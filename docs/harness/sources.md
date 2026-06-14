@@ -41,6 +41,18 @@ packaging, CI, or platform support changes.
 | "Code as Agent Harness" | Executable, verifiable, stateful agent harness direction |
 | VS Code, "The Coding Harness Behind GitHub Copilot in VS Code" | Editor-harness responsibilities and Copilot feedback-loop framing |
 | HumanLayer, "Harness Engineering for Coding Agents" | Harness as coding-agent configuration surface and skill/prompt/tooling practice |
+| GitHub Docs, "About the repository README file" | README purpose, expected content, relative links, and keeping deep docs outside the landing page |
+| GitHub Docs, "Basic writing and formatting syntax" | Markdown heading, link, code block, list, and image behavior on GitHub |
+| The Turing Way, "Landing Page - README File" | README as project landing page, audience fit, fast start, and jargon control |
+| Kubernetes README | Large-project README pattern: short value statement, getting-started links, development, support, governance, roadmap |
+| FastAPI README | Product README pattern: tagline, feature/value bullets, install, example, docs, license |
+| uv README | CLI README pattern: concise positioning, badges, quick install, docs-first navigation |
+| pip README | Infrastructure README pattern: concise purpose, docs links, release cadence, support, contribution, code of conduct |
+| pytest README | Developer-tool README pattern: minimal example, features, documentation, issue route, support, security, license |
+| Black README | Opinionated-tool README pattern: clear positioning, quick usage, configuration stance, contributing, changelog, code of conduct |
+| pre-commit README | Minimal README pattern that sends users to canonical docs when the README is not the full manual |
+| Requests README | Minimal mature-project README pattern with docs-first routing |
+| OpenSSF Scorecard | Security posture signal and supply-chain best-practice framing |
 
 ## Local References
 
@@ -93,3 +105,6 @@ project-owned docs instead of machine-specific absolute paths.
   in `research-sources.json`, refresh metadata lives in
   `research-sources.lock.json`, and local sibling references are recorded in
   this file.
+- The root README is treated as the project landing page, not the full manual.
+  It now gives the fastest safe path, clear trust boundaries, Action usage,
+  verification, source provenance, and links to deeper harness docs.

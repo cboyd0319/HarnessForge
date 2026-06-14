@@ -143,6 +143,66 @@
       "category": "analysis"
     },
     {
+      "id": "github-readme-docs",
+      "url": "https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-readmes",
+      "category": "readme-guidance"
+    },
+    {
+      "id": "github-markdown-syntax",
+      "url": "https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax",
+      "category": "readme-guidance"
+    },
+    {
+      "id": "turingway-readme",
+      "url": "https://book.the-turing-way.org/project-design/pd-overview/project-repo/project-repo-readme/",
+      "category": "readme-guidance"
+    },
+    {
+      "id": "kubernetes-readme",
+      "url": "https://raw.githubusercontent.com/kubernetes/kubernetes/master/README.md",
+      "category": "readme-exemplar"
+    },
+    {
+      "id": "fastapi-readme",
+      "url": "https://raw.githubusercontent.com/fastapi/fastapi/master/README.md",
+      "category": "readme-exemplar"
+    },
+    {
+      "id": "uv-readme",
+      "url": "https://raw.githubusercontent.com/astral-sh/uv/main/README.md",
+      "category": "readme-exemplar"
+    },
+    {
+      "id": "pip-readme",
+      "url": "https://raw.githubusercontent.com/pypa/pip/main/README.rst",
+      "category": "readme-exemplar"
+    },
+    {
+      "id": "pytest-readme",
+      "url": "https://raw.githubusercontent.com/pytest-dev/pytest/main/README.rst",
+      "category": "readme-exemplar"
+    },
+    {
+      "id": "black-readme",
+      "url": "https://raw.githubusercontent.com/psf/black/main/README.md",
+      "category": "readme-exemplar"
+    },
+    {
+      "id": "pre-commit-readme",
+      "url": "https://raw.githubusercontent.com/pre-commit/pre-commit/main/README.md",
+      "category": "readme-exemplar"
+    },
+    {
+      "id": "requests-readme",
+      "url": "https://raw.githubusercontent.com/psf/requests/main/README.md",
+      "category": "readme-exemplar"
+    },
+    {
+      "id": "openssf-scorecard",
+      "url": "https://scorecard.dev/",
+      "category": "supply-chain"
+    },
+    {
       "id": "python-downloads",
       "url": "https://www.python.org/downloads/",
       "category": "platform"

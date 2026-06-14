@@ -1,7 +1,7 @@
 {
-  "checkedAt": "2026-06-14T03:17:01+00:00",
+  "checkedAt": "2026-06-14T03:30:52+00:00",
   "failureCount": 1,
-  "sourceCount": 32,
+  "sourceCount": 44,
   "sources": [
     {
       "category": "field-report",
@@ -18,7 +18,7 @@
       ],
       "httpStatus": 200,
       "id": "openai-harness-engineering",
-      "sha256": "796e12c5354a500a264b6efba861d300542c47a92bc431b2b47e83e7ed196da6",
+      "sha256": "5575f073d50a80d2b043d4a0bd4e259e5f4f055f3a575f4dc7f7521942fba261",
       "status": "ok",
       "title": "Harness engineering: leveraging Codex in an agent-first world | OpenAI",
       "url": "https://openai.com/index/harness-engineering/"
@@ -36,7 +36,7 @@
       ],
       "httpStatus": 200,
       "id": "anthropic-effective-harnesses",
-      "sha256": "376501c594e4e7f84225055e2194706bc190e6fab3968a81e09000d318aaf479",
+      "sha256": "cba751dfd825b5d01635e156629c35de64036e6e3e1c1820162ede7185d1a4f5",
       "status": "ok",
       "title": "Effective harnesses for long-running agents \\ Anthropic",
       "url": "https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents"
@@ -56,7 +56,7 @@
       ],
       "httpStatus": 200,
       "id": "anthropic-long-running-apps",
-      "sha256": "872b1d7ee502cd95ee353c3ab7ef619102d9bbebdf5466ea7c7dafeef177df56",
+      "sha256": "fff1da1fe1cd37199cce41757bcf033dfa57c8513123d7c045939f394e017d62",
       "status": "ok",
       "title": "Harness design for long-running application development \\ Anthropic",
       "url": "https://www.anthropic.com/engineering/harness-design-long-running-apps"
@@ -241,7 +241,7 @@
       ],
       "httpStatus": 200,
       "id": "google-antigravity-agent",
-      "sha256": "dde6496be72b4c832776cdd2fed6ed67687dca34d29a593f985f9c558b42e7ab",
+      "sha256": "7afda478bd6ec9668792cc5d94093b3de7ec7faba00d13b711184d9d12042754",
       "status": "ok",
       "title": "Antigravity Agent | Gemini API | Google AI for Developers",
       "url": "https://ai.google.dev/gemini-api/docs/antigravity-agent"
@@ -319,7 +319,7 @@
       ],
       "httpStatus": 200,
       "id": "walkinglabs-github",
-      "sha256": "eaca027e5f1ae0c9384ee0adde8dfec1c113a1124bf5fdc223d01a3734f38756",
+      "sha256": "6d1dc40d2fa677aa0cabe6e72232e2ca24d0806fa4fb9ac8047361d9f03ceead",
       "status": "ok",
       "title": "GitHub - walkinglabs/learn-harness-engineering: Harness engineering beginner tutorial, from 0 to 1 \u00b7 GitHub",
       "url": "https://github.com/walkinglabs/learn-harness-engineering"
@@ -359,7 +359,7 @@
       ],
       "httpStatus": 200,
       "id": "walkinglabs-harness-creator-skill",
-      "sha256": "e2abef000c3ab1a754c7e192821cd4f25af5e18aefeebeb543bd5627ef9329e7",
+      "sha256": "c0d14248da680d05d88ca89b57570e25d797b82e640900af0d17f5096ff2779b",
       "status": "ok",
       "title": "learn-harness-engineering/skills/harness-creator at main \u00b7 walkinglabs/learn-harness-engineering \u00b7 GitHub",
       "url": "https://github.com/walkinglabs/learn-harness-engineering/tree/main/skills/harness-creator"
@@ -379,7 +379,7 @@
       ],
       "httpStatus": 200,
       "id": "agentpatterns-copilot-harness",
-      "sha256": "a7654e3bebe419a795ebf748b6c8c5012aaa2da223c2fa37921e879c6b268f5b",
+      "sha256": "df7b0f95a5e26e02015d36d3199b3026bbd461f7efeab1048c93549883f23c27",
       "status": "ok",
       "title": "GitHub Copilot: Harness Engineering for Agent-Ready Code - AgentPatterns.ai",
       "url": "https://agentpatterns.ai/training/copilot/harness-engineering/"
@@ -427,7 +427,7 @@
       ],
       "httpStatus": 200,
       "id": "charlesanim-harness-engineering",
-      "sha256": "35153f64275d6eb6866cdf38226692a22b476e6118f34da57071ebab037e280b",
+      "sha256": "a49dac4b4d852fd4d2dc8f0c3f51c56986c08514827e966526e9496c1c633db6",
       "status": "ok",
       "title": "GitHub - charlesanim/harness-engineering: Agent skill: set up OpenAI's harness engineering methodology in any repo. Works with Copilot, Codex, Claude, Cursor. \u00b7 GitHub",
       "url": "https://github.com/charlesanim/harness-engineering"
@@ -530,6 +530,217 @@
       "status": "ok",
       "title": "Skill Issue: Harness Engineering for Coding Agents | HumanLayer Blog",
       "url": "https://www.humanlayer.dev/blog/skill-issue-harness-engineering-for-coding-agents"
+    },
+    {
+      "category": "readme-guidance",
+      "contentType": "text/html",
+      "headings": [
+        "Repositories",
+        "About the repository README file",
+        "In this article",
+        "About READMEs",
+        "Auto-generated table of contents for markdown files",
+        "Section links in markdown files and blob pages",
+        "Relative links and image paths in markdown files",
+        "Wikis"
+      ],
+      "httpStatus": 200,
+      "id": "github-readme-docs",
+      "sha256": "c73bb9fb4be2995cceb4b93f7dbbed972d1ed6156a1580077299166f6348fc35",
+      "status": "ok",
+      "title": "About the repository README file - GitHub Docs",
+      "url": "https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-readmes"
+    },
+    {
+      "category": "readme-guidance",
+      "contentType": "text/html",
+      "headings": [
+        "Get started",
+        "Basic writing and formatting syntax",
+        "Who can use this feature?",
+        "In this article",
+        "Headings",
+        "Styling text",
+        "Quoting text",
+        "Quoting code"
+      ],
+      "httpStatus": 200,
+      "id": "github-markdown-syntax",
+      "sha256": "d5bca3f34d06e24cec41f2d3ec9852de3fdff6d7ed2ea4992c925fc0aa6abee3",
+      "status": "ok",
+      "title": "Basic writing and formatting syntax - GitHub Docs",
+      "url": "https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax"
+    },
+    {
+      "category": "readme-guidance",
+      "contentType": "text/html",
+      "headings": [
+        "Landing Page - README File",
+        "Case Study: The Turing Way \u00b6"
+      ],
+      "httpStatus": 200,
+      "id": "turingway-readme",
+      "sha256": "20b6e89fe10272393083586b037d52a3a9777dbeed44d9e2af3ee65992d09e09",
+      "status": "ok",
+      "title": "Landing Page - README File - The Turing Way",
+      "url": "https://book.the-turing-way.org/project-design/pd-overview/project-repo/project-repo-readme/"
+    },
+    {
+      "category": "readme-exemplar",
+      "contentType": "text/plain",
+      "headings": [
+        "Kubernetes (K8s)",
+        "To start using K8s",
+        "To start developing K8s",
+        "Support",
+        "Community Meetings",
+        "Adopters",
+        "Governance",
+        "Roadmap"
+      ],
+      "httpStatus": 200,
+      "id": "kubernetes-readme",
+      "sha256": "ca72a02de7afff935feb2beb5c670b758617eac433a8473703ed151f9641bb62",
+      "status": "ok",
+      "title": "Kubernetes (K8s)",
+      "url": "https://raw.githubusercontent.com/kubernetes/kubernetes/master/README.md"
+    },
+    {
+      "category": "readme-exemplar",
+      "contentType": "text/plain",
+      "headings": [
+        "Sponsors",
+        "Opinions",
+        "FastAPI Conf",
+        "FastAPI mini documentary",
+        "**Typer**, the FastAPI of CLIs",
+        "Requirements",
+        "Installation",
+        "Example"
+      ],
+      "httpStatus": 200,
+      "id": "fastapi-readme",
+      "sha256": "02bd2ce60ce1f2d05877ff89e4e0542537bf9d2fa5cf939a666223f0793d7f8d",
+      "status": "ok",
+      "title": "FastAPI framework, high performance, easy to learn, fast to code, ready for production",
+      "url": "https://raw.githubusercontent.com/fastapi/fastapi/master/README.md"
+    },
+    {
+      "category": "readme-exemplar",
+      "contentType": "text/plain",
+      "headings": [
+        "uv",
+        "Highlights",
+        "Installation",
+        "On macOS and Linux.",
+        "On Windows.",
+        "With pip.",
+        "Or pipx.",
+        "Documentation"
+      ],
+      "httpStatus": 200,
+      "id": "uv-readme",
+      "sha256": "b7968d4f0c957b08fac687b1933788df10828a450c2dfa5080cbea0d013b33ea",
+      "status": "ok",
+      "title": "uv",
+      "url": "https://raw.githubusercontent.com/astral-sh/uv/main/README.md"
+    },
+    {
+      "category": "readme-exemplar",
+      "contentType": "text/plain",
+      "headings": [
+        "pip - The Python Package Installer",
+        "Code of Conduct"
+      ],
+      "httpStatus": 200,
+      "id": "pip-readme",
+      "sha256": "807e8aad661c9fe6540a2f0790279c230c81c72bdf72b9466f6e9ed9304ed8b1",
+      "status": "ok",
+      "title": "pip - The Python Package Installer",
+      "url": "https://raw.githubusercontent.com/pypa/pip/main/README.rst"
+    },
+    {
+      "category": "readme-exemplar",
+      "contentType": "text/plain",
+      "headings": [
+        "Features",
+        "Documentation",
+        "Bugs/Requests",
+        "Changelog",
+        "Support pytest",
+        "pytest for enterprise",
+        "License"
+      ],
+      "httpStatus": 200,
+      "id": "pytest-readme",
+      "sha256": "37c713f12b48774c77c40accfe3a6a28c25d7e763c9c5e34266261cf738713b5",
+      "status": "ok",
+      "title": "The `pytest` framework makes it easy to write small tests, yet",
+      "url": "https://raw.githubusercontent.com/pytest-dev/pytest/main/README.rst"
+    },
+    {
+      "category": "readme-exemplar",
+      "contentType": "text/plain",
+      "headings": [
+        "Installation and usage",
+        "The _Black_ code style",
+        "Configuration",
+        "Used by",
+        "Testimonials",
+        "Show your style",
+        "License",
+        "Contributing"
+      ],
+      "httpStatus": 200,
+      "id": "black-readme",
+      "sha256": "31627c695463fac84221c717a61e41f3c2d94d0f37d600800c9cddad07709982",
+      "status": "ok",
+      "title": "The Uncompromising Code Formatter",
+      "url": "https://raw.githubusercontent.com/psf/black/main/README.md"
+    },
+    {
+      "category": "readme-exemplar",
+      "contentType": "text/plain",
+      "headings": [
+        "pre-commit"
+      ],
+      "httpStatus": 200,
+      "id": "pre-commit-readme",
+      "sha256": "e247ace0ab84c08b12ebee0c304e2e9c66af77f6f43c685ac102d51a02c72cb6",
+      "status": "ok",
+      "title": "pre-commit",
+      "url": "https://raw.githubusercontent.com/pre-commit/pre-commit/main/README.md"
+    },
+    {
+      "category": "readme-exemplar",
+      "contentType": "text/plain",
+      "headings": [
+        "Requests",
+        "Installing Requests and Supported Versions",
+        "Supported Features & Best\u2013Practices",
+        "Cloning the repository"
+      ],
+      "httpStatus": 200,
+      "id": "requests-readme",
+      "sha256": "2a9268c9be5f4dc9abe9105740be7c5234babc3dd2b25eb11ca376c538a0c67b",
+      "status": "ok",
+      "title": "Requests",
+      "url": "https://raw.githubusercontent.com/psf/requests/main/README.md"
+    },
+    {
+      "category": "supply-chain",
+      "contentType": "text/html",
+      "headings": [
+        "Build better security habits, one test at a time",
+        "Run the checks",
+        "Learn more"
+      ],
+      "httpStatus": 200,
+      "id": "openssf-scorecard",
+      "sha256": "e2ed41c121a06c3f8cf4911c36a5ab43f325918d14b09d9472b35d1f9caa3bcc",
+      "status": "ok",
+      "title": "OpenSSF Scorecard",
+      "url": "https://scorecard.dev/"
     },
     {
       "category": "platform",

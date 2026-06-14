@@ -79,6 +79,104 @@ class RefreshResearchTests(unittest.TestCase):
         self.assertEqual(title, "setuptools 82.0.1")
         self.assertEqual(headings, ["Most extensible Python build backend"])
 
+    def test_plain_text_metadata_extracts_markdown_headings(self) -> None:
+        title, headings = refresh_research._extract_metadata(
+            "text/plain",
+            "# demo [![CI](https://example.test/badge.svg)](https://example.test)\n"
+            "\n"
+            "## Install\n"
+            "## Contribute\n",
+        )
+
+        self.assertEqual(title, "demo")
+        self.assertEqual(headings, ["demo", "Install", "Contribute"])
+
+    def test_plain_text_metadata_uses_intro_when_markdown_has_no_h1(self) -> None:
+        title, headings = refresh_research._extract_metadata(
+            "text/plain",
+            "![Logo](https://example.test/logo.png)\n"
+            "\n"
+            "Useful project tagline.\n"
+            "\n"
+            "## Install\n",
+        )
+
+        self.assertEqual(title, "Useful project tagline.")
+        self.assertEqual(headings, ["Install"])
+
+    def test_plain_text_metadata_uses_html_intro_when_present(self) -> None:
+        title, headings = refresh_research._extract_metadata(
+            "text/plain",
+            '<p align="center">\n'
+            "  <em>Fast and useful.</em>\n"
+            "</p>\n"
+            "\n"
+            "**Documentation**: [https://example.test](https://example.test)\n"
+            "\n"
+            "## Install\n",
+        )
+
+        self.assertEqual(title, "Fast and useful.")
+        self.assertEqual(headings, ["Install"])
+
+    def test_plain_text_metadata_uses_html_heading_when_present(self) -> None:
+        title, headings = refresh_research._extract_metadata(
+            "text/plain",
+            '<h2 align="center">The Useful Tool</h2>\n'
+            "\n"
+            "> a tagline\n"
+            "\n"
+            "## Install\n",
+        )
+
+        self.assertEqual(title, "The Useful Tool")
+        self.assertEqual(headings, ["Install"])
+
+    def test_plain_text_metadata_extracts_rst_headings(self) -> None:
+        title, headings = refresh_research._extract_metadata(
+            "text/plain",
+            "demo\n"
+            "====\n"
+            "\n"
+            "Install\n"
+            "-------\n",
+        )
+
+        self.assertEqual(title, "demo")
+        self.assertEqual(headings, ["demo", "Install"])
+
+    def test_plain_text_metadata_skips_indented_rst_code_blocks(self) -> None:
+        title, headings = refresh_research._extract_metadata(
+            "text/plain",
+            "demo\n"
+            "====\n"
+            "\n"
+            "    content of test_sample.py\n"
+            "    -------------------------\n"
+            "\n"
+            "Features\n"
+            "--------\n",
+        )
+
+        self.assertEqual(title, "demo")
+        self.assertEqual(headings, ["demo", "Features"])
+
+    def test_plain_text_metadata_skips_indented_markdown_code_comments(self) -> None:
+        title, headings = refresh_research._extract_metadata(
+            "text/plain",
+            ".. image:: https://example.test/logo.svg\n"
+            "\n"
+            "The demo framework helps with tests.\n"
+            "\n"
+            "    # content of test_sample.py\n"
+            "\n"
+            "Features\n"
+            "--------\n",
+        )
+
+        self.assertEqual(title, "The demo framework helps with tests.")
+        self.assertEqual(headings, ["Features"])
+
     def test_research_source_template_matches_repo_source_ids(self) -> None:
         root = Path(__file__).resolve().parents[1]
         repo_sources = json.loads(

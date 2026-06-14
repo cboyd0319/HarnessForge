@@ -16,6 +16,7 @@ from urllib.request import Request, urlopen
 TITLE_RE = re.compile(r"<title[^>]*>(.*?)</title>", re.IGNORECASE | re.DOTALL)
 H_RE = re.compile(r"<h([12])[^>]*>(.*?)</h\1>", re.IGNORECASE | re.DOTALL)
 TAG_RE = re.compile(r"<[^>]+>")
+MD_HEADING_RE = re.compile(r"^(#{1,2})\s+(.+?)\s*$")
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -95,9 +96,80 @@ def _extract_metadata(content_type: str, text: str) -> tuple[str, list[str]]:
     media_type = content_type.split(";", 1)[0].strip().lower()
     if media_type == "application/json":
         return _extract_json_metadata(text)
+    if media_type in {"text/markdown", "text/plain", "text/x-rst"}:
+        title, headings = _extract_plain_text_metadata(text)
+        if title or headings:
+            return title, headings
     title = _first_match(TITLE_RE, text)
     headings = [_clean(match.group(2)) for match in H_RE.finditer(text)]
     return title, [heading for heading in headings if heading][:8]
+
+
+def _extract_plain_text_metadata(text: str) -> tuple[str, list[str]]:
+    lines = text.splitlines()
+    markdown_headings: list[tuple[int, str]] = []
+    first_heading_index = len(lines)
+    for index, line in enumerate(lines):
+        if line[:1].isspace():
+            continue
+        match = MD_HEADING_RE.match(line.strip())
+        if match:
+            first_heading_index = min(first_heading_index, index)
+            level = len(match.group(1))
+            heading = _clean_markdown(match.group(2))
+            if heading:
+                markdown_headings.append((level, heading))
+    if markdown_headings:
+        title = next(
+            (heading for level, heading in markdown_headings if level == 1),
+            _first_plain_title(lines[:first_heading_index]),
+        )
+        if not title:
+            title = markdown_headings[0][1]
+        return title, [heading for _, heading in markdown_headings[:8]]
+
+    rst_headings = []
+    first_heading_index = len(lines)
+    for index, line in enumerate(lines[:-1]):
+        if line[:1].isspace() or lines[index + 1][:1].isspace():
+            continue
+        title = line.strip()
+        underline = lines[index + 1].strip()
+        if (
+            title
+            and len(underline) >= len(title)
+            and set(underline) in ({"="}, {"-"})
+        ):
+            first_heading_index = min(first_heading_index, index)
+            rst_headings.append(_clean_markdown(title))
+    rst_headings = [heading for heading in rst_headings if heading]
+    if rst_headings:
+        title = _first_plain_title(lines[:first_heading_index]) or rst_headings[0]
+        return title, rst_headings[:8]
+
+    return "", []
+
+
+def _first_plain_title(lines: list[str]) -> str:
+    for line in lines:
+        stripped = line.strip()
+        if not stripped:
+            continue
+        if set(stripped) in ({"-"}, {"*"}, {"_"}, {"="}):
+            continue
+        if stripped.startswith((".. ", ":", "[![", "![")):
+            continue
+        lowered = stripped.lower()
+        if lowered.startswith(("**documentation**", "**source code**")):
+            continue
+        if re.match(r"<h[12]\b", stripped, re.IGNORECASE) or "<em>" in lowered:
+            return _clean(stripped)
+        if stripped.startswith("<"):
+            continue
+        title = _clean_markdown(stripped)
+        if title:
+            return title
+    return ""
 
 
 def _extract_json_metadata(text: str) -> tuple[str, list[str]]:
@@ -147,6 +219,14 @@ def _first_match(pattern: re.Pattern[str], text: str) -> str:
 def _clean(text: str) -> str:
     unescaped = html.unescape(TAG_RE.sub(" ", text))
     return " ".join(unescaped.split())
+
+
+def _clean_markdown(text: str) -> str:
+    without_badges = re.sub(r"\[!\[[^\]]*\]\([^)]*\)\]\([^)]*\)", "", text)
+    without_images = re.sub(r"!\[([^\]]*)\]\([^)]*\)", r"\1", without_badges)
+    without_links = re.sub(r"\[([^\]]+)\]\([^)]*\)", r"\1", without_images)
+    without_code = re.sub(r"`([^`]+)`", r"\1", without_links)
+    return " ".join(without_code.strip(" #").split())
 
 
 def _render_inbox(lock: dict[str, Any]) -> str:
