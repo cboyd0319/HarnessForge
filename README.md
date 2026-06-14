@@ -1,4 +1,4 @@
-# repo-harness-creator
+# Repo Harness Creator
 
 <p align="center">
   <img src="docs/assets/logo.png" alt="repo-harness-creator logo" width="180">
