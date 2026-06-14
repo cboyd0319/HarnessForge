@@ -30,6 +30,9 @@ maintenance loop.
   OpenSSF Scorecard, and widely used open-source README examples. Reworked the
   root README as the project landing page and expanded the tracked research
   source ledger to 44 sources.
+- Fixed the root composite Action manifest after hosted CI rejected an unquoted
+  description value containing a colon. Added a local regression test for that
+  manifest shape.
 
 ## Recommended Next Step
 
@@ -39,14 +42,14 @@ Push the branch and verify the GitHub-hosted CI matrix, including the local
 ## Verification Evidence
 
 - `./init.sh` passed on macOS 26.5.1 with Python 3.14.5: doctor, compile,
-  36 unit tests, pin check, self-audit `100/100`.
+  37 unit tests, pin check, self-audit `100/100`.
 - `pwsh -NoProfile -File ./init.ps1` passed on macOS 26.5.1 with Python
-  3.14.5: doctor, compile, 36 unit tests, pin check, self-audit `100/100`.
+  3.14.5: doctor, compile, 37 unit tests, pin check, self-audit `100/100`.
 - Isolated virtualenv package install passed; `repo-harness --version` returned
   `0.1.0`, generated target init included component and research starter files,
   generated 32 research source records, and installed CLI audit passed.
 - Isolated generated-harness smoke passed with 44 research source records.
-- `PYTHONPATH=src:. python3 -m unittest discover -s tests` passed with 36
+- `PYTHONPATH=src:. python3 -m unittest discover -s tests` passed with 37
   tests.
 - `PYTHONPATH=src:. python3 scripts/check_pins.py --root .` passed.
 - `PYTHONPATH=src:. python3 -m repo_harness_creator audit --target .

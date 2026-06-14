@@ -27,12 +27,14 @@ self-healing, component-boundary improvements, and a high-quality public README.
 ## Blockers
 
 - Live Ubuntu 22.04, macOS 15, and Windows 2025 CI execution depends on pushing
-  the repository. Local macOS POSIX and PowerShell checks pass with 36 tests,
+  the repository. Local macOS POSIX and PowerShell checks pass with 37 tests,
   pin check, and self-audit `100/100`.
-- Current focused local suite passes with 36 tests, pin check, and self-audit
+- Current focused local suite passes with 37 tests, pin check, and self-audit
   `100/100`.
 - Research metadata refresh currently tracks 44 sources with one recorded Red
   Hat 403 fetch failure.
+- Root Action manifest regression coverage now checks quoted description values
+  containing colons.
 - Hosted execution of the reusable Action `uses: ./` smoke step is pending until
   the repo is pushed.
 

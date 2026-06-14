@@ -11,6 +11,21 @@ from repo_harness_creator.github_action import _output, run_from_env
 
 
 class GitHubActionTests(unittest.TestCase):
+    def test_action_manifest_quotes_description_values_with_colons(self) -> None:
+        action = Path(__file__).resolve().parents[1] / "action.yml"
+
+        lines = action.read_text(encoding="utf-8").splitlines()
+        for line_number, line in enumerate(lines, 1):
+            stripped = line.lstrip()
+            if not stripped.startswith("description: "):
+                continue
+            value = stripped.split(": ", 1)[1]
+            if ":" in value:
+                self.assertTrue(
+                    value.startswith(("\"", "'")),
+                    f"action.yml:{line_number} description with colon must be quoted",
+                )
+
     def test_action_audit_writes_outputs_and_reports(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
