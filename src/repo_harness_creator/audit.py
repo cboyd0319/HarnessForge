@@ -562,6 +562,11 @@ def _feedback_checks(files: dict[str, str], link_failures: list[str]) -> list[Ch
         _check("docs/harness/evaluator-rubric.md" in files, "Evaluator rubric exists for output review"),
         _contains(all_text, ("Verification Evidence", "Evidence", "command output"), "Evidence recording is requested"),
         _contains(all_text, ("audit", "assess", "score"), "Regular assessment loop is documented"),
+        _contains_all(
+            all_text,
+            ("local checks", "push", "remote CI"),
+            "Remote CI cost control is documented",
+        ),
         _check(not link_failures, "Local Markdown links resolve", "; ".join(link_failures[:3])),
         _check(".github/workflows/ci.yml" in files or "init.sh" in files, "At least one local or CI feedback entrypoint exists"),
     ]
@@ -590,6 +595,21 @@ def _scope_checks(
             all_text,
             ("prompt injection", "data poisoning", "untrusted"),
             "Prompt-injection and data-poisoning boundary is documented",
+        ),
+        _contains_all(
+            all_text,
+            ("least privilege", "human approval", "cost-incurring"),
+            "Agent tool approval boundary is documented",
+        ),
+        _contains_all(
+            all_text,
+            ("intentionally vulnerable", "risk", "product defects"),
+            "Intentional vulnerability fixture boundary is documented",
+        ),
+        _contains_all(
+            all_text,
+            ("threat model", "AI/RAG/agent", "evidence"),
+            "AI/agent threat-model evidence loop is documented",
         ),
         _check(
             allow_local_absolute_paths or not local_path_failures,

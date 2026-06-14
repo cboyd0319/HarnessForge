@@ -243,6 +243,96 @@
       "category": "security"
     },
     {
+      "id": "owasp-cheat-sheet-series",
+      "url": "https://www.owasp.community/projects/cheat-sheet-series",
+      "category": "security"
+    },
+    {
+      "id": "owasp-security-shepherd",
+      "url": "https://github.com/OWASP/SecurityShepherd",
+      "category": "security-training"
+    },
+    {
+      "id": "owasp-pytm",
+      "url": "https://github.com/OWASP/pytm",
+      "category": "threat-modeling"
+    },
+    {
+      "id": "owasp-samm",
+      "url": "https://owaspsamm.org/model/",
+      "category": "security-program"
+    },
+    {
+      "id": "owasp-ai-agent-security-cheat-sheet",
+      "url": "https://cheatsheetseries.owasp.org/cheatsheets/AI_Agent_Security_Cheat_Sheet.html",
+      "category": "agent-security"
+    },
+    {
+      "id": "owasp-mcp-security-cheat-sheet",
+      "url": "https://cheatsheetseries.owasp.org/cheatsheets/MCP_Security_Cheat_Sheet.html",
+      "category": "agent-security"
+    },
+    {
+      "id": "owasp-llm-prompt-injection-cheat-sheet",
+      "url": "https://cheatsheetseries.owasp.org/cheatsheets/LLM_Prompt_Injection_Prevention_Cheat_Sheet.html",
+      "category": "agent-security"
+    },
+    {
+      "id": "owasp-rag-security-cheat-sheet",
+      "url": "https://cheatsheetseries.owasp.org/cheatsheets/RAG_Security_Cheat_Sheet.html",
+      "category": "agent-security"
+    },
+    {
+      "id": "owasp-secure-coding-with-ai-cheat-sheet",
+      "url": "https://cheatsheetseries.owasp.org/cheatsheets/Secure_Coding_with_AI_Cheat_Sheet.html",
+      "category": "agent-security"
+    },
+    {
+      "id": "owasp-secure-ai-model-ops-cheat-sheet",
+      "url": "https://cheatsheetseries.owasp.org/cheatsheets/Secure_AI_Model_Ops_Cheat_Sheet.html",
+      "category": "agent-security"
+    },
+    {
+      "id": "owasp-ci-cd-security-cheat-sheet",
+      "url": "https://cheatsheetseries.owasp.org/cheatsheets/CI_CD_Security_Cheat_Sheet.html",
+      "category": "supply-chain"
+    },
+    {
+      "id": "owasp-github-actions-security-cheat-sheet",
+      "url": "https://cheatsheetseries.owasp.org/cheatsheets/GitHub_Actions_Security_Cheat_Sheet.html",
+      "category": "supply-chain"
+    },
+    {
+      "id": "owasp-software-supply-chain-security-cheat-sheet",
+      "url": "https://cheatsheetseries.owasp.org/cheatsheets/Software_Supply_Chain_Security_Cheat_Sheet.html",
+      "category": "supply-chain"
+    },
+    {
+      "id": "owasp-dependency-graph-sbom-cheat-sheet",
+      "url": "https://cheatsheetseries.owasp.org/cheatsheets/Dependency_Graph_SBOM_Cheat_Sheet.html",
+      "category": "supply-chain"
+    },
+    {
+      "id": "owasp-secrets-management-cheat-sheet",
+      "url": "https://cheatsheetseries.owasp.org/cheatsheets/Secrets_Management_Cheat_Sheet.html",
+      "category": "supply-chain"
+    },
+    {
+      "id": "owasp-secure-code-review-cheat-sheet",
+      "url": "https://cheatsheetseries.owasp.org/cheatsheets/Secure_Code_Review_Cheat_Sheet.html",
+      "category": "security"
+    },
+    {
+      "id": "owasp-threat-modeling-cheat-sheet",
+      "url": "https://cheatsheetseries.owasp.org/cheatsheets/Threat_Modeling_Cheat_Sheet.html",
+      "category": "security"
+    },
+    {
+      "id": "owasp-logging-cheat-sheet",
+      "url": "https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html",
+      "category": "security"
+    },
+    {
       "id": "owasp-llm-top-10",
       "url": "https://owasp.org/www-project-top-10-for-large-language-model-applications/",
       "category": "agent-security"

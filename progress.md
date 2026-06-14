@@ -134,17 +134,51 @@ maintenance loop.
   recorded as review signals instead.
 - Added an audit requirement that generated and live harnesses document
   prompt-injection and data-poisoning boundaries as untrusted-content risks.
+- Personally reviewed the requested OWASP CheatSheetSeries, SecurityShepherd,
+  SAMM, and pytm sources for repo-harness-creator fit. Accepted narrow controls:
+  tool/retrieval output remains untrusted, invisible Unicode and Markdown/HTML
+  exfiltration markers are withheld from research metadata, intentionally
+  vulnerable training/demo fixtures are preserved unless remediation is in
+  scope, and material AI/RAG/agent, tool, auth, secret, data-flow, or deployment
+  changes must update boundary/threat-model evidence.
+- Tightened remote CI cost posture. Push/PR CI now runs the Ubuntu 22.04 Python
+  3.13.14 path by default with superseded-run cancellation; macOS and Windows
+  platform checks remain available through manual `workflow_dispatch`.
 
 ## Recommended Next Step
 
-After push, watch hosted CI for the agentic-security source and metadata
-hardening slice. Then decide whether to cut a `v1` Action tag before broader
-public use, whether to keep both Python minors in CI or trim to Python 3.13
-only, and whether deeper workspace graph parsing or release-time
+Review the local commit for the OWASP/security and CI-cost-control batch. Push
+only at an explicit batch/release boundary or user request. Before a first
+public Action release, consider running the manual macOS/Windows platform CI
+check, then decide whether to cut a `v1` Action tag and whether release-time
 SBOM/provenance should come next.
 
 ## Verification Evidence
 
+- Personally scanned the requested OWASP CheatSheetSeries, SecurityShepherd,
+  SAMM, and pytm materials without delegating the review. The accepted controls
+  were limited to source-backed harness policy, audit checks, fixed allowlist
+  entries, and CI cost controls.
+- `PYTHONPATH=src:. python3 scripts/refresh_research.py --root .` refreshed
+  106 fixed-allowlist sources with the same single known Red Hat 403 failure.
+  No current source metadata triggered adversarial review signals.
+- `PYTHONPATH=src:. python3 -m unittest tests.test_refresh_research
+  tests.test_pins tests.test_generate_audit` passed with 44 focused tests after
+  adding invisible-Unicode/Markdown-exfiltration metadata withholding, OWASP
+  source entries, fixture/threat-model controls, and CI-cost workflow tests.
+- `PYTHONPATH=src:. python3 -m unittest discover -s tests` passed with 76
+  tests. JSON validation for research sources, source template, and manifest
+  passed.
+- `python3 -m compileall src tests`, `PYTHONPATH=src:. python3
+  scripts/check_pins.py --root .`, `git diff --check`, and
+  `PYTHONPATH=src:. python3 -m repo_harness_creator audit --target .
+  --min-score 85` passed; self-audit stayed `100/100`.
+- `./init.sh` passed on macOS 26.5.1 with Python 3.14.5 after the
+  OWASP/security and CI-cost-control batch: doctor, compile, 76 unit tests, pin
+  check, and self-audit `100/100`.
+- `pwsh -NoProfile -File ./init.ps1` passed on macOS 26.5.1 with Python
+  3.14.5 after the OWASP/security and CI-cost-control batch: doctor, compile,
+  76 unit tests, pin check, and self-audit `100/100`.
 - Required read-only `agy` research pass completed against this repo plus the
   local AGT prompt-injection benchmark and OWASP Agentic Skills repo. Findings
   were personally checked against local files and public OWASP/user-provided

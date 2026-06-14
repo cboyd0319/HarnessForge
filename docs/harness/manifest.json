@@ -53,6 +53,8 @@
     ".github/workflows/ci.yml": [
       "actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10",
       "actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405",
+      "cancel-in-progress: true",
+      "workflow_dispatch",
       "scripts/check_pins.py"
     ],
     ".github/workflows/harness-self-heal.yml": [
@@ -68,7 +70,8 @@
       "Ubuntu 22.04+",
       "Definition Of Done",
       "full-length commit SHAs",
-      "personal machines"
+      "personal machines",
+      "remote CI"
     ],
     "README.md": [
       "docs/assets/logo.png",
@@ -97,7 +100,10 @@
     "docs/harness/verification-matrix.md": [
       "Change Type",
       "Required Checks",
-      "When Checks Cannot Run"
+      "When Checks Cannot Run",
+      "Remote CI",
+      "AI/RAG/agent",
+      "intentionally vulnerable"
     ],
     "docs/harness/component-inventory.md": [
       "Component Inventory",
@@ -119,7 +125,12 @@
       "machine-local absolute paths",
       "fixed allowlist",
       "prompt injection",
-      "data poisoning"
+      "data poisoning",
+      "least privilege",
+      "human approval",
+      "cost-incurring",
+      "intentionally vulnerable",
+      "Threat model"
     ],
     "docs/harness/feature-privacy-labels.json": [
       "External AI optional",
@@ -150,12 +161,20 @@
       "Self-healing must be reviewable",
       "fixed allowlist",
       "prompt injection",
+      "invisible Unicode",
       "Safe Loop",
       "Promotion Rule"
     ],
     "docs/harness/research-sources.json": [
       "openai-harness-engineering",
       "github-actions-secure-use",
+      "owasp-ai-agent-security-cheat-sheet",
+      "owasp-mcp-security-cheat-sheet",
+      "owasp-security-shepherd",
+      "owasp-pytm",
+      "owasp-samm",
+      "owasp-rag-security-cheat-sheet",
+      "owasp-secure-coding-with-ai-cheat-sheet",
       "owasp-llm-top-10",
       "owasp-agentic-applications-top-10",
       "owasp-agentic-skills-top-10",
@@ -164,6 +183,13 @@
       "pnpm-workspaces",
       "github-actions-workflow-syntax",
       "terraform-standard-module-structure"
+    ],
+    "docs/harness/agent-operating-model.md": [
+      "least privilege",
+      "human approval",
+      "local commits",
+      "push",
+      "intentionally vulnerable"
     ],
     "docs/harness/research-inbox.md": [
       "Research Inbox",

@@ -77,9 +77,13 @@
         "2026-06-14: Agentic-security allowlist expanded to 88 sources after AGT, OWASP Agentic Skills, OWASP GenAI, Endor, Lakera, Practical DevSecOps, and Rogue Security review.",
         "2026-06-14: Research refresh withholds adversarial title/heading metadata as review signals; focused refresh and audit tests passed.",
         "2026-06-14: Audit now checks for prompt-injection and data-poisoning boundary documentation; self-audit remains 100/100.",
-        "2026-06-14: POSIX and PowerShell entrypoints pass with 73 tests, pin check, and self-audit 100/100 after agentic-security source and metadata hardening."
+        "2026-06-14: POSIX and PowerShell entrypoints pass with 73 tests, pin check, and self-audit 100/100 after agentic-security source and metadata hardening.",
+        "2026-06-14: Personal OWASP CheatSheetSeries, SecurityShepherd, SAMM, and pytm review accepted controls for untrusted tool/retrieval output, poisoned metadata, intentionally vulnerable fixtures, threat-model freshness, SAMM evidence mapping, and CI cost discipline.",
+        "2026-06-14: Research refresh checked 106 fixed-allowlist sources with one known Red Hat 403 failure and no adversarial metadata signals.",
+        "2026-06-14: Push/PR CI now runs Ubuntu 22.04 with Python 3.13.14 by default; macOS and Windows platform checks are manual workflow_dispatch jobs.",
+        "2026-06-14: POSIX and PowerShell entrypoints pass with 76 tests, pin check, and self-audit 100/100 after the OWASP/security and CI-cost-control batch."
       ],
-      "notes": "Prior pushed CI passed; current agentic-security source and metadata hardening slice passes focused tests, JSON validation, compile, pin enforcement, diff hygiene, self-audit, POSIX verification, and PowerShell verification."
+      "notes": "Prior pushed CI passed. Current OWASP/security and CI-cost-control batch passes focused tests, JSON validation, compile, pin enforcement, diff hygiene, self-audit, POSIX verification, and PowerShell verification. Remote macOS/Windows CI is intentionally manual to control cost."
     }
   ]
 }

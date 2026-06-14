@@ -1,7 +1,7 @@
 {
-  "checkedAt": "2026-06-14T18:56:37+00:00",
+  "checkedAt": "2026-06-14T19:22:44+00:00",
   "failureCount": 1,
-  "sourceCount": 88,
+  "sourceCount": 106,
   "sources": [
     {
       "category": "field-report",
@@ -18,7 +18,7 @@
       ],
       "httpStatus": 200,
       "id": "openai-harness-engineering",
-      "sha256": "2f40a57726aba6b0246bd8144302dc1eaf5c14494e0804de15c32f8c497da3eb",
+      "sha256": "1d545a8acd160c12a269356cbe3f6ec89a2cbb2e1a98bc0495c4668b12cc755b",
       "status": "ok",
       "title": "Harness engineering: leveraging Codex in an agent-first world | OpenAI",
       "url": "https://openai.com/index/harness-engineering/"
@@ -36,7 +36,7 @@
       ],
       "httpStatus": 200,
       "id": "anthropic-effective-harnesses",
-      "sha256": "ced17874a261ddf13a9d0e32fd283dcd2db2773101e53465aec75cc60f3ce8c1",
+      "sha256": "71d165a77f3407f562ef0e867466094b8c1e4f565faa545bbef1b96beab05c14",
       "status": "ok",
       "title": "Effective harnesses for long-running agents \\ Anthropic",
       "url": "https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents"
@@ -56,7 +56,7 @@
       ],
       "httpStatus": 200,
       "id": "anthropic-long-running-apps",
-      "sha256": "afa5fcc57b981ff5fd23aa5a114891c562e58937f83fd5eed50860042a0b45bb",
+      "sha256": "c86a8193c6a9f2ba18de7eb5b30375c9acce218130fc9449c2a1ea49bbbcb14f",
       "status": "ok",
       "title": "Harness design for long-running application development \\ Anthropic",
       "url": "https://www.anthropic.com/engineering/harness-design-long-running-apps"
@@ -241,7 +241,7 @@
       ],
       "httpStatus": 200,
       "id": "google-antigravity-agent",
-      "sha256": "d14fc04fec6a1cf7266ef955caefb0f4019dceecdc35a8c92dd98d40bea6b360",
+      "sha256": "0b09030fbd46bd799d96a607f38233bf175dca4aa7ff0ebd4472063bb9e1bf3b",
       "status": "ok",
       "title": "Antigravity Agent | Gemini API | Google AI for Developers",
       "url": "https://ai.google.dev/gemini-api/docs/antigravity-agent"
@@ -319,7 +319,7 @@
       ],
       "httpStatus": 200,
       "id": "walkinglabs-github",
-      "sha256": "fee758dd6ead53f26bbcd8336641b84858de8d2c935002fc4f1633a21ad3e5f4",
+      "sha256": "c6fc522f86e71c72320d495a523796f67c1fef7d57ab5bf4b877da24f77e238d",
       "status": "ok",
       "title": "GitHub - walkinglabs/learn-harness-engineering: Harness engineering beginner tutorial, from 0 to 1 \u00b7 GitHub",
       "url": "https://github.com/walkinglabs/learn-harness-engineering"
@@ -359,7 +359,7 @@
       ],
       "httpStatus": 200,
       "id": "walkinglabs-harness-creator-skill",
-      "sha256": "39e578d4d4fd9c9bf0636f84f1e1fdf28e1d4d160334fd9b75763c10965376e1",
+      "sha256": "6beb428c6b92103387266532f0b05519d1e61a3dd453eaec636afecfcdf9aae6",
       "status": "ok",
       "title": "learn-harness-engineering/skills/harness-creator at main \u00b7 walkinglabs/learn-harness-engineering \u00b7 GitHub",
       "url": "https://github.com/walkinglabs/learn-harness-engineering/tree/main/skills/harness-creator"
@@ -379,7 +379,7 @@
       ],
       "httpStatus": 200,
       "id": "agentpatterns-copilot-harness",
-      "sha256": "4a251c1e87a9ae7dfd2e78fc185e27ccc4a98d26673d42e91e74190a01138913",
+      "sha256": "4e1e2f3bb68a3ff211826c8d3a05d46cad66a4291094a82f3436d6bf197fb322",
       "status": "ok",
       "title": "GitHub Copilot: Harness Engineering for Agent-Ready Code - AgentPatterns.ai",
       "url": "https://agentpatterns.ai/training/copilot/harness-engineering/"
@@ -427,7 +427,7 @@
       ],
       "httpStatus": 200,
       "id": "charlesanim-harness-engineering",
-      "sha256": "a38d728c527ea065dbe47ebbf58298c5b426788a8ce01583f685c57b7cf0fdf6",
+      "sha256": "d20c785fbba3378203732ae5f4b737047cbec16c099a1e6bbdad08c3b8e8f62a",
       "status": "ok",
       "title": "GitHub - charlesanim/harness-engineering: Agent skill: set up OpenAI's harness engineering methodology in any repo. Works with Copilot, Codex, Claude, Cursor. \u00b7 GitHub",
       "url": "https://github.com/charlesanim/harness-engineering"
@@ -843,7 +843,7 @@
       ],
       "httpStatus": 200,
       "id": "github-actions-checkout",
-      "sha256": "87db4576b688423943785f2f706f06ef08ef9269b7ac69ca3ab09aa69794e5a0",
+      "sha256": "97cb7b0b5101a59e491404637ed3e843565d841f2e5318233380b75b4f73f712",
       "status": "ok",
       "title": "GitHub - actions/checkout: Action for checking out a repo \u00b7 GitHub",
       "url": "https://github.com/actions/checkout"
@@ -889,6 +889,345 @@
       "url": "https://cheatsheetseries.owasp.org/cheatsheets/Server_Side_Request_Forgery_Prevention_Cheat_Sheet.html"
     },
     {
+      "category": "security",
+      "contentType": "text/html",
+      "headings": [
+        "OWASP Cheat Sheet Series",
+        "About OWASP Cheat Sheet Series"
+      ],
+      "httpStatus": 200,
+      "id": "owasp-cheat-sheet-series",
+      "sha256": "bb0065e02a4405c37385c88b4267010b3715c0bfee3b15d810d99a2674432a5e",
+      "status": "ok",
+      "title": "OWASP Foundation - The Open Source Foundation for Application Security",
+      "url": "https://www.owasp.community/projects/cheat-sheet-series"
+    },
+    {
+      "category": "security-training",
+      "contentType": "text/html",
+      "headings": [
+        "Navigation Menu",
+        "Search code, repositories, users, issues, pull requests...",
+        "Provide feedback",
+        "Saved searches",
+        "Use saved searches to filter your results more quickly",
+        "OWASP/SecurityShepherd",
+        "Folders and files",
+        "Latest commit"
+      ],
+      "httpStatus": 200,
+      "id": "owasp-security-shepherd",
+      "sha256": "3476209b0543d7d2e036d6fc15f0c74e3533ec5b84b8ce52d975cba0dc53749d",
+      "status": "ok",
+      "title": "GitHub - OWASP/SecurityShepherd: Web and mobile application security training platform \u00b7 GitHub",
+      "url": "https://github.com/OWASP/SecurityShepherd"
+    },
+    {
+      "category": "threat-modeling",
+      "contentType": "text/html",
+      "headings": [
+        "Navigation Menu",
+        "Search code, repositories, users, issues, pull requests...",
+        "Provide feedback",
+        "Saved searches",
+        "Use saved searches to filter your results more quickly",
+        "OWASP/pytm",
+        "Folders and files",
+        "Latest commit"
+      ],
+      "httpStatus": 200,
+      "id": "owasp-pytm",
+      "sha256": "dd221327bad3cf62dea3240ad8f8d97cad68429f82b69397e2da30d3e76814ba",
+      "status": "ok",
+      "title": "GitHub - OWASP/pytm: A Pythonic framework for threat modeling \u00b7 GitHub",
+      "url": "https://github.com/OWASP/pytm"
+    },
+    {
+      "category": "security-program",
+      "contentType": "text/html",
+      "headings": [
+        "The Model",
+        "SAMM model overview",
+        "Introduction"
+      ],
+      "httpStatus": 200,
+      "id": "owasp-samm",
+      "sha256": "051e4a91a0639c564f859cd26799e6f4d5985464012cf1b38487882ce5536ddf",
+      "status": "ok",
+      "title": "The Model",
+      "url": "https://owaspsamm.org/model/"
+    },
+    {
+      "category": "agent-security",
+      "contentType": "text/html",
+      "headings": [
+        "AI Agent Security Cheat Sheet \u00b6",
+        "Introduction \u00b6",
+        "Key Risks \u00b6",
+        "Best Practices \u00b6",
+        "Do's and Don'ts \u00b6",
+        "References \u00b6"
+      ],
+      "httpStatus": 200,
+      "id": "owasp-ai-agent-security-cheat-sheet",
+      "sha256": "ac41a682ae5f35ca4a664ffc0f0fdc9b7f4d13a394e84fa5ad35755f2c935f33",
+      "status": "ok",
+      "title": "AI Agent Security - OWASP Cheat Sheet Series",
+      "url": "https://cheatsheetseries.owasp.org/cheatsheets/AI_Agent_Security_Cheat_Sheet.html"
+    },
+    {
+      "category": "agent-security",
+      "contentType": "text/html",
+      "headings": [
+        "MCP (Model Context Protocol) Security Cheat Sheet \u00b6",
+        "Introduction \u00b6",
+        "Architecture Overview \u00b6",
+        "Key Risks \u00b6",
+        "Best Practices \u00b6",
+        "Do's and Don'ts \u00b6",
+        "References \u00b6"
+      ],
+      "httpStatus": 200,
+      "id": "owasp-mcp-security-cheat-sheet",
+      "sha256": "03693a27c048f21a468b3b2c35ef30cc043f42838acbbdcacc264af43997a983",
+      "status": "ok",
+      "title": "MCP Security - OWASP Cheat Sheet Series",
+      "url": "https://cheatsheetseries.owasp.org/cheatsheets/MCP_Security_Cheat_Sheet.html"
+    },
+    {
+      "category": "agent-security",
+      "contentType": "text/html",
+      "headings": [
+        "LLM Prompt Injection Prevention Cheat Sheet \u00b6",
+        "Introduction \u00b6",
+        "Anatomy of Prompt Injection Vulnerabilities \u00b6",
+        "Common Attack Types \u00b6",
+        "Primary Defenses \u00b6",
+        "Additional Defenses \u00b6",
+        "Secure Implementation Pipeline \u00b6",
+        "Framework-Specific Implementations \u00b6"
+      ],
+      "httpStatus": 200,
+      "id": "owasp-llm-prompt-injection-cheat-sheet",
+      "sha256": "d4ff635b98c6f195e1706811131716f717bc64fd1ec2b72ec3ded07da8564e93",
+      "status": "ok",
+      "title": "LLM Prompt Injection Prevention - OWASP Cheat Sheet Series",
+      "url": "https://cheatsheetseries.owasp.org/cheatsheets/LLM_Prompt_Injection_Prevention_Cheat_Sheet.html"
+    },
+    {
+      "category": "agent-security",
+      "contentType": "text/html",
+      "headings": [
+        "Retrieval-Augmented Generation (RAG) Security Cheat Sheet \u00b6",
+        "Introduction \u00b6",
+        "Implementation Priority \u00b6",
+        "Section 1: Document Poisoning \u00b6",
+        "Section 2: Embedding Manipulation \u00b6",
+        "Section 3: Context Window Attacks \u00b6",
+        "Section 4: Access Control Inheritance \u00b6",
+        "Section 5: Source Attribution and Provenance \u00b6"
+      ],
+      "httpStatus": 200,
+      "id": "owasp-rag-security-cheat-sheet",
+      "sha256": "b77e00842ccd75e1c4cad03486fa4bed035eacde197013312c60a4dc9fb4f868",
+      "status": "ok",
+      "title": "RAG Security - OWASP Cheat Sheet Series",
+      "url": "https://cheatsheetseries.owasp.org/cheatsheets/RAG_Security_Cheat_Sheet.html"
+    },
+    {
+      "category": "agent-security",
+      "contentType": "text/html",
+      "headings": [
+        "Secure Coding with AI Cheat Sheet \u00b6",
+        "Introduction \u00b6",
+        "Threat Model and Trust Boundaries \u00b6",
+        "Section 1: Hallucinated Dependencies \u00b6",
+        "Section 2: Outdated Dependencies with Known CVEs \u00b6",
+        "Section 3: Indirect Prompt Injection in the Development Loop \u00b6",
+        "Section 4: MCP and Tool Security \u00b6",
+        "Section 5: Agent Runtime Sandboxing \u00b6"
+      ],
+      "httpStatus": 200,
+      "id": "owasp-secure-coding-with-ai-cheat-sheet",
+      "sha256": "20920f81e956b45232206d9a68abc4d3fa4428c2b1b50daf7b2ebbb267ddb0d7",
+      "status": "ok",
+      "title": "Secure Coding with AI - OWASP Cheat Sheet Series",
+      "url": "https://cheatsheetseries.owasp.org/cheatsheets/Secure_Coding_with_AI_Cheat_Sheet.html"
+    },
+    {
+      "category": "agent-security",
+      "contentType": "text/html",
+      "headings": [
+        "Secure AI/ML Model Ops Cheat Sheet \u00b6",
+        "Introduction \u00b6",
+        "Common Security Issues \u00b6",
+        "Real-World Examples \u00b6",
+        "Security Recommendations \u00b6",
+        "References \u00b6"
+      ],
+      "httpStatus": 200,
+      "id": "owasp-secure-ai-model-ops-cheat-sheet",
+      "sha256": "503a719d49315e2f06fc2ab6e4d2a886a1dc0d1ddc47367dc5a782b7282afb29",
+      "status": "ok",
+      "title": "Secure AI Model Ops - OWASP Cheat Sheet Series",
+      "url": "https://cheatsheetseries.owasp.org/cheatsheets/Secure_AI_Model_Ops_Cheat_Sheet.html"
+    },
+    {
+      "category": "supply-chain",
+      "contentType": "text/html",
+      "headings": [
+        "CI/CD Security Cheat Sheet \u00b6",
+        "Introduction \u00b6",
+        "Secure Configuration \u00b6",
+        "IAM \u00b6",
+        "Managing Third-Party Code \u00b6",
+        "Integrity Assurance \u00b6",
+        "Visibility and Monitoring \u00b6",
+        "References \u00b6"
+      ],
+      "httpStatus": 200,
+      "id": "owasp-ci-cd-security-cheat-sheet",
+      "sha256": "04853b08fa8ea2a35992bb3f7e290005f90089b14facf86ab370a2d3d231bb4e",
+      "status": "ok",
+      "title": "CI CD Security - OWASP Cheat Sheet Series",
+      "url": "https://cheatsheetseries.owasp.org/cheatsheets/CI_CD_Security_Cheat_Sheet.html"
+    },
+    {
+      "category": "supply-chain",
+      "contentType": "text/html",
+      "headings": [
+        "GitHub Actions Security Cheat Sheet \u00b6",
+        "Introduction \u00b6",
+        "Treat your CI/CD pipeline as a critical production code \u00b6",
+        "Assume failure and have an incident response plan in place \u00b6",
+        "Enable static analysis for GitHub Actions workflows \u00b6",
+        "Harden repository settings \u00b6",
+        "Restrict egress traffic from GitHub-hosted runners \u00b6",
+        "Use self-hosted runners with extra caution \u00b6"
+      ],
+      "httpStatus": 200,
+      "id": "owasp-github-actions-security-cheat-sheet",
+      "sha256": "d79583254e169bb2882514cfd33b6749112fcb195e5dbc67444654745013cf75",
+      "status": "ok",
+      "title": "GitHub Actions Security - OWASP Cheat Sheet Series",
+      "url": "https://cheatsheetseries.owasp.org/cheatsheets/GitHub_Actions_Security_Cheat_Sheet.html"
+    },
+    {
+      "category": "supply-chain",
+      "contentType": "text/html",
+      "headings": [
+        "Software Supply Chain Security \u00b6",
+        "Introduction \u00b6",
+        "Overview of Threat Landscape \u00b6",
+        "Mitigations and Security Best Practices \u00b6",
+        "References \u00b6"
+      ],
+      "httpStatus": 200,
+      "id": "owasp-software-supply-chain-security-cheat-sheet",
+      "sha256": "c4dac878f97ce825a034b5add5e6b9d366a858a60098b75ef00a59f9e5051b6b",
+      "status": "ok",
+      "title": "Software Supply Chain Security - OWASP Cheat Sheet Series",
+      "url": "https://cheatsheetseries.owasp.org/cheatsheets/Software_Supply_Chain_Security_Cheat_Sheet.html"
+    },
+    {
+      "category": "supply-chain",
+      "contentType": "text/html",
+      "headings": [
+        "Dependency Graph & SBOM Best Practices Cheat Sheet \u00b6",
+        "Introduction \u00b6",
+        "Definitions (short) \u00b6",
+        "Minimum SBOM elements you should capture (practical) \u00b6",
+        "SBOM Formats & Generations \u00b6",
+        "Tooling & automation \u2014 pragmatic recommendations \u00b6",
+        "Bind SBOM to artifacts (signing & provenance) \u00b6",
+        "Ingesting & managing SBOMs at scale \u00b6"
+      ],
+      "httpStatus": 200,
+      "id": "owasp-dependency-graph-sbom-cheat-sheet",
+      "sha256": "84f859b19e1a1c8f1075d95c2de468a0f404d41981b72d1df4c67b8a8c60671b",
+      "status": "ok",
+      "title": "Dependency Graph SBOM - OWASP Cheat Sheet Series",
+      "url": "https://cheatsheetseries.owasp.org/cheatsheets/Dependency_Graph_SBOM_Cheat_Sheet.html"
+    },
+    {
+      "category": "supply-chain",
+      "contentType": "text/html",
+      "headings": [
+        "Secrets Management Cheat Sheet \u00b6",
+        "1 Introduction \u00b6",
+        "2 General Secrets Management \u00b6",
+        "3 Continuous Integration (CI) and Continuous Deployment (CD) \u00b6",
+        "4 Cloud Providers \u00b6",
+        "5 Containers & Orchestrators \u00b6",
+        "6 Implementation Guidance \u00b6",
+        "7 Encryption \u00b6"
+      ],
+      "httpStatus": 200,
+      "id": "owasp-secrets-management-cheat-sheet",
+      "sha256": "b98ca8b4496f7507ffa2e6ada30fa36c0038a035c8c62a96df303a9255e8852e",
+      "status": "ok",
+      "title": "Secrets Management - OWASP Cheat Sheet Series",
+      "url": "https://cheatsheetseries.owasp.org/cheatsheets/Secrets_Management_Cheat_Sheet.html"
+    },
+    {
+      "category": "security",
+      "contentType": "text/html",
+      "headings": [
+        "Secure Code Review Cheat Sheet \u00b6",
+        "Introduction \u00b6",
+        "Review Methodology \u00b6",
+        "Common Vulnerability Patterns \u00b6",
+        "Review Techniques \u00b6",
+        "Review Checklists \u00b6",
+        "Tools and Techniques \u00b6",
+        "Integration with SDLC \u00b6"
+      ],
+      "httpStatus": 200,
+      "id": "owasp-secure-code-review-cheat-sheet",
+      "sha256": "497c6c006160850d791d0860703a7f40bbeae910573d57e97a1a896b3b65a502",
+      "status": "ok",
+      "title": "Secure Code Review - OWASP Cheat Sheet Series",
+      "url": "https://cheatsheetseries.owasp.org/cheatsheets/Secure_Code_Review_Cheat_Sheet.html"
+    },
+    {
+      "category": "security",
+      "contentType": "text/html",
+      "headings": [
+        "Threat Modeling Cheat Sheet \u00b6",
+        "Introduction \u00b6",
+        "Overview \u00b6",
+        "Advantages \u00b6",
+        "Addressing Each Question \u00b6",
+        "Threat Modeling and the Development Team \u00b6",
+        "References \u00b6"
+      ],
+      "httpStatus": 200,
+      "id": "owasp-threat-modeling-cheat-sheet",
+      "sha256": "eb395683eac215ad5170c22fe854d72a90cc2bcb97663d0224250f3377f9c5cc",
+      "status": "ok",
+      "title": "Threat Modeling - OWASP Cheat Sheet Series",
+      "url": "https://cheatsheetseries.owasp.org/cheatsheets/Threat_Modeling_Cheat_Sheet.html"
+    },
+    {
+      "category": "security",
+      "contentType": "text/html",
+      "headings": [
+        "Logging Cheat Sheet \u00b6",
+        "Introduction \u00b6",
+        "Purpose \u00b6",
+        "Design, implementation, and testing \u00b6",
+        "Deployment and operation \u00b6",
+        "Attacks on Logs \u00b6",
+        "Related articles \u00b6"
+      ],
+      "httpStatus": 200,
+      "id": "owasp-logging-cheat-sheet",
+      "sha256": "6afd0196275b1460d69fdd2eae641258261ed53c6c864c6acaaf603c9c075bb4",
+      "status": "ok",
+      "title": "Logging - OWASP Cheat Sheet Series",
+      "url": "https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html"
+    },
+    {
       "category": "agent-security",
       "contentType": "text/html",
       "headings": [
@@ -903,7 +1242,7 @@
       ],
       "httpStatus": 200,
       "id": "owasp-llm-top-10",
-      "sha256": "a9d13708c8c51619d48f32936e7139c63107e577792fce4dccd43ba03e1b80c9",
+      "sha256": "fd06d7746d37a7b1f3f13778feff0165fd85e1ee1c0b765e3636fafc8e2c4e63",
       "status": "ok",
       "title": "OWASP Top 10 for Large Language Model Applications | OWASP Foundation",
       "url": "https://owasp.org/www-project-top-10-for-large-language-model-applications/"
@@ -954,7 +1293,7 @@
       ],
       "httpStatus": 200,
       "id": "owasp-agentic-applications-crosswalk",
-      "sha256": "8e7c1f29be4a583ffe68b6ee83a00dec951c080071f23ec370d4f379b3f34321",
+      "sha256": "9c7c9b1fa6eb20c5b4e4efce9bcf0e4946139074bf1c75beda2b4169c2c17720",
       "status": "ok",
       "title": "AIUC-1: Crosswalks OWASP Top 10 For Agentic Applications - OWASP Gen AI Security Project",
       "url": "https://genai.owasp.org/resource/aiuc-1-crosswalks-owasp-top-10-for-agentic-applications/"
@@ -994,7 +1333,7 @@
       ],
       "httpStatus": 200,
       "id": "owasp-agentic-skills-top-10",
-      "sha256": "18222c8b0e31c2b24cfde9b84401a493095b2da92e57e8ce2eb1cbbc550ff4fd",
+      "sha256": "cd1ec8ca4a30e9afb96f43cf4f1ab4a02658f20d1023f2bb5ecbeb6acbd5f46e",
       "status": "ok",
       "title": "OWASP Agentic Skills Top 10 | OWASP Foundation",
       "url": "https://owasp.org/www-project-agentic-skills-top-10/"
@@ -1014,7 +1353,7 @@
       ],
       "httpStatus": 200,
       "id": "owasp-agentic-skills-github",
-      "sha256": "a0066d98c8a4c9776d966119a1b06d1865bf1659ec115db0b9ab1a9ef94b402d",
+      "sha256": "febb3baa7718d08c34ab306c48b0a920c2b76389dc0605ef70edf0e8deae6781",
       "status": "ok",
       "title": "GitHub - OWASP/www-project-agentic-skills-top-10: OWASP Foundation web repository \u00b7 GitHub",
       "url": "https://github.com/OWASP/www-project-agentic-skills-top-10"
@@ -1034,7 +1373,7 @@
       ],
       "httpStatus": 200,
       "id": "microsoft-agt-prompt-injection-benchmark",
-      "sha256": "5dab024bb40c9f6581f74b9e119b392e706783da37e103dbe71ab3690216da98",
+      "sha256": "c74bd35a0bd1a0a87c87e7b7d905969311f23bcb929220be241ad38d80bc6d74",
       "status": "ok",
       "title": "agent-governance-toolkit/benchmarks/prompt-injection at main \u00b7 microsoft/agent-governance-toolkit \u00b7 GitHub",
       "url": "https://github.com/microsoft/agent-governance-toolkit/tree/main/benchmarks/prompt-injection"
@@ -1054,7 +1393,7 @@
       ],
       "httpStatus": 200,
       "id": "practical-devsecops-agentic-top-10",
-      "sha256": "410011b71832221f87e6c831a8575fbc3843290c67c7ea5f8c73017b4c55896e",
+      "sha256": "2496fceedf136f236a4c6bf8c5f0f736c873ecb24cfbc11fc1d6577cdaf648f8",
       "status": "ok",
       "title": "OWASP Top 10 for Agentic Applications for 2026",
       "url": "https://www.practical-devsecops.com/owasp-top-10-agentic-applications/"
@@ -1370,7 +1709,7 @@
       ],
       "httpStatus": 200,
       "id": "bazel-modules",
-      "sha256": "2ba9dd09b98fe30cb37396b1cf8494fed39106d1d68f94b6f5bf390bc0d1fd2f",
+      "sha256": "dfe496e9ec6ae4477e8c40e7e048b3e346a57c4e4237d291ab09f23b37919287",
       "status": "ok",
       "title": "Bazel modules",
       "url": "https://bazel.build/external/module"
@@ -1474,7 +1813,7 @@
       ],
       "httpStatus": 200,
       "id": "medium-monorepos-guide",
-      "sha256": "47aa07b3aa2e0eb3b425870f21ada87bf5dadf31ad755d2689865a54f678f73e",
+      "sha256": "0e02e8164044a9d22c825bde32b3bac5a1a62f0316a9149359930c2cc6219a35",
       "status": "ok",
       "title": "Monorepos: A Comprehensive Guide with Examples | by Md Julakadar | Medium",
       "url": "https://medium.com/@julakadaredrishi/monorepos-a-comprehensive-guide-with-examples-63202cfab711"
@@ -1514,7 +1853,7 @@
       ],
       "httpStatus": 200,
       "id": "github-actions-vanilla-monorepo-example",
-      "sha256": "ddbe6c5a0cd970dc38dac1af1e6c4414841741d74f602d440e0a2459931c6209",
+      "sha256": "574137c02f7d4c863574f23ac4a841a82f1a18322e7d9d2bd1cb2ab044c24c5d",
       "status": "ok",
       "title": "GitHub - gamgi/github-actions-vanilla-monorepo-example: An example on how to use GitHub actions in a monorepo. \u00b7 GitHub",
       "url": "https://github.com/gamgi/github-actions-vanilla-monorepo-example"
@@ -1531,7 +1870,7 @@
       ],
       "httpStatus": 200,
       "id": "repo-local-harnesses-linkedin",
-      "sha256": "54b04f67df0523d4e18723b470db7c6113edac06dd3878d31b1dbce5c6f6e7bc",
+      "sha256": "2aac28076c438c6929d8ea060bc7a783fba0b4c57aef8b289111885e01c88a14",
       "status": "ok",
       "title": "Repo-Local Harnesses for Coding Agents, Part 1: Why the Harness Belongs in the Repo",
       "url": "https://www.linkedin.com/pulse/repo-local-harnesses-coding-agents-part-1-why-harness-chris-mamon-c71nf/"
@@ -1571,7 +1910,7 @@
       ],
       "httpStatus": 200,
       "id": "harness-idp-sandbox-monorepo",
-      "sha256": "79db4b0929807555e07f97bf4f309b8e25c37f016b66c74a7b63fddce44aad73",
+      "sha256": "9dc3e51806350c002f1b0b2036b69c571d5a16b759566bec10ec9b773b4228ae",
       "status": "ok",
       "title": "GitHub - harness-idp-sandbox/harness-monorepo \u00b7 GitHub",
       "url": "https://github.com/harness-idp-sandbox/harness-monorepo"
@@ -1591,7 +1930,7 @@
       ],
       "httpStatus": 200,
       "id": "awesome-monorepo",
-      "sha256": "6bc06b9b16ba86c377b6f3b0adb12f218458e549f0c9633b29c109f79a49274e",
+      "sha256": "8ad2d367051231726eb5c067807ea4dfcfc2e62557606a2f5a83c7f55c2ace2b",
       "status": "ok",
       "title": "GitHub - korfuri/awesome-monorepo: A curated list of awesome Monorepo tools, software and architectures. \u00b7 GitHub",
       "url": "https://github.com/korfuri/awesome-monorepo"
@@ -1611,7 +1950,7 @@
       ],
       "httpStatus": 200,
       "id": "tomsoir-bazel-monorepo",
-      "sha256": "975e6fadab3b7d0ecc5446311cda6f96c75e9cd5574a6b6955bd2a275ccc5652",
+      "sha256": "def45de2ea2b30ba5bcdbb706827b1125957acbb18dd640a7a13847e810f4314",
       "status": "ok",
       "title": "GitHub - tomsoir/bazel-monorepo: Bazel monorepo example \u00b7 GitHub",
       "url": "https://github.com/tomsoir/bazel-monorepo"

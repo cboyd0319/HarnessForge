@@ -43,6 +43,10 @@ Run `python3 scripts/refresh_research.py --root .` only when refreshing the
 research ledger. Run `python3 scripts/check_pins.py --root .` when dependencies,
 workflow files, Action metadata, or packaging configuration change.
 
+Prefer local verification and local commits during active work. Push only at an
+explicit batch boundary, release point, or user request because remote CI has
+real cost.
+
 ## Code style guidelines
 
 - Runtime code stays Python standard library only unless a dependency removes
@@ -55,6 +59,8 @@ workflow files, Action metadata, or packaging configuration change.
 - Keep generated artifacts portable. Do not commit machine-specific or
   user-specific absolute local paths unless the user explicitly requests that
   exact path and durable evidence records why.
+- If a repo contains intentionally vulnerable training, demo, or fixture code,
+  preserve it unless the user explicitly requests remediation for that scope.
 - Follow `CONTRIBUTING.md` for submitted work. Use signed-off commits for
   commits intended for review.
 - Keep this file as a map. Move long-running policy, research, and operational
@@ -63,6 +69,7 @@ workflow files, Action metadata, or packaging configuration change.
 ## Testing instructions
 
 - Use the smallest reliable check that proves the changed surface.
+- Prefer local linting, tests, pin checks, and audit before remote CI.
 - Add focused tests for CLI behavior, filesystem writes, scoring, Action
   behavior, research refresh logic, and cross-platform path handling.
 - Verify generated files work for POSIX and Windows paths.

@@ -202,6 +202,11 @@ for vulnerability reporting, scope, and severity guidance.
   runner.
 - The composite Action sets `PYTHONSAFEPATH=1` so the caller repository's
   working directory cannot shadow the Action library at Python startup.
+- Generated harnesses preserve intentionally vulnerable training, demo, or
+  fixture code unless remediation is explicitly in scope.
+- Material AI/RAG/agent, tool, external-service, auth, secret, data-flow, or
+  deployment changes require updated boundary/threat model evidence and focused
+  checks.
 
 Network access is limited to explicit research-refresh workflows and normal
 GitHub Actions setup behavior, not routine local harness generation. Research
@@ -221,9 +226,10 @@ It refreshes research metadata, applies only safe harness updates, runs
 verification, and opens a pull request when changes are detected. It does not
 silently mutate `main`. Fetched titles, headings, and hashes are treated as
 untrusted metadata for human review, not executable instructions. Metadata that
-resembles prompt injection, indirect prompt injection, data poisoning, or
-credential-exfiltration instructions is withheld from durable output and
-recorded as review signals.
+resembles prompt injection, indirect prompt injection, data poisoning,
+credential-exfiltration instructions, invisible Unicode, or Markdown/HTML
+exfiltration markers is withheld from durable output and recorded as review
+signals.
 
 Research sources are tracked in:
 
@@ -248,6 +254,14 @@ On Windows:
 
 The local harness check runs the package doctor, bytecode compilation, unit
 tests, pin checks, and a self-audit.
+
+Prefer local checks and local commits during active work. Push only at an
+explicit batch boundary, release point, or user request because remote CI has
+real cost.
+
+The default push/PR CI path runs Ubuntu 22.04 with Python 3.13.14. Use the
+manual `workflow_dispatch` CI run for macOS and Windows platform confirmation
+at release or risk-based checkpoints.
 
 For focused checks:
 

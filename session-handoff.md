@@ -44,6 +44,21 @@ and the required AGENTS instruction format.
 ## Blockers
 
 - No known blockers.
+- Current OWASP/security and CI-cost-control batch passes focused tests, full
+  unit discovery with 76 tests, compile, pin check, JSON validation, diff
+  hygiene, self-audit `100/100`, and both POSIX and PowerShell entrypoints.
+- The fixed research allowlist now tracks 106 sources with the same known Red
+  Hat 403 failure. Current refresh produced no adversarial metadata signals.
+- Research refresh now also withholds invisible Unicode and Markdown/HTML
+  exfiltration markers from durable fetched metadata.
+- Harness docs/templates now preserve intentionally vulnerable training, demo,
+  or fixture code unless remediation is explicitly in scope.
+- Material AI/RAG/agent, tool, external-service, auth, secret, data-flow, or
+  deployment changes now require boundary/threat-model evidence and focused
+  abuse-case checks.
+- Push/PR CI now runs the Ubuntu 22.04 Python 3.13.14 path by default with
+  superseded-run cancellation. macOS and Windows remote platform checks are
+  manual `workflow_dispatch` jobs for release or risk-based confirmation.
 - Current agentic-security source and metadata hardening slice passes focused
   refresh/audit tests, full unit discovery with 73 tests, compile, pin check,
   JSON validation, diff hygiene, self-audit `100/100`, and both POSIX and
@@ -184,8 +199,8 @@ and the required AGENTS instruction format.
 
 ## Next Session
 
-After this push, watch hosted CI for the agentic-security source and metadata
-hardening slice. Then decide whether the first release should cut a `v1` Action
-tag before broader public use, whether to keep both Python minors in CI or trim
-to Python 3.13 only, and whether deeper workspace graph parsing or release-time
-SBOM/provenance should come next.
+Review the local OWASP/security and CI-cost-control commit. Push only at an
+explicit batch/release boundary or user request. Before a public Action release,
+run the manual macOS/Windows platform CI check if hosted platform confirmation
+is needed, then decide whether to cut a `v1` Action tag and whether
+release-time SBOM/provenance should come next.

@@ -1,6 +1,12 @@
 # Verification Matrix
 
 Use the smallest check set that can catch likely regressions for the change.
+Prefer local checks during active development. Remote CI is for reviewed
+branches, release/batch checkpoints, platform-specific confirmation, and cases
+where local checks cannot cover the risk.
+The default push/PR CI path should stay small; keep macOS and Windows remote
+checks as manual or release/batch platform checks unless this repo's risk
+requires every-push coverage.
 
 | Change Type | Required Checks |
 | --- | --- |
@@ -14,6 +20,8 @@ Use the smallest check set that can catch likely regressions for the change.
 | Terraform or infrastructure | `terraform fmt -check -recursive` plus project-specific validation |
 | Security, auth, secrets, data loss, or billing | Focused tests, human review, rollback path, and least-privilege check |
 | Dependencies, tool versions, or workflow Actions | Pin check, primary-source version evidence, install smoke, and affected tests |
+| AI/RAG/agent tools, external data flow, auth, secrets, or deployment boundary | Update security boundary/threat model evidence, run focused abuse-case tests, self-audit, and affected local tests |
+| Training, demo, or intentionally vulnerable fixtures | Confirm owner/path and accepted risk, avoid automatic remediation unless in scope, and run targeted fixture tests |
 
 ## Detected Commands
 
@@ -27,3 +35,4 @@ Record:
 - The exact reason.
 - The risk.
 - The next best check that did run.
+- Whether remote CI was intentionally skipped to control cost.

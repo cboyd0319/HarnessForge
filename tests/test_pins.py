@@ -103,6 +103,23 @@ class PinCheckTests(unittest.TestCase):
             any("persist-credentials: false" in line for line in checkout_block)
         )
 
+    def test_ci_cancels_superseded_runs(self) -> None:
+        root = Path(__file__).resolve().parents[1]
+        workflow = (root / ".github/workflows/ci.yml").read_text(encoding="utf-8")
+
+        self.assertIn("concurrency:", workflow)
+        self.assertIn("github.event.pull_request.number || github.ref", workflow)
+        self.assertIn("cancel-in-progress: true", workflow)
+
+    def test_ci_keeps_platform_checks_manual(self) -> None:
+        root = Path(__file__).resolve().parents[1]
+        workflow = (root / ".github/workflows/ci.yml").read_text(encoding="utf-8")
+
+        self.assertIn("workflow_dispatch:", workflow)
+        self.assertIn("if: github.event_name == 'workflow_dispatch'", workflow)
+        self.assertIn("macos-15", workflow)
+        self.assertIn("windows-2025-vs2026", workflow)
+
     def test_self_heal_stages_generated_root_and_template_files(self) -> None:
         root = Path(__file__).resolve().parents[1]
         workflow = (root / ".github/workflows/harness-self-heal.yml").read_text(

@@ -54,6 +54,12 @@ packaging, CI, or platform support changes.
 | pre-commit README | Minimal README pattern that sends users to canonical docs when the README is not the full manual |
 | Requests README | Minimal mature-project README pattern with docs-first routing |
 | OpenSSF Scorecard | Security posture signal and supply-chain best-practice framing |
+| OWASP Cheat Sheet Series project | Practical application-security good-practice source set |
+| OWASP Security Shepherd | Intentionally vulnerable training apps need explicit scope boundaries, local tests before push, CI cost controls, and release SBOM evidence |
+| OWASP pytm | Threat model freshness, LLM/RAG/agent attributes, and focused controls for prompt injection, RAG poisoning, excessive agency, code execution, and data exposure |
+| OWASP SAMM | Risk-driven software assurance loop across governance, design, implementation, verification, and operations, with policy-to-check and evidence mapping |
+| OWASP AI Agent Security, MCP Security, LLM Prompt Injection Prevention, RAG Security, Secure AI Model Ops, and Secure Coding with AI cheat sheets | Agent trust boundaries, untrusted tool/retrieval output, prompt injection, data poisoning, least privilege, human approval, test integrity, and poisoned metadata controls |
+| OWASP CI/CD Security, GitHub Actions Security, Software Supply Chain Security, Dependency Graph/SBOM, Secrets Management, Secure Code Review, Threat Modeling, and Logging cheat sheets | CI least privilege, workflow trigger caution, action pinning, supply-chain provenance, secret logging limits, manual review scope, threat modeling, and audit evidence controls |
 | pnpm, Yarn, npm, and Bun workspace docs | JavaScript package-manager workspace root markers and workspace-member routing |
 | Turborepo, Nx, Lerna, and Rush docs | JavaScript monorepo orchestrator markers and root-vs-leaf task routing |
 | uv workspace docs | Python workspace root marker, shared lockfile model, and all-package run behavior |
@@ -144,6 +150,29 @@ project-owned docs instead of machine-specific absolute paths.
   sources is conservative: public/retrieved content is untrusted, prompt
   injection and data poisoning metadata is withheld, scanners are advisory, and
   human review remains the promotion gate.
+- OWASP CheatSheetSeries added concrete harness controls for AI coding agents,
+  MCP, RAG, CI/CD, GitHub Actions, supply chain, SBOM, secrets, secure review,
+  threat modeling, and logging. Imported controls remain bounded: least
+  privilege, exact approval for high-impact actions, untrusted tool/retrieval
+  output, review of rules/build/workflow files, scanner-as-signal treatment,
+  test integrity review, and CI cost discipline through local-first checks.
+- OWASP Security Shepherd reinforces that intentionally vulnerable training,
+  demo, or fixture code is a scoped exception. Harness instructions now require
+  owner/path/risk context and must not auto-remediate accepted vulnerable
+  examples unless the user asks for that work.
+- OWASP pytm reinforces threat model freshness. Material AI/RAG/agent, tool,
+  external-service, auth, secret, data-flow, and deployment changes now require
+  boundary docs, evidence updates, and focused abuse-case checks.
+- OWASP SAMM provides the maturity lens for keeping harness controls tied to
+  governance, design, implementation, verification, and operations instead of
+  standalone checklists. Policies should resolve to runnable checks, review
+  evidence, defect records, or explicit risk acceptance.
+- Suspicious research metadata now withholds invisible Unicode and
+  Markdown/HTML exfiltration markers in addition to direct instruction and
+  credential-exfiltration patterns.
+- Remote CI is useful but not free. Agents should do local checks and local
+  commits during active work, then push only at an explicit batch boundary,
+  release point, or user request.
 - Read-only CI jobs should not keep checkout credentials available to later
   steps. The main CI checkout now opts out of persisted credentials; the
   self-heal workflow keeps credentials because it intentionally pushes a

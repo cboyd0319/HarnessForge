@@ -56,6 +56,30 @@ ADVERSARIAL_METADATA_PATTERNS = (
         "sensitive-file-read",
         re.compile(r"(?:~/.ssh|/etc/passwd|\.env\b)", re.IGNORECASE),
     ),
+    (
+        "unicode-injection",
+        re.compile(
+            r"\b(?:ignore|instructions?|system|developer|assistant|prompt|"
+            r"secret|token|credential|api\s*key|private\s*key|exfiltrate|"
+            r"send|upload|leak|delete|bypass|override)\b"
+            r".{0,120}[\u200b\u200c\u200d\ufeff\u202a-\u202e\u2066-\u2069]"
+            r"|[\u200b\u200c\u200d\ufeff\u202a-\u202e\u2066-\u2069].{0,120}"
+            r"\b(?:ignore|instructions?|system|developer|assistant|prompt|"
+            r"secret|token|credential|api\s*key|private\s*key|exfiltrate|"
+            r"send|upload|leak|delete|bypass|override)\b",
+            re.IGNORECASE,
+        ),
+    ),
+    (
+        "markdown-exfiltration",
+        re.compile(
+            r"!\[[^\]]*\]\(\s*https?://[^)]*"
+            r"(?:secret|token|credential|api[-_\s]*key|prompt|data)="
+            r"|<img\b[^>]*\bsrc\s*=\s*[\"']?https?://[^\"'>\s]*"
+            r"(?:secret|token|credential|api[-_\s]*key|prompt|data)=",
+            re.IGNORECASE,
+        ),
+    ),
 )
 
 
@@ -134,7 +158,9 @@ def _fetch_source(source: dict[str, Any], *, timeout: int) -> dict[str, Any]:
 
     text = raw.decode("utf-8", errors="replace")
     title, headings = _extract_metadata(content_type, text)
-    adversarial_signals = _adversarial_metadata_signals(title, headings)
+    adversarial_signals = _adversarial_metadata_signals(
+        title, [*headings, *_extract_raw_metadata_fragments(content_type, text)]
+    )
     if adversarial_signals:
         title = WITHHELD_ADVERSARIAL_METADATA
         headings = []
@@ -304,6 +330,23 @@ def _extract_metadata(content_type: str, text: str) -> tuple[str, list[str]]:
     title = _first_match(TITLE_RE, text)
     headings = [_clean(match.group(2)) for match in H_RE.finditer(text)]
     return title, [heading for heading in headings if heading][:8]
+
+
+def _extract_raw_metadata_fragments(content_type: str, text: str) -> list[str]:
+    media_type = content_type.split(";", 1)[0].strip().lower()
+    if media_type in {"text/markdown", "text/plain", "text/x-rst"}:
+        fragments = [
+            match.group(2)
+            for line in text.splitlines()
+            if not line[:1].isspace()
+            for match in [MD_HEADING_RE.match(line.strip())]
+            if match
+        ]
+        return fragments[:8]
+    return [
+        *[match.group(1) for match in TITLE_RE.finditer(text)],
+        *[match.group(2) for match in H_RE.finditer(text)],
+    ][:8]
 
 
 def _extract_plain_text_metadata(text: str) -> tuple[str, list[str]]:

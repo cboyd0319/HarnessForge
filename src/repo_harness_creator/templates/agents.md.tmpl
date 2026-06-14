@@ -38,6 +38,10 @@ Full local verification on Windows:
 .\init.ps1
 ```
 
+Prefer local verification and local commits during active work. Push only at an
+explicit batch boundary, release point, or user request because remote CI has
+real cost.
+
 ## Code style guidelines
 
 - Follow the repository's existing language, framework, formatting, and helper
@@ -49,6 +53,9 @@ Full local verification on Windows:
 - Prefer repo-relative paths. Do not commit machine-specific or user-specific
   absolute local paths unless the user explicitly requests that exact path and
   durable evidence records why.
+- If the repo contains intentionally vulnerable training, demo, or fixture
+  code, preserve it unless the user explicitly requests remediation for that
+  scope.
 - Use latest stable supported packages with hard pins. Direct dependencies use
   exact versions; external GitHub Actions use full-length commit SHAs with
   version comments.
@@ -57,6 +64,7 @@ Full local verification on Windows:
 ## Testing instructions
 
 - Do not claim done without verification evidence.
+- Prefer local linting, tests, pin checks, and audit before remote CI.
 - Add or update focused tests for changed behavior when practical.
 - Record skipped checks with reason and risk in durable state.
 - Definition Of Done: target behavior or documentation change is complete,
