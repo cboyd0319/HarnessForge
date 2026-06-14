@@ -44,9 +44,17 @@ and the required AGENTS instruction format.
 ## Blockers
 
 - No known blockers.
+- Current self-heal automation and local-path policy slice passes focused tests,
+  full unit discovery with 72 tests, compile, pin check, diff hygiene,
+  self-audit `100/100`, and both POSIX and PowerShell entrypoints.
+- The scheduled research/self-heal workflow now runs at 12:00 UTC. Research
+  refresh remains a fixed `research-sources.json` allowlist metadata refresh;
+  it does not search for latest research or auto-promote fetched text.
+- Audit now fails durable harness docs/state that contain machine-local
+  absolute paths unless the caller uses the explicit local override.
 - Current full local POSIX and PowerShell verification passes with 60 tests, pin
   check, and self-audit `100/100` after the personal AGT current snapshot
-  slice; POSIX also passes when launched with `PYTHONPATH=/tmp` in prior
+  slice; POSIX also passes when launched with `PYTHONPATH=<non-repo-path>` in prior
   verification.
 - Research metadata refresh currently tracks 76 sources with one recorded Red
   Hat 403 fetch failure.
@@ -166,7 +174,8 @@ and the required AGENTS instruction format.
 
 ## Next Session
 
-After this push, watch hosted CI for the monorepo detection slice. Then decide
-whether the first release should cut a `v1` Action tag before broader public
-use, and whether deeper workspace graph parsing or release-time
+After this push, watch hosted CI for the self-heal automation and local-path
+policy slice. Then decide whether the first release should cut a `v1` Action
+tag before broader public use, whether to keep both Python minors in CI or trim
+to Python 3.13 only, and whether deeper workspace graph parsing or release-time
 SBOM/provenance should come next.

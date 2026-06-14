@@ -205,10 +205,13 @@ for vulnerability reporting, scope, and severity guidance.
 
 Network access is limited to explicit research-refresh workflows and normal
 GitHub Actions setup behavior, not routine local harness generation. Research
-refresh accepts default-port HTTPS public-source URLs only; local files,
-credentials, localhost, private-address targets, private DNS resolutions, and
-unsafe redirects are rejected. Connections are opened to validated public DNS
-results while preserving the original host for TLS verification.
+refresh reads only the checked-in fixed allowlist in
+`docs/harness/research-sources.json`; it does not search the web, discover
+latest research, or follow unreviewed source expansion. It accepts default-port
+HTTPS public-source URLs only; local files, credentials, localhost,
+private-address targets, private DNS resolutions, and unsafe redirects are
+rejected. Connections are opened to validated public DNS results while
+preserving the original host for TLS verification.
 
 ## Self-Healing
 
@@ -216,7 +219,8 @@ This repo includes a scheduled self-healing workflow in
 [.github/workflows/harness-self-heal.yml](.github/workflows/harness-self-heal.yml).
 It refreshes research metadata, applies only safe harness updates, runs
 verification, and opens a pull request when changes are detected. It does not
-silently mutate `main`.
+silently mutate `main`. Fetched titles, headings, and hashes are treated as
+untrusted metadata for human review, not executable instructions.
 
 Research sources are tracked in:
 

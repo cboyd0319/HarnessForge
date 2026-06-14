@@ -108,6 +108,7 @@ class PinCheckTests(unittest.TestCase):
         workflow = (root / ".github/workflows/harness-self-heal.yml").read_text(
             encoding="utf-8"
         )
+        self.assertIn('cron: "0 12 * * 1"', workflow)
         git_add_line = next(
             line.strip()
             for line in workflow.splitlines()

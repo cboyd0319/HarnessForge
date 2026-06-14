@@ -133,11 +133,11 @@ project-owned docs instead of machine-specific absolute paths.
   PEP 639 `license-files` metadata for `LICENSE`.
 - Durable output should hide home paths across common personal-machine shapes.
   Redaction now covers home paths with spaces and the current user's home path.
-- Research refresh is a metadata check for public sources, not a general URL
-  fetcher. The refresh script now rejects non-HTTPS URLs, embedded
-  credentials, non-default HTTPS ports, localhost, literal non-public IP
-  targets, hostnames that resolve to non-public addresses, and redirects to
-  unsafe targets before fetching.
+- Research refresh is a metadata check for the fixed `research-sources.json`
+  allowlist, not a general URL fetcher or latest-research discovery job. The
+  refresh script now rejects non-HTTPS URLs, embedded credentials, non-default
+  HTTPS ports, localhost, literal non-public IP targets, hostnames that resolve
+  to non-public addresses, and redirects to unsafe targets before fetching.
 - Read-only CI jobs should not keep checkout credentials available to later
   steps. The main CI checkout now opts out of persisted credentials; the
   self-heal workflow keeps credentials because it intentionally pushes a
@@ -149,6 +149,8 @@ project-owned docs instead of machine-specific absolute paths.
   in `research-sources.json`, refresh metadata lives in
   `research-sources.lock.json`, and local sibling references are recorded in
   this file.
+- Harness docs and reports should use repo-relative paths. Machine-local
+  absolute paths need an explicit user request and reviewable evidence.
 - The root README is treated as the project landing page, not the full manual.
   It now gives the fastest safe path, clear trust boundaries, Action usage,
   verification, source provenance, and links to deeper harness docs.

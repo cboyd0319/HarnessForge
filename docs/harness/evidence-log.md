@@ -4,6 +4,9 @@ Use this for compact current evidence. Keep raw logs out of this file.
 
 | Date | Scope | Command Or Review | Result | Notes |
 | --- | --- | --- | --- | --- |
+| 2026-06-14 | Self-heal automation and local-path policy checks | `PYTHONPATH=src:. python3 -m unittest tests.test_cli tests.test_generate_audit tests.test_pins`, self-audit, pin, compile, diff | pass | 31 focused tests plus full unit discovery with 72 tests passed after setting self-heal to 12:00 UTC, documenting fixed-allowlist research, and adding default audit enforcement for durable local absolute paths. |
+| 2026-06-14 | POSIX verification | `./init.sh` | pass | Doctor, compile, 72 tests, pin check, and self-audit `100/100` after self-heal automation and local-path policy hardening. |
+| 2026-06-14 | PowerShell verification | `pwsh -NoProfile -File ./init.ps1` | pass | Doctor, compile, 72 tests, pin check, and self-audit `100/100` after self-heal automation and local-path policy hardening. |
 | 2026-06-14 | Monorepo and repo-harness research | Read-only `agy` pass, official source review, supplied local examples, cloned public example repos, and browser review | pass | Accepted source-backed workspace/layout markers, workflow routing markers, Terraform component boundaries, and repo-local harness routing evidence. |
 | 2026-06-14 | Research refresh | `PYTHONPATH=src:. python3 scripts/refresh_research.py --root .` | pass | 76 sources checked; one known Red Hat 403 remains recorded. |
 | 2026-06-14 | Monorepo detection and generated inventory checks | `PYTHONPATH=src:. python3 -m unittest tests.test_detect tests.test_generate_audit tests.test_refresh_research`, compile, pin, JSON validation | pass | 46 focused tests plus compile, pin, and JSON checks passed after workspace/layout, routing-marker, Terraform component, and source-ledger updates. |
@@ -45,7 +48,7 @@ Use this for compact current evidence. Keep raw logs out of this file.
 | 2026-06-14 | POSIX verification | `./init.sh` | pass | Doctor, compile, 50 tests, pin check, and self-audit `100/100` after current state updates. |
 | 2026-06-14 | PowerShell verification | `pwsh -NoProfile -File ./init.ps1` | pass | Doctor, compile, 50 tests, pin check, and self-audit `100/100` after current state updates. |
 | 2026-06-14 | POSIX entrypoint regression | `PYTHONPATH=src:. python3 -m unittest tests.test_local_entrypoints` | pass | New regression failed before the fix and passed after `init.sh` began prepending `src` to existing `PYTHONPATH`. |
-| 2026-06-14 | POSIX polluted environment | `PYTHONPATH=/tmp ./init.sh` | pass | Doctor, compile, 47 tests, pin check, and self-audit `100/100` passed with a pre-existing `PYTHONPATH`. |
+| 2026-06-14 | POSIX polluted environment | `PYTHONPATH=<non-repo-path> ./init.sh` | pass | Doctor, compile, 47 tests, pin check, and self-audit `100/100` passed with a pre-existing `PYTHONPATH`. |
 | 2026-06-14 | POSIX verification | `./init.sh` | pass | Doctor, compile, 47 tests, pin check, and self-audit `100/100` after final state updates. |
 | 2026-06-14 | PowerShell verification | `pwsh -NoProfile -File ./init.ps1` | pass | Doctor, compile, 47 tests, pin check, and self-audit `100/100` after final state updates. |
 | 2026-06-14 | Hosted CI | `gh run view 27490215814 --json status,conclusion,headSha,url` | pass | Commit `fda509a` passed CI across Ubuntu 22.04, macOS 15, and Windows 2025 on Python 3.13.14 and 3.14.6. |

@@ -299,6 +299,8 @@ def _manifest_content(profile: ProjectProfile, agent_file: str) -> str:
                 "Data Boundaries",
                 "Required Checks",
                 "security wins",
+                "machine-local absolute paths",
+                "fixed allowlist",
             ],
             "docs/harness/feature-privacy-labels.json": [
                 "External AI optional",
@@ -327,6 +329,7 @@ def _manifest_content(profile: ProjectProfile, agent_file: str) -> str:
             ],
             "docs/harness/self-healing.md": [
                 "Self-healing must be reviewable",
+                "fixed allowlist",
                 "Safe Loop",
                 "Promotion Rule",
             ],

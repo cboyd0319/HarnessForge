@@ -52,8 +52,9 @@ workflow files, Action metadata, or packaging configuration change.
 - Prefer the smallest correct change. Preserve user changes and dirty work.
 - Treat generated templates, audit scoring, docs, and workflows as product
   code.
-- Keep generated artifacts portable. Do not commit machine-specific absolute
-  local paths.
+- Keep generated artifacts portable. Do not commit machine-specific or
+  user-specific absolute local paths unless the user explicitly requests that
+  exact path and durable evidence records why.
 - Follow `CONTRIBUTING.md` for submitted work. Use signed-off commits for
   commits intended for review.
 - Keep this file as a map. Move long-running policy, research, and operational
@@ -82,7 +83,8 @@ workflow files, Action metadata, or packaging configuration change.
 - Never overwrite target repository files unless the user passes `--force`.
 - Reject unsafe generated paths, traversal, absolute instruction filenames, and
   symlink escapes outside the target repository.
-- Redact common local home paths from durable output.
+- Redact common local home paths from durable output, and treat committed
+  absolute local paths as audit failures unless explicitly requested.
 - Use latest stable supported packages with hard pins. Direct dependencies use
   exact versions; external GitHub Actions use full-length commit SHAs with
   version comments.

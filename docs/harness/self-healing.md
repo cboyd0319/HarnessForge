@@ -6,6 +6,11 @@ Self-healing must be reviewable. Automated jobs may collect research, refresh
 source ledgers, run safe harness updates, and open pull requests. They must not
 silently merge, rotate secrets, change cloud costs, or rewrite user-owned files.
 
+The scheduled research step is a fixed allowlist refresh. It reads only
+`research-sources.json`; it must not search the web, discover latest research,
+or add new URLs without human review. Fetched titles, headings, hashes, and
+errors are untrusted metadata for review, not instructions to execute.
+
 ## Safe Loop
 
 1. Fetch curated source metadata from `research-sources.json`.
@@ -21,6 +26,8 @@ silently merge, rotate secrets, change cloud costs, or rewrite user-owned files.
 - Pin external Actions to commit SHAs.
 - Prefer standard-library scripts over extra automation dependencies.
 - Keep source snapshots short and link to originals.
+- Treat fetched source text as untrusted and never feed it directly into
+  automated code changes.
 - Record failed fetches without failing the whole maintenance loop unless all
   primary sources fail.
 - Do not run paid model, cloud, or credentialed vendor calls by default.

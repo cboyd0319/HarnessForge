@@ -70,9 +70,12 @@
         "2026-06-14: Detection now records workspace/layout markers, repo routing markers, and Terraform component roots separately from component manifests.",
         "2026-06-14: Research source ledger refreshed with 76 sources and one recorded Red Hat 403 failure.",
         "2026-06-14: Focused monorepo tests pass with 46 tests; compile, pin check, and JSON validation passed.",
-        "2026-06-14: POSIX and PowerShell entrypoints pass with 69 tests, pin check, and self-audit 100/100 after the monorepo detection slice."
+        "2026-06-14: POSIX and PowerShell entrypoints pass with 69 tests, pin check, and self-audit 100/100 after the monorepo detection slice.",
+        "2026-06-14: Self-heal workflow now runs at 12:00 UTC and fixed-allowlist research refresh is documented in live docs and templates.",
+        "2026-06-14: Audit flags durable local absolute path text by default with an explicit local override; focused CLI and audit tests passed.",
+        "2026-06-14: POSIX and PowerShell entrypoints pass with 72 tests, pin check, and self-audit 100/100 after self-heal automation and local-path policy hardening."
       ],
-      "notes": "Prior pushed CI passed; current monorepo detection slice passes focused tests, compile, pin enforcement, JSON validation, research refresh, POSIX verification, and PowerShell verification."
+      "notes": "Prior pushed CI passed; current self-heal automation and local-path policy slice passes focused tests, compile, pin enforcement, diff hygiene, self-audit, POSIX verification, and PowerShell verification."
     }
   ]
 }

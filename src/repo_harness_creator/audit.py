@@ -21,21 +21,41 @@ DOMAIN_ORDER = (
     "lifecycle",
 )
 
+LOCAL_ABSOLUTE_PATH_RE = re.compile(
+    r"(?<![A-Za-z0-9_:/.-])("
+    r"(?:[A-Za-z]:[\\/][^\s`'\"<>)]*)|"
+    r"(?:/(?:Users|home|tmp|private/tmp|var/folders|Volumes)[^\s`'\"<>)]*)"
+    r")"
+)
 
-def audit_target(target: Path) -> AuditResult:
+
+def audit_target(
+    target: Path, *, allow_local_absolute_paths: bool = False
+) -> AuditResult:
     root = target.resolve()
     files = _load_known_files(root)
-    text = "\n\n".join(files.values())
     manifest = _load_manifest(root)
     manifest_failures = _manifest_failures(root, manifest)
     link_failures = _local_markdown_link_failures(root, files)
+    local_path_failures = (
+        []
+        if allow_local_absolute_paths
+        else _local_absolute_path_failures(files)
+    )
     domains = (
         _score("instructions", _instruction_checks(files)),
         _score("tools", _tool_checks(files)),
         _score("environment", _environment_checks(files)),
         _score("state", _state_checks(files)),
         _score("feedback", _feedback_checks(files, link_failures)),
-        _score("scope", _scope_checks(files)),
+        _score(
+            "scope",
+            _scope_checks(
+                files,
+                local_path_failures,
+                allow_local_absolute_paths=allow_local_absolute_paths,
+            ),
+        ),
         _score("lifecycle", _lifecycle_checks(files)),
     )
     total = sum(domain.score for domain in domains)
@@ -43,7 +63,12 @@ def audit_target(target: Path) -> AuditResult:
     weakest = min(domain.score for domain in domains)
     overall = max(0, min(100, round(average - ((5 - weakest) * 4))))
     bottleneck = min(domains, key=lambda item: (item.score, DOMAIN_ORDER.index(item.name))).name
-    recommendations = _recommendations(domains, manifest_failures, link_failures)
+    recommendations = _recommendations(
+        domains,
+        manifest_failures,
+        link_failures,
+        local_path_failures,
+    )
     return AuditResult(
         target_name=root.name,
         overall=overall,
@@ -328,6 +353,16 @@ def _local_markdown_link_failures(root: Path, files: dict[str, str]) -> list[str
     return failures
 
 
+def _local_absolute_path_failures(files: dict[str, str]) -> list[str]:
+    failures: list[str] = []
+    for file_name, text in files.items():
+        for match in LOCAL_ABSOLUTE_PATH_RE.finditer(text):
+            failures.append(f"{file_name}: {redact_local_paths(match.group(1))}")
+            if len(failures) >= 10:
+                return failures
+    return failures
+
+
 def _strip_markdown_code_blocks(text: str) -> str:
     lines: list[str] = []
     fence: str | None = None
@@ -532,15 +567,30 @@ def _feedback_checks(files: dict[str, str], link_failures: list[str]) -> list[Ch
     ]
 
 
-def _scope_checks(files: dict[str, str]) -> list[CheckResult]:
+def _scope_checks(
+    files: dict[str, str],
+    local_path_failures: list[str],
+    *,
+    allow_local_absolute_paths: bool,
+) -> list[CheckResult]:
     contract = files.get("docs/harness/change-contract.md", "")
     feature = files.get("feature_list.json") or files.get("feature-list.json") or ""
     all_text = "\n".join(files.values())
+    local_path_detail = (
+        "explicitly allowed for this audit"
+        if allow_local_absolute_paths
+        else "; ".join(local_path_failures[:3])
+    )
     return [
         _check(bool(contract), "Change contract exists"),
         _check("docs/harness/security-boundary-map.md" in files, "Security boundary map exists"),
         _check("docs/harness/dependency-change-policy.md" in files, "Dependency change policy exists"),
         _contains(all_text, ("personal machines", "security wins"), "Personal-machine trust boundary is documented"),
+        _check(
+            allow_local_absolute_paths or not local_path_failures,
+            "Durable harness text avoids local absolute paths",
+            local_path_detail,
+        ),
         _contains(contract, ("Problem", "Scope", "Non-goals"), "Change contract captures scope"),
         _contains(contract, ("Acceptance Criteria", "Acceptance criteria"), "Acceptance criteria are explicit"),
         _contains_all(contract, ("Verification", "Rollback"), "Verification and rollback are captured"),
@@ -584,6 +634,7 @@ def _recommendations(
     domains: tuple[DomainScore, ...],
     manifest_failures: list[str],
     link_failures: list[str],
+    local_path_failures: list[str],
 ) -> tuple[str, ...]:
     recs: list[str] = []
     for domain in sorted(domains, key=lambda item: item.score):
@@ -596,6 +647,11 @@ def _recommendations(
         recs.append("Resolve manifest failures so local policy matches actual files.")
     if link_failures:
         recs.append("Fix local Markdown links so harness docs remain navigable.")
+    if local_path_failures:
+        recs.append(
+            "Remove local absolute paths from durable harness text or rerun audit "
+            "with an explicit override."
+        )
     return tuple(recs)
 
 

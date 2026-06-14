@@ -115,15 +115,41 @@ maintenance loop.
   workflow path filters and `working-directory`, local Actions, devcontainers,
   Harness IDP folders, existing agent-instruction files, and Terraform roots
   and modules.
+- Hardened the scheduled research and self-heal boundary. The workflow now runs
+  at 12:00 UTC, the docs/templates state that research refresh reads only the
+  fixed allowlist in `research-sources.json`, and fetched titles/headings/hashes
+  are treated as untrusted review metadata rather than instructions.
+- Added default audit enforcement for durable local absolute paths. Loaded
+  harness docs and state fail audit when they contain machine-local absolute
+  paths unless the caller uses an explicit local audit override. The generated
+  harness templates carry the same repo-relative-path policy.
 
 ## Recommended Next Step
 
-After push, watch hosted CI for the monorepo detection slice. Then decide
-whether to cut a `v1` Action tag before broader public use, and whether deeper
-workspace graph parsing or release-time SBOM/provenance should come next.
+After push, watch hosted CI for the self-heal automation and local-path policy
+slice. Then decide whether to cut a `v1` Action tag before broader public use,
+whether to keep both Python minors in CI or trim to Python 3.13 only, and
+whether deeper workspace graph parsing or release-time SBOM/provenance should
+come next.
 
 ## Verification Evidence
 
+- `PYTHONPATH=src:. python3 -m unittest tests.test_cli
+  tests.test_generate_audit tests.test_pins` passed with 31 focused tests after
+  self-heal schedule, fixed-allowlist research, and local absolute path audit
+  hardening.
+- `PYTHONPATH=src:. python3 -m unittest discover -s tests` passed with 72
+  tests.
+- `python3 -m compileall src tests scripts`, `PYTHONPATH=src:. python3
+  scripts/check_pins.py --root .`, `git diff --check`, and
+  `PYTHONPATH=src:. python3 -m repo_harness_creator audit --target .
+  --min-score 85` passed; self-audit stayed `100/100`.
+- `./init.sh` passed on macOS 26.5.1 with Python 3.14.5 after the self-heal
+  automation and local-path policy slice: doctor, compile, 72 unit tests, pin
+  check, and self-audit `100/100`.
+- `pwsh -NoProfile -File ./init.ps1` passed on macOS 26.5.1 with Python
+  3.14.5 after the self-heal automation and local-path policy slice: doctor,
+  compile, 72 unit tests, pin check, and self-audit `100/100`.
 - Personal review of the current `microsoft/agent-governance-toolkit`
   `origin/main` snapshot completed without Antigravity delegation; local clone
   lag was handled by reviewing a temporary archive of `origin/main`.
@@ -205,7 +231,7 @@ workspace graph parsing or release-time SBOM/provenance should come next.
   adding the new security guidance sources.
 - `PYTHONPATH=src:. python3 -m unittest tests.test_local_entrypoints` failed
   before the POSIX entrypoint fix and passed after it.
-- `PYTHONPATH=/tmp ./init.sh` passed on macOS 26.5.1 with Python 3.14.5:
+- `PYTHONPATH=<non-repo-path> ./init.sh` passed on macOS 26.5.1 with Python 3.14.5:
   doctor, compile, 47 unit tests, pin check, self-audit `100/100`.
 - `./init.sh` passed on macOS 26.5.1 with Python 3.14.5 after the final state
   updates: doctor, compile, 47 unit tests, pin check, self-audit `100/100`.

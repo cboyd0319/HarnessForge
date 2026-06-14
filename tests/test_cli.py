@@ -39,6 +39,37 @@ class CliTests(unittest.TestCase):
         self.assertEqual(audit_code, 0)
         self.assertIn("Detected stack", stdout.getvalue())
 
+    def test_audit_requires_explicit_override_for_local_absolute_paths(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            with contextlib.redirect_stdout(io.StringIO()):
+                init_code = main(["init", "--target", str(root)])
+            (root / "README.md").write_text(
+                "Local checkout was /Users/person/private/repo\n",
+                encoding="utf-8",
+            )
+            stdout = io.StringIO()
+            with contextlib.redirect_stdout(stdout):
+                strict_code = main(
+                    ["audit", "--target", str(root), "--min-score", "100"]
+                )
+            with contextlib.redirect_stdout(io.StringIO()):
+                allowed_code = main(
+                    [
+                        "audit",
+                        "--target",
+                        str(root),
+                        "--min-score",
+                        "85",
+                        "--allow-local-absolute-paths",
+                    ]
+                )
+
+        self.assertEqual(init_code, 0)
+        self.assertEqual(strict_code, 1)
+        self.assertEqual(allowed_code, 0)
+        self.assertIn("Durable harness text avoids local absolute paths", stdout.getvalue())
+
     def test_update_without_apply_does_not_write(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

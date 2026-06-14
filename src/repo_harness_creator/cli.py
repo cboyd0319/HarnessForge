@@ -57,6 +57,11 @@ def build_parser() -> argparse.ArgumentParser:
     audit.add_argument("--json", action="store_true")
     audit.add_argument("--html", type=Path)
     audit.add_argument("--min-score", type=int, default=0)
+    audit.add_argument(
+        "--allow-local-absolute-paths",
+        action="store_true",
+        help="explicitly allow local absolute paths for this audit run",
+    )
     audit.set_defaults(func=_audit)
 
     update = subparsers.add_parser("update", help="plan or apply safe harness corrections")
@@ -99,7 +104,10 @@ def _init(args: argparse.Namespace) -> int:
 
 
 def _audit(args: argparse.Namespace) -> int:
-    result = audit_target(args.target)
+    result = audit_target(
+        args.target,
+        allow_local_absolute_paths=args.allow_local_absolute_paths,
+    )
     if args.html:
         args.html.parent.mkdir(parents=True, exist_ok=True)
         args.html.write_text(render_html_report(result), encoding="utf-8")

@@ -46,7 +46,9 @@ Full local verification on Windows:
 - One feature or fix at a time unless `docs/harness/multi-agent-orchestration.md`
   defines separate owners.
 - Keep project-specific facts in repo docs, not in chat history.
-- Prefer repo-relative paths. Do not commit machine-specific local paths.
+- Prefer repo-relative paths. Do not commit machine-specific or user-specific
+  absolute local paths unless the user explicitly requests that exact path and
+  durable evidence records why.
 - Use latest stable supported packages with hard pins. Direct dependencies use
   exact versions; external GitHub Actions use full-length commit SHAs with
   version comments.
@@ -75,5 +77,5 @@ Full local verification on Windows:
   permission, and cost boundaries.
 - Respect `docs/harness/dependency-change-policy.md` for package, tool, and
   Action pin policy.
-- Do not commit secrets, credentials, private data, machine-specific paths, or
-  long raw command output.
+- Do not commit secrets, credentials, private data, machine-specific absolute
+  paths, or long raw command output.

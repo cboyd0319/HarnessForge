@@ -57,6 +57,7 @@
     ],
     ".github/workflows/harness-self-heal.yml": [
       "schedule",
+      "0 12 * * 1",
       "scripts/refresh_research.py",
       "gh pr create"
     ],
@@ -114,7 +115,9 @@
       "Access Boundaries",
       "Data Boundaries",
       "Required Checks",
-      "security wins"
+      "security wins",
+      "machine-local absolute paths",
+      "fixed allowlist"
     ],
     "docs/harness/feature-privacy-labels.json": [
       "External AI optional",
@@ -143,6 +146,7 @@
     ],
     "docs/harness/self-healing.md": [
       "Self-healing must be reviewable",
+      "fixed allowlist",
       "Safe Loop",
       "Promotion Rule"
     ],

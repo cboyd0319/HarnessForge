@@ -308,6 +308,48 @@ class GenerateAuditTests(unittest.TestCase):
         self.assertFalse(link_check.passed)
         self.assertIn("absolute local path", link_check.detail)
 
+    def test_audit_flags_local_absolute_path_text(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            create_harness(root)
+            (root / "README.md").write_text(
+                "Local checkout was /Users/person/private/repo\n",
+                encoding="utf-8",
+            )
+
+            result = audit_target(root)
+
+        scope = next(domain for domain in result.domains if domain.name == "scope")
+        path_check = next(
+            check
+            for check in scope.checks
+            if check.message == "Durable harness text avoids local absolute paths"
+        )
+        self.assertFalse(path_check.passed)
+        self.assertIn("README.md", path_check.detail)
+        self.assertTrue(
+            any("Remove local absolute paths" in item for item in result.recommendations)
+        )
+
+    def test_audit_can_explicitly_allow_local_absolute_path_text(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            create_harness(root)
+            (root / "README.md").write_text(
+                "User-requested local path was C:\\Users\\person\\repo\n",
+                encoding="utf-8",
+            )
+
+            result = audit_target(root, allow_local_absolute_paths=True)
+
+        scope = next(domain for domain in result.domains if domain.name == "scope")
+        path_check = next(
+            check
+            for check in scope.checks
+            if check.message == "Durable harness text avoids local absolute paths"
+        )
+        self.assertTrue(path_check.passed, path_check.detail)
+
     def test_manifest_required_files_cannot_point_outside_target(self) -> None:
         for required_file in ("../outside.md", "..\\outside.md"):
             with self.subTest(required_file=required_file):
