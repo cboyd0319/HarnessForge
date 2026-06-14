@@ -22,6 +22,11 @@ inventory, not permission to mutate nested projects.
 - Preserve platform parity for macOS 15+, Windows 11+, Ubuntu 22.04+, and Python
   3.13+ where the component uses Python.
 
+## Project Assets
+
+- `docs/assets/logo.png`: repository logo used by the root README and project
+  presentation surfaces.
+
 ## Manual Additions
 
 No manual component additions yet.

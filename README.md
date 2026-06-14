@@ -1,5 +1,9 @@
 # repo-harness-creator
 
+<p align="center">
+  <img src="docs/assets/logo.png" alt="repo-harness-creator logo" width="180">
+</p>
+
 [![CI](https://github.com/cboyd0319/repo-harness-creator/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/cboyd0319/repo-harness-creator/actions/workflows/ci.yml)
 [![Python 3.13+](https://img.shields.io/badge/python-3.13%2B-3776AB)](pyproject.toml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)

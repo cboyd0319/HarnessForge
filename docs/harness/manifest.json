@@ -6,6 +6,7 @@
     "README.md",
     "action.yml",
     "docs/action.md",
+    "docs/assets/logo.png",
     "pyproject.toml",
     "feature_list.json",
     "progress.md",
@@ -69,6 +70,7 @@
       "personal machines"
     ],
     "README.md": [
+      "docs/assets/logo.png",
       "Python 3.13",
       "repo-harness init",
       "repo-harness audit",
