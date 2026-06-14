@@ -78,10 +78,10 @@ $Separator = [System.IO.Path]::PathSeparator
 $env:PYTHONPATH = if ($env:PYTHONPATH) { "src$Separator$env:PYTHONPATH" } else { "src" }
 $PythonBin = if ($env:PYTHON) {
   $env:PYTHON
-} elseif (Get-Command python -ErrorAction SilentlyContinue) {
-  'python'
 } elseif (Get-Command python3 -ErrorAction SilentlyContinue) {
   'python3'
+} elseif (Get-Command python -ErrorAction SilentlyContinue) {
+  'python'
 } else {
   'python'
 }
@@ -90,7 +90,7 @@ Write-Host "== Doctor =="
 Invoke-Native $PythonBin -m harnessforge doctor
 
 Write-Host "== Compile =="
-Invoke-Native $PythonBin -m compileall src tests
+Invoke-Native $PythonBin -m compileall scripts src tests
 
 Write-Host "== Tests =="
 Invoke-Native $PythonBin -m unittest discover -s tests

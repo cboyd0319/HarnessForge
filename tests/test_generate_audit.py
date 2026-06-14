@@ -109,6 +109,49 @@ class GenerateAuditTests(unittest.TestCase):
         self.assertNotIn("Invoke-Expression", init_ps1)
         self.assertEqual(result.overall, 100)
 
+    def test_audit_respects_declared_macos_only_platform_contract(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            create_harness(root)
+            (root / "init.ps1").unlink()
+            manifest_path = root / "docs/harness/manifest.json"
+            manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+            manifest["supportedPlatforms"] = {
+                "macosOnly": {
+                    "python": "3.13+",
+                    "macOS": "26+",
+                    "note": (
+                        "This repository does not support Windows or Linux "
+                        "runtime or contributor verification targets."
+                    ),
+                }
+            }
+            manifest["requiredFiles"] = [
+                path for path in manifest["requiredFiles"] if path != "init.ps1"
+            ]
+            manifest_path.write_text(
+                f"{json.dumps(manifest, indent=2)}\n",
+                encoding="utf-8",
+            )
+
+            result = audit_target(root)
+
+        tools = next(domain for domain in result.domains if domain.name == "tools")
+        environment = next(
+            domain for domain in result.domains if domain.name == "environment"
+        )
+        self.assertFalse(
+            any("PowerShell" in check.message for check in tools.checks)
+        )
+        self.assertTrue(
+            next(
+                check
+                for check in environment.checks
+                if check.message == "Runtime boundary is documented"
+            ).passed
+        )
+        self.assertGreaterEqual(result.overall, 85)
+
     def test_platform_routers_follow_custom_agent_file(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -187,14 +230,37 @@ class GenerateAuditTests(unittest.TestCase):
                 "requests>=2\n",
                 encoding="utf-8",
             )
+            (root / "pins.toml").write_text(
+                "[agent_cli]\n"
+                'codex = "0.20.0"\n'
+                "\n[agent_cli_integrity]\n"
+                'codex = "sha512-reviewed"\n',
+                encoding="utf-8",
+            )
             (root / "package.json").write_text(
-                json.dumps({"dependencies": {"left-pad": "^1.3.0"}}),
+                json.dumps(
+                    {
+                        "dependencies": {
+                            "@openai/codex": "0.21.0",
+                            "left-pad": "^1.3.0",
+                        }
+                    }
+                ),
                 encoding="utf-8",
             )
             (root / "package-lock.json").write_text(
                 json.dumps(
                     {
                         "packages": {
+                            "": {"dependencies": {"@openai/codex": "0.21.0"}},
+                            "node_modules/@openai/codex": {
+                                "version": "0.21.0",
+                                "resolved": (
+                                    "https://registry.npmjs.org/@openai/codex/"
+                                    "-/codex-0.21.0.tgz"
+                                ),
+                                "integrity": "sha512-drifted",
+                            },
                             "node_modules/left-pad": {
                                 "version": "1.3.0",
                                 "resolved": "https://example.invalid/left-pad.tgz",
@@ -227,6 +293,7 @@ class GenerateAuditTests(unittest.TestCase):
         self.assertIn("Python requirement", strict.stdout)
         self.assertIn("exact npm version", strict.stdout)
         self.assertIn("package-lock entry", strict.stdout)
+        self.assertIn("pins.toml", strict.stdout)
 
     def test_existing_files_are_skipped_without_force(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

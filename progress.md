@@ -183,16 +183,35 @@ maintenance loop.
   generated harnesses: Delegate/Review/Own ownership boundaries across the
   SDLC, test-integrity review for agent-written tests, high-signal review
   criteria, and official source provenance in the fixed research allowlist.
+- Added a reviewed `pins.toml` ledger and ledger-backed pin enforcement.
+  `scripts/check_pins.py` and generated advisory pin checkers now parse
+  `pins.toml` with `tomllib` when it is present, and tie Python pins,
+  `package.json` direct versions, `package-lock.json` integrity values,
+  Containerfile base image tags and digests, and profile image tags back to the
+  ledger. Generated harnesses keep `pins.toml` optional.
+- Rechecked all repo script surfaces and the local memory/best-practices docs.
+  Accepted focused improvements: the product audit now respects a target repo's
+  declared runtime/runner boundary, so macOS-only targets are not forced to
+  restore PowerShell or document unrelated OS floors; this repo's root
+  entrypoints now compile `scripts/` as product code; PowerShell entrypoints
+  prefer `python3` before `python` when `PYTHON` is unset; Python dependencies
+  with extras are accepted as exact pins tied to the base `pins.toml` package
+  entry; and non-version strings such as `==latest` are rejected.
+- Added explicit boundary documentation and regression coverage for the three
+  HarnessForge surfaces: this repo's live harness, generated target harness
+  artifacts, and the published GitHub Action. Generated harness defaults remain
+  cross-platform; target-specific platform narrowing must be declared by the
+  target repo; Action runs are input-driven and target-contained.
 
 ## Recommended Next Step
 
 Review the local commits for the OWASP/security, CI-cost-control,
-generated-harness alignment, local-repo harness comparison, rename, and
-platform-router batches. Push only at an explicit batch/release boundary or
-user request. Before a first public Action release, run the manual macOS/Windows
-platform CI check if hosted platform confirmation is needed, then decide
-whether to cut a `v1` Action tag and which release-time SBOM/provenance
-controls should become blocking.
+generated-harness alignment, local-repo harness comparison, rename,
+platform-router, Codex SDLC, pins-ledger, and script/boundary batches. Push
+only at an explicit batch/release boundary or user request. Before a first
+public Action release, run the manual macOS/Windows platform CI check if hosted
+platform confirmation is needed, then decide whether to cut a `v1` Action tag
+and which release-time SBOM/provenance controls should become blocking.
 
 ## Verification Evidence
 
@@ -200,6 +219,36 @@ controls should become blocking.
   SAMM, and pytm materials without delegating the review. The accepted controls
   were limited to source-backed harness policy, audit checks, fixed allowlist
   entries, and CI cost controls.
+- `PYTHONPATH=src:. python3 -m unittest tests.test_pins
+  tests.test_generate_audit` passed with 36 focused tests after adding
+  ledger-backed pin checks.
+- `PYTHONPATH=src:. python3 -m unittest tests.test_generate_audit
+  tests.test_github_action tests.test_local_entrypoints tests.test_pins` passed
+  with 50 focused tests after the script/boundary pass.
+- `PYTHONPATH=src:. python3 -m unittest discover -s tests` passed with 91
+  tests after the script/boundary pass, then 92 tests after tightening Python
+  exact-version requirement parsing.
+- `python3 -m compileall scripts src tests`, `bash -n init.sh`, PowerShell AST
+  parse of `init.ps1`, JSON/TOML metadata parse, `PYTHONPATH=src:. python3
+  scripts/check_pins.py --root .`, `git diff --check`, and `PYTHONPATH=src:.
+  python3 -m harnessforge audit --target . --min-score 85` passed after the
+  script/boundary pass; self-audit stayed `100/100`.
+- `PYTHONPATH=src:. python3 -m harnessforge audit --target
+  /path/to/RunHaven --min-score 85` passed with `100/100`, confirming a
+  declared macOS-only target is checked for its runtime boundary without being
+  forced to satisfy PowerShell checks.
+- `./init.sh` and `pwsh -NoProfile -File ./init.ps1` passed after the
+  script/boundary pass: doctor, compile, 92 unit tests, pin check, and
+  self-audit `100/100`.
+- `PYTHONPATH=src:. python3 -m unittest discover -s tests` passed with 87
+  tests after the pins-ledger batch.
+- `python3 -m compileall scripts src tests`, `python3` `tomllib` parse of
+  `pins.toml`, `PYTHONPATH=src:. python3 scripts/check_pins.py --root .`,
+  `git diff --check`, and `PYTHONPATH=src:. python3 -m harnessforge audit
+  --target . --min-score 85` passed; self-audit stayed `100/100`.
+- `./init.sh` and `pwsh -NoProfile -File ./init.ps1` passed on macOS 26.5.1
+  with Python 3.14.5 after the pins-ledger batch: doctor, compile, 87 unit
+  tests, pin check, and self-audit `100/100`.
 - `PYTHONPATH=src:. python3 scripts/refresh_research.py --root .` refreshed
   106 fixed-allowlist sources with the same single known Red Hat 403 failure.
   No current source metadata triggered adversarial review signals.

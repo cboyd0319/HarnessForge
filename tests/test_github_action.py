@@ -104,6 +104,24 @@ class GitHubActionTests(unittest.TestCase):
         self.assertTrue(ci_exists)
         self.assertTrue(self_heal_exists)
 
+    def test_action_init_writes_only_inside_declared_target(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            workspace = Path(tmp)
+            target = workspace / "target-repo"
+            env = {
+                "INPUT_COMMAND": "init",
+                "INPUT_TARGET": str(target),
+            }
+
+            with contextlib.redirect_stdout(io.StringIO()):
+                code = run_from_env(env)
+
+            self.assertEqual(code, 0)
+            self.assertTrue((target / "AGENTS.md").exists())
+            self.assertTrue((target / "docs/harness/manifest.json").exists())
+            self.assertFalse((workspace / "AGENTS.md").exists())
+            self.assertFalse((workspace / "docs").exists())
+
     def test_action_report_paths_must_stay_inside_target(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp) / "repo"

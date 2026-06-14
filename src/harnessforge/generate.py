@@ -395,13 +395,16 @@ def _manifest_content(
         "docs/harness/dependency-change-policy.md": [
             "latest stable",
             "exact pins",
+            "pins.toml",
             "GitHub Actions",
         ],
         "docs/harness/security-boundary-map.md": [
+            "Harness Surface Boundaries",
             "Access Boundaries",
             "Data Boundaries",
             "Required Checks",
             "security wins",
+            "GitHub Action",
             "machine-local absolute paths",
             "fixed allowlist",
             "prompt injection",
@@ -480,6 +483,7 @@ def _manifest_content(
             "Delegate",
             "Review",
             "Own",
+            "GitHub Action behavior",
             "least privilege",
             "human approval",
             "verification commands",
@@ -500,10 +504,13 @@ def _manifest_content(
         "scripts/check_pins.py": [
             "40-char SHA",
             "--strict",
+            "pins.toml",
+            "tomllib",
             "unexpected build hook",
             "container base image",
             "Python requirement",
             "package-lock entry",
+            "profile image",
         ],
     }
     if agent_file != "CLAUDE.md":

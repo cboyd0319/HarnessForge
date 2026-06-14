@@ -51,7 +51,7 @@ echo "== Doctor =="
 "$PYTHON_BIN" -m harnessforge doctor
 
 echo "== Compile =="
-"$PYTHON_BIN" -m compileall src tests
+"$PYTHON_BIN" -m compileall scripts src tests
 
 echo "== Tests =="
 "$PYTHON_BIN" -m unittest discover -s tests

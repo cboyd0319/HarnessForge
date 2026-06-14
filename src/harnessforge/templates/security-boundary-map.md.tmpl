@@ -11,6 +11,21 @@ security wins and the tool must explain the safe next step.
 
 ## Access Boundaries
 
+### Harness Surface Boundaries
+
+Keep three surfaces separate:
+
+- Project harness: checked-in controls for this repository. These may be
+  narrower than HarnessForge defaults when the project declares a specific
+  platform or operational contract.
+- Generated harness artifacts: files created by HarnessForge in this
+  repository. Defaults are portable and conservative, and should not inherit
+  HarnessForge's own release state or local paths.
+- HarnessForge GitHub Action: reusable CI surface for generating, updating, or
+  auditing this repository's harness. It should run with explicit workflow
+  permissions, keep reports target-relative, and write files only for `init` or
+  applied `update`.
+
 | Boundary | Current Owner | Rule |
 | --- | --- | --- |
 | Local repository files | Project maintainers | Agents must preserve user changes and avoid destructive git operations unless explicitly approved. |

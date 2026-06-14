@@ -3,6 +3,7 @@ from __future__ import annotations
 import html
 import json
 import re
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 from urllib.parse import unquote
@@ -29,12 +30,23 @@ LOCAL_ABSOLUTE_PATH_RE = re.compile(
 )
 
 
+@dataclass(frozen=True)
+class PlatformContract:
+    requires_posix: bool
+    requires_powershell: bool
+    macos_only: bool
+    windows_only: bool
+    linux_only: bool
+    detail: str
+
+
 def audit_target(
     target: Path, *, allow_local_absolute_paths: bool = False
 ) -> AuditResult:
     root = target.resolve()
     files = _load_known_files(root)
     manifest = _load_manifest(root)
+    platform_contract = _platform_contract(files, manifest)
     manifest_failures = _manifest_failures(root, manifest)
     link_failures = _local_markdown_link_failures(root, files)
     local_path_failures = (
@@ -44,8 +56,8 @@ def audit_target(
     )
     domains = (
         _score("instructions", _instruction_checks(files)),
-        _score("tools", _tool_checks(files)),
-        _score("environment", _environment_checks(files)),
+        _score("tools", _tool_checks(files, platform_contract)),
+        _score("environment", _environment_checks(files, platform_contract)),
         _score("state", _state_checks(files)),
         _score("feedback", _feedback_checks(files, link_failures)),
         _score(
@@ -272,6 +284,107 @@ def _load_manifest(root: Path) -> dict[str, Any]:
     return parsed if isinstance(parsed, dict) else {}
 
 
+def _platform_contract(
+    files: dict[str, str], manifest: dict[str, Any]
+) -> PlatformContract:
+    manifest_platforms = manifest.get("supportedPlatforms", {})
+    manifest_text = (
+        json.dumps(manifest_platforms, sort_keys=True)
+        if isinstance(manifest_platforms, dict)
+        else ""
+    )
+    evidence = "\n".join(
+        [
+            manifest_text,
+            files.get("AGENTS.md", ""),
+            files.get("README.md", ""),
+            files.get("docs/harness/README.md", ""),
+            files.get("docs/harness/component-inventory.md", ""),
+            files.get("docs/harness/dependency-change-policy.md", ""),
+            files.get("docs/harness/verification-matrix.md", ""),
+        ]
+    )
+    normalized = _normalize_platform_text(evidence)
+    macos_only = _has_any(
+        normalized,
+        (
+            "macosonly",
+            "macos only",
+            "macos-only",
+            "only supports macos",
+            "windows and linux are not supported",
+            "does not support windows or linux",
+            "do not add windows or linux",
+        ),
+    )
+    windows_only = _has_any(
+        normalized,
+        (
+            "windowsonly",
+            "windows only",
+            "windows-only",
+            "only supports windows",
+            "macos and linux are not supported",
+            "does not support macos or linux",
+        ),
+    )
+    linux_only = _has_any(
+        normalized,
+        (
+            "linuxonly",
+            "linux only",
+            "linux-only",
+            "only supports linux",
+            "macos and windows are not supported",
+            "does not support macos or windows",
+        ),
+    )
+    if macos_only:
+        return PlatformContract(
+            requires_posix=True,
+            requires_powershell=False,
+            macos_only=True,
+            windows_only=False,
+            linux_only=False,
+            detail="macOS-only platform contract",
+        )
+    if windows_only:
+        return PlatformContract(
+            requires_posix=False,
+            requires_powershell=True,
+            macos_only=False,
+            windows_only=True,
+            linux_only=False,
+            detail="Windows-only platform contract",
+        )
+    if linux_only:
+        return PlatformContract(
+            requires_posix=True,
+            requires_powershell=False,
+            macos_only=False,
+            windows_only=False,
+            linux_only=True,
+            detail="Linux-only platform contract",
+        )
+    return PlatformContract(
+        requires_posix=True,
+        requires_powershell=True,
+        macos_only=False,
+        windows_only=False,
+        linux_only=False,
+        detail="cross-platform harness contract",
+    )
+
+
+def _normalize_platform_text(text: str) -> str:
+    lower = text.lower()
+    return re.sub(r"[\s_]+", " ", lower)
+
+
+def _has_any(text: str, needles: tuple[str, ...]) -> bool:
+    return any(needle in text for needle in needles)
+
+
 def _manifest_failures(root: Path, manifest: dict[str, Any]) -> list[str]:
     failures: list[str] = []
     if not manifest:
@@ -482,22 +595,47 @@ def _instruction_checks(files: dict[str, str]) -> list[CheckResult]:
     ]
 
 
-def _tool_checks(files: dict[str, str]) -> list[CheckResult]:
+def _tool_checks(
+    files: dict[str, str], platform_contract: PlatformContract
+) -> list[CheckResult]:
     init_sh = files.get("init.sh", "")
     init_ps1 = files.get("init.ps1", "")
     all_text = "\n".join(files.values())
-    return [
-        _check("init.sh" in files, "POSIX verification entrypoint exists"),
-        _check("init.ps1" in files, "PowerShell verification entrypoint exists"),
+    checks = [
         _check("scripts/check_pins.py" in files, "Pin check script exists"),
-        _contains(init_sh, ("set -e", "set -euo pipefail"), "POSIX entrypoint fails fast"),
-        _contains(init_ps1, ("$ErrorActionPreference = 'Stop'",), "PowerShell entrypoint fails fast"),
         _contains(all_text, ("destructive", "--force", "overwrite"), "Tool safety and overwrite behavior are documented"),
         _contains(all_text, ("40-char SHA", "commit SHA", "exact pins"), "Dependency and Action pin policy is documented"),
     ]
+    if platform_contract.requires_posix:
+        checks.insert(0, _check("init.sh" in files, "POSIX verification entrypoint exists"))
+        checks.insert(
+            1,
+            _contains(
+                init_sh,
+                ("set -e", "set -euo pipefail"),
+                "POSIX entrypoint fails fast",
+            ),
+        )
+    if platform_contract.requires_powershell:
+        insert_at = 2 if platform_contract.requires_posix else 0
+        checks.insert(
+            insert_at,
+            _check("init.ps1" in files, "PowerShell verification entrypoint exists"),
+        )
+        checks.insert(
+            insert_at + 1,
+            _contains(
+                init_ps1,
+                ("$ErrorActionPreference = 'Stop'",),
+                "PowerShell entrypoint fails fast",
+            ),
+        )
+    return checks
 
 
-def _environment_checks(files: dict[str, str]) -> list[CheckResult]:
+def _environment_checks(
+    files: dict[str, str], platform_contract: PlatformContract
+) -> list[CheckResult]:
     runtime_files = (
         "pyproject.toml",
         "package.json",
@@ -542,11 +680,69 @@ def _environment_checks(files: dict[str, str]) -> list[CheckResult]:
             "Runtime manifest or explicit generic profile is discoverable",
         ),
         _contains(environment_text, ("Python 3.13", "python 3.13"), "Python 3.13+ floor is documented"),
-        _contains_all(environment_text, ("macOS 15", "Windows 11", "Ubuntu 22.04"), "Supported OS floor is documented"),
-        _contains(environment_text, ("pathlib", "cross-platform", "PowerShell"), "Cross-platform handling is called out"),
+        _runtime_boundary_check(environment_text, platform_contract),
+        _runner_handling_check(environment_text, platform_contract),
         _check("docs/harness/component-inventory.md" in files, "Component inventory exists"),
         _check("docs/harness/manifest.json" in files, "Machine-readable harness manifest exists"),
     ]
+
+
+def _runtime_boundary_check(
+    environment_text: str, platform_contract: PlatformContract
+) -> CheckResult:
+    if (
+        platform_contract.macos_only
+        or platform_contract.windows_only
+        or platform_contract.linux_only
+    ):
+        return _contains(
+            environment_text,
+            (
+                platform_contract.detail,
+                "supportedPlatforms",
+                "supported platforms",
+                "not supported",
+                "unsupported platform",
+            ),
+            "Runtime boundary is documented",
+        )
+    return _contains(
+        environment_text,
+        (
+            "Python 3.13",
+            "python 3.13",
+            "pathlib",
+            "repo-relative",
+            "target-relative",
+            "cross-platform",
+        ),
+        "Runtime boundary is documented",
+    )
+
+
+def _runner_handling_check(
+    environment_text: str, platform_contract: PlatformContract
+) -> CheckResult:
+    if (
+        platform_contract.macos_only
+        or platform_contract.windows_only
+        or platform_contract.linux_only
+    ):
+        return _contains(
+            environment_text,
+            (
+                platform_contract.detail,
+                "not supported",
+                "unsupported platform",
+                "unsupported-platform",
+            ),
+            "Runner and path handling is called out",
+        )
+    return _contains(
+        environment_text,
+        ("pathlib", "repo-relative", "target-relative", "PowerShell"),
+        "Runner and path handling is called out",
+    )
 
 
 def _state_checks(files: dict[str, str]) -> list[CheckResult]:

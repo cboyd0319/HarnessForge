@@ -11,6 +11,10 @@ API, workflow action, Python, Node, npm, PowerShell, or security-tool versions.
 Use exact pins for direct package dependencies and immutable commit SHAs for
 external GitHub Actions. If the newest stable release has a known reachable
 security issue, pin the newest supported clean release and record the reason.
+When `pins.toml` is present, `scripts/check_pins.py` ties Python package pins,
+`package.json` direct package versions, `package-lock.json` integrity values,
+Containerfile base image tags and digests, and profile image tags back to that
+reviewed ledger.
 
 ## Decision Order
 

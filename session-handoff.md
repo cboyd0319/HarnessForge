@@ -29,6 +29,7 @@ and the required AGENTS instruction format.
 - `.github/workflows/ci.yml`
 - `.github/workflows/harness-self-heal.yml`
 - `scripts/check_pins.py`
+- `pins.toml`
 - `scripts/refresh_research.py`
 - `src/harnessforge/audit.py`
 - `src/harnessforge/detect.py`
@@ -49,6 +50,26 @@ and the required AGENTS instruction format.
 ## Blockers
 
 - No known blockers.
+- Current pins-ledger batch added `pins.toml` and ledger-backed checks to the
+  live and generated pin checkers. When `pins.toml` exists, checks now tie
+  Python pins, `package.json` direct package versions, package-lock integrity,
+  Containerfile base image tags and digests, and profile image tags back to the
+  ledger. Current verification passes focused tests with 36 tests, full unit
+  discovery with 87 tests, compile, `pins.toml` parse, pin check, diff hygiene,
+  self-audit `100/100`, POSIX entrypoint, and PowerShell entrypoint.
+- Current script and boundary batch keeps three HarnessForge surfaces separate:
+  this repo's live harness, generated target-repo harness artifacts, and the
+  published GitHub Action. The product audit now honors a target repo's declared
+  runtime/runner boundary, so macOS-only targets are not forced to restore
+  PowerShell or document unrelated OS floors. Root entrypoints compile
+  `scripts/` as product code, PowerShell entrypoints prefer `python3` before
+  `python`, Python requirement extras stay tied to the base `pins.toml` package
+  entry, non-version strings such as `==latest` are rejected, and the Action
+  docs/tests now state that Action runs are input-driven and target-contained.
+  Current verification passes focused tests with 50 tests, full unit discovery
+  with 92 tests, compile, syntax checks, metadata parse, pin check, diff
+  hygiene, self-audit `100/100`, RunHaven audit `100/100`, POSIX entrypoint,
+  and PowerShell entrypoint.
 - Current OpenAI Codex AI-native engineering guide review imported
   Delegate/Review/Own SDLC boundaries, agent-generated test integrity guidance,
   high-signal review criteria, and the official source URL into the fixed
@@ -259,9 +280,9 @@ and the required AGENTS instruction format.
 ## Next Session
 
 Review the local OWASP/security, CI-cost-control, generated-harness alignment,
-local sibling harness comparison, HarnessForge rename, and platform-router
-commits. Push only at an explicit batch/release boundary or user request. Before
-a public Action release, run the manual macOS/Windows platform CI check if
-hosted platform confirmation is needed, then decide whether to cut a `v1`
-Action tag and which release-time SBOM/provenance controls should become
-blocking.
+local sibling harness comparison, HarnessForge rename, platform-router,
+pins-ledger, and script/boundary commits. Push only at an explicit batch/release
+boundary or user request. Before a public Action release, run the manual
+macOS/Windows platform CI check if hosted platform confirmation is needed, then
+decide whether to cut a `v1` Action tag and which release-time SBOM/provenance
+controls should become blocking.

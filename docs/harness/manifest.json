@@ -11,6 +11,7 @@
     "docs/action.md",
     "docs/assets/logo.png",
     "pyproject.toml",
+    "pins.toml",
     "feature_list.json",
     "progress.md",
     "session-handoff.md",
@@ -105,6 +106,7 @@
     ],
     "docs/action.md": [
       "cboyd0319/harnessforge@<reviewed-commit-sha>",
+      "Boundary Model",
       "Inputs",
       "Outputs",
       "Version Pinning",
@@ -141,13 +143,16 @@
     "docs/harness/dependency-change-policy.md": [
       "latest stable",
       "exact pins",
+      "pins.toml",
       "GitHub Actions"
     ],
     "docs/harness/security-boundary-map.md": [
+      "Harness Surface Boundaries",
       "Access Boundaries",
       "Data Boundaries",
       "Required Checks",
       "security wins",
+      "GitHub Action",
       "machine-local absolute paths",
       "fixed allowlist",
       "prompt injection",
@@ -226,6 +231,7 @@
       "Delegate",
       "Review",
       "Own",
+      "GitHub Action behavior",
       "least privilege",
       "human approval",
       "verification commands",
@@ -248,12 +254,20 @@
       "user_visible_behavior",
       "verification"
     ],
+    "pins.toml": [
+      "minimum_supported",
+      "setuptools",
+      "82.0.1"
+    ],
     "scripts/check_pins.py": [
       "40-char SHA",
       "exact pin",
+      "pins.toml",
+      "tomllib",
       "container base image",
       "Python requirement",
-      "package-lock entry"
+      "package-lock entry",
+      "profile image"
     ],
     "scripts/refresh_research.py": [
       "research-sources.json",

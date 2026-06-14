@@ -1,0 +1,13 @@
+# Current reviewed pins verified on 2026-06-14.
+
+[python]
+minimum_supported = "3.13"
+setuptools = "82.0.1"
+
+[package_json]
+
+[package_integrity]
+
+[container_images]
+
+[profile_images]

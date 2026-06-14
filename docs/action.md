@@ -4,6 +4,22 @@ This repository is also a composite GitHub Action. It sets up Python, sets
 `PYTHONSAFEPATH=1`, points `PYTHONPATH` at the action checkout, then runs the
 same library code as the CLI.
 
+## Boundary Model
+
+The Action is separate from this repo's live harness and from generated target
+harness files. It must not assume HarnessForge's own `pins.toml`, workflows,
+state files, or release process are present in the caller repository.
+
+- `audit` reads the declared `target`, writes only requested reports inside
+  that target, and can run with `contents: read`.
+- `init` and applied `update` may write generated harness files inside
+  `target`; callers should grant write permissions only when they intend to
+  commit or open a pull request.
+- Report paths are target-relative outputs with forward slashes on every
+  runner.
+- The caller owns checkout credentials, branch creation, commits, pushes, and
+  pull-request creation.
+
 ## Audit With HarnessForge
 
 ```yaml

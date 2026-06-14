@@ -9,6 +9,179 @@ from scripts.check_pins import check_root
 
 
 class PinCheckTests(unittest.TestCase):
+    def test_accepts_pins_toml_ledger_matches_repo_surfaces(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "src/demo").mkdir(parents=True)
+            (root / "pins.toml").write_text(
+                "[python]\n"
+                'minimum_supported = "3.13"\n'
+                'setuptools = "82.0.1"\n'
+                'requests = "2.32.5"\n'
+                "\n[agent_cli]\n"
+                'codex = "0.20.0"\n'
+                "\n[agent_cli_integrity]\n"
+                'codex = "sha512-reviewed"\n'
+                "\n[container_images]\n"
+                'python_313 = { image = "python", tag = "3.13", '
+                'digest = "sha256:abc123" }\n'
+                "\n[profile_images]\n"
+                'default = "registry.example.com/team/agent:1.2.3"\n',
+                encoding="utf-8",
+            )
+            (root / "pyproject.toml").write_text(
+                "[build-system]\n"
+                'requires = ["setuptools==82.0.1"]\n'
+                'build-backend = "setuptools.build_meta"\n'
+                "[project]\n"
+                'name = "demo"\n'
+                'version = "0.1.0"\n'
+                'requires-python = ">=3.13"\n'
+                'dependencies = ["requests[socks]==2.32.5"]\n',
+                encoding="utf-8",
+            )
+            (root / "requirements.txt").write_text(
+                "requests[socks]==2.32.5\n",
+                encoding="utf-8",
+            )
+            (root / "Containerfile").write_text(
+                "FROM python:3.13@sha256:abc123\n",
+                encoding="utf-8",
+            )
+            (root / "package.json").write_text(
+                json.dumps({"dependencies": {"@openai/codex": "0.20.0"}}),
+                encoding="utf-8",
+            )
+            (root / "package-lock.json").write_text(
+                json.dumps(
+                    {
+                        "packages": {
+                            "": {"dependencies": {"@openai/codex": "0.20.0"}},
+                            "node_modules/@openai/codex": {
+                                "version": "0.20.0",
+                                "resolved": (
+                                    "https://registry.npmjs.org/@openai/codex/"
+                                    "-/codex-0.20.0.tgz"
+                                ),
+                                "integrity": "sha512-reviewed",
+                            },
+                        }
+                    }
+                ),
+                encoding="utf-8",
+            )
+            (root / "src/demo/profiles.py").write_text(
+                'PROFILES = {"default": {"image": '
+                '"registry.example.com/team/agent:1.2.3"}}\n',
+                encoding="utf-8",
+            )
+
+            failures = check_root(root)
+
+        self.assertEqual(failures, [])
+
+    def test_rejects_pins_toml_ledger_drift(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "src/demo").mkdir(parents=True)
+            (root / "pins.toml").write_text(
+                "[python]\n"
+                'minimum_supported = "3.13"\n'
+                'setuptools = "82.0.1"\n'
+                'requests = "2.32.5"\n'
+                "\n[agent_cli]\n"
+                'codex = "0.20.0"\n'
+                "\n[agent_cli_integrity]\n"
+                'codex = "sha512-reviewed"\n'
+                "\n[container_images]\n"
+                'python_313 = { image = "python", tag = "3.13", '
+                'digest = "sha256:abc123" }\n'
+                "\n[profile_images]\n"
+                'default = "registry.example.com/team/agent:1.2.3"\n',
+                encoding="utf-8",
+            )
+            (root / "pyproject.toml").write_text(
+                "[build-system]\n"
+                'requires = ["setuptools==82.0.2"]\n'
+                'build-backend = "setuptools.build_meta"\n'
+                "[project]\n"
+                'name = "demo"\n'
+                'version = "0.1.0"\n'
+                'requires-python = ">=3.12"\n'
+                'dependencies = ["requests==2.32.4"]\n',
+                encoding="utf-8",
+            )
+            (root / "requirements.txt").write_text(
+                "requests==2.32.4\n",
+                encoding="utf-8",
+            )
+            (root / "Containerfile").write_text(
+                "FROM python:3.13@sha256:def456\n",
+                encoding="utf-8",
+            )
+            (root / "package.json").write_text(
+                json.dumps({"dependencies": {"@openai/codex": "0.21.0"}}),
+                encoding="utf-8",
+            )
+            (root / "package-lock.json").write_text(
+                json.dumps(
+                    {
+                        "packages": {
+                            "": {"dependencies": {"@openai/codex": "0.21.0"}},
+                            "node_modules/@openai/codex": {
+                                "version": "0.21.0",
+                                "resolved": (
+                                    "https://registry.npmjs.org/@openai/codex/"
+                                    "-/codex-0.21.0.tgz"
+                                ),
+                                "integrity": "sha512-drifted",
+                            },
+                        }
+                    }
+                ),
+                encoding="utf-8",
+            )
+            (root / "src/demo/profiles.py").write_text(
+                'PROFILES = {"default": {"image": '
+                '"registry.example.com/team/agent:9.9.9"}}\n',
+                encoding="utf-8",
+            )
+
+            failures = check_root(root)
+
+        joined = "\n".join(failures)
+        self.assertIn("pins.toml python.minimum_supported", joined)
+        self.assertIn("setuptools==82.0.2", joined)
+        self.assertIn("requests==2.32.4", joined)
+        self.assertIn("container image", joined)
+        self.assertIn("@openai/codex", joined)
+        self.assertIn("package-lock integrity", joined)
+        self.assertIn("profile image", joined)
+
+    def test_rejects_non_version_python_requirement_without_ledger(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "pyproject.toml").write_text(
+                "[build-system]\n"
+                'requires = ["setuptools==82.0.1"]\n'
+                'build-backend = "setuptools.build_meta"\n'
+                "[project]\n"
+                'name = "demo"\n'
+                'version = "0.1.0"\n'
+                'dependencies = ["requests==latest"]\n',
+                encoding="utf-8",
+            )
+            (root / "requirements.txt").write_text(
+                "flask==latest\n",
+                encoding="utf-8",
+            )
+
+            failures = check_root(root)
+
+        joined = "\n".join(failures)
+        self.assertIn("project dependency", joined)
+        self.assertIn("requirements.txt:1 Python requirement", joined)
+
     def test_accepts_exact_build_requirement_and_sha_pinned_action(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -201,6 +374,7 @@ class PinCheckTests(unittest.TestCase):
             "progress.md",
             "session-handoff.md",
             "feature_list.json",
+            "pins.toml",
             "init.sh",
             "init.ps1",
         ):

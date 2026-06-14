@@ -11,6 +11,21 @@ security wins and the tool must explain the safe next step.
 
 ## Access Boundaries
 
+### Harness Surface Boundaries
+
+Keep three surfaces separate:
+
+- Live repo harness: checked-in controls for maintaining HarnessForge itself.
+  These can include product-only files such as `pins.toml`, root workflows, and
+  release evidence.
+- Generated repo harness: files HarnessForge writes into a target repository.
+  Defaults must be portable and conservative, and must not assume this repo's
+  private state, release process, or local paths.
+- Published GitHub Action: reusable CI surface for other repositories. It runs
+  the same library code as the CLI, writes only to the declared target during
+  `init` or applied `update`, keeps reports target-relative, and depends on
+  caller-provided workflow permissions.
+
 | Boundary | Current Owner | Rule |
 | --- | --- | --- |
 | Target repository files | CLI user | `init` and `update` skip existing files unless `--force` is explicitly passed. |
@@ -25,6 +40,7 @@ security wins and the tool must explain the safe next step.
 | Training, demo, and intentionally vulnerable fixtures | Maintainers | Do not automatically remediate accepted vulnerable examples, challenge code, or fixtures unless the user asks for that scope. Record owner, path, and risk acceptance; scan findings must separate intentional training content from product defects. |
 | Threat model and control evidence | Maintainers | Material AI/RAG/agent, tool, external-service, auth, secret, data-flow, or deployment changes must update boundary docs, defect/evidence records, and focused abuse-case checks. |
 | GitHub workflows | Maintainers | Workflows use least privilege, external Actions pinned to commit SHAs, `PYTHONSAFEPATH=1` for the reusable Action runtime, no persisted checkout credentials in read-only CI, cancellation for superseded CI runs, and target-contained Action report paths that reject POSIX and Windows absolute/rooted syntax. |
+| Published GitHub Action | Action users | The Action must not assume this repo's live harness state. It accepts explicit inputs, validates report paths inside `target`, emits delimiter-protected outputs, and only writes harness files for `init` or `update` when the caller chooses those commands and permissions. |
 | Secrets and credentials | Maintainers | No command should print, store, transform, or transmit secrets. |
 | Cost-incurring systems | Maintainers | Prefer local verification and local commits during active work. Push only at explicit batch boundaries or by user request. Self-healing must not call paid model or cloud APIs unless a future reviewed workflow explicitly opts in. |
 
