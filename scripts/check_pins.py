@@ -235,7 +235,9 @@ def _check_container_pins(root: Path, ledger: dict[str, Any]) -> list[str]:
     ledger_entries = _container_ledger_entries(ledger)
     for path in _walk_named_files(root, CONTAINERFILE_NAMES):
         relative = path.relative_to(root)
-        for number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
+        lines = path.read_text(encoding="utf-8").splitlines()
+        stage_aliases = _container_stage_aliases(lines)
+        for number, line in enumerate(lines, 1):
             value = line.strip()
             if not value.startswith("FROM "):
                 continue
@@ -247,6 +249,8 @@ def _check_container_pins(root: Path, ledger: dict[str, Any]) -> list[str]:
                 failures.append(f"{relative}:{number} container FROM has no image")
                 continue
             image = parts[image_index]
+            if image.lower() in stage_aliases:
+                continue
             if image.lower() != "scratch" and "@sha256:" not in image:
                 failures.append(
                     f"{relative}:{number} container base image should use "
@@ -263,6 +267,19 @@ def _check_container_pins(root: Path, ledger: dict[str, Any]) -> list[str]:
                         "recorded in pins.toml [container_images]"
                     )
     return failures
+
+
+def _container_stage_aliases(lines: list[str]) -> set[str]:
+    aliases: set[str] = set()
+    for line in lines:
+        parts = line.strip().split()
+        if len(parts) < 4 or not parts or parts[0] != "FROM":
+            continue
+        for index, part in enumerate(parts):
+            if part.upper() == "AS" and index + 1 < len(parts):
+                aliases.add(parts[index + 1].lower())
+                break
+    return aliases
 
 
 def _check_python_requirements(root: Path, ledger: dict[str, Any]) -> list[str]:
@@ -681,8 +698,11 @@ def _profile_ledger_images(ledger: dict[str, Any]) -> set[str]:
 
 def _check_forbidden_build_hooks(root: Path) -> list[str]:
     failures: list[str] = []
+    has_rust = bool(_walk_named_files(root, {"Cargo.toml"}))
     for path in _walk_named_files(root, FORBIDDEN_BUILD_HOOKS):
         relative = path.relative_to(root)
+        if path.name == "build.rs" and has_rust:
+            continue
         failures.append(f"build hook file is not allowed in this repo: {relative}")
     return failures
 

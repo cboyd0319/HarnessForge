@@ -239,17 +239,38 @@ maintenance loop.
   contract. Optional workflow warnings are louder at generation time, Python
   detection now adds Ruff and mypy defaults from config, and generated review
   placeholders are marked `REVIEW REQUIRED`.
+- Completed a deeper local reference-repo compatibility pass across 25 sibling
+  repositories under the local GitHub checkout parent, with direct read-only
+  detection/audit/dry-run checks, temporary generated-harness smoke tests, and a
+  read-only AGY supplement. Accepted concrete fixes for scenario coverage:
+  explicit platform-contract audit precedence with old-manifest fallback,
+  docs-only and monorepo environment profiles, root Maven/Gemfile manifest
+  priority, docs-site `validate.sh` detection, Poetry/Pipenv Python command
+  prefixes, nested package-manager labels, skipped-file ownership/hash metadata
+  that avoids immediate drift, clearer preserved-file onboarding warnings,
+  generated/live pin-check allowances for Rust `build.rs`, and Docker
+  multi-stage alias handling. Default init still preserves existing instruction
+  files; the supported easy path for such repos is now explicitly surfaced as
+  `--agent-file HARNESSFORGE_AGENTS.md`.
 
 ## Recommended Next Step
 
-Review and commit the generator metadata, drift, and platform-contract slice
-when ready. Push local commits only at an explicit batch/release boundary or
-user request. Before a first public Action release, run the manual
-macOS/Windows platform CI check, then decide whether to cut a `v1` Action tag
-and which release-time SBOM/provenance controls should become blocking.
+Review and commit the reference-repo compatibility slice when ready. Push local
+commits only at an explicit batch/release boundary or user request. Remaining
+product decisions before a first public Action release: whether to add
+component-directed monorepo verification commands, path/package exclusions for
+intentionally vulnerable training repos, Maven/Gradle dependency pin parsing,
+and selective update semantics for generated-owned files. Then run the manual
+macOS/Windows platform CI check and decide whether to cut a `v1` Action tag and
+which release-time SBOM/provenance controls should become blocking.
 
 ## Verification Evidence
 
+- `PYTHONPATH=src:. python3 -m unittest discover -s tests` passed with
+  116 tests after the reference-repo compatibility pass. Compile, pin check,
+  JSON parsing, self-audit `100/100`, `git diff --check`, rendered
+  compatibility smokes, and temporary reference-repo detection/generation
+  matrices passed.
 - `PYTHONPATH=src:. python3 -m unittest discover -s tests` passed with
   103 tests after adding generated-file ownership metadata, drift reporting,
   platform-contract options, louder optional-workflow warnings, Ruff/mypy

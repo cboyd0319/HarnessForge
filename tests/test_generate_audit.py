@@ -471,6 +471,32 @@ class GenerateAuditTests(unittest.TestCase):
         self.assertIn("package-lock entry", strict.stdout)
         self.assertIn("pins.toml", strict.stdout)
 
+    def test_generated_pin_checker_allows_rust_build_and_container_stage_alias(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "Cargo.toml").write_text(
+                "[package]\nname = 'demo'\nversion = '0.1.0'\n",
+                encoding="utf-8",
+            )
+            (root / "build.rs").write_text("fn main() {}\n", encoding="utf-8")
+            (root / "Dockerfile").write_text(
+                "FROM python:3.13@sha256:abc123 AS builder\n"
+                "RUN true\n"
+                "FROM builder\n",
+                encoding="utf-8",
+            )
+            create_harness(root)
+            script = root / "scripts" / "check_pins.py"
+
+            strict = subprocess.run(
+                [sys.executable, str(script), "--root", str(root), "--strict"],
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+
+        self.assertEqual(strict.returncode, 0, strict.stdout)
+
     def test_existing_files_are_skipped_without_force(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -538,6 +564,79 @@ class GenerateAuditTests(unittest.TestCase):
                 with self.subTest(relative_path=relative_path):
                     content = (root / relative_path).read_text(encoding="utf-8")
                     self.assertIn("REVIEW REQUIRED", content)
+
+    def test_generated_docs_only_repo_audits_cross_platform(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "README.md").write_text("# Docs\n", encoding="utf-8")
+            create_harness(root)
+
+            result = audit_target(root)
+            environment = next(
+                domain for domain in result.domains if domain.name == "environment"
+            )
+
+        self.assertEqual(result.overall, 100)
+        self.assertTrue(
+            next(
+                check
+                for check in environment.checks
+                if check.message == "Runtime manifest or explicit generic profile is discoverable"
+            ).passed
+        )
+        self.assertTrue(
+            next(
+                check
+                for check in environment.checks
+                if check.message == "Runner and path handling is called out"
+            ).passed
+        )
+
+    def test_generated_nested_monorepo_without_root_manifest_audits(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "component-a").mkdir()
+            (root / "component-a" / "package.json").write_text(
+                json.dumps({"scripts": {"test": "vitest"}}),
+                encoding="utf-8",
+            )
+            (root / "component-b").mkdir()
+            (root / "component-b" / "pyproject.toml").write_text(
+                "[project]\nname='component-b'\n",
+                encoding="utf-8",
+            )
+            create_harness(root)
+
+            result = audit_target(root)
+            manifest = json.loads(
+                (root / "docs/harness/manifest.json").read_text(encoding="utf-8")
+            )
+
+        self.assertEqual(manifest["detectedStack"], "monorepo")
+        self.assertEqual(result.overall, 100)
+
+    def test_custom_agent_file_supplies_environment_evidence(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "AGENTS.md").write_text(
+                "# Existing agent notes\n\nKeep this file untouched.\n",
+                encoding="utf-8",
+            )
+            create_harness(root, agent_file="HARNESSFORGE_AGENTS.md")
+
+            result = audit_target(root)
+            environment = next(
+                domain for domain in result.domains if domain.name == "environment"
+            )
+
+        self.assertEqual(result.overall, 100)
+        self.assertTrue(
+            next(
+                check
+                for check in environment.checks
+                if check.message == "Runner and path handling is called out"
+            ).passed
+        )
 
     def test_live_manifest_matches_generated_shared_snippets(self) -> None:
         repo_root = Path(__file__).resolve().parents[1]

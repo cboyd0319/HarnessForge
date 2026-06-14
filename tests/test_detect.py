@@ -64,6 +64,93 @@ class DetectProjectTests(unittest.TestCase):
         self.assertIn("python -m ruff check .", profile.verification_commands)
         self.assertIn("python -m mypy .", profile.verification_commands)
 
+    def test_python_commands_use_poetry_and_pipenv_runners(self) -> None:
+        cases = (
+            ("poetry.lock", "poetry run python -m compileall ."),
+            ("Pipfile.lock", "pipenv run python -m compileall ."),
+        )
+        for marker, command in cases:
+            with self.subTest(marker=marker):
+                with tempfile.TemporaryDirectory() as tmp:
+                    root = Path(tmp)
+                    (root / "pyproject.toml").write_text(
+                        "[project]\nname='demo'\n",
+                        encoding="utf-8",
+                    )
+                    (root / marker).write_text("", encoding="utf-8")
+
+                    profile = detect_project(root)
+
+                self.assertIn(command, profile.verification_commands)
+
+    def test_nested_manifests_contribute_package_manager_labels(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "frontend").mkdir()
+            (root / "frontend" / "package.json").write_text(
+                json.dumps({"scripts": {"test": "vitest"}}),
+                encoding="utf-8",
+            )
+            (root / "frontend" / "pnpm-lock.yaml").write_text("", encoding="utf-8")
+            (root / "service").mkdir()
+            (root / "service" / "pom.xml").write_text("<project />\n", encoding="utf-8")
+
+            profile = detect_project(root)
+
+        self.assertIn("pnpm", profile.package_managers)
+        self.assertIn("npm", profile.package_managers)
+        self.assertIn("maven", profile.package_managers)
+
+    def test_docs_site_uses_local_validation_script(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "Gemfile").write_text("source 'https://rubygems.org'\n", encoding="utf-8")
+            (root / "_config.yml").write_text("title: docs\n", encoding="utf-8")
+            (root / "validate.sh").write_text("#!/usr/bin/env sh\n", encoding="utf-8")
+            for index in range(5):
+                (root / f"page-{index}.md").write_text("# Page\n", encoding="utf-8")
+
+            profile = detect_project(root)
+
+        self.assertEqual(profile.stack, "docs")
+        self.assertIn("./validate.sh", profile.verification_commands)
+        self.assertNotIn("bundle exec rake test", profile.verification_commands)
+
+    def test_root_jvm_manifest_takes_priority_over_python_helpers(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "pom.xml").write_text("<project />\n", encoding="utf-8")
+            (root / "scripts").mkdir()
+            (root / "scripts" / "helper.py").write_text(
+                "print('helper')\n",
+                encoding="utf-8",
+            )
+
+            profile = detect_project(root)
+
+        self.assertEqual(profile.stack, "java")
+        self.assertIn("mvn test", profile.verification_commands)
+        self.assertNotIn("python -m compileall .", profile.verification_commands)
+
+    def test_root_gemfile_takes_priority_over_python_helpers(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "Gemfile").write_text(
+                "source 'https://rubygems.org'\n",
+                encoding="utf-8",
+            )
+            (root / "scripts").mkdir()
+            (root / "scripts" / "helper.py").write_text(
+                "print('helper')\n",
+                encoding="utf-8",
+            )
+
+            profile = detect_project(root)
+
+        self.assertEqual(profile.stack, "ruby")
+        self.assertIn("bundle exec rake test", profile.verification_commands)
+        self.assertNotIn("python -m compileall .", profile.verification_commands)
+
     def test_detects_react_project_and_package_manager(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -99,6 +186,11 @@ class DetectProjectTests(unittest.TestCase):
 
         self.assertIn("apps/web (package.json)", profile.components)
         self.assertIn("services/api (pyproject.toml)", profile.components)
+        self.assertEqual(profile.stack, "monorepo")
+        self.assertIn(
+            "No project verification check detected",
+            profile.verification_commands[0],
+        )
 
     def test_detects_javascript_workspace_and_orchestrator_markers(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

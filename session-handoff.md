@@ -119,6 +119,20 @@ and the required AGENTS instruction format.
   that require project decisions are marked `REVIEW REQUIRED`. Current
   verification passes full unit discovery with 103 tests, compile, pin check,
   JSON parsing, self-audit `100/100`, diff hygiene, and rendered target smokes.
+- Current reference-repo compatibility batch audited 25 sibling repositories
+  under the local GitHub checkout parent with direct read-only detection/audit/dry-run
+  checks, temporary generated-harness smoke tests, and a read-only AGY
+  supplement. Accepted fixes: explicit platform-contract audit precedence with
+  old-manifest fallback, docs-only and monorepo environment profiles, root
+  Maven/Gemfile manifest priority, docs-site `validate.sh` detection,
+  Poetry/Pipenv Python command prefixes, nested package-manager labels,
+  skipped-file ownership/hash metadata that avoids immediate drift, clearer
+  preserved-file onboarding warnings, Rust `build.rs` allowance when Cargo is
+  present, and Docker multi-stage alias handling. Default init still preserves
+  existing instruction files; the side-by-side path is now surfaced as
+  `--agent-file HARNESSFORGE_AGENTS.md`. Current verification passes full unit
+  discovery with 116 tests, compile, pin check, JSON parsing, self-audit
+  `100/100`, diff hygiene, and rendered compatibility smokes.
 - Current OpenAI Codex AI-native engineering guide review imported
   Delegate/Review/Own SDLC boundaries, agent-generated test integrity guidance,
   high-signal review criteria, and the official source URL into the fixed
@@ -328,8 +342,10 @@ and the required AGENTS instruction format.
 
 ## Next Session
 
-Review and commit the generator metadata, drift, and platform-contract slice
-when ready. Push local commits only at an explicit batch/release boundary or
-user request. Before a public Action release, run the manual macOS/Windows
-platform CI check, then decide whether to cut a `v1` Action tag and which
-release-time SBOM/provenance controls should become blocking.
+Review and commit the reference-repo compatibility slice when ready. Push local
+commits only at an explicit batch/release boundary or user request. Remaining
+product decisions before public release: component-directed monorepo
+verification commands, path/package exclusions for intentionally vulnerable
+training repos, Maven/Gradle dependency pin parsing, selective update semantics
+for generated-owned files, manual macOS/Windows platform CI, `v1` Action tag,
+and release-time SBOM/provenance gates.

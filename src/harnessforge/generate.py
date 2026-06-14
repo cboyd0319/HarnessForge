@@ -60,7 +60,12 @@ def create_harness(
     )
     _validate_destinations(profile.root, tuple(spec[1] for spec in specs))
     rendered = _render_harness_files(specs, context)
-    generated_files = _generated_file_metadata(specs, rendered)
+    generated_files = _generated_file_metadata(
+        profile.root,
+        specs,
+        rendered,
+        force=force,
+    )
     results: list[WriteResult] = []
     for template_name, relative_path, executable in specs:
         destination = profile.root / relative_path
@@ -384,18 +389,27 @@ def _render_harness_files(
 
 
 def _generated_file_metadata(
-    specs: tuple[tuple[str, str, bool], ...], rendered: dict[str, str]
+    root: Path,
+    specs: tuple[tuple[str, str, bool], ...],
+    rendered: dict[str, str],
+    *,
+    force: bool,
 ) -> dict[str, dict[str, object]]:
     metadata: dict[str, dict[str, object]] = {}
     for template_name, relative_path, executable in specs:
+        destination = root / relative_path
+        existing_project_file = destination.exists() and not force
         entry: dict[str, object] = {
-            "ownership": "generated",
+            "ownership": "project" if existing_project_file else "generated",
             "template": template_name,
             "templateSha256": _template_sha256(template_name),
             "executable": executable,
             "reviewRequired": relative_path in REVIEW_REQUIRED_FILES,
+            "writeStatus": "skipped-existing" if existing_project_file else "generated",
         }
-        if relative_path in rendered:
+        if existing_project_file:
+            entry["contentSha256"] = sha256(destination.read_bytes()).hexdigest()
+        elif relative_path in rendered:
             entry["contentSha256"] = _sha256_text(rendered[relative_path])
         metadata[relative_path] = entry
     return metadata

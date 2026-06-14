@@ -108,6 +108,7 @@ def detect_project(
             ".buckconfig",
             "pyproject.toml",
             "uv.toml",
+            "Pipfile",
             "package.json",
             "pnpm-workspace.yaml",
             "turbo.json",
@@ -126,6 +127,7 @@ def detect_project(
             "global.json",
             "composer.json",
             "Gemfile",
+            "validate.sh",
             "MODULE.bazel",
             "MODULE.bazel.lock",
             "REPO.bazel",
@@ -254,27 +256,34 @@ def _detect_package_managers(
     if explicit_package_manager:
         return (explicit_package_manager,)
     managers: list[str] = []
+    filenames = {Path(file).name for file in file_set}
     package_manager = package_json.get("packageManager") if package_json else None
     if isinstance(package_manager, str):
         manager_name = package_manager.split("@", 1)[0].strip()
         if manager_name in {"bun", "npm", "pnpm", "yarn"}:
             managers.append(manager_name)
-    if "bun.lock" in file_set or "bun.lockb" in file_set:
+    if "bun.lock" in filenames or "bun.lockb" in filenames:
         managers.append("bun")
-    if "pnpm-lock.yaml" in file_set or "pnpm-workspace.yaml" in file_set:
+    if "pnpm-lock.yaml" in filenames or "pnpm-workspace.yaml" in filenames:
         managers.append("pnpm")
-    if "yarn.lock" in file_set:
+    if "yarn.lock" in filenames:
         managers.append("yarn")
-    if "package-lock.json" in file_set or "package.json" in file_set:
+    if "package-lock.json" in filenames or "package.json" in filenames:
         managers.append("npm")
-    if "uv.lock" in file_set:
+    if "uv.lock" in filenames:
         managers.append("uv")
-    if "poetry.lock" in file_set:
+    if "poetry.lock" in filenames:
         managers.append("poetry")
-    if "Cargo.toml" in file_set:
+    if "Pipfile" in filenames or "Pipfile.lock" in filenames:
+        managers.append("pipenv")
+    if "Cargo.toml" in filenames:
         managers.append("cargo")
-    if "go.mod" in file_set:
+    if "go.mod" in filenames:
         managers.append("go")
+    if "pom.xml" in filenames:
+        managers.append("maven")
+    if {"build.gradle", "build.gradle.kts", "gradlew"} & filenames:
+        managers.append("gradle")
     return tuple(_dedupe(managers))
 
 
@@ -463,8 +472,8 @@ def _primary_stack(
         return "pants"
     if ".buckconfig" in file_set:
         return "buck"
-    deps = _package_deps(package_json)
     if package_json:
+        deps = _package_deps(package_json)
         if {"react", "next", "@vitejs/plugin-react"} & deps or any(
             file.endswith(".tsx") for file in file_set
         ):
@@ -472,6 +481,28 @@ def _primary_stack(
         if "typescript" in languages:
             return "typescript"
         return "node"
+    if _looks_like_docs_site(file_set):
+        return "docs"
+    if {"pyproject.toml", "requirements.txt", "setup.py"} & file_set:
+        return "python"
+    if {"go.mod", "go.work"} & file_set:
+        return "go"
+    if "Cargo.toml" in file_set:
+        return "rust"
+    if {"pom.xml", "build.gradle", "build.gradle.kts"} & file_set:
+        return "java"
+    if any(
+        Path(file).parent == Path(".")
+        and file.endswith((".csproj", ".fsproj", ".vbproj", ".sln", ".slnx"))
+        for file in file_set
+    ):
+        return "dotnet"
+    if "composer.json" in file_set:
+        return "php"
+    if "Gemfile" in file_set:
+        return "ruby"
+    if _nested_component_count(file_set) >= 2 and languages != {"terraform"}:
+        return "monorepo"
     priority = [
         ("python", "python"),
         ("go", "go"),
@@ -489,6 +520,23 @@ def _primary_stack(
     return "generic"
 
 
+def _looks_like_docs_site(file_set: set[str]) -> bool:
+    markdown_count = sum(1 for file in file_set if Path(file).suffix.lower() == ".md")
+    return markdown_count >= 5 and bool(
+        {"_config.yml", "validate.sh", "mkdocs.yml", "hugo.toml", "config.toml"}
+        & file_set
+    )
+
+
+def _nested_component_count(file_set: set[str]) -> int:
+    component_dirs = {
+        str(Path(file).parent)
+        for file in file_set
+        if Path(file).parent != Path(".") and Path(file).name in COMPONENT_MARKERS
+    }
+    return len(component_dirs)
+
+
 def _verification_commands(
     file_set: set[str],
     package_json: dict[str, Any] | None,
@@ -499,6 +547,7 @@ def _verification_commands(
 ) -> tuple[str, ...]:
     commands: list[str] = []
     commands.extend(_make_commands(file_set))
+    commands.extend(_validation_script_commands(file_set))
     if package_json:
         commands.extend(_node_commands(package_json, package_managers))
     if stack == "python":
@@ -550,6 +599,13 @@ def _make_commands(file_set: set[str]) -> list[str]:
     return ["make check"]
 
 
+def _validation_script_commands(file_set: set[str]) -> list[str]:
+    for script in ("validate.sh", "check.sh", "test.sh"):
+        if script in file_set:
+            return [f"./{script}"]
+    return []
+
+
 def _node_commands(
     package_json: dict[str, Any], package_managers: tuple[str, ...]
 ) -> list[str]:
@@ -579,7 +635,7 @@ def _python_commands(
     pyproject: dict[str, Any] | None,
     package_managers: tuple[str, ...],
 ) -> list[str]:
-    prefix = "uv run " if "uv" in package_managers else ""
+    prefix = _python_runner_prefix(package_managers)
     commands = [f"{prefix}python -m compileall ."]
     if _uses_ruff(file_set, pyproject):
         commands.append(f"{prefix}python -m ruff check .")
@@ -595,6 +651,16 @@ def _python_commands(
     elif "tests" in {Path(file).parts[0] for file in file_set if Path(file).parts}:
         commands.append(f"{prefix}python -m unittest discover")
     return commands
+
+
+def _python_runner_prefix(package_managers: tuple[str, ...]) -> str:
+    if "uv" in package_managers:
+        return "uv run "
+    if "poetry" in package_managers:
+        return "poetry run "
+    if "pipenv" in package_managers:
+        return "pipenv run "
+    return ""
 
 
 def _uses_ruff(file_set: set[str], pyproject: dict[str, Any] | None) -> bool:

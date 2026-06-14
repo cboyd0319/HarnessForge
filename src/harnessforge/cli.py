@@ -9,7 +9,7 @@ from . import __version__
 from .audit import audit_target, audit_to_dict, format_audit, render_html_report
 from .doctor import doctor_json, doctor_report, format_doctor
 from .generate import PLATFORM_CONTRACTS, create_harness
-from .models import DriftResult
+from .models import DriftResult, WriteResult
 from .redact import redact_local_paths
 from .update import build_drift_report, plan_or_apply_update
 
@@ -135,6 +135,8 @@ def _init(args: argparse.Namespace) -> int:
         relative = _relative(result.path, profile.root)
         suffix = f" ({result.reason})" if result.reason else ""
         print(f"{result.status.upper()} {relative}{suffix}")
+    for warning in _preserved_file_warnings(results, profile.root):
+        print(warning)
     for warning in _workflow_warnings(args.with_ci_workflow, args.with_self_heal_workflow):
         print(warning)
     return 0
@@ -208,6 +210,8 @@ def _update(args: argparse.Namespace) -> int:
     for write in writes:
         suffix = f" ({write.reason})" if write.reason else ""
         print(f"  - {write.status.upper()} {_relative(write.path, profile.root)}{suffix}")
+    for warning in _preserved_file_warnings(writes, profile.root):
+        print(warning)
     for warning in _workflow_warnings(args.with_ci_workflow, args.with_self_heal_workflow):
         print(warning)
     return 0
@@ -248,4 +252,28 @@ def _workflow_warnings(
         "Optional workflow scaffold review required:",
         "  - replace cboyd0319/harnessforge@<reviewed-commit-sha> before relying on it",
         "  - review workflow permissions, triggers, branch, and pull-request behavior",
+    )
+
+
+def _preserved_file_warnings(
+    results: tuple[WriteResult, ...], root: Path
+) -> tuple[str, ...]:
+    preserved = sorted(
+        _relative(result.path, root)
+        for result in results
+        if getattr(result, "status", "") == "skipped"
+        and getattr(result, "reason", "") == "exists"
+    )
+    if not preserved:
+        return ()
+    shown = ", ".join(preserved[:4])
+    if len(preserved) > 4:
+        shown += f", and {len(preserved) - 4} more"
+    return (
+        f"Existing files preserved: {shown}",
+        (
+            "  - if audit still evaluates old instructions, rerun with "
+            "--agent-file HARNESSFORGE_AGENTS.md for a side-by-side entrypoint "
+            "or use --force only after review"
+        ),
     )

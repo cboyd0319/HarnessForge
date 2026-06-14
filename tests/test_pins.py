@@ -247,6 +247,42 @@ class PinCheckTests(unittest.TestCase):
 
         self.assertTrue(any("build hook file" in failure for failure in failures))
 
+    def test_allows_rust_build_rs_when_cargo_manifest_exists(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "Cargo.toml").write_text(
+                "[package]\nname = 'demo'\nversion = '0.1.0'\n",
+                encoding="utf-8",
+            )
+            (root / "build.rs").write_text("fn main() {}\n", encoding="utf-8")
+
+            failures = check_root(root)
+
+        self.assertFalse(any("build hook file" in failure for failure in failures))
+
+    def test_rejects_build_rs_without_cargo_manifest(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "build.rs").write_text("fn main() {}\n", encoding="utf-8")
+
+            failures = check_root(root)
+
+        self.assertTrue(any("build hook file" in failure for failure in failures))
+
+    def test_accepts_multistage_container_aliases(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "Dockerfile").write_text(
+                "FROM python:3.13@sha256:abc123 AS builder\n"
+                "RUN true\n"
+                "FROM builder\n",
+                encoding="utf-8",
+            )
+
+            failures = check_root(root)
+
+        self.assertFalse(any("container base image" in failure for failure in failures))
+
     def test_rejects_mutable_container_and_requirement_pins(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

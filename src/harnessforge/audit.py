@@ -57,7 +57,7 @@ def audit_target(
     domains = (
         _score("instructions", _instruction_checks(files, manifest)),
         _score("tools", _tool_checks(files, platform_contract)),
-        _score("environment", _environment_checks(files, platform_contract)),
+        _score("environment", _environment_checks(files, manifest, platform_contract)),
         _score("state", _state_checks(files)),
         _score("feedback", _feedback_checks(files, link_failures)),
         _score(
@@ -299,7 +299,20 @@ def _load_manifest(root: Path) -> dict[str, Any]:
 def _platform_contract(
     files: dict[str, str], manifest: dict[str, Any]
 ) -> PlatformContract:
+    manifest_contract = manifest.get("platformContract")
+    if isinstance(manifest_contract, str):
+        explicit = _platform_contract_from_name(manifest_contract)
+        if explicit and manifest_contract.strip().lower() != "cross-platform":
+            return explicit
+
     manifest_platforms = manifest.get("supportedPlatforms", {})
+    supported_explicit = _platform_contract_from_supported_platforms(manifest_platforms)
+    if supported_explicit:
+        return supported_explicit
+    if isinstance(manifest_contract, str):
+        explicit = _platform_contract_from_name(manifest_contract)
+        if explicit:
+            return explicit
     manifest_text = (
         json.dumps(manifest_platforms, sort_keys=True)
         if isinstance(manifest_platforms, dict)
@@ -386,6 +399,62 @@ def _platform_contract(
         linux_only=False,
         detail="cross-platform harness contract",
     )
+
+
+def _platform_contract_from_name(value: str) -> PlatformContract | None:
+    normalized = value.strip().lower()
+    if normalized == "macos-only":
+        return PlatformContract(
+            requires_posix=True,
+            requires_powershell=False,
+            macos_only=True,
+            windows_only=False,
+            linux_only=False,
+            detail="macOS-only platform contract",
+        )
+    if normalized == "windows-only":
+        return PlatformContract(
+            requires_posix=False,
+            requires_powershell=True,
+            macos_only=False,
+            windows_only=True,
+            linux_only=False,
+            detail="Windows-only platform contract",
+        )
+    if normalized == "linux-only":
+        return PlatformContract(
+            requires_posix=True,
+            requires_powershell=False,
+            macos_only=False,
+            windows_only=False,
+            linux_only=True,
+            detail="Linux-only platform contract",
+        )
+    if normalized == "cross-platform":
+        return PlatformContract(
+            requires_posix=True,
+            requires_powershell=True,
+            macos_only=False,
+            windows_only=False,
+            linux_only=False,
+            detail="cross-platform harness contract",
+        )
+    return None
+
+
+def _platform_contract_from_supported_platforms(
+    supported_platforms: object,
+) -> PlatformContract | None:
+    if not isinstance(supported_platforms, dict):
+        return None
+    keys = {str(key).strip().lower() for key in supported_platforms}
+    if keys == {"macosonly"}:
+        return _platform_contract_from_name("macos-only")
+    if keys == {"windowsonly"}:
+        return _platform_contract_from_name("windows-only")
+    if keys == {"linuxonly"}:
+        return _platform_contract_from_name("linux-only")
+    return None
 
 
 def _normalize_platform_text(text: str) -> str:
@@ -669,7 +738,7 @@ def _tool_checks(
 
 
 def _environment_checks(
-    files: dict[str, str], platform_contract: PlatformContract
+    files: dict[str, str], manifest: dict[str, Any], platform_contract: PlatformContract
 ) -> list[CheckResult]:
     runtime_files = (
         "pyproject.toml",
@@ -689,25 +758,31 @@ def _environment_checks(
         ".devcontainer/devcontainer.json",
     )
     manifest_text = files.get("docs/harness/manifest.json", "")
-    explicit_generic_profile = '"detectedStack": "generic"' in manifest_text
+    explicit_generic_profile = any(
+        f'"detectedStack": "{stack}"' in manifest_text
+        for stack in ("generic", "docs", "monorepo")
+    )
+    environment_candidates = [
+        _manifest_agent_file(manifest),
+        "AGENTS.md",
+        "CLAUDE.md",
+        "GEMINI.md",
+        ".github/copilot-instructions.md",
+        "README.md",
+        "action.yml",
+        "docs/action.md",
+        "pyproject.toml",
+        ".github/workflows/ci.yml",
+        ".github/workflows/harness-self-heal.yml",
+        "docs/harness/README.md",
+        "docs/harness/component-inventory.md",
+        "docs/harness/manifest.json",
+        "docs/harness/dependency-change-policy.md",
+    ]
     environment_text = "\n".join(
         files.get(name, "")
-        for name in (
-            "AGENTS.md",
-            "CLAUDE.md",
-            "GEMINI.md",
-            ".github/copilot-instructions.md",
-            "README.md",
-            "action.yml",
-            "docs/action.md",
-            "pyproject.toml",
-            ".github/workflows/ci.yml",
-            ".github/workflows/harness-self-heal.yml",
-            "docs/harness/README.md",
-            "docs/harness/component-inventory.md",
-            "docs/harness/manifest.json",
-            "docs/harness/dependency-change-policy.md",
-        )
+        for name in dict.fromkeys(environment_candidates)
+        if name
     )
     return [
         _check(

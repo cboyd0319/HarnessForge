@@ -123,6 +123,37 @@ class CliTests(unittest.TestCase):
         self.assertEqual(drift["AGENTS.md"]["ownership"], "generated")
         self.assertFalse(claude_text.startswith("# edited"))
 
+    def test_init_records_existing_files_as_project_owned_without_initial_drift(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "AGENTS.md").write_text(
+                "# Existing\n\nKeep local instructions.\n",
+                encoding="utf-8",
+            )
+            init_stdout = io.StringIO()
+            with contextlib.redirect_stdout(init_stdout):
+                init_code = main(["init", "--target", str(root)])
+            stdout = io.StringIO()
+            with contextlib.redirect_stdout(stdout):
+                report_code = main(
+                    [
+                        "update",
+                        "--target",
+                        str(root),
+                        "--drift-report",
+                        "--json",
+                    ]
+                )
+            payload = json.loads(stdout.getvalue())
+
+        self.assertEqual(init_code, 0)
+        self.assertEqual(report_code, 0)
+        self.assertIn("Existing files preserved", init_stdout.getvalue())
+        self.assertIn("HARNESSFORGE_AGENTS.md", init_stdout.getvalue())
+        drift = {item["path"]: item for item in payload["drift"]}
+        self.assertEqual(drift["AGENTS.md"]["ownership"], "project")
+        self.assertEqual(drift["AGENTS.md"]["fileStatus"], "unchanged")
+
     def test_audit_requires_explicit_override_for_local_absolute_paths(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
