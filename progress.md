@@ -207,17 +207,31 @@ maintenance loop.
   suite, self-audit `100/100`, manual platform workflow release checkpoint, and
   recurring self-heal PR review boundary. Action output delimiter names now use
   the HarnessForge prefix.
+- Started release prep locally. POSIX and PowerShell release gates pass with
+  92 tests, pin check, and self-audit `100/100`; an isolated wheel build/install
+  smoke for `harnessforge-0.1.0-py3-none-any.whl` generated and audited a fresh
+  target harness at `100/100`. Wheel SHA-256:
+  `34134b559fafe823c5f9b9b5f041eaf387b226ca9300b8b1abdfdc1f997e657e`.
 
 ## Recommended Next Step
 
-Review and commit the current cleanup edits when ready. Push only at an
-explicit batch/release boundary or user request. Before a first public Action
-release, run the manual macOS/Windows platform CI check if hosted platform
-confirmation is needed, then decide whether to cut a `v1` Action tag and which
-release-time SBOM/provenance controls should become blocking.
+Review and commit the release-prep evidence when ready. Push the two local
+commits only at an explicit batch/release boundary or user request. Before a
+first public Action release, run the manual macOS/Windows platform CI check,
+then decide whether to cut a `v1` Action tag and which release-time
+SBOM/provenance controls should become blocking.
 
 ## Verification Evidence
 
+- `./init.sh` passed on macOS 26.5.1 with Python 3.14.5: doctor, compile,
+  92 tests, pin check, and self-audit `100/100`.
+- `pwsh -NoProfile -File ./init.ps1` passed on macOS 26.5.1 with Python
+  3.14.5: doctor, compile, 92 tests, pin check, and self-audit `100/100`.
+- Isolated release smoke passed from a temporary directory outside the repo:
+  built `harnessforge-0.1.0-py3-none-any.whl`, installed it in a fresh venv,
+  confirmed `harnessforge --version`, generated a target harness, audited it at
+  `100/100`, and recorded wheel SHA-256
+  `34134b559fafe823c5f9b9b5f041eaf387b226ca9300b8b1abdfdc1f997e657e`.
 - `PYTHONPATH=src:. python3 -m unittest tests.test_github_action`, `python3 -m
   compileall src/harnessforge/github_action.py`, `PYTHONPATH=src:. python3
   scripts/check_pins.py --root .`, `PYTHONPATH=src:. python3 -m harnessforge

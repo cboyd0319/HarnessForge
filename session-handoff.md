@@ -75,6 +75,15 @@ and the required AGENTS instruction format.
   output delimiter prefix from the old project wording to `harnessforge`.
   Focused verification passed Action tests, targeted compile, pin check,
   self-audit `100/100`, stale-string scan, and diff hygiene.
+- Current release-prep batch passed local POSIX and PowerShell release gates
+  with 92 tests, pin check, and self-audit `100/100` on macOS 26.5.1 with
+  Python 3.14.5. An isolated wheel smoke built and installed
+  `harnessforge-0.1.0-py3-none-any.whl` in a fresh venv outside the repo,
+  confirmed `harnessforge --version`, generated a target harness, audited it at
+  `100/100`, and recorded SHA-256
+  `34134b559fafe823c5f9b9b5f041eaf387b226ca9300b8b1abdfdc1f997e657e`.
+  Remote manual macOS/Windows CI, SBOM/provenance decision, and release tag
+  remain gated.
 - Current OpenAI Codex AI-native engineering guide review imported
   Delegate/Review/Own SDLC boundaries, agent-generated test integrity guidance,
   high-signal review criteria, and the official source URL into the fixed
@@ -284,8 +293,8 @@ and the required AGENTS instruction format.
 
 ## Next Session
 
-Review and commit the current cleanup edits when ready. Push only at an
-explicit batch/release boundary or user request. Before a public Action release,
-run the manual macOS/Windows platform CI check if hosted platform confirmation
-is needed, then decide whether to cut a `v1` Action tag and which release-time
-SBOM/provenance controls should become blocking.
+Review and commit the release-prep evidence when ready. Push the two local
+commits only at an explicit batch/release boundary or user request. Before a
+public Action release, run the manual macOS/Windows platform CI check, then
+decide whether to cut a `v1` Action tag and which release-time SBOM/provenance
+controls should become blocking.
