@@ -41,13 +41,15 @@ and the required AGENTS instruction format.
   section headings.
 - Current hardening pass added PEP 639 `license-files`, `PYTHONSAFEPATH=1` for
   the composite Action, root-manifest symlink escape protection in detection,
-  broader local home-path redaction, and target-contained Action report paths.
+  broader local home-path redaction, target-contained Action report paths, and
+  slash-separated Action report outputs.
 - Research refresh now rejects non-HTTPS URLs, embedded credentials, localhost,
   and literal non-public IP targets before fetching.
-- Hosted execution of the reusable Action `uses: ./` smoke step is pending until
-  the repo is pushed.
+- Hosted CI run `27489182164` exposed a Windows-only report output separator
+  regression after commit `18efcb8`. The local fix normalizes Action report
+  outputs to forward slashes; verify the latest hosted CI status after push.
 
 ## Next Session
 
-Push and inspect CI. If it passes, decide whether the first release should cut a
-`v1` Action tag before broader public use.
+Inspect the latest CI status. If it passes, decide whether the first release
+should cut a `v1` Action tag before broader public use.

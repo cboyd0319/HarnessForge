@@ -74,9 +74,12 @@ traversal outside the target repository are rejected.
 | --- | --- |
 | `overall-score` | Harness score from 0 to 100 |
 | `bottleneck` | Lowest-scoring harness domain |
-| `report-json` | JSON report path when requested |
-| `report-html` | HTML report path when requested |
+| `report-json` | Target-relative JSON report path when requested |
+| `report-html` | Target-relative HTML report path when requested |
 | `changed-files` | Number of files written by `init` or applied `update` |
+
+Report path outputs use forward slashes on every runner so workflow consumers
+can handle them consistently across Windows and POSIX jobs.
 
 ## Version Pinning
 

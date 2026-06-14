@@ -138,7 +138,7 @@ def _is_inside_target(path: Path, target: Path) -> bool:
 
 def _relative_to_target(path: Path, target: Path) -> str:
     try:
-        return str(path.resolve().relative_to(target.resolve()))
+        return path.resolve().relative_to(target.resolve()).as_posix()
     except ValueError:
         return redact_local_paths(str(path))
 

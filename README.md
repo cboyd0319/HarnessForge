@@ -195,6 +195,8 @@ default posture is intentionally restrictive.
   `$GITHUB_OUTPUT`.
 - GitHub Action report paths must be relative and stay inside the target
   repository.
+- GitHub Action report outputs use target-relative forward-slash paths on every
+  runner.
 - The composite Action sets `PYTHONSAFEPATH=1` so the caller repository's
   working directory cannot shadow the Action library at Python startup.
 

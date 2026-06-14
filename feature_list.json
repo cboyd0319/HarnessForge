@@ -39,9 +39,10 @@
         "2026-06-14: Root, template, and generated AGENTS.md files verified against the required five-section format.",
         "2026-06-14: Detection ignores root manifest symlinks outside the target repo; Action runtime sets PYTHONSAFEPATH; redaction covers home paths with spaces and the current home path.",
         "2026-06-14: Research refresh rejects non-HTTPS URLs, credentials, localhost, and literal non-public IP targets before fetching.",
-        "2026-06-14: GitHub Action report paths must be target-relative and resolve inside the target repository."
+        "2026-06-14: GitHub Action report paths must be target-relative and resolve inside the target repository.",
+        "2026-06-14: GitHub Action report outputs use slash-separated target-relative paths across Windows and POSIX runners."
       ],
-      "notes": "Live hosted CI remains pending until the repo is pushed."
+      "notes": "Latest local checks pass; hosted CI must be verified after pushes."
     }
   ]
 }

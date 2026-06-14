@@ -41,18 +41,23 @@ maintenance loop.
   `license-files` metadata, set `PYTHONSAFEPATH=1` in the composite Action,
   ignored root manifest symlinks that resolve outside target repositories, and
   expanded local home-path redaction. GitHub Action report paths now must be
-  target-relative and resolve inside the target repository.
+  target-relative and resolve inside the target repository, with slash-separated
+  target-relative report outputs on every runner.
 - Tightened research refresh to match the documented public-source boundary:
   non-HTTPS URLs, embedded credentials, localhost, and literal non-public IP
   targets are rejected before any fetch.
 - Refreshed the research ledger to 46 sources, adding Python packaging and
   Python command-line environment docs. OpenAI and Red Hat public pages returned
   HTTP 403 and are recorded in the lock file.
+- Hosted CI run `27489182164` passed on Ubuntu and macOS but exposed a Windows
+  output separator regression in Action report outputs. The local fix now
+  normalizes those outputs to forward slashes before writing `GITHUB_OUTPUT`.
 
 ## Recommended Next Step
 
-Push the branch and verify the GitHub-hosted CI matrix, including the local
-`uses: ./` Action smoke step, on Ubuntu 22.04, macOS 15, and Windows 2025.
+Verify the latest pushed GitHub-hosted CI matrix, including the local
+`uses: ./` Action smoke step, on Ubuntu 22.04, macOS 15, and Windows 2025. If
+it is green, decide whether to cut a `v1` Action tag before broader public use.
 
 ## Verification Evidence
 
@@ -66,11 +71,14 @@ Push the branch and verify the GitHub-hosted CI matrix, including the local
 - Isolated generated-harness smoke passed with 46 research source records.
 - `PYTHONPATH=src:. python3 -m unittest discover -s tests` passed with 43
   tests.
+- `PYTHONPATH=src:. python3 -m unittest tests.test_github_action` passed with
+  5 focused Action tests after report output normalization.
 - `PYTHONPATH=src:. python3 scripts/check_pins.py --root .` passed.
 - `PYTHONPATH=src:. python3 -m repo_harness_creator audit --target .
   --min-score 85` passed with self-audit `100/100`.
 - `python3 scripts/refresh_research.py --root .` refreshed 46 sources with two
   recorded 403 fetch failures from OpenAI and Red Hat.
 - `git diff --check` passed.
-- Live Ubuntu 22.04, macOS 15, and Windows 2025 CI execution is pending until
-  pushed.
+- Hosted CI run `27489182164` failed on Windows because report outputs used
+  backslashes. The local fix normalizes those outputs; verify the latest hosted
+  CI status after push.

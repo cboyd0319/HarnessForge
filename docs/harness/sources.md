@@ -105,7 +105,8 @@ project-owned docs instead of machine-specific absolute paths.
   the action checkout.
 - Action report paths should be easy to reason about and not write outside the
   audited repository by accident. The reusable Action now accepts only
-  target-relative report paths that resolve inside `target`.
+  target-relative report paths that resolve inside `target`, and emits
+  slash-separated target-relative report outputs on every runner.
 - Package metadata should make legal files explicit. `pyproject.toml` now uses
   PEP 639 `license-files` metadata for `LICENSE`.
 - Durable output should hide home paths across common personal-machine shapes.
