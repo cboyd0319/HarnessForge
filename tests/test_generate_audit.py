@@ -127,6 +127,43 @@ class GenerateAuditTests(unittest.TestCase):
         self.assertFalse(link_check.passed)
         self.assertIn("missing.md", link_check.detail)
 
+    def test_audit_catches_missing_local_markdown_anchors(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            create_harness(root)
+            (root / "README.md").write_text(
+                "See [missing anchor](docs/harness/README.md#not-present)\n",
+                encoding="utf-8",
+            )
+
+            result = audit_target(root)
+
+        feedback = next(domain for domain in result.domains if domain.name == "feedback")
+        link_check = next(
+            check for check in feedback.checks if check.message == "Local Markdown links resolve"
+        )
+        self.assertFalse(link_check.passed)
+        self.assertIn("missing local anchor", link_check.detail)
+
+    def test_audit_ignores_markdown_links_inside_fenced_code_blocks(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            create_harness(root)
+            (root / "README.md").write_text(
+                "```markdown\n"
+                "See [example only](docs/harness/missing.md#not-present)\n"
+                "```\n",
+                encoding="utf-8",
+            )
+
+            result = audit_target(root)
+
+        feedback = next(domain for domain in result.domains if domain.name == "feedback")
+        link_check = next(
+            check for check in feedback.checks if check.message == "Local Markdown links resolve"
+        )
+        self.assertTrue(link_check.passed, link_check.detail)
+
     def test_bottleneck_domain_penalizes_overall_score(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

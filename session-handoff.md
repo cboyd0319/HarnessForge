@@ -30,13 +30,18 @@ and the required AGENTS instruction format.
 - `.github/workflows/harness-self-heal.yml`
 - `scripts/check_pins.py`
 - `scripts/refresh_research.py`
+- `src/repo_harness_creator/audit.py`
+- `tests/test_generate_audit.py`
+- `tests/test_pins.py`
+- `docs/harness/evaluator-rubric.md`
 
 ## Blockers
 
 - No known blockers.
-- Current full local POSIX and PowerShell verification passes with 56 tests, pin
-  check, and self-audit `100/100`; POSIX also passes when launched with
-  `PYTHONPATH=/tmp` in prior verification.
+- Current full local POSIX and PowerShell verification passes with 60 tests, pin
+  check, and self-audit `100/100` after the personal AGT current snapshot
+  slice; POSIX also passes when launched with `PYTHONPATH=/tmp` in prior
+  verification.
 - Research metadata refresh currently tracks 49 sources with one recorded Red
   Hat 403 fetch failure.
 - Root Action manifest regression coverage now checks quoted description values
@@ -117,15 +122,27 @@ and the required AGENTS instruction format.
   `.gitignore` hygiene, and Action `min-score` validation. Deferred external
   workflow gates, SBOM/provenance, Scorecard, fuzzing, and CODEOWNERS until the
   release path and maintainer model justify them.
+- Personally reviewed the current `microsoft/agent-governance-toolkit`
+  `origin/main` snapshot for the requested paths, without Antigravity
+  delegation. The local clone was stale, so the review used a temporary archive
+  of current `origin/main`. Accepted additional repo-fit items: multiline
+  workflow fail-fast enforcement, local Markdown anchor validation with fenced
+  code blocks ignored, forbidden `setup.py`/`build.rs` build-hook detection,
+  example and security-sensitive contribution rules, and benchmark claim
+  limits. Deferred AGT compliance suites, incident-response structure,
+  secret-scanning, SBOM, Scorecard, CodeQL, dependency-review, and release
+  workflows for the release and maintainer-model decision.
 - Current focused AGT-derived checks pass: `PYTHONPATH=src:. python3 -m
-  unittest tests.test_github_action tests.test_generate_audit tests.test_pins`
-  and `PYTHONPATH=src:. python3 scripts/check_pins.py --root .`.
+  unittest tests.test_generate_audit tests.test_pins` with 22 tests,
+  `PYTHONPATH=src:. python3 scripts/check_pins.py --root .`, `git diff
+  --check`, and self-audit.
 - Current full AGT-derived checks pass: `./init.sh` and `pwsh -NoProfile -File
-  ./init.ps1`, each with doctor, compile, 56 tests, pin check, and self-audit
+  ./init.ps1`, each with doctor, compile, 60 tests, pin check, and self-audit
   `100/100`.
 
 ## Next Session
 
-Decide whether the first release should cut a `v1` Action tag before broader
-public use, then decide whether release-time SBOM/provenance or Scorecard
+After this push, watch hosted CI for the personal AGT-derived hardening slice.
+Then decide whether the first release should cut a `v1` Action tag before
+broader public use, and whether release-time SBOM/provenance or Scorecard
 should be the next AGT-derived workflow gate.

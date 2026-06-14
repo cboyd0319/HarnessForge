@@ -23,3 +23,11 @@ Score each category from 0 to 2.
 
 Record any rubric weakness here when human judgment and the rubric disagree.
 Update this file before using the same evaluation again.
+
+## Benchmark And Effectiveness Claims
+
+Do not present structural audit scores, smoke tests, or synthetic benchmarks as
+proof of production agent effectiveness. Any benchmark or effectiveness claim
+must record the task set or corpus, command, environment, input selection or
+seed, scope limits, and known failure modes. Label smoke, synthetic, and
+experimental results explicitly.

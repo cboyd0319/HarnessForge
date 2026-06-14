@@ -55,6 +55,38 @@ class PinCheckTests(unittest.TestCase):
         self.assertTrue(any("exact pin" in failure for failure in failures))
         self.assertTrue(any("40-char SHA" in failure for failure in failures))
 
+    def test_rejects_unexpected_build_hook_files(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "pyproject.toml").write_text(
+                "[build-system]\n"
+                'requires = ["setuptools==82.0.1"]\n'
+                'build-backend = "setuptools.build_meta"\n',
+                encoding="utf-8",
+            )
+            (root / "setup.py").write_text(
+                "from setuptools import setup\n",
+                encoding="utf-8",
+            )
+
+            failures = check_root(root)
+
+        self.assertTrue(any("build hook file" in failure for failure in failures))
+
+    def test_multiline_workflow_shell_blocks_fail_fast(self) -> None:
+        root = Path(__file__).resolve().parents[1]
+        workflows = sorted((root / ".github/workflows").glob("*.yml"))
+
+        for workflow in workflows:
+            with self.subTest(workflow=workflow.name):
+                text = workflow.read_text(encoding="utf-8")
+                for line_number, first_command in _multiline_run_first_commands(text):
+                    self.assertEqual(
+                        first_command,
+                        "set -euo pipefail",
+                        f"{workflow}:{line_number} multiline run block must fail fast",
+                    )
+
     def test_read_only_ci_checkout_does_not_persist_credentials(self) -> None:
         root = Path(__file__).resolve().parents[1]
         lines = (root / ".github/workflows/ci.yml").read_text(
@@ -94,6 +126,32 @@ class PinCheckTests(unittest.TestCase):
         ):
             with self.subTest(path=path):
                 self.assertIn(path, git_add_line)
+
+
+def _multiline_run_first_commands(text: str) -> list[tuple[int, str]]:
+    lines = text.splitlines()
+    commands: list[tuple[int, str]] = []
+    for index, line in enumerate(lines):
+        stripped = line.lstrip()
+        if not (stripped.startswith("run: |") or stripped.startswith("run: >")):
+            continue
+        indent = len(line) - len(stripped)
+        block: list[str] = []
+        for block_line in lines[index + 1 :]:
+            block_indent = len(block_line) - len(block_line.lstrip())
+            if block_line.strip() and block_indent <= indent:
+                break
+            block.append(block_line.strip())
+        first_command = next(
+            (
+                block_line
+                for block_line in block
+                if block_line and not block_line.startswith("#")
+            ),
+            "",
+        )
+        commands.append((index + 1, first_command))
+    return commands
 
 
 if __name__ == "__main__":

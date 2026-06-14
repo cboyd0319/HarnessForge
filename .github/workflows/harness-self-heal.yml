@@ -43,6 +43,7 @@ jobs:
         env:
           PYTHONPATH: src
         run: |
+          set -euo pipefail
           python -m compileall src tests scripts
           python -m unittest discover -s tests
           python scripts/check_pins.py --root .
@@ -53,6 +54,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          set -euo pipefail
           if [ -z "$(git status --porcelain)" ]; then
             echo "No harness changes detected."
             exit 0

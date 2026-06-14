@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import os
 import re
 import sys
 import tomllib
@@ -12,6 +13,21 @@ USES_RE = re.compile(r"^\s*(?:-\s*)?uses:\s*([^#\s]+)(?:\s*#\s*(.+))?\s*$")
 PINNED_SPEC_RE = re.compile(
     r"^[A-Za-z0-9_.-]+==[0-9]+(?:\.[0-9]+)+(?:[A-Za-z0-9_.+-]*)?$"
 )
+FORBIDDEN_BUILD_HOOKS = {"build.rs", "setup.py"}
+SCAN_SKIP_DIRS = {
+    ".git",
+    ".mypy_cache",
+    ".nox",
+    ".pytest_cache",
+    ".ruff_cache",
+    ".tox",
+    ".venv",
+    "__pycache__",
+    "build",
+    "dist",
+    "node_modules",
+    "venv",
+}
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -34,6 +50,7 @@ def check_root(root: Path) -> list[str]:
     failures: list[str] = []
     failures.extend(_check_pyproject(root / "pyproject.toml"))
     failures.extend(_check_action_pins(root))
+    failures.extend(_check_forbidden_build_hooks(root))
     return failures
 
 
@@ -107,6 +124,24 @@ def _check_action_pins(root: Path) -> list[str]:
             if not comment:
                 failures.append(
                     f"{relative}:{number} SHA-pinned action needs a version comment"
+                )
+    return failures
+
+
+def _check_forbidden_build_hooks(root: Path) -> list[str]:
+    failures: list[str] = []
+    for current, directories, names in os.walk(root):
+        directories[:] = [
+            directory for directory in directories if directory not in SCAN_SKIP_DIRS
+        ]
+        for name in sorted(names):
+            if name not in FORBIDDEN_BUILD_HOOKS:
+                continue
+            path = Path(current) / name
+            if path.is_file():
+                relative = path.relative_to(root)
+                failures.append(
+                    f"build hook file is not allowed in this repo: {relative}"
                 )
     return failures
 

@@ -285,7 +285,9 @@ def _local_markdown_link_failures(root: Path, files: dict[str, str]) -> list[str
         if not file_name.endswith(".md"):
             continue
         source = root / file_name
-        for raw_target in re.findall(r"(?<!!)\[[^\]]+\]\(([^)]+)\)", text):
+        for raw_target in re.findall(
+            r"(?<!!)\[[^\]]+\]\(([^)]+)\)", _strip_markdown_code_blocks(text)
+        ):
             target = raw_target.strip()
             if " " in target and not target.startswith("<"):
                 target = target.split(" ", 1)[0]
@@ -293,23 +295,110 @@ def _local_markdown_link_failures(root: Path, files: dict[str, str]) -> list[str
             lower = target.lower()
             if (
                 not target
-                or target.startswith("#")
                 or lower.startswith(("http://", "https://", "mailto:", "tel:"))
             ):
                 continue
-            target = unquote(target.split("#", 1)[0].split("?", 1)[0])
-            if not target:
+
+            path_text, _, fragment = target.partition("#")
+            path_text = unquote(path_text.split("?", 1)[0])
+            fragment = unquote(fragment.split("?", 1)[0])
+            if not path_text and not fragment:
                 continue
-            if is_absolute_path_text(target):
-                failures.append(f"{file_name} links to absolute local path: {target}")
+
+            if not path_text:
+                destination = source
+            elif is_absolute_path_text(path_text):
+                failures.append(f"{file_name} links to absolute local path: {path_text}")
                 continue
-            destination = source.parent / path_from_relative_text(target)
+            else:
+                destination = source.parent / path_from_relative_text(path_text)
+
             if not is_inside_root(destination, root):
                 failures.append(f"{file_name} links outside the repository: {target}")
                 continue
             if not destination.exists():
-                failures.append(f"{file_name} links to missing local file: {target}")
+                failures.append(f"{file_name} links to missing local file: {path_text}")
+                continue
+            if (
+                fragment
+                and destination.suffix.lower() in {".md", ".markdown"}
+                and not _markdown_anchor_exists(root, destination, files, fragment)
+            ):
+                failures.append(f"{file_name} links to missing local anchor: {target}")
     return failures
+
+
+def _strip_markdown_code_blocks(text: str) -> str:
+    lines: list[str] = []
+    fence: str | None = None
+    for line in text.splitlines():
+        stripped = line.lstrip()
+        if fence is None and (
+            stripped.startswith("```") or stripped.startswith("~~~")
+        ):
+            fence = stripped[:3]
+            lines.append("")
+            continue
+        if fence is not None:
+            lines.append("")
+            if stripped.startswith(fence):
+                fence = None
+            continue
+        lines.append(line)
+    return "\n".join(lines)
+
+
+def _markdown_anchor_exists(
+    root: Path, destination: Path, files: dict[str, str], fragment: str
+) -> bool:
+    target_text = _markdown_target_text(root, destination, files)
+    if target_text is None:
+        return True
+    return fragment.strip().lower() in _markdown_anchors(target_text)
+
+
+def _markdown_target_text(
+    root: Path, destination: Path, files: dict[str, str]
+) -> str | None:
+    try:
+        relative = destination.resolve(strict=False).relative_to(
+            root.resolve(strict=False)
+        )
+    except ValueError:
+        return None
+    return files.get(relative.as_posix()) or _read_text_inside_root(destination, root)
+
+
+def _markdown_anchors(text: str) -> set[str]:
+    anchors: set[str] = set()
+    heading_counts: dict[str, int] = {}
+    stripped = _strip_markdown_code_blocks(text)
+    for line in stripped.splitlines():
+        match = re.match(r"^#{1,6}\s+(.+?)\s*#*\s*$", line)
+        if not match:
+            continue
+        base = _github_heading_anchor(match.group(1))
+        if not base:
+            continue
+        count = heading_counts.get(base, 0)
+        heading_counts[base] = count + 1
+        anchors.add(base if count == 0 else f"{base}-{count}")
+    for match in re.finditer(
+        r"<a\s+[^>]*(?:id|name)=['\"]([^'\"]+)['\"]",
+        stripped,
+        flags=re.IGNORECASE,
+    ):
+        anchors.add(match.group(1).strip().lower())
+    return anchors
+
+
+def _github_heading_anchor(text: str) -> str:
+    text = re.sub(r"`([^`]*)`", r"\1", text)
+    text = re.sub(r"\[([^\]]+)\]\([^)]+\)", r"\1", text)
+    text = html.unescape(text).strip().lower()
+    text = re.sub(r"<[^>]+>", "", text)
+    text = re.sub(r"[^\w\s-]", "", text)
+    return re.sub(r"[\s-]+", "-", text).strip("-")
 
 
 def _read_text_inside_root(path: Path, root: Path) -> str | None:

@@ -93,15 +93,43 @@ maintenance loop.
   GitHub Action `min-score` validation. Deferred external workflow gates,
   SBOM/provenance, Scorecard, fuzzing, and CODEOWNERS until the release path
   and maintainer model justify the extra automation.
+- Personally reviewed the current `microsoft/agent-governance-toolkit`
+  `origin/main` snapshot for the requested `.github`, `scripts`, `examples`,
+  security, compliance, policy, package, operation, benchmark, and Action
+  paths. The local AGT clone was stale, so the review used a temporary archive
+  of current `origin/main`. Accepted additional repo-fit items: multiline
+  workflow fail-fast enforcement, local Markdown anchor validation with fenced
+  code blocks ignored, forbidden `setup.py`/`build.rs` build-hook detection,
+  example and security-sensitive contribution rules, and benchmark claim
+  limits. Deferred AGT compliance suites, incident-response structure,
+  secret-scanning, SBOM, Scorecard, CodeQL, dependency-review, and release
+  workflows as too much automation before the release and maintainer model
+  require them.
 
 ## Recommended Next Step
 
-Decide whether to cut a `v1` Action tag before broader public use, then decide
-whether release-time SBOM/provenance or Scorecard should be the next
-AGT-derived workflow gate.
+After push, watch hosted CI for this AGT-derived hardening slice. Then decide
+whether to cut a `v1` Action tag before broader public use, and whether
+release-time SBOM/provenance or Scorecard should be the next AGT-derived
+workflow gate.
 
 ## Verification Evidence
 
+- Personal review of the current `microsoft/agent-governance-toolkit`
+  `origin/main` snapshot completed without Antigravity delegation; local clone
+  lag was handled by reviewing a temporary archive of `origin/main`.
+- `PYTHONPATH=src:. python3 -m unittest tests.test_generate_audit
+  tests.test_pins` passed with 22 focused tests after workflow fail-fast,
+  local Markdown anchor, fenced-code link, and build-hook checks.
+- `PYTHONPATH=src:. python3 scripts/check_pins.py --root .`, `git diff
+  --check`, and `PYTHONPATH=src:. python3 -m repo_harness_creator audit
+  --target . --min-score 85` passed; self-audit stayed `100/100`.
+- `./init.sh` passed on macOS 26.5.1 with Python 3.14.5 after the personal AGT
+  current snapshot slice: doctor, compile, 60 unit tests, pin check, and
+  self-audit `100/100`.
+- `pwsh -NoProfile -File ./init.ps1` passed on macOS 26.5.1 with Python
+  3.14.5 after the personal AGT current snapshot slice: doctor, compile, 60
+  unit tests, pin check, and self-audit `100/100`.
 - Read-only `agy` deep comparison against `agent-governance-toolkit` completed;
   accepted contribution policy, PR template, stronger security scope,
   `.gitignore` hygiene, and Action `min-score` validation while deferring

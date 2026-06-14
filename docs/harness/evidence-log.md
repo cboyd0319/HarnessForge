@@ -4,6 +4,10 @@ Use this for compact current evidence. Keep raw logs out of this file.
 
 | Date | Scope | Command Or Review | Result | Notes |
 | --- | --- | --- | --- | --- |
+| 2026-06-14 | Personal AGT current snapshot review | Local `origin/main` archive review, no delegation | pass | Reviewed requested AGT `.github`, `scripts`, `examples`, security, compliance, policy, package, operation, benchmark, and action paths; local clone was stale, so the current remote snapshot was used. |
+| 2026-06-14 | AGT-derived workflow, audit, and pin checks | `PYTHONPATH=src:. python3 -m unittest tests.test_generate_audit tests.test_pins`, `PYTHONPATH=src:. python3 scripts/check_pins.py --root .`, `git diff --check`, self-audit | pass | 22 focused tests passed after multiline workflow fail-fast enforcement, local Markdown anchor validation, fenced-code link skipping, and forbidden build-hook detection. |
+| 2026-06-14 | POSIX verification | `./init.sh` | pass | Doctor, compile, 60 tests, pin check, and self-audit `100/100` after the personal AGT current snapshot slice. |
+| 2026-06-14 | PowerShell verification | `pwsh -NoProfile -File ./init.ps1` | pass | Doctor, compile, 60 tests, pin check, and self-audit `100/100` after the personal AGT current snapshot slice. |
 | 2026-06-14 | Deep agent governance toolkit comparison | Read-only `agy` comparison plus local file review | pass | Accepted contribution policy, PR template, stronger security scope, `.gitignore` hygiene, and Action min-score validation; deferred external workflow gates, SBOM, Scorecard, fuzzing, and CODEOWNERS for current scope. |
 | 2026-06-14 | AGT-derived Action and policy checks | `PYTHONPATH=src:. python3 -m unittest tests.test_github_action tests.test_generate_audit tests.test_pins`, `PYTHONPATH=src:. python3 scripts/check_pins.py --root .` | pass | 25 focused tests and pin enforcement passed after Action score-range validation, contribution docs, PR template, and security policy expansion. |
 | 2026-06-14 | POSIX verification | `./init.sh` | pass | Doctor, compile, 56 tests, pin check, and self-audit `100/100` after the deeper AGT-derived changes. |

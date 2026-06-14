@@ -26,6 +26,38 @@ Run `./init.sh` or `.\init.ps1` before submitting larger changes.
   when a design, algorithm, policy, or convention is adapted from another
   project.
 
+## Examples And Integrations
+
+- Prefer an example or docs addition over core code when supporting a niche
+  ecosystem, optional tool, or third-party integration.
+- Keep examples runnable and self-contained. Include setup, run commands,
+  expected output, and cleanup when the example writes files or state.
+- Use fake secrets and placeholder environment variables. Never require a real
+  token, private repository, or cloud account for a basic example.
+- Keep example-only dependencies out of the root package unless they are
+  already part of the supported runtime.
+- Label experimental examples clearly and do not present smoke results as
+  production evidence.
+
+## Security-Sensitive Changes
+
+Changes to path validation, generated workflows, dependency handling, research
+fetching, build or publish behavior, Action permissions, redaction, or file
+writes need stronger review evidence.
+
+- Add negative or regression tests for the boundary being changed.
+- Hand-review AI-generated tests and code. Do not trust tests only because they
+  pass.
+- Do not include secrets, private repository details, or long raw logs in AI
+  prompts, commits, issues, or pull requests.
+- Verify new dependencies and external actions against their official source,
+  current supported versions, and this repo's pinning rules.
+- Reject unsafe defaults such as broad write permissions, `shell=True`,
+  disabled TLS validation, path traversal tolerance, or permissive fallback
+  behavior.
+- Update `docs/harness/evidence-log.md`, `progress.md`, and
+  `session-handoff.md` when a security boundary or durable decision changes.
+
 ## Developer Certificate Of Origin
 
 Commits intended for submission should include a `Signed-off-by` trailer:
