@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import json
+import subprocess
+import sys
 import tempfile
 import unittest
 from pathlib import Path
@@ -79,10 +81,80 @@ class GenerateAuditTests(unittest.TestCase):
         written = {write.path.name for write in writes if write.status == "written"}
         self.assertEqual(profile.stack, "python")
         self.assertIn("AGENTS.md", written)
+        self.assertIn("check_pins.py", written)
         self.assertIn("PYTHON_BIN", init_sh)
+        self.assertIn("scripts/check_pins.py --root .", init_sh)
+        self.assertIn("repo-harness audit --target . --min-score 85", init_sh)
         self.assertIn("Get-Command python3", init_ps1)
+        self.assertIn("scripts/check_pins.py --root .", init_ps1)
         self.assertNotIn("Invoke-Expression", init_ps1)
-        self.assertGreaterEqual(result.overall, 85)
+        self.assertEqual(result.overall, 100)
+
+    def test_optional_workflow_scaffolds_are_explicit(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            create_harness(root)
+
+            self.assertFalse((root / ".github/workflows/repo-harness.yml").exists())
+            self.assertFalse((root / ".github/workflows/harness-self-heal.yml").exists())
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            resolved_root = root.resolve()
+            _, writes = create_harness(
+                root,
+                with_ci_workflow=True,
+                with_self_heal_workflow=True,
+            )
+            ci = (root / ".github/workflows/repo-harness.yml").read_text(
+                encoding="utf-8"
+            )
+            self_heal = (root / ".github/workflows/harness-self-heal.yml").read_text(
+                encoding="utf-8"
+            )
+            written = {
+                str(write.path.resolve().relative_to(resolved_root))
+                for write in writes
+                if write.status == "written"
+            }
+
+        self.assertIn(".github/workflows/repo-harness.yml", written)
+        self.assertIn(".github/workflows/harness-self-heal.yml", written)
+        self.assertIn("workflow_dispatch", ci)
+        self.assertIn("cancel-in-progress: true", ci)
+        self.assertIn("persist-credentials: false", ci)
+        self.assertIn("contents: write", self_heal)
+        self.assertIn("gh pr create", self_heal)
+
+    def test_generated_pin_checker_is_advisory_unless_strict(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            create_harness(root)
+            workflow_dir = root / ".github" / "workflows"
+            workflow_dir.mkdir(parents=True)
+            (workflow_dir / "bad.yml").write_text(
+                "steps:\n  - uses: actions/checkout@v6\n",
+                encoding="utf-8",
+            )
+            script = root / "scripts" / "check_pins.py"
+
+            advisory = subprocess.run(
+                [sys.executable, str(script), "--root", str(root)],
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            strict = subprocess.run(
+                [sys.executable, str(script), "--root", str(root), "--strict"],
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+
+        self.assertEqual(advisory.returncode, 0)
+        self.assertIn("Advisory mode", advisory.stdout)
+        self.assertEqual(strict.returncode, 1)
+        self.assertIn("40-char SHA", strict.stdout)
 
     def test_existing_files_are_skipped_without_force(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -106,8 +178,35 @@ class GenerateAuditTests(unittest.TestCase):
         self.assertIn("init.ps1", manifest["requiredFiles"])
         self.assertIn("docs/harness/clean-state-checklist.md", manifest["requiredFiles"])
         self.assertIn("docs/harness/component-inventory.md", manifest["requiredFiles"])
+        self.assertIn("scripts/check_pins.py", manifest["requiredFiles"])
+        self.assertIn("docs/harness/release-controls.md", manifest["requiredFiles"])
         self.assertIn("docs/harness/research-sources.json", manifest["requiredFiles"])
         self.assertIn("detectedComponents", manifest)
+
+    def test_live_manifest_matches_generated_shared_snippets(self) -> None:
+        repo_root = Path(__file__).resolve().parents[1]
+        live = json.loads(
+            (repo_root / "docs/harness/manifest.json").read_text(encoding="utf-8")
+        )
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            create_harness(root)
+            generated = json.loads(
+                (root / "docs/harness/manifest.json").read_text(encoding="utf-8")
+            )
+
+        shared_controls = {
+            "docs/harness/verification-matrix.md",
+            "docs/harness/security-boundary-map.md",
+            "docs/harness/release-controls.md",
+            "docs/harness/self-healing.md",
+            "docs/harness/agent-operating-model.md",
+        }
+        live_snippets = live["requiredHarnessSnippets"]
+        for file_name in sorted(shared_controls):
+            snippets = generated["requiredHarnessSnippets"][file_name]
+            with self.subTest(file_name=file_name):
+                self.assertEqual(live_snippets.get(file_name), snippets)
 
     def test_generated_component_inventory_records_workspace_markers(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

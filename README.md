@@ -55,7 +55,7 @@ specific project task correctly without real task runs and review.
 | Linux | Ubuntu 22.04 or newer as the explicit floor |
 | Runtime dependencies | Python standard library only |
 | Build backend | `setuptools==82.0.1`, hard pinned |
-| CI coverage | Ubuntu 22.04, macOS 15, `windows-2025-vs2026` on Python 3.13.14 and 3.14.6 |
+| CI coverage | Push/PR: Ubuntu 22.04 on Python 3.13.14. Manual platform check: macOS 15 and `windows-2025-vs2026` on Python 3.13.14 |
 
 Other modern Linux distributions should work when Python 3.13+ is available.
 They are not the stated support floor until they are covered by CI or equivalent
@@ -84,9 +84,18 @@ Write missing files:
 repo-harness init --target /path/to/repo
 ```
 
+Opt into reviewed workflow scaffolds only when wanted:
+
+```bash
+repo-harness init --target /path/to/repo --with-ci-workflow
+repo-harness init --target /path/to/repo --with-self-heal-workflow
+```
+
 By default, `init` only writes missing generated files. It does not overwrite
 existing project files. Use `--force` only when replacing generated harness
 surfaces is intentional and reviewed.
+Workflow scaffolds use manual triggers by default and must be reviewed and
+pinned before relying on them.
 
 The generated harness includes:
 
@@ -94,10 +103,10 @@ The generated harness includes:
 | --- | --- |
 | Agent instructions | `AGENTS.md` |
 | Project state | `feature_list.json`, `progress.md`, `session-handoff.md` |
-| Local checks | `init.sh`, `init.ps1` |
+| Local checks | `init.sh`, `init.ps1`, `scripts/check_pins.py` |
 | Harness docs | `docs/harness/README.md`, `verification-matrix.md`, `change-contract.md` |
 | Security and privacy | `security-boundary-map.md`, `feature-privacy-labels.json` |
-| Evidence and quality | `evidence-log.md`, `quality-document.md`, `evaluator-rubric.md` |
+| Evidence and quality | `evidence-log.md`, `quality-document.md`, `release-controls.md`, `evaluator-rubric.md` |
 | Research | `sources.md`, `research-sources.json`, `research-inbox.md` |
 | Lifecycle | `self-healing.md`, `entropy-control.md`, `clean-state-checklist.md` |
 

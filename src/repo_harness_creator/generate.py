@@ -24,6 +24,8 @@ def create_harness(
     package_manager: str | None = None,
     commands: tuple[str, ...] = (),
     project_name: str | None = None,
+    with_ci_workflow: bool = False,
+    with_self_heal_workflow: bool = False,
 ) -> tuple[ProjectProfile, tuple[WriteResult, ...]]:
     agent_file = _validate_agent_file(agent_file)
     profile = detect_project(
@@ -32,13 +34,22 @@ def create_harness(
         explicit_commands=commands,
     )
     context = _template_context(profile, agent_file=agent_file, project_name=project_name)
-    specs = _template_specs(agent_file)
+    specs = _template_specs(
+        agent_file,
+        with_ci_workflow=with_ci_workflow,
+        with_self_heal_workflow=with_self_heal_workflow,
+    )
     _validate_destinations(profile.root, tuple(spec[1] for spec in specs))
     results: list[WriteResult] = []
     for template_name, relative_path, executable in specs:
         destination = profile.root / relative_path
         if template_name == "manifest.json.tmpl":
-            content = _manifest_content(profile, agent_file)
+            content = _manifest_content(
+                profile,
+                agent_file,
+                with_ci_workflow=with_ci_workflow,
+                with_self_heal_workflow=with_self_heal_workflow,
+            )
         elif template_name == "feature-list.schema.json.tmpl":
             content = _feature_list_schema()
         else:
@@ -57,13 +68,19 @@ def create_harness(
     return profile, tuple(results)
 
 
-def _template_specs(agent_file: str) -> tuple[tuple[str, str, bool], ...]:
-    return (
+def _template_specs(
+    agent_file: str,
+    *,
+    with_ci_workflow: bool = False,
+    with_self_heal_workflow: bool = False,
+) -> tuple[tuple[str, str, bool], ...]:
+    specs = [
         ("agents.md.tmpl", agent_file, False),
         ("feature-list.json.tmpl", "feature_list.json", False),
         ("feature-list.schema.json.tmpl", "docs/harness/feature-list.schema.json", False),
         ("progress.md.tmpl", "progress.md", False),
         ("session-handoff.md.tmpl", "session-handoff.md", False),
+        ("check-pins.py.tmpl", "scripts/check_pins.py", True),
         ("init.sh.tmpl", "init.sh", True),
         ("init.ps1.tmpl", "init.ps1", False),
         ("harness-readme.md.tmpl", "docs/harness/README.md", False),
@@ -77,6 +94,7 @@ def _template_specs(agent_file: str) -> tuple[tuple[str, str, bool], ...]:
         ("clean-state-checklist.md.tmpl", "docs/harness/clean-state-checklist.md", False),
         ("evaluator-rubric.md.tmpl", "docs/harness/evaluator-rubric.md", False),
         ("quality-document.md.tmpl", "docs/harness/quality-document.md", False),
+        ("release-controls.md.tmpl", "docs/harness/release-controls.md", False),
         ("self-healing.md.tmpl", "docs/harness/self-healing.md", False),
         ("research-sources.json.tmpl", "docs/harness/research-sources.json", False),
         ("research-inbox.md.tmpl", "docs/harness/research-inbox.md", False),
@@ -85,7 +103,18 @@ def _template_specs(agent_file: str) -> tuple[tuple[str, str, bool], ...]:
         ("entropy-control.md.tmpl", "docs/harness/entropy-control.md", False),
         ("sources.md.tmpl", "docs/harness/sources.md", False),
         ("manifest.json.tmpl", "docs/harness/manifest.json", False),
-    )
+    ]
+    if with_ci_workflow:
+        specs.append(("ci-workflow.yml.tmpl", ".github/workflows/repo-harness.yml", False))
+    if with_self_heal_workflow:
+        specs.append(
+            (
+                "self-heal-workflow.yml.tmpl",
+                ".github/workflows/harness-self-heal.yml",
+                False,
+            )
+        )
+    return tuple(specs)
 
 
 def _validate_agent_file(agent_file: str) -> str:
@@ -218,7 +247,192 @@ def _python_command_args(command: str) -> str | None:
     return None
 
 
-def _manifest_content(profile: ProjectProfile, agent_file: str) -> str:
+def _manifest_content(
+    profile: ProjectProfile,
+    agent_file: str,
+    *,
+    with_ci_workflow: bool = False,
+    with_self_heal_workflow: bool = False,
+) -> str:
+    required_files = [
+        agent_file,
+        "feature_list.json",
+        "progress.md",
+        "session-handoff.md",
+        "scripts/check_pins.py",
+        "init.sh",
+        "init.ps1",
+        "docs/harness/README.md",
+        "docs/harness/change-contract.md",
+        "docs/harness/verification-matrix.md",
+        "docs/harness/component-inventory.md",
+        "docs/harness/dependency-change-policy.md",
+        "docs/harness/security-boundary-map.md",
+        "docs/harness/feature-privacy-labels.json",
+        "docs/harness/evidence-log.md",
+        "docs/harness/clean-state-checklist.md",
+        "docs/harness/evaluator-rubric.md",
+        "docs/harness/quality-document.md",
+        "docs/harness/release-controls.md",
+        "docs/harness/self-healing.md",
+        "docs/harness/research-sources.json",
+        "docs/harness/research-inbox.md",
+        "docs/harness/manifest.json",
+        "docs/harness/sources.md",
+        "docs/harness/entropy-control.md",
+        "docs/harness/agent-operating-model.md",
+        "docs/harness/multi-agent-orchestration.md",
+        "docs/harness/feature-list.schema.json",
+    ]
+    required_snippets: dict[str, list[str]] = {
+        agent_file: [
+            "Startup",
+            "Build and test commands",
+            "Definition Of Done",
+            "feature_list.json",
+            "progress.md",
+            "remote CI",
+        ],
+        "docs/harness/README.md": [
+            "Operating Loop",
+            "When To Add Harness",
+            "Assessment And Updates",
+        ],
+        "docs/harness/change-contract.md": [
+            "Problem",
+            "Acceptance Criteria",
+            "Verification",
+            "Rollback",
+        ],
+        "docs/harness/verification-matrix.md": [
+            "Change Type",
+            "Required Checks",
+            "When Checks Cannot Run",
+            "Remote CI",
+            "AI/RAG/agent",
+            "intentionally vulnerable",
+        ],
+        "docs/harness/component-inventory.md": [
+            "Component Inventory",
+            "Detected Workspace Markers",
+            "Detected Routing Markers",
+            "Detected Components",
+            "Routing Rules",
+        ],
+        "docs/harness/dependency-change-policy.md": [
+            "latest stable",
+            "exact pins",
+            "GitHub Actions",
+        ],
+        "docs/harness/security-boundary-map.md": [
+            "Access Boundaries",
+            "Data Boundaries",
+            "Required Checks",
+            "security wins",
+            "machine-local absolute paths",
+            "fixed allowlist",
+            "prompt injection",
+            "data poisoning",
+            "least privilege",
+            "human approval",
+            "cost-incurring",
+            "intentionally vulnerable",
+            "Threat model",
+        ],
+        "docs/harness/feature-privacy-labels.json": [
+            "External AI optional",
+            "Sensitive",
+            "Public-data only",
+        ],
+        "docs/harness/evidence-log.md": [
+            "Date",
+            "Scope",
+            "Command Or Review",
+        ],
+        "docs/harness/clean-state-checklist.md": [
+            "Startup path",
+            "Verification path",
+            "Next Session",
+        ],
+        "docs/harness/evaluator-rubric.md": [
+            "Correctness",
+            "Verification",
+            "Handoff Readiness",
+        ],
+        "docs/harness/quality-document.md": [
+            "Quality Document",
+            "Domain Grades",
+            "Harness Simplification",
+        ],
+        "docs/harness/release-controls.md": [
+            "Release Controls",
+            "Manual platform",
+            "SBOM",
+            "provenance",
+            "Rollback",
+        ],
+        "docs/harness/self-healing.md": [
+            "Self-healing must be reviewable",
+            "fixed allowlist",
+            "prompt injection",
+            "invisible Unicode",
+            "Safe Loop",
+            "Promotion Rule",
+        ],
+        "docs/harness/research-sources.json": [
+            "openai-harness-engineering",
+            "walkinglabs-course",
+            "github-actions-secure-use",
+            "owasp-ai-agent-security-cheat-sheet",
+            "owasp-mcp-security-cheat-sheet",
+            "owasp-security-shepherd",
+            "owasp-pytm",
+            "owasp-samm",
+            "owasp-rag-security-cheat-sheet",
+            "owasp-secure-coding-with-ai-cheat-sheet",
+            "owasp-llm-top-10",
+            "owasp-agentic-applications-top-10",
+            "owasp-agentic-skills-top-10",
+            "microsoft-agt-prompt-injection-benchmark",
+            "pnpm-workspaces",
+            "github-actions-workflow-syntax",
+            "terraform-standard-module-structure",
+        ],
+        "docs/harness/agent-operating-model.md": [
+            "least privilege",
+            "human approval",
+            "local commits",
+            "push",
+            "intentionally vulnerable",
+        ],
+        "docs/harness/research-inbox.md": [
+            "Research Inbox",
+            "review signals",
+            "Promotion checklist",
+        ],
+        "scripts/check_pins.py": [
+            "40-char SHA",
+            "--strict",
+            "unexpected build hook",
+        ],
+    }
+    if with_ci_workflow:
+        required_files.append(".github/workflows/repo-harness.yml")
+        required_snippets[".github/workflows/repo-harness.yml"] = [
+            "workflow_dispatch",
+            "cancel-in-progress: true",
+            "persist-credentials: false",
+            "repo-harness-creator@<reviewed-commit-sha>",
+        ]
+    if with_self_heal_workflow:
+        required_files.append(".github/workflows/harness-self-heal.yml")
+        required_snippets[".github/workflows/harness-self-heal.yml"] = [
+            "workflow_dispatch",
+            "contents: write",
+            "pull-requests: write",
+            "apply",
+            "gh pr create",
+        ]
     manifest = {
         "version": 1,
         "generatedBy": "repo-harness-creator",
@@ -230,154 +444,8 @@ def _manifest_content(profile: ProjectProfile, agent_file: str) -> str:
             "windows": "11+",
             "linux": "Ubuntu 22.04+ floor; other modern distributions are best effort",
         },
-        "requiredFiles": [
-            agent_file,
-            "feature_list.json",
-            "progress.md",
-            "session-handoff.md",
-            "init.sh",
-            "init.ps1",
-            "docs/harness/README.md",
-            "docs/harness/change-contract.md",
-            "docs/harness/verification-matrix.md",
-            "docs/harness/component-inventory.md",
-            "docs/harness/dependency-change-policy.md",
-            "docs/harness/security-boundary-map.md",
-            "docs/harness/feature-privacy-labels.json",
-            "docs/harness/evidence-log.md",
-            "docs/harness/clean-state-checklist.md",
-            "docs/harness/evaluator-rubric.md",
-            "docs/harness/quality-document.md",
-            "docs/harness/self-healing.md",
-            "docs/harness/research-sources.json",
-            "docs/harness/research-inbox.md",
-            "docs/harness/manifest.json",
-            "docs/harness/sources.md",
-            "docs/harness/entropy-control.md",
-            "docs/harness/agent-operating-model.md",
-            "docs/harness/multi-agent-orchestration.md",
-            "docs/harness/feature-list.schema.json",
-        ],
-        "requiredHarnessSnippets": {
-            agent_file: [
-                "Startup",
-                "Verification",
-                "Definition Of Done",
-                "feature_list.json",
-                "progress.md",
-                "remote CI",
-            ],
-            "docs/harness/README.md": [
-                "Operating Loop",
-                "When To Add Harness",
-                "Assessment And Updates",
-            ],
-            "docs/harness/change-contract.md": [
-                "Problem",
-                "Acceptance Criteria",
-                "Verification",
-                "Rollback",
-            ],
-            "docs/harness/verification-matrix.md": [
-                "Change Type",
-                "Required Checks",
-                "When Checks Cannot Run",
-                "Remote CI",
-                "AI/RAG/agent",
-                "intentionally vulnerable",
-            ],
-            "docs/harness/component-inventory.md": [
-                "Component Inventory",
-                "Detected Workspace Markers",
-                "Detected Routing Markers",
-                "Detected Components",
-                "Routing Rules",
-            ],
-            "docs/harness/dependency-change-policy.md": [
-                "latest stable",
-                "exact pins",
-                "GitHub Actions",
-            ],
-            "docs/harness/security-boundary-map.md": [
-                "Access Boundaries",
-                "Data Boundaries",
-                "Required Checks",
-                "security wins",
-                "machine-local absolute paths",
-                "fixed allowlist",
-                "prompt injection",
-                "data poisoning",
-                "least privilege",
-                "human approval",
-                "cost-incurring",
-                "intentionally vulnerable",
-                "Threat model",
-            ],
-            "docs/harness/feature-privacy-labels.json": [
-                "External AI optional",
-                "Sensitive",
-                "Public-data only",
-            ],
-            "docs/harness/evidence-log.md": [
-                "Date",
-                "Scope",
-                "Command Or Review",
-            ],
-            "docs/harness/clean-state-checklist.md": [
-                "Startup path",
-                "Verification path",
-                "Next Session",
-            ],
-            "docs/harness/evaluator-rubric.md": [
-                "Correctness",
-                "Verification",
-                "Handoff Readiness",
-            ],
-            "docs/harness/quality-document.md": [
-                "Quality Document",
-                "Domain Grades",
-                "Harness Simplification",
-            ],
-            "docs/harness/self-healing.md": [
-                "Self-healing must be reviewable",
-                "fixed allowlist",
-                "prompt injection",
-                "invisible Unicode",
-                "Safe Loop",
-                "Promotion Rule",
-            ],
-            "docs/harness/research-sources.json": [
-                "openai-harness-engineering",
-                "walkinglabs-course",
-                "github-actions-secure-use",
-                "owasp-ai-agent-security-cheat-sheet",
-                "owasp-mcp-security-cheat-sheet",
-                "owasp-security-shepherd",
-                "owasp-pytm",
-                "owasp-samm",
-                "owasp-rag-security-cheat-sheet",
-                "owasp-secure-coding-with-ai-cheat-sheet",
-                "owasp-llm-top-10",
-                "owasp-agentic-applications-top-10",
-                "owasp-agentic-skills-top-10",
-                "microsoft-agt-prompt-injection-benchmark",
-                "pnpm-workspaces",
-                "github-actions-workflow-syntax",
-                "terraform-standard-module-structure",
-            ],
-            "docs/harness/agent-operating-model.md": [
-                "least privilege",
-                "human approval",
-                "local commits",
-                "push",
-                "intentionally vulnerable",
-            ],
-            "docs/harness/research-inbox.md": [
-                "Research Inbox",
-                "review signals",
-                "Promotion checklist",
-            ],
-        },
+        "requiredFiles": required_files,
+        "requiredHarnessSnippets": required_snippets,
         "verificationCommands": list(profile.verification_commands),
         "detectedComponents": list(profile.components),
         "detectedWorkspaceMarkers": list(profile.workspace_markers),

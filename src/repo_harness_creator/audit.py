@@ -237,6 +237,7 @@ def _load_known_files(root: Path) -> dict[str, str]:
         "docs/harness/clean-state-checklist.md",
         "docs/harness/evaluator-rubric.md",
         "docs/harness/quality-document.md",
+        "docs/harness/release-controls.md",
         "docs/harness/self-healing.md",
         "docs/harness/manifest.json",
         "docs/harness/sources.md",
@@ -448,7 +449,12 @@ def _read_text_inside_root(path: Path, root: Path) -> str | None:
 def _score(name: str, checks: list[CheckResult]) -> DomainScore:
     passed = sum(1 for check in checks if check.passed)
     total = len(checks)
-    score = 0 if total == 0 else round((passed / total) * 5)
+    if total == 0:
+        score = 0
+    elif passed == total:
+        score = 5
+    else:
+        score = max(1, (passed * 5) // total)
     return DomainScore(
         name=name,
         score=score,
@@ -648,6 +654,11 @@ def _lifecycle_checks(files: dict[str, str]) -> list[CheckResult]:
         _contains(lifecycle_text, ("restart", "restartable", "Next Session"), "Clean restart path is documented"),
         _check("docs/harness/clean-state-checklist.md" in files, "Clean-state checklist exists"),
         _check("docs/harness/quality-document.md" in files, "Quality document exists for periodic reassessment"),
+        _contains_all(
+            files.get("docs/harness/release-controls.md", ""),
+            ("Release Controls", "SBOM", "provenance", "Rollback"),
+            "Release controls are documented",
+        ),
         _check("docs/harness/self-healing.md" in files, "Self-healing loop is documented"),
         _check("docs/harness/research-sources.json" in files, "Research source list exists"),
         _check("docs/harness/entropy-control.md" in files, "Harness drift or entropy control doc exists"),

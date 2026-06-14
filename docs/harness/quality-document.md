@@ -33,3 +33,7 @@ unsafe to rely on without repair.
 At least monthly, review one harness component and decide whether it is still
 useful. Keep it when it prevents repeated failures. Remove or merge it when it
 adds upkeep without improving verification, restartability, or scope control.
+
+Structural harness scores do not prove real agent effectiveness. Record
+representative before/after agent-session evidence or benchmark notes before
+making release claims about agent reliability.

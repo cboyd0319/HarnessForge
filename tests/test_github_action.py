@@ -82,6 +82,28 @@ class GitHubActionTests(unittest.TestCase):
             self.assertTrue((root / "reports" / "report.json").exists())
             self.assertIn("Repo Harness Audit", summary.read_text(encoding="utf-8"))
 
+    def test_action_init_can_scaffold_optional_workflows(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            env = {
+                "INPUT_COMMAND": "init",
+                "INPUT_TARGET": str(root),
+                "INPUT_WITH_CI_WORKFLOW": "true",
+                "INPUT_WITH_SELF_HEAL_WORKFLOW": "true",
+            }
+
+            with contextlib.redirect_stdout(io.StringIO()):
+                code = run_from_env(env)
+
+            ci_exists = (root / ".github/workflows/repo-harness.yml").exists()
+            self_heal_exists = (
+                root / ".github/workflows/harness-self-heal.yml"
+            ).exists()
+
+        self.assertEqual(code, 0)
+        self.assertTrue(ci_exists)
+        self.assertTrue(self_heal_exists)
+
     def test_action_report_paths_must_stay_inside_target(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp) / "repo"

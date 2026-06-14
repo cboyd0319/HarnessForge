@@ -39,6 +39,29 @@ class CliTests(unittest.TestCase):
         self.assertEqual(audit_code, 0)
         self.assertIn("Detected stack", stdout.getvalue())
 
+    def test_init_can_scaffold_optional_workflows(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            with contextlib.redirect_stdout(io.StringIO()):
+                code = main(
+                    [
+                        "init",
+                        "--target",
+                        str(root),
+                        "--with-ci-workflow",
+                        "--with-self-heal-workflow",
+                    ]
+                )
+
+            ci = root / ".github/workflows/repo-harness.yml"
+            self_heal = root / ".github/workflows/harness-self-heal.yml"
+            ci_exists = ci.exists()
+            self_heal_exists = self_heal.exists()
+
+        self.assertEqual(code, 0)
+        self.assertTrue(ci_exists)
+        self.assertTrue(self_heal_exists)
+
     def test_audit_requires_explicit_override_for_local_absolute_paths(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

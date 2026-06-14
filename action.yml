@@ -39,6 +39,14 @@ inputs:
     description: Root agent instruction file name to generate.
     required: false
     default: AGENTS.md
+  with-ci-workflow:
+    description: Also scaffold the optional manual repo-harness CI workflow for init or update.
+    required: false
+    default: "false"
+  with-self-heal-workflow:
+    description: Also scaffold the optional manual self-heal pull-request workflow for init or update.
+    required: false
+    default: "false"
   html-report:
     description: Optional target-relative path for an HTML audit report.
     required: false
@@ -86,6 +94,8 @@ runs:
         INPUT_APPLY: ${{ inputs.apply }}
         INPUT_FORCE: ${{ inputs.force }}
         INPUT_AGENT_FILE: ${{ inputs.agent-file }}
+        INPUT_WITH_CI_WORKFLOW: ${{ inputs.with-ci-workflow }}
+        INPUT_WITH_SELF_HEAL_WORKFLOW: ${{ inputs.with-self-heal-workflow }}
         INPUT_HTML_REPORT: ${{ inputs.html-report }}
         INPUT_JSON_REPORT: ${{ inputs.json-report }}
       run: python -m repo_harness_creator.github_action

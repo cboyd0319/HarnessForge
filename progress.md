@@ -144,14 +144,26 @@ maintenance loop.
 - Tightened remote CI cost posture. Push/PR CI now runs the Ubuntu 22.04 Python
   3.13.14 path by default with superseded-run cancellation; macOS and Windows
   platform checks remain available through manual `workflow_dispatch`.
+- Completed a deeper Walking Labs resources, projects, and harness-creator
+  skill review. Accepted the parts that fit this repo now: generated advisory
+  pin checker, generated release controls, optional manual CI/self-heal
+  workflow scaffolds, generated-harness `100/100` quality gate, manifest drift
+  coverage for shared control surfaces, initializer baseline-commit reminders,
+  and structural-score caveats. Deferred generic architecture scanners, memory
+  index cap checks, memory topic cleanup, and agent-specific tool-permission
+  config validation as project-specific opt-ins.
+- Fixed audit scoring so a domain only receives `5/5` when every check in that
+  domain passes. This prevents a single failed security or scope check from
+  rounding to a perfect score.
 
 ## Recommended Next Step
 
-Review the local commit for the OWASP/security and CI-cost-control batch. Push
-only at an explicit batch/release boundary or user request. Before a first
-public Action release, consider running the manual macOS/Windows platform CI
-check, then decide whether to cut a `v1` Action tag and whether release-time
-SBOM/provenance should come next.
+Review the local commits for the OWASP/security, CI-cost-control, and
+generated-harness alignment batches. Push only at an explicit batch/release
+boundary or user request. Before a first public Action release, run the manual
+macOS/Windows platform CI check if hosted platform confirmation is needed, then
+decide whether to cut a `v1` Action tag and which release-time SBOM/provenance
+controls should become blocking.
 
 ## Verification Evidence
 
@@ -179,6 +191,20 @@ SBOM/provenance should come next.
 - `pwsh -NoProfile -File ./init.ps1` passed on macOS 26.5.1 with Python
   3.14.5 after the OWASP/security and CI-cost-control batch: doctor, compile,
   76 unit tests, pin check, and self-audit `100/100`.
+- Walking Labs resources/projects/harness-creator review completed with an AGY
+  read-only supplement and direct local file inspection. Imported controls are
+  generated pin checking, release controls, optional workflow scaffolds,
+  generated-harness quality gate, manifest drift tests, and initializer
+  baseline-commit reminders.
+- `PYTHONPATH=src:. python3 -m unittest tests.test_cli tests.test_github_action
+  tests.test_generate_audit tests.test_pins` passed with 45 focused tests after
+  generated pin checker, optional workflow scaffolds, release controls, and
+  manifest drift coverage.
+- `PYTHONPATH=src:. python3 -m unittest discover -s tests` passed with 81 tests.
+- `python3 -m compileall src tests`, `PYTHONPATH=src:. python3
+  scripts/check_pins.py --root .`, `git diff --check`, and
+  `PYTHONPATH=src:. python3 -m repo_harness_creator audit --target .
+  --min-score 85` passed; self-audit stayed `100/100`.
 - Required read-only `agy` research pass completed against this repo plus the
   local AGT prompt-injection benchmark and OWASP Agentic Skills repo. Findings
   were personally checked against local files and public OWASP/user-provided

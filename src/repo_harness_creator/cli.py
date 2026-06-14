@@ -48,6 +48,16 @@ def build_parser() -> argparse.ArgumentParser:
     init.add_argument("--package-manager")
     init.add_argument("--command", dest="commands", action="append", default=[])
     init.add_argument("--project-name")
+    init.add_argument(
+        "--with-ci-workflow",
+        action="store_true",
+        help="also scaffold a manual repo-harness CI workflow",
+    )
+    init.add_argument(
+        "--with-self-heal-workflow",
+        action="store_true",
+        help="also scaffold a manual self-heal pull-request workflow",
+    )
     init.add_argument("--force", action="store_true")
     init.add_argument("--dry-run", action="store_true")
     init.set_defaults(func=_init)
@@ -67,6 +77,16 @@ def build_parser() -> argparse.ArgumentParser:
     update = subparsers.add_parser("update", help="plan or apply safe harness corrections")
     update.add_argument("--target", type=Path, default=Path.cwd())
     update.add_argument("--agent-file", default="AGENTS.md")
+    update.add_argument(
+        "--with-ci-workflow",
+        action="store_true",
+        help="include the optional manual repo-harness CI workflow",
+    )
+    update.add_argument(
+        "--with-self-heal-workflow",
+        action="store_true",
+        help="include the optional manual self-heal pull-request workflow",
+    )
     update.add_argument("--apply", action="store_true")
     update.add_argument("--force", action="store_true")
     update.add_argument("--json", action="store_true")
@@ -89,6 +109,8 @@ def _init(args: argparse.Namespace) -> int:
         package_manager=args.package_manager,
         commands=tuple(args.commands),
         project_name=args.project_name,
+        with_ci_workflow=args.with_ci_workflow,
+        with_self_heal_workflow=args.with_self_heal_workflow,
     )
     print(f"Target: {profile.name}")
     print(f"Detected stack: {profile.stack}")
@@ -125,6 +147,8 @@ def _update(args: argparse.Namespace) -> int:
         apply=args.apply,
         force=args.force,
         agent_file=args.agent_file,
+        with_ci_workflow=args.with_ci_workflow,
+        with_self_heal_workflow=args.with_self_heal_workflow,
     )
     if args.json:
         payload = {

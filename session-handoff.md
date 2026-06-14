@@ -44,6 +44,22 @@ and the required AGENTS instruction format.
 ## Blockers
 
 - No known blockers.
+- Current generated-harness alignment batch passes focused CLI/Action/generator
+  tests with 45 tests, full unit discovery with 81 tests, compile, pin check,
+  diff hygiene, and self-audit `100/100`.
+- Generated harnesses now include an advisory `scripts/check_pins.py`, a
+  `release-controls.md` artifact, and best-effort local self-audit from
+  generated POSIX/PowerShell entrypoints when `repo-harness` is available.
+- Optional workflow scaffolds are explicit flags:
+  `--with-ci-workflow` and `--with-self-heal-workflow`. They generate manual
+  workflows and are also available through the composite Action inputs.
+- Audit scoring now prevents domains with any failed check from rounding to
+  `5/5`.
+- Walking Labs review imported generated-harness quality gates, manifest drift
+  coverage, initializer baseline-commit reminders, structural-score caveats,
+  release evidence, and rollback controls. Architecture scanners, memory index
+  checks, memory topic cleanup, and agent-specific permission config validation
+  remain deferred project-specific opt-ins.
 - Current OWASP/security and CI-cost-control batch passes focused tests, full
   unit discovery with 76 tests, compile, pin check, JSON validation, diff
   hygiene, self-audit `100/100`, and both POSIX and PowerShell entrypoints.
@@ -199,8 +215,9 @@ and the required AGENTS instruction format.
 
 ## Next Session
 
-Review the local OWASP/security and CI-cost-control commit. Push only at an
-explicit batch/release boundary or user request. Before a public Action release,
-run the manual macOS/Windows platform CI check if hosted platform confirmation
-is needed, then decide whether to cut a `v1` Action tag and whether
-release-time SBOM/provenance should come next.
+Review the local OWASP/security, CI-cost-control, and generated-harness
+alignment commits. Push only at an explicit batch/release boundary or user
+request. Before a public Action release, run the manual macOS/Windows platform
+CI check if hosted platform confirmation is needed, then decide whether to cut
+a `v1` Action tag and which release-time SBOM/provenance controls should become
+blocking.

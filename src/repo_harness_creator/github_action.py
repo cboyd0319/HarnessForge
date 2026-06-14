@@ -58,6 +58,10 @@ def run_from_env(env: Mapping[str, str]) -> int:
             target,
             agent_file=env.get("INPUT_AGENT_FILE", "AGENTS.md"),
             force=_bool_input(env.get("INPUT_FORCE", "false")),
+            with_ci_workflow=_bool_input(env.get("INPUT_WITH_CI_WORKFLOW", "false")),
+            with_self_heal_workflow=_bool_input(
+                env.get("INPUT_WITH_SELF_HEAL_WORKFLOW", "false")
+            ),
         )
         changed_files = sum(1 for write in writes if write.status == "written")
         result = audit_target(target)
@@ -68,6 +72,10 @@ def run_from_env(env: Mapping[str, str]) -> int:
             apply=_bool_input(env.get("INPUT_APPLY", "false")),
             force=_bool_input(env.get("INPUT_FORCE", "false")),
             agent_file=env.get("INPUT_AGENT_FILE", "AGENTS.md"),
+            with_ci_workflow=_bool_input(env.get("INPUT_WITH_CI_WORKFLOW", "false")),
+            with_self_heal_workflow=_bool_input(
+                env.get("INPUT_WITH_SELF_HEAL_WORKFLOW", "false")
+            ),
         )
         changed_files = sum(1 for write in writes if write.status == "written")
         result = audit_target(target)

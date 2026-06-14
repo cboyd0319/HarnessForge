@@ -83,6 +83,10 @@ packaging, CI, or platform support changes.
   package install safety, and harness-as-product discipline.
 - JobSentinel `docs/harness/sources.md` local sibling reference for dated
   harness source inventory and refresh checklist.
+- Walking Labs `docs/en/resources`, `docs/en/projects`, `projects`, and
+  `skills/harness-creator` local sibling references for initializer flow,
+  structural benchmarking, project progression, and skill-packaged harness
+  validation patterns.
 
 Generated harnesses must use portable URLs, repo-relative paths, or
 project-owned docs instead of machine-specific absolute paths.
@@ -189,3 +193,15 @@ project-owned docs instead of machine-specific absolute paths.
 - The root README is treated as the project landing page, not the full manual.
   It now gives the fastest safe path, clear trust boundaries, Action usage,
   verification, source provenance, and links to deeper harness docs.
+- Deeper Walking Labs resource, project, and harness-creator skill review
+  reinforced generated-harness quality gates, initializer baseline commits,
+  explicit optional workflow scaffolds, structural benchmark caveats, release
+  evidence, and release rollback controls. The imported controls are local and
+  reviewable: generated pin checking, generated release controls, optional
+  manual workflow scaffolds, manifest drift tests, and a generated-harness
+  `100/100` quality gate.
+- Deferred heavier Walking Labs ideas for project-specific opt-ins rather than
+  default generation: architecture/layer scanners, memory index cap checks,
+  memory topic cleanup, and agent-specific tool-permission config validation.
+  These need repo ownership and false-positive review before becoming generic
+  harness output.

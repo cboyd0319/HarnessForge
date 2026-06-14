@@ -52,6 +52,19 @@ jobs:
 Existing files are preserved. Set `force: "true"` only when overwriting
 generated harness files is intentional.
 
+Optional workflow scaffolds are off by default:
+
+```yaml
+- uses: cboyd0319/repo-harness-creator@<reviewed-commit-sha> # v1
+  with:
+    command: init
+    with-ci-workflow: "true"
+    with-self-heal-workflow: "true"
+```
+
+Review and pin the generated workflows before relying on them. The scaffolded
+workflows use manual triggers by default to avoid surprise CI cost.
+
 ## Inputs
 
 | Input | Default | Purpose |
@@ -64,6 +77,8 @@ generated harness files is intentional.
 | `apply` | `false` | Apply safe corrections for `update` |
 | `force` | `false` | Allow overwrites for generated files |
 | `agent-file` | `AGENTS.md` | Root instruction file to generate |
+| `with-ci-workflow` | `false` | Include optional manual repo-harness CI workflow scaffolding during `init` or applied `update` |
+| `with-self-heal-workflow` | `false` | Include optional manual self-heal pull-request workflow scaffolding during `init` or applied `update` |
 | `html-report` | empty | Optional target-relative HTML report path; POSIX and Windows absolute/rooted paths are rejected |
 | `json-report` | empty | Optional target-relative JSON report path; POSIX and Windows absolute/rooted paths are rejected |
 

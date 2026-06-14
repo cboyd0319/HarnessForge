@@ -15,4 +15,19 @@ fi
 
 {{commands_shell}}
 
+if [ -f scripts/check_pins.py ]; then
+  echo "== python scripts/check_pins.py --root . =="
+  "$PYTHON_BIN" scripts/check_pins.py --root .
+fi
+
+if command -v repo-harness >/dev/null 2>&1; then
+  echo "== repo-harness audit --target . --min-score 85 =="
+  repo-harness audit --target . --min-score 85
+elif "$PYTHON_BIN" -m repo_harness_creator --version >/dev/null 2>&1; then
+  echo "== python -m repo_harness_creator audit --target . --min-score 85 =="
+  "$PYTHON_BIN" -m repo_harness_creator audit --target . --min-score 85
+else
+  echo "== repo-harness audit skipped: repo-harness is not installed =="
+fi
+
 echo "== Harness verification complete =="

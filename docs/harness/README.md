@@ -23,7 +23,7 @@ agent sessions.
 | State | `feature_list.json`, `progress.md`, `evidence-log.md` | Current objective, evidence, and restart state |
 | Feedback | tests, self-audit, CI, `evaluator-rubric.md`, research refresh | Deterministic quality checks and source drift signal |
 | Scope | `docs/harness/change-contract.md`, `security-boundary-map.md`, `feature-privacy-labels.json` | Acceptance, rollback, security, and data-flow discipline |
-| Lifecycle | `session-handoff.md`, `clean-state-checklist.md`, `quality-document.md`, `self-healing.md`, entropy control | Restart, recurring maintenance, and reviewed automation |
+| Lifecycle | `session-handoff.md`, `clean-state-checklist.md`, `quality-document.md`, `release-controls.md`, `self-healing.md`, entropy control | Restart, release readiness, recurring maintenance, and reviewed automation |
 
 ## Operating Loop
 

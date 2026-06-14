@@ -16,4 +16,22 @@ $PythonBin = if ($env:PYTHON) {
 
 {{commands_powershell}}
 
+if (Test-Path 'scripts/check_pins.py') {
+  Write-Host '== python scripts/check_pins.py --root . =='
+  & $PythonBin scripts/check_pins.py --root .
+}
+
+if (Get-Command repo-harness -ErrorAction SilentlyContinue) {
+  Write-Host '== repo-harness audit --target . --min-score 85 =='
+  & repo-harness audit --target . --min-score 85
+} else {
+  & $PythonBin -m repo_harness_creator --version *> $null
+  if ($LASTEXITCODE -eq 0) {
+    Write-Host '== python -m repo_harness_creator audit --target . --min-score 85 =='
+    & $PythonBin -m repo_harness_creator audit --target . --min-score 85
+  } else {
+    Write-Host '== repo-harness audit skipped: repo-harness is not installed =='
+  }
+}
+
 Write-Host '== Harness verification complete =='

@@ -1,0 +1,113 @@
+#!/usr/bin/env python3
+from __future__ import annotations
+
+import argparse
+import os
+import re
+from pathlib import Path
+
+SHA_RE = re.compile(r"^[0-9a-f]{40}$")
+USES_RE = re.compile(r"^\s*(?:-\s*)?uses:\s*([^#\s]+)(?:\s*#\s*(.+))?\s*$")
+FORBIDDEN_BUILD_HOOKS = {"build.rs", "setup.py"}
+SCAN_SKIP_DIRS = {
+    ".git",
+    ".mypy_cache",
+    ".nox",
+    ".pytest_cache",
+    ".ruff_cache",
+    ".tox",
+    ".venv",
+    "__pycache__",
+    "build",
+    "dist",
+    "node_modules",
+    "venv",
+}
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description="Check basic repo harness pins.")
+    parser.add_argument("--root", default=".", help="Repository root to check.")
+    parser.add_argument(
+        "--strict",
+        action="store_true",
+        help="exit non-zero when advisory findings are present",
+    )
+    args = parser.parse_args()
+
+    findings = check_root(Path(args.root))
+    if findings:
+        print("Pin check findings:")
+        for finding in findings:
+            print(f"  - {finding}")
+        if args.strict:
+            return 1
+        print("Advisory mode: rerun with --strict to make findings blocking.")
+        return 0
+    print("Pin check passed.")
+    return 0
+
+
+def check_root(root: Path) -> list[str]:
+    root = root.resolve()
+    findings: list[str] = []
+    findings.extend(_check_action_pins(root))
+    findings.extend(_check_forbidden_build_hooks(root))
+    return findings
+
+
+def _check_action_pins(root: Path) -> list[str]:
+    files = [root / "action.yml"]
+    workflows = root / ".github" / "workflows"
+    if workflows.exists():
+        files.extend(sorted(workflows.glob("*.yml")))
+        files.extend(sorted(workflows.glob("*.yaml")))
+    findings: list[str] = []
+    for path in files:
+        if not path.exists():
+            continue
+        relative = path.relative_to(root)
+        for number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
+            match = USES_RE.match(line)
+            if not match:
+                continue
+            ref = match.group(1).strip("'\"")
+            comment = (match.group(2) or "").strip()
+            if ref.startswith(("./", "../", "docker://")):
+                continue
+            if "@" not in ref:
+                findings.append(f"{relative}:{number} action reference has no @ pin: {ref}")
+                continue
+            action, version = ref.rsplit("@", 1)
+            if "/" not in action:
+                findings.append(f"{relative}:{number} action owner/repo is invalid: {ref}")
+                continue
+            if not SHA_RE.match(version):
+                findings.append(
+                    f"{relative}:{number} external action must use a 40-char SHA: {ref}"
+                )
+            if not comment:
+                findings.append(
+                    f"{relative}:{number} SHA-pinned action needs a version comment"
+                )
+    return findings
+
+
+def _check_forbidden_build_hooks(root: Path) -> list[str]:
+    findings: list[str] = []
+    for current, directories, names in os.walk(root):
+        directories[:] = [
+            directory for directory in directories if directory not in SCAN_SKIP_DIRS
+        ]
+        for name in sorted(names):
+            if name not in FORBIDDEN_BUILD_HOOKS:
+                continue
+            path = Path(current) / name
+            if path.is_file():
+                relative = path.relative_to(root)
+                findings.append(f"unexpected build hook file needs review: {relative}")
+    return findings
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
