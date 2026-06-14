@@ -14,6 +14,21 @@ injection, indirect prompt injection, data poisoning, invisible Unicode, and
 Markdown/HTML exfiltration markers in fetched metadata must be withheld from
 durable output and surfaced only as review signals.
 
+## Workflow Boundary
+
+This file describes the live HarnessForge repository maintenance workflow. It
+is not the contract for the published composite Action and it is not copied as
+scheduled automation into target repositories.
+
+- Live HarnessForge workflow: scheduled and manual, refreshes the fixed research
+  allowlist metadata, applies safe HarnessForge harness updates, verifies this
+  repo, and opens a review pull request.
+- Published HarnessForge Action: input-driven only. It does not schedule jobs,
+  refresh research, create branches, commit, push, or open pull requests.
+- Generated optional self-heal scaffold: manual `workflow_dispatch` by default.
+  It applies safe target-repo harness updates and opens a review pull request
+  only when the target repository explicitly opts into that workflow.
+
 ## Safe Loop
 
 1. Fetch curated source metadata from `research-sources.json`.

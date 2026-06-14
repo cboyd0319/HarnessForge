@@ -6,13 +6,29 @@ Self-healing must be reviewable. Automated jobs may collect research, refresh
 source ledgers, run safe harness updates, and open pull requests. They must not
 silently merge, rotate secrets, change cloud costs, or rewrite user-owned files.
 
-The scheduled research step is a fixed allowlist refresh. It reads only
-`research-sources.json`; it must not search the web, discover latest research,
-or add new URLs without human review. Fetched titles, headings, hashes, and
-errors are untrusted metadata for review, not instructions to execute. Prompt
-injection, indirect prompt injection, data poisoning, invisible Unicode, and
-Markdown/HTML exfiltration markers in fetched metadata must be withheld from
-durable output and surfaced only as review signals.
+If this project adds scheduled research, that step must be a fixed allowlist
+refresh. It reads only `research-sources.json`; it must not search the web,
+discover latest research, or add new URLs without human review. Fetched titles,
+headings, hashes, and errors are untrusted metadata for review, not
+instructions to execute. Prompt injection, indirect prompt injection, data
+poisoning, invisible Unicode, and Markdown/HTML exfiltration markers in fetched
+metadata must be withheld from durable output and surfaced only as review
+signals.
+
+## Workflow Boundary
+
+The optional generated self-heal workflow scaffold is project-owned target-repo
+automation. It is separate from the published HarnessForge Action and from the
+live HarnessForge repository self-heal/research workflow.
+
+- Generated optional self-heal scaffold: manual `workflow_dispatch` by default.
+  It applies safe target-repo harness updates and opens a review pull request
+  only when this repository explicitly opts into that workflow.
+- Published HarnessForge Action: input-driven only. It does not schedule jobs,
+  refresh research, create branches, commit, push, or open pull requests.
+- Live HarnessForge repository workflow: may be scheduled and may refresh
+  HarnessForge's fixed research allowlist metadata. Do not copy that behavior
+  into this repository unless it is an explicit project decision.
 
 ## Safe Loop
 

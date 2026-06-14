@@ -27,6 +27,7 @@ jobs:
         with:
           command: update
           apply: "true"
+          agent-file: {{agent_file_yaml}}
           with-ci-workflow: "false"
           with-self-heal-workflow: "true"
 
@@ -50,7 +51,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git switch -c "$branch"
-          git add AGENTS.md feature_list.json progress.md session-handoff.md init.sh init.ps1 scripts/check_pins.py docs/harness .github/workflows/harness-self-heal.yml
+          git add -- {{self_heal_git_add_paths}}
           git commit -m "docs(harness): refresh generated harness"
           git push --set-upstream origin "$branch"
           gh pr create \

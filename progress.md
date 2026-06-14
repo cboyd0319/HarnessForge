@@ -212,10 +212,25 @@ maintenance loop.
   smoke for `harnessforge-0.1.0-py3-none-any.whl` generated and audited a fresh
   target harness at `100/100`. Wheel SHA-256:
   `34134b559fafe823c5f9b9b5f041eaf387b226ca9300b8b1abdfdc1f997e657e`.
+- Clarified the generated/local boundary for agent tooling. Generated
+  `GEMINI.md` keeps the intended Gemini/Antigravity loader router, but generated
+  instruction entrypoints now have regression coverage against repo-local
+  AGY/Antigravity research-tool mandates. Live and generated boundary maps state
+  that generated harnesses must not inherit HarnessForge's local agent/tooling
+  mandates.
+- Completed a deeper generated-surface review across every template, a rendered
+  default harness, a rendered custom-agent harness, optional workflow scaffolds,
+  and the published Action docs. Live HarnessForge self-heal/research workflow
+  behavior is now explicitly separate from generated optional workflow scaffolds
+  and the input-driven composite Action. Generated self-heal scaffolds stay
+  manual by default, do not inherit scheduled research refresh, stage generated
+  router files, and preserve custom `--agent-file` values. Audit now follows
+  the manifest-declared canonical instruction file, so custom-agent generated
+  harnesses audit at `100/100`.
 
 ## Recommended Next Step
 
-Review and commit the release-prep evidence when ready. Push the two local
+Review and commit the generated-surface boundary fixes when ready. Push local
 commits only at an explicit batch/release boundary or user request. Before a
 first public Action release, run the manual macOS/Windows platform CI check,
 then decide whether to cut a `v1` Action tag and which release-time
@@ -223,6 +238,31 @@ SBOM/provenance controls should become blocking.
 
 ## Verification Evidence
 
+- `PYTHONPATH=src:. python3 -m unittest tests.test_generate_audit
+  tests.test_github_action tests.test_refresh_research tests.test_pins` passed
+  with 70 focused tests after adding generated workflow/Action boundary
+  assertions, generated self-heal staging coverage, custom `--agent-file`
+  self-heal coverage, and Action-doc boundary assertions.
+- Rendered default and custom-agent target smokes passed. The default generated
+  target with both optional workflows audited at `100/100`; the custom
+  `--agent-file PROJECT_AGENTS.md` target audited at `100/100`; generated scans
+  found no local-commit wording, `Local production harness patterns`,
+  AGY/Antigravity research mandates, schedules, cron triggers, or
+  `refresh_research.py` inheritance in generated targets.
+- `PYTHONPATH=src:. python3 -m unittest discover -s tests` passed with
+  97 tests. `PYTHONPATH=src:. python3 -m compileall src tests scripts`,
+  `PYTHONPATH=src:. python3 scripts/check_pins.py --root .`, JSON/template
+  parsing, `PYTHONPATH=src:. python3 -m harnessforge audit --target .
+  --min-score 85`, and `git diff --check` passed; self-audit stayed `100/100`.
+- `PYTHONPATH=src:. python3 -m unittest tests.test_generate_audit
+  tests.test_refresh_research` passed with 44 focused tests after adding the
+  generated instruction-entrypoint guard for repo-local AGY/Antigravity research
+  mandates.
+- `PYTHONPATH=src:. python3 -m unittest discover -s tests` passed with
+  93 tests. `python3 -m compileall src tests`, generated-template mandate scan,
+  `PYTHONPATH=src:. python3 scripts/check_pins.py --root .`, `PYTHONPATH=src:.
+  python3 -m harnessforge audit --target . --min-score 85`, and `git diff
+  --check` passed; self-audit stayed `100/100`.
 - `./init.sh` passed on macOS 26.5.1 with Python 3.14.5: doctor, compile,
   92 tests, pin check, and self-audit `100/100`.
 - `pwsh -NoProfile -File ./init.ps1` passed on macOS 26.5.1 with Python

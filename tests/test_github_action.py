@@ -52,6 +52,17 @@ class GitHubActionTests(unittest.TestCase):
             action.read_text(encoding="utf-8"),
         )
 
+    def test_action_docs_separate_action_from_workflows(self) -> None:
+        root = Path(__file__).resolve().parents[1]
+        docs = (root / "docs/action.md").read_text(encoding="utf-8")
+
+        self.assertIn("The Action is separate", docs)
+        self.assertIn("does not schedule jobs", docs)
+        self.assertIn("refresh research", docs)
+        self.assertIn("open pull requests by itself", docs)
+        self.assertIn("project-owned generated files", docs)
+        self.assertIn("not the live HarnessForge repository workflow", docs)
+
     def test_action_audit_writes_outputs_and_reports(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

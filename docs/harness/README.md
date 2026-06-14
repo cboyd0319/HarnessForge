@@ -61,6 +61,10 @@ The scheduled self-healing workflow refreshes `research-inbox.md`, applies safe
 missing-file harness updates, verifies the repo, and opens a pull request when
 there is a reviewable change.
 
+That scheduled workflow is HarnessForge-maintainer automation for this
+repository. It is separate from the published composite Action and from the
+manual workflow scaffolds generated into target repositories.
+
 ## When To Add Harness
 
 Add harness when a repeated failure, hidden setup step, source-of-truth conflict,

@@ -84,6 +84,27 @@ and the required AGENTS instruction format.
   `34134b559fafe823c5f9b9b5f041eaf387b226ca9300b8b1abdfdc1f997e657e`.
   Remote manual macOS/Windows CI, SBOM/provenance decision, and release tag
   remain gated.
+- Current generated/local boundary batch keeps generated `GEMINI.md` support
+  for Gemini and Antigravity loading, but adds regression coverage that
+  generated instruction entrypoints do not impose repo-local AGY/Antigravity
+  research mandates. Live and generated boundary maps now state that generated
+  harnesses must not inherit HarnessForge's local agent/tooling mandates.
+  Focused generator/refresh tests passed with 44 tests, full unit discovery
+  passed with 93 tests, pin check passed, diff hygiene passed, and self-audit
+  stayed `100/100`.
+- Current deep generated-surface boundary batch separates live HarnessForge
+  self-heal/research workflow behavior, generated optional workflow scaffolds,
+  and published composite Action behavior. Generated self-heal scaffolds are
+  documented and tested as manual by default, without scheduled research
+  refresh inheritance; they stage generated router files and preserve custom
+  `--agent-file` values. The published Action docs now state that the Action is
+  input-driven and does not schedule jobs, refresh research, create branches,
+  commit, push, or open pull requests by itself. Audit now follows the
+  manifest-declared canonical instruction file, so custom-agent generated
+  harnesses audit at `100/100`. Focused tests passed with 70 tests, full unit
+  discovery passed with 97 tests, compile passed, pin check passed,
+  JSON/template parsing passed, generated default/custom target audits passed
+  at `100/100`, diff hygiene passed, and self-audit stayed `100/100`.
 - Current OpenAI Codex AI-native engineering guide review imported
   Delegate/Review/Own SDLC boundaries, agent-generated test integrity guidance,
   high-signal review criteria, and the official source URL into the fixed
@@ -293,7 +314,7 @@ and the required AGENTS instruction format.
 
 ## Next Session
 
-Review and commit the release-prep evidence when ready. Push the two local
+Review and commit the generated-surface boundary fixes when ready. Push local
 commits only at an explicit batch/release boundary or user request. Before a
 public Action release, run the manual macOS/Windows platform CI check, then
 decide whether to cut a `v1` Action tag and which release-time SBOM/provenance

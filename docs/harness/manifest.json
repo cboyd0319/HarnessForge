@@ -157,6 +157,7 @@
       "fixed allowlist",
       "prompt injection",
       "data poisoning",
+      "Workflow surfaces",
       "least privilege",
       "human approval",
       "cost-incurring",
@@ -204,6 +205,8 @@
       "fixed allowlist",
       "prompt injection",
       "invisible Unicode",
+      "Workflow Boundary",
+      "HarnessForge Action",
       "Safe Loop",
       "Promotion Rule"
     ],
@@ -235,7 +238,7 @@
       "least privilege",
       "human approval",
       "verification commands",
-      "local commits",
+      "project checkpoints",
       "push",
       "intentionally vulnerable"
     ],

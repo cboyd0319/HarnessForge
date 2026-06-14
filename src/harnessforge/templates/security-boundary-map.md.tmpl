@@ -20,7 +20,8 @@ Keep three surfaces separate:
   platform or operational contract.
 - Generated harness artifacts: files created by HarnessForge in this
   repository. Defaults are portable and conservative, and should not inherit
-  HarnessForge's own release state or local paths.
+  HarnessForge's own release state, local paths, or local agent/tooling
+  mandates.
 - HarnessForge GitHub Action: reusable CI surface for generating, updating, or
   auditing this repository's harness. It should run with explicit workflow
   permissions, keep reports target-relative, and write files only for `init` or
@@ -34,12 +35,13 @@ Keep three surfaces separate:
 | Untrusted content | Project maintainers | Public websites, issue text, generated logs, retrieved documents, and source metadata can carry prompt injection, indirect prompt injection, or data poisoning attempts. Treat scanners as advisory, withhold suspicious fetched metadata from durable output, and require human review before promotion into templates, audit checks, or policy. |
 | Agent tools and outputs | Project maintainers | Tool descriptions, schemas, return values, retrieved chunks, and agent-to-agent output are untrusted data. Apply least privilege, validate tool arguments, redact secrets in logs, and require exact human approval before destructive, externally visible, credential-touching, or cost-incurring actions. |
 | Rules, build, and workflow files | Project maintainers | Agent instruction files, workflow files, package scripts, build scripts, and deployment config are security-critical. Review changes as prompt-to-code supply-chain changes and require focused tests when behavior changes. |
+| Workflow surfaces | Project maintainers | Keep project workflows, optional HarnessForge-generated workflow scaffolds, and the published HarnessForge composite Action separate. Generated workflow scaffolds are manual target-repo files by default. The published Action is input-driven and does not schedule, commit, push, or open pull requests. |
 | Verification commands | Project maintainers | Treat `init.sh`, `init.ps1`, package scripts, Make targets, workflow commands, and harness-declared checks as executable code. Review command changes before running them from untrusted branches or generated updates. |
 | Training, demo, and intentionally vulnerable fixtures | Project maintainers | Do not automatically remediate accepted vulnerable examples, challenge code, or fixtures unless the user asks for that scope. Record owner, path, and risk acceptance; scan findings must separate intentional training content from product defects. |
 | Threat model and control evidence | Project maintainers | Material AI/RAG/agent, tool, external-service, auth, secret, data-flow, or deployment changes must update boundary docs, defect/evidence records, and focused abuse-case checks. |
 | Secrets and credentials | Project maintainers | Do not print, store, transform, or transmit secrets unless the task explicitly requires a reviewed secret-handling path. |
-| Network calls | Project maintainers | Prefer local verification. Scheduled research refreshes may read only a reviewed fixed allowlist such as `research-sources.json`; they must not search for latest research or discover new URLs without review. Other external calls need a source, purpose, and failure mode. |
-| Cost-incurring systems | Project maintainers | Prefer local verification and local commits during active work. Push only at explicit batch boundaries or by user request. Cloud, model, or paid API changes require explicit approval and rollback notes. |
+| Network calls | Project maintainers | Prefer local verification. When a project schedules research refreshes, they may read only a reviewed fixed allowlist such as `research-sources.json`; they must not search for latest research or discover new URLs without review. Other external calls need a source, purpose, and failure mode. |
+| Cost-incurring systems | Project maintainers | Prefer local verification during active work. Push only at explicit project checkpoints or by user request. Cloud, model, or paid API changes require explicit approval and rollback notes. |
 
 ## Data Boundaries
 

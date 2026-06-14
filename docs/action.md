@@ -15,6 +15,8 @@ state files, or release process are present in the caller repository.
 - `init` and applied `update` may write generated harness files inside
   `target`; callers should grant write permissions only when they intend to
   commit or open a pull request.
+- The Action does not schedule jobs, refresh research, create branches, commit,
+  push, or open pull requests by itself.
 - Report paths are target-relative outputs with forward slashes on every
   runner.
 - The caller owns checkout credentials, branch creation, commits, pushes, and
@@ -79,7 +81,9 @@ Optional workflow scaffolds are off by default:
 ```
 
 Review and pin the generated workflows before relying on them. The scaffolded
-workflows use manual triggers by default to avoid surprise CI cost.
+workflows use manual triggers by default to avoid surprise CI cost. They are
+project-owned generated files, not the live HarnessForge repository workflow
+and not behavior embedded in the composite Action runtime.
 
 ## Inputs
 

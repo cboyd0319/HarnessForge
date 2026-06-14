@@ -159,6 +159,28 @@ def _template_specs(
     return tuple(specs)
 
 
+def _self_heal_git_add_paths(agent_file: str) -> str:
+    paths = [agent_file]
+    if agent_file != "CLAUDE.md":
+        paths.append("CLAUDE.md")
+    if agent_file != "GEMINI.md":
+        paths.append("GEMINI.md")
+    paths.extend(
+        [
+            ".github/copilot-instructions.md",
+            "feature_list.json",
+            "progress.md",
+            "session-handoff.md",
+            "init.sh",
+            "init.ps1",
+            "scripts/check_pins.py",
+            "docs/harness",
+            ".github/workflows/harness-self-heal.yml",
+        ]
+    )
+    return " \\\n            ".join(shlex.quote(path) for path in paths)
+
+
 def _validate_agent_file(agent_file: str) -> str:
     name = agent_file.strip()
     path = Path(name)
@@ -184,11 +206,13 @@ def _template_context(
     commands = profile.verification_commands
     return {
         "agent_file": agent_file,
+        "agent_file_yaml": json.dumps(agent_file),
         "project_name": project_name or profile.name,
         "detected_stack": profile.stack,
         "languages": ", ".join(profile.languages),
         "package_managers": ", ".join(profile.package_managers) or "none detected",
         "runtime_files": ", ".join(profile.runtime_files) or "none detected",
+        "self_heal_git_add_paths": _self_heal_git_add_paths(agent_file),
         "components_markdown": _components_markdown(profile.components),
         "workspace_markers_markdown": _workspace_markers_markdown(
             profile.workspace_markers
@@ -368,6 +392,7 @@ def _manifest_content(
             "Operating Loop",
             "When To Add Harness",
             "Assessment And Updates",
+            "project-owned generated files",
         ],
         "docs/harness/change-contract.md": [
             "Problem",
@@ -409,6 +434,7 @@ def _manifest_content(
             "fixed allowlist",
             "prompt injection",
             "data poisoning",
+            "Workflow surfaces",
             "least privilege",
             "human approval",
             "cost-incurring",
@@ -456,6 +482,8 @@ def _manifest_content(
             "fixed allowlist",
             "prompt injection",
             "invisible Unicode",
+            "Workflow Boundary",
+            "HarnessForge Action",
             "Safe Loop",
             "Promotion Rule",
         ],
@@ -487,7 +515,7 @@ def _manifest_content(
             "least privilege",
             "human approval",
             "verification commands",
-            "local commits",
+            "project checkpoints",
             "push",
             "intentionally vulnerable",
         ],
@@ -540,6 +568,10 @@ def _manifest_content(
             "contents: write",
             "pull-requests: write",
             "apply",
+            "agent-file:",
+            agent_file,
+            "git add --",
+            ".github/copilot-instructions.md",
             "gh pr create",
         ]
     manifest = {

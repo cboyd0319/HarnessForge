@@ -44,8 +44,8 @@ def audit_target(
     target: Path, *, allow_local_absolute_paths: bool = False
 ) -> AuditResult:
     root = target.resolve()
-    files = _load_known_files(root)
     manifest = _load_manifest(root)
+    files = _load_known_files(root, manifest)
     platform_contract = _platform_contract(files, manifest)
     manifest_failures = _manifest_failures(root, manifest)
     link_failures = _local_markdown_link_failures(root, files)
@@ -55,7 +55,7 @@ def audit_target(
         else _local_absolute_path_failures(files)
     )
     domains = (
-        _score("instructions", _instruction_checks(files)),
+        _score("instructions", _instruction_checks(files, manifest)),
         _score("tools", _tool_checks(files, platform_contract)),
         _score("environment", _environment_checks(files, platform_contract)),
         _score("state", _state_checks(files)),
@@ -68,7 +68,7 @@ def audit_target(
                 allow_local_absolute_paths=allow_local_absolute_paths,
             ),
         ),
-        _score("lifecycle", _lifecycle_checks(files)),
+        _score("lifecycle", _lifecycle_checks(files, manifest)),
     )
     total = sum(domain.score for domain in domains)
     average = (total / (len(domains) * 5)) * 100
@@ -204,7 +204,7 @@ def render_html_report(result: AuditResult) -> str:
 """
 
 
-def _load_known_files(root: Path) -> dict[str, str]:
+def _load_known_files(root: Path, manifest: dict[str, Any]) -> dict[str, str]:
     candidates = [
         "AGENTS.md",
         "CLAUDE.md",
@@ -262,14 +262,26 @@ def _load_known_files(root: Path) -> dict[str, str]:
         "docs/harness/multi-agent-orchestration.md",
         "docs/harness/feature-list.schema.json",
     ]
+    for candidate in _manifest_file_candidates(manifest):
+        if candidate not in candidates:
+            candidates.append(candidate)
     loaded: dict[str, str] = {}
     for candidate in candidates:
-        path = root / candidate
+        if is_absolute_path_text(candidate):
+            continue
+        path = root / path_from_relative_text(candidate)
+        if not is_inside_root(path, root):
+            continue
         text = _read_text_inside_root(path, root)
         if text is None:
             continue
         loaded[candidate] = text
     return loaded
+
+
+def _manifest_file_candidates(manifest: dict[str, Any]) -> list[str]:
+    agent_file = _manifest_agent_file(manifest)
+    return [agent_file] if agent_file else []
 
 
 def _load_manifest(root: Path) -> dict[str, Any]:
@@ -296,7 +308,7 @@ def _platform_contract(
     evidence = "\n".join(
         [
             manifest_text,
-            files.get("AGENTS.md", ""),
+            _instruction_text(files, manifest),
             files.get("README.md", ""),
             files.get("docs/harness/README.md", ""),
             files.get("docs/harness/component-inventory.md", ""),
@@ -578,13 +590,36 @@ def _score(name: str, checks: list[CheckResult]) -> DomainScore:
     )
 
 
-def _instruction_checks(files: dict[str, str]) -> list[CheckResult]:
-    instruction = (
+def _manifest_agent_file(manifest: dict[str, Any]) -> str:
+    snippets = manifest.get("requiredHarnessSnippets", {})
+    if not isinstance(snippets, dict):
+        return ""
+    for file_name, required_snippets in snippets.items():
+        if not isinstance(file_name, str) or not isinstance(required_snippets, list):
+            continue
+        if file_name.endswith(".md") and "Startup" in required_snippets:
+            return file_name
+    return ""
+
+
+def _instruction_text(files: dict[str, str], manifest: dict[str, Any]) -> str:
+    manifest_agent_file = _manifest_agent_file(manifest)
+    if manifest_agent_file:
+        instruction = files.get(manifest_agent_file)
+        if instruction:
+            return instruction
+    return (
         files.get("AGENTS.md")
         or files.get("CLAUDE.md")
         or files.get("GEMINI.md")
         or ""
     )
+
+
+def _instruction_checks(
+    files: dict[str, str], manifest: dict[str, Any]
+) -> list[CheckResult]:
+    instruction = _instruction_text(files, manifest)
     return [
         _check(bool(instruction), "Root agent instruction file exists"),
         _contains(instruction, ("Startup", "Before writing code"), "Startup path is documented"),
@@ -843,14 +878,11 @@ def _scope_checks(
     ]
 
 
-def _lifecycle_checks(files: dict[str, str]) -> list[CheckResult]:
+def _lifecycle_checks(
+    files: dict[str, str], manifest: dict[str, Any]
+) -> list[CheckResult]:
     handoff = files.get("session-handoff.md", "")
-    instructions = (
-        files.get("AGENTS.md")
-        or files.get("CLAUDE.md")
-        or files.get("GEMINI.md")
-        or ""
-    )
+    instructions = _instruction_text(files, manifest)
     lifecycle_text = "\n".join(
         files.get(name, "")
         for name in (

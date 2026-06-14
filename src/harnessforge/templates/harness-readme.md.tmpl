@@ -50,6 +50,10 @@ harnessforge update --target .
 Run `harnessforge update --target . --apply` only when you want safe missing-file
 corrections. Existing files are preserved unless `--force` is passed.
 
+Optional workflow scaffolds are project-owned generated files. They are separate
+from the published HarnessForge Action runtime and from HarnessForge's live
+repository maintenance workflows.
+
 Run `./init.sh --no-env` or `.\init.ps1 -NoEnv` when checks should run without
 common AI, cloud, or GitHub credentials in the process environment.
 
