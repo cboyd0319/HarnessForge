@@ -1056,6 +1056,47 @@ class GenerateAuditTests(unittest.TestCase):
         self.assertIn("justfile", manifest["detectedRoutingMarkers"])
         self.assertIn("just gen-docs-check", manifest["verificationCommands"])
 
+    def test_agents_file_includes_agent_skill_catalog_context(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "skills" / "demo").mkdir(parents=True)
+            (root / "skills" / "demo" / "SKILL.md").write_text(
+                "---\nname: demo\n---\n",
+                encoding="utf-8",
+            )
+            (root / ".claude-plugin").mkdir()
+            (root / ".claude-plugin" / "marketplace.json").write_text(
+                "{}\n",
+                encoding="utf-8",
+            )
+            create_harness(root)
+            agents = (root / "AGENTS.md").read_text(encoding="utf-8")
+            manifest = json.loads(
+                (root / "docs/harness/manifest.json").read_text(encoding="utf-8")
+            )
+
+        self.assertIn("Agent skill surfaces detected", agents)
+        self.assertIn("Agent plugin manifests detected", agents)
+        self.assertIn("agent skills", manifest["detectedRoutingMarkers"])
+        self.assertIn(".claude-plugin", manifest["detectedRoutingMarkers"])
+
+    def test_agents_file_includes_docs_catalog_context(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "README.md").write_text(
+                "# Catalog\n\n| Name | Link |\n| --- | --- |\n",
+                encoding="utf-8",
+            )
+            (root / "CONTRIBUTING.md").write_text(
+                "# Contributing\n",
+                encoding="utf-8",
+            )
+            create_harness(root)
+            agents = (root / "AGENTS.md").read_text(encoding="utf-8")
+
+        self.assertIn("Documentation or catalog repository detected", agents)
+        self.assertNotIn("No stack-specific context", agents)
+
     def test_audit_requires_instructions_to_route_to_detected_spec_sources(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

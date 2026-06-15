@@ -450,6 +450,12 @@ maintenance loop.
   as `docs` instead of `generic`, and `harnessforge index` now supports
   `--max-files` plus explicit component-inventory truncation signals for large
   repositories.
+- Completed a follow-up real-repo content-quality pass across the local
+  reference set. Accepted three additional fixes: repo-relative path handling
+  now preserves literal trailing spaces in filenames, structural indexes now
+  include an `other` file class for unclassified repo artifacts, and generated
+  context now calls out agent skill catalogs, plugin manifests, and
+  docs/catalog repositories as first-class review surfaces.
 - Added read-only `harnessforge effectiveness --target . --json` evidence
   assessment. The command scans target-contained
   `docs/harness/evidence/effectiveness*.json` reports or explicit
@@ -458,7 +464,7 @@ maintenance loop.
   running benchmarks, installing dependencies, calling models, writing files,
   or turning structural audit score into a performance claim.
 - Current verification passes full unit discovery and POSIX/PowerShell
-  entrypoints with 219 tests, focused CLI, generator, and contract tests,
+  entrypoints with 223 tests, focused CLI, generator, and contract tests,
   index/effectiveness JSON and text smokes, compile, pin check, research source
   check, JSON validation, session/plan/index/effectiveness JSON smokes,
   self-audit `100/100`, changed-file local-path scan, and diff hygiene.
@@ -501,6 +507,13 @@ Push local commits only at an explicit batch/release boundary or user request.
 - `harnessforge index --target <large-repo> --max-files 20000 --json` cleared
   file truncation on the large reference repos while reporting the bounded
   component inventory limit.
+- A second read-only real-repo quality pass found no command failures and no
+  remaining generated `No stack-specific context` output after adding
+  docs/catalog and skill/plugin context. Remaining blocked repos are docs or
+  skill/catalog repos without repo-owned validation commands.
+- `harnessforge index --target <repo> --max-files 20000 --json` no longer
+  emits false stat warnings for awkward but valid target-relative filenames
+  with trailing spaces, and now exposes those files through the `other` class.
 - `./init.sh` passed with doctor, compile, 211 tests, pin check, research
   source check, and self-audit `100/100`.
 - `pwsh -NoProfile -File ./init.ps1` passed with doctor, compile, 211 tests,
@@ -511,6 +524,12 @@ Push local commits only at an explicit batch/release boundary or user request.
 - `PYTHON=<python3.13> pwsh -NoProfile -File ./init.ps1` passed with
   doctor, compile, 219 tests, pin check, research source check, and self-audit
   `100/100` after the real-repo scan fixes.
+- `PYTHON=<python3.13> ./init.sh` passed with doctor, compile, 223
+  tests, pin check, research source check, and self-audit `100/100` after the
+  follow-up real-repo quality pass.
+- `PYTHON=<python3.13> pwsh -NoProfile -File ./init.ps1` passed with
+  doctor, compile, 223 tests, pin check, research source check, and self-audit
+  `100/100` after the follow-up real-repo quality pass.
 - `PYTHONPATH=src:. python3 -m unittest
   tests.test_cli.CliTests.test_effectiveness_json_assesses_reviewable_evidence_without_writing`
   first failed because `effectiveness` was not a recognized subcommand, then

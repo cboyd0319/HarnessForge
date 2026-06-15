@@ -620,6 +620,12 @@ optional cache must be target-contained, reviewable, and safe to delete.
 The latest local real-repo pass also fixed root Maven and Gradle command
 inference for monorepo-classified repositories and docs/research repository
 classification when non-code assets are present.
+The follow-up real-repo quality pass fixed literal repo-relative path handling
+for filenames with trailing spaces, added an `other` structural index class for
+unclassified artifacts, and improved generated context for agent skill
+catalogs, plugin manifests, and docs/catalog repositories. Remaining blocked
+reference repos are blocked only because they do not expose a repo-owned
+verification command.
 `scripts/refresh_research.py --check` validates duplicate source IDs and URLs,
 required fields, placeholder text, canonical URL shape, arXiv `/abs/` URLs,
 lock-file consistency, and local-path leakage before any metadata fetch. Root
@@ -644,7 +650,7 @@ coverage, focused verify report-persistence tests, focused verify-evidence gate
 tests, focused Action sync tests, focused session tests, focused sensor-registry
 generator test, focused source-record generator test, focused index CLI tests,
 focused effectiveness CLI and contract tests, full unit discovery and
-POSIX/PowerShell entrypoints with 219 tests, compile, JSON/YAML validation, pin
+POSIX/PowerShell entrypoints with 223 tests, compile, JSON/YAML validation, pin
 check, research source check, rendered optional workflow audit and pin smoke,
 session, plan, index, and effectiveness JSON smokes, expected-warning sync JSON
 smoke, self-audit `100/100`, changed-file local-path scan, and diff hygiene.

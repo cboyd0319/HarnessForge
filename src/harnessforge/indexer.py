@@ -20,6 +20,7 @@ FILE_CLASS_ORDER = (
     "workflow",
     "harness",
     "config",
+    "other",
 )
 
 SOURCE_LANGUAGES = {
@@ -527,6 +528,8 @@ def _classes_for_path(
         in {".json", ".toml", ".yaml", ".yml", ".ini", ".cfg", ".conf"}
     ):
         classes.append("config")
+    if not classes:
+        classes.append("other")
     return tuple(file_class for file_class in FILE_CLASS_ORDER if file_class in classes)
 
 

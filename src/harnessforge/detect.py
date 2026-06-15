@@ -265,6 +265,8 @@ def _detect_languages(
         languages.add("typescript")
     if {"pyproject.toml", "requirements.txt", "setup.py"} & file_set or ".py" in suffixes:
         languages.add("python")
+    if _has_agent_skill_surface(file_set):
+        languages.add("docs")
     if "Package.swift" in file_set or ".swift" in suffixes:
         languages.add("swift")
     if {".sh", ".bash", ".zsh", ".command"} & suffixes:
@@ -561,6 +563,12 @@ def _detect_routing_markers(root: Path, file_set: set[str]) -> tuple[str, ...]:
         markers.append(".harness")
     if any(file.startswith(".windsurf/") for file in file_set):
         markers.append(".windsurf")
+    if any(file.startswith(".claude-plugin/") for file in file_set):
+        markers.append(".claude-plugin")
+    if any(file.startswith(".codex-plugin/") for file in file_set):
+        markers.append(".codex-plugin")
+    if _has_agent_skill_surface(file_set):
+        markers.append("agent skills")
     if {"Justfile", "justfile"} & file_set:
         markers.append("justfile")
     if _has_structured_spec_surface(file_set):
@@ -769,6 +777,21 @@ def _has_documentation_files(file_set: set[str]) -> bool:
     return any(
         Path(file).suffix.lower() in {".adoc", ".md", ".rst", ".txt"}
         for file in file_set
+    )
+
+
+def _has_agent_skill_surface(file_set: set[str]) -> bool:
+    return any(_is_agent_skill_file(file) for file in file_set)
+
+
+def _is_agent_skill_file(file: str) -> bool:
+    path = Path(file)
+    parts = path.parts
+    if path.name != "SKILL.md":
+        return False
+    return len(parts) >= 3 and (
+        parts[0] == "skills"
+        or parts[:2] in {(".claude", "skills"), (".codex", "skills")}
     )
 
 

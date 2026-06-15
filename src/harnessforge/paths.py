@@ -21,7 +21,7 @@ def is_absolute_path_text(path_text: str) -> bool:
 def path_from_relative_text(path_text: str) -> Path:
     parts = [
         part
-        for part in SEPARATOR_RE.split(path_text.strip())
+        for part in SEPARATOR_RE.split(path_text)
         if part and part != "."
     ]
     if not parts:

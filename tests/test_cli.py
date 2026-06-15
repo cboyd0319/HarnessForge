@@ -269,6 +269,29 @@ class CliTests(unittest.TestCase):
         self.assertEqual(payload["limits"]["maxComponents"], 80)
         self.assertIn("80-component detection limit", " ".join(payload["warnings"]))
 
+    def test_index_json_preserves_trailing_space_file_names(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "Exit: ").write_text("diagnostic output\n", encoding="utf-8")
+            stdout = io.StringIO()
+            with contextlib.redirect_stdout(stdout):
+                code = main(["index", "--target", str(root), "--json"])
+
+            payload = json.loads(stdout.getvalue())
+
+        self.assertEqual(code, 0)
+        class_examples = {
+            item["class"]: item["examples"] for item in payload["fileClasses"]
+        }
+        self.assertIn("Exit: ", class_examples["other"])
+        self.assertIn(
+            {"class": "other", "files": 1, "bytes": 18, "examples": ["Exit: "]},
+            payload["fileClasses"],
+        )
+        self.assertFalse(
+            any("Could not stat file" in warning for warning in payload["warnings"])
+        )
+
     def test_effectiveness_json_assesses_reviewable_evidence_without_writing(
         self,
     ) -> None:

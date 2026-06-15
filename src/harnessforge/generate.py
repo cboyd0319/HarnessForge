@@ -542,6 +542,13 @@ def _project_context_markdown(profile: ProjectProfile) -> str:
             "nearest docs build targets before changing generated docs or\n"
             "  published site content."
         )
+    elif profile.stack == "docs" or "docs" in languages:
+        signals.append(
+            "- Documentation or catalog repository detected. Treat README files, "
+            "contribution rules, figures, tables, and external links as the\n"
+            "  main product surface; use a repo-owned link or format check when "
+            "one exists."
+        )
     if "terraform" in languages:
         signals.append(
             "- Terraform or infrastructure files detected. Treat provider, "
@@ -595,6 +602,19 @@ def _project_context_markdown(profile: ProjectProfile) -> str:
             "- Go module surfaces are present. Treat nested `go.mod` files as "
             "separate module\n"
             "  boundaries."
+        )
+    if "agent skills" in routing_markers:
+        signals.append(
+            "- Agent skill surfaces detected. Treat `SKILL.md` frontmatter, "
+            "trigger descriptions, bundled scripts, assets, and examples as\n"
+            "  agent-control surfaces; review tool assumptions before changing "
+            "or distributing them."
+        )
+    if {".claude-plugin", ".codex-plugin"} & routing_markers:
+        signals.append(
+            "- Agent plugin manifests detected. Review marketplace metadata, "
+            "packaged skills, install commands, and distribution scope before\n"
+            "  changing plugin behavior."
         )
     if (
         "gen-docs" in command_text

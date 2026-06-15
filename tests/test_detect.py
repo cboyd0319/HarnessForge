@@ -147,6 +147,26 @@ class DetectProjectTests(unittest.TestCase):
         self.assertTrue(profile.component_scan_truncated)
         self.assertEqual(profile.component_scan_limit, 80)
 
+    def test_detects_agent_skill_catalog_routing(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "skills" / "demo").mkdir(parents=True)
+            (root / "skills" / "demo" / "SKILL.md").write_text(
+                "---\nname: demo\n---\n",
+                encoding="utf-8",
+            )
+            (root / ".claude-plugin").mkdir()
+            (root / ".claude-plugin" / "marketplace.json").write_text(
+                "{}\n",
+                encoding="utf-8",
+            )
+
+            profile = detect_project(root)
+
+        self.assertIn("docs", profile.languages)
+        self.assertIn("agent skills", profile.routing_markers)
+        self.assertIn(".claude-plugin", profile.routing_markers)
+
     def test_docs_site_uses_local_validation_script(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
