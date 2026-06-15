@@ -879,6 +879,49 @@ class GenerateAuditTests(unittest.TestCase):
         self.assertIn("GitHub Action surface", agents)
         self.assertIn("Existing hidden agent instruction files", agents)
 
+    def test_agents_file_includes_generic_spec_runner_and_docgen_context(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "Cargo.toml").write_text(
+                "[workspace]\nmembers = ['crates/docgen']\n",
+                encoding="utf-8",
+            )
+            (root / "crates" / "docgen").mkdir(parents=True)
+            (root / "crates" / "docgen" / "Cargo.toml").write_text(
+                "[package]\nname='project-docgen'\nversion='0.1.0'\n",
+                encoding="utf-8",
+            )
+            (root / "justfile").write_text(
+                "gen-docs-check:\n\tcargo run -p project-docgen -- --check\n",
+                encoding="utf-8",
+            )
+            (root / "specs" / "architecture").mkdir(parents=True)
+            (root / "specs" / "work-items").mkdir(parents=True)
+            (root / "specs" / "foundation.md").write_text(
+                "# Foundation\n",
+                encoding="utf-8",
+            )
+            (root / "specs" / "architecture" / "design.md").write_text(
+                "# Design\n",
+                encoding="utf-8",
+            )
+            (root / "specs" / "work-items" / "0000-template.md").write_text(
+                "# Work Item Template\n",
+                encoding="utf-8",
+            )
+            create_harness(root)
+            agents = (root / "AGENTS.md").read_text(encoding="utf-8")
+            manifest = json.loads(
+                (root / "docs/harness/manifest.json").read_text(encoding="utf-8")
+            )
+
+        self.assertIn("Structured project specs detected", agents)
+        self.assertIn("Repository task runner detected", agents)
+        self.assertIn("Generated documentation checks detected", agents)
+        self.assertIn("structured project specs", manifest["detectedWorkspaceMarkers"])
+        self.assertIn("justfile", manifest["detectedRoutingMarkers"])
+        self.assertIn("just gen-docs-check", manifest["verificationCommands"])
+
     def test_live_manifest_matches_generated_shared_snippets(self) -> None:
         repo_root = Path(__file__).resolve().parents[1]
         live = json.loads(

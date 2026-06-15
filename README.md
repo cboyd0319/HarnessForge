@@ -72,6 +72,13 @@ harnessforge --help
 
 ## Create A Harness
 
+Inspect what HarnessForge detects before writing files:
+
+```bash
+harnessforge inspect --target /path/to/repo
+harnessforge inspect --target /path/to/repo --json
+```
+
 Preview the files first:
 
 ```bash
@@ -181,6 +188,7 @@ input, output, and update mode.
 
 | Command | Purpose |
 | --- | --- |
+| `harnessforge inspect` | Show detected project profile without writing files |
 | `harnessforge init` | Create missing harness artifacts |
 | `harnessforge audit` | Score an existing repo harness |
 | `harnessforge update` | Plan or apply safe missing-file corrections |

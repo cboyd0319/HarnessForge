@@ -414,6 +414,11 @@ def _project_context_markdown(profile: ProjectProfile) -> str:
     }
     component_text = "\n".join(profile.components)
     languages = set(profile.languages)
+    package_managers = set(profile.package_managers)
+    runtime_files = set(profile.runtime_files)
+    routing_markers = set(profile.routing_markers)
+    workspace_markers = set(profile.workspace_markers)
+    command_text = "\n".join(profile.verification_commands).lower()
     if profile.stack == "rust" or "rust" in profile.languages:
         signals.append(
             "- Rust workspace or crate detected. Treat `Cargo.toml`, "
@@ -446,10 +451,16 @@ def _project_context_markdown(profile: ProjectProfile) -> str:
             "the change is Java, C/C++, Starlark, tests, tooling, or docs\n"
             "  before choosing verification."
         )
-    if {".bazelrc", ".bazelversion"} & set(profile.routing_markers):
+    if {".bazelrc", ".bazelversion"} & routing_markers:
         signals.append(
             "- Bazel runtime routing files detected. Treat `.bazelrc` and "
             "`.bazelversion` changes as shared build-contract changes."
+        )
+    if "structured project specs" in workspace_markers | routing_markers:
+        signals.append(
+            "- Structured project specs detected. Treat architecture, security, "
+            "operations, UX, and work-item docs as planning or source-of-truth\n"
+            "  surfaces when the target repo already uses them."
         )
     if any(path.startswith("third_party") for path in component_paths):
         signals.append(
@@ -484,7 +495,7 @@ def _project_context_markdown(profile: ProjectProfile) -> str:
     if "Dockerfile" in component_text or "Containerfile" in component_text or {
         "Dockerfile",
         "Containerfile",
-    } & set(profile.runtime_files):
+    } & runtime_files:
         signals.append(
             "- Container image definitions detected. Treat base images, build "
             "context, network access, mounted secrets, and published tags as\n"
@@ -501,25 +512,40 @@ def _project_context_markdown(profile: ProjectProfile) -> str:
             "crate checks first,\n"
             "  then workspace checks for shared behavior."
         )
-    if {"npm", "pnpm", "yarn", "bun"} & set(profile.package_managers):
+    if "just" in package_managers or "justfile" in routing_markers | runtime_files:
+        signals.append(
+            "- Repository task runner detected. Inspect `justfile` targets and "
+            "prefer the project-provided aggregate check when it exists."
+        )
+    if {"npm", "pnpm", "yarn", "bun"} & package_managers:
         signals.append(
             "- JavaScript or TypeScript subprojects are present. Inspect the "
             "nearest `package.json`\n"
             "  scripts before choosing Node-based checks."
         )
-    if {"maven", "gradle"} & set(profile.package_managers):
+    if {"maven", "gradle"} & package_managers:
         signals.append(
             "- JVM build surfaces are present. Inspect the nearest `pom.xml`, "
             "`build.gradle`, or\n"
             "  `build.gradle.kts` before changing Java or plugin behavior."
         )
-    if "go" in profile.package_managers:
+    if "go" in package_managers:
         signals.append(
             "- Go module surfaces are present. Treat nested `go.mod` files as "
             "separate module\n"
             "  boundaries."
         )
-    if "action.yml" in profile.routing_markers or "action.yaml" in profile.routing_markers:
+    if (
+        "gen-docs" in command_text
+        or "docs-check" in command_text
+        or "docgen" in component_text.lower()
+    ):
+        signals.append(
+            "- Generated documentation checks detected. Treat generated docs as "
+            "code-owned artifacts and run the documented drift check after\n"
+            "  changing schemas, tool definitions, CLIs, or docs generators."
+        )
+    if "action.yml" in routing_markers or "action.yaml" in routing_markers:
         signals.append(
             "- GitHub Action surface detected. Changes to `action.yml` or "
             "workflow behavior are\n"

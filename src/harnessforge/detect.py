@@ -45,6 +45,7 @@ COMPONENT_MARKERS = {
     "BUILD.bazel",
     "Cargo.toml",
     "Gemfile",
+    "Justfile",
     "Makefile",
     "MODULE.bazel",
     "Package.swift",
@@ -60,6 +61,7 @@ COMPONENT_MARKERS = {
     "global.json",
     "go.mod",
     "go.work",
+    "justfile",
     "lerna.json",
     "nx.json",
     "pants.toml",
@@ -152,9 +154,12 @@ def detect_project(
             "global.json",
             "composer.json",
             "Gemfile",
+            "Justfile",
+            "justfile",
             "Makefile",
             "Package.swift",
             "Package.resolved",
+            ".config/nextest.toml",
             "validate.sh",
             "MODULE.bazel",
             "MODULE.bazel.lock",
@@ -169,7 +174,7 @@ def detect_project(
         )
         if file in file_set
     )
-    stack = _primary_stack(file_set, package_json, languages)
+    stack = _primary_stack(file_set, package_json, pyproject, languages)
     commands = explicit_commands or _verification_commands(
         root,
         file_set,
@@ -292,6 +297,8 @@ def _detect_languages(
         languages.add("buck")
     if suffixes and suffixes <= {".md", ".txt", ".rst"}:
         languages.add("docs")
+    if _has_structured_spec_surface(file_set):
+        languages.add("docs")
     return languages or {"generic"}
 
 
@@ -318,6 +325,8 @@ def _detect_package_managers(
         managers.append("yarn")
     if "package-lock.json" in filenames or "package.json" in filenames:
         managers.append("npm")
+    if {"Justfile", "justfile"} & filenames:
+        managers.append("just")
     if "uv.lock" in filenames:
         managers.append("uv")
     if "poetry.lock" in filenames:
@@ -386,6 +395,8 @@ def _detect_workspace_markers(
     ):
         if marker in file_set:
             markers.append(marker)
+    if _has_structured_spec_surface(file_set):
+        markers.append("structured project specs")
     if _has_multiple_nested_components(file_set):
         markers.append("multiple nested component manifests")
     if _has_uv_workspace(pyproject):
@@ -448,6 +459,10 @@ def _detect_routing_markers(root: Path, file_set: set[str]) -> tuple[str, ...]:
         markers.append(".harness")
     if any(file.startswith(".windsurf/") for file in file_set):
         markers.append(".windsurf")
+    if {"Justfile", "justfile"} & file_set:
+        markers.append("justfile")
+    if _has_structured_spec_surface(file_set):
+        markers.append("structured project specs")
     for marker in (
         "AGENTS.md",
         "CLAUDE.md",
@@ -517,7 +532,10 @@ def _composer_has_path_repositories(composer_json: dict[str, Any] | None) -> boo
 
 
 def _primary_stack(
-    file_set: set[str], package_json: dict[str, Any] | None, languages: set[str]
+    file_set: set[str],
+    package_json: dict[str, Any] | None,
+    pyproject: dict[str, Any] | None,
+    languages: set[str],
 ) -> str:
     if "Cargo.toml" in file_set:
         return "rust"
@@ -538,9 +556,13 @@ def _primary_stack(
         if "typescript" in languages:
             return "typescript"
         return "node"
+    if pyproject and _root_python_runtime_project(file_set, pyproject):
+        return "python"
     if _nested_component_count(file_set) >= 2 and languages != {"terraform"}:
         return "monorepo"
     if _looks_like_docs_site(file_set):
+        return "docs"
+    if _looks_like_structured_docs_repo(file_set, languages):
         return "docs"
     if {"pyproject.toml", "requirements.txt", "setup.py"} & file_set:
         return "python"
@@ -587,6 +609,57 @@ def _looks_like_docs_site(file_set: set[str]) -> bool:
     )
 
 
+def _looks_like_structured_docs_repo(file_set: set[str], languages: set[str]) -> bool:
+    implementation_languages = languages - {"docs", "generic", "shell"}
+    return _has_structured_spec_surface(file_set) and not implementation_languages
+
+
+def _has_structured_spec_surface(file_set: set[str]) -> bool:
+    markdown_paths = [
+        Path(file)
+        for file in file_set
+        if Path(file).suffix.lower() in {".md", ".rst", ".txt"}
+    ]
+    if len(markdown_paths) < 3:
+        return False
+    names = {path.name.lower() for path in markdown_paths}
+    parts = {part.lower() for path in markdown_paths for part in path.parts}
+    foundation_names = {
+        "foundation.md",
+        "overview.md",
+        "requirements.md",
+        "product.md",
+        "vision.md",
+    }
+    spec_parts = {
+        "architecture",
+        "design",
+        "security",
+        "devops",
+        "ux",
+        "ui",
+        "work-items",
+        "work_items",
+        "workitems",
+        "plans",
+        "planning",
+        "requirements",
+    }
+    planning_parts = {
+        "work-items",
+        "work_items",
+        "workitems",
+        "plans",
+        "planning",
+        "tasks",
+    }
+    return (
+        bool(foundation_names & names)
+        and bool(spec_parts & parts)
+        and (bool(planning_parts & parts) or any("template" in name for name in names))
+    )
+
+
 def _nested_component_count(file_set: set[str]) -> int:
     component_dirs = {
         str(Path(file).parent)
@@ -606,8 +679,17 @@ def _verification_commands(
     stack: str,
 ) -> tuple[str, ...]:
     commands: list[str] = []
-    commands.extend(_make_commands(root, file_set))
-    commands.extend(_validation_script_commands(file_set))
+    make_commands = _make_commands(root, file_set)
+    commands.extend(make_commands)
+    commands.extend(_just_commands(root, file_set))
+    validation_commands = _validation_script_commands(file_set)
+    if "make architecture-lint" in make_commands:
+        validation_commands = [
+            command
+            for command in validation_commands
+            if command != "./tools/architecture-lint.sh"
+        ]
+    commands.extend(validation_commands)
     if package_json:
         commands.extend(_node_commands(package_json, package_managers))
     if stack == "python":
@@ -617,7 +699,8 @@ def _verification_commands(
     if stack == "go":
         commands.append("go test ./...")
     if stack == "rust":
-        commands.extend(_rust_commands(root, file_set, cargo_toml))
+        if "just ci" not in commands:
+            commands.extend(_rust_commands(root, file_set, cargo_toml))
     if stack == "swift":
         commands.extend(_swift_commands(file_set, has_make_command=bool(commands)))
     if stack == "java":
@@ -665,10 +748,10 @@ def _make_commands(root: Path, file_set: set[str]) -> list[str]:
         return []
     targets = _makefile_targets(root / makefile, root)
     commands: list[str] = []
-    for target in ("check", "test", "validate", "lint"):
+    for target in ("check", "test", "architecture-lint", "validate", "lint"):
         if target in targets:
             commands.append(f"make {target}")
-    return commands[:2]
+    return commands[:3]
 
 
 def _makefile_targets(path: Path, root: Path) -> set[str]:
@@ -692,12 +775,67 @@ def _makefile_targets(path: Path, root: Path) -> set[str]:
     return targets
 
 
+def _just_commands(root: Path, file_set: set[str]) -> list[str]:
+    justfile = (
+        "justfile"
+        if "justfile" in file_set
+        else "Justfile"
+        if "Justfile" in file_set
+        else ""
+    )
+    if not justfile:
+        return []
+    targets = _justfile_targets(root / justfile, root)
+    if "ci" in targets:
+        return ["just ci"]
+    commands: list[str] = []
+    for target in (
+        "check",
+        "fmt-check",
+        "lint",
+        "test",
+        "gen-docs-check",
+        "docs-check",
+        "build",
+    ):
+        if target in targets:
+            commands.append(f"just {target}")
+    return commands[:4]
+
+
+def _justfile_targets(path: Path, root: Path) -> set[str]:
+    if not is_inside_root(path, root):
+        return set()
+    try:
+        text = path.read_text(encoding="utf-8")
+    except (OSError, UnicodeDecodeError):
+        return set()
+    targets: set[str] = set()
+    for line in text.splitlines():
+        if line.startswith(("\t", " ")):
+            continue
+        stripped = line.strip()
+        if not stripped or stripped.startswith(("#", "set ", "export ")):
+            continue
+        if ":=" in stripped:
+            continue
+        match = re.match(r"^([A-Za-z0-9_.-]+)(?:\s+[^:#]*)?:", line)
+        if not match:
+            continue
+        target = match.group(1)
+        if target.startswith((".", "_")) or "%" in target:
+            continue
+        targets.add(target)
+    return targets
+
+
 def _validation_script_commands(file_set: set[str]) -> list[str]:
     commands: list[str] = []
     for script in (
         "validate.sh",
         "check.sh",
         "test.sh",
+        "tools/architecture-lint.sh",
         "tools/validate_harness.sh",
         "tools/check_harness_docs.sh",
         "scripts/check_harness_docs.sh",
@@ -705,7 +843,7 @@ def _validation_script_commands(file_set: set[str]) -> list[str]:
     ):
         if script in file_set:
             commands.append(f"./{script}")
-    return commands[:3]
+    return commands[:4]
 
 
 def _swift_commands(file_set: set[str], *, has_make_command: bool) -> list[str]:

@@ -7,9 +7,10 @@ from pathlib import Path
 
 from . import __version__
 from .audit import audit_target, audit_to_dict, format_audit, render_html_report
+from .detect import detect_project
 from .doctor import doctor_json, doctor_report, format_doctor
 from .generate import PLATFORM_CONTRACTS, create_harness
-from .models import DriftResult, WriteResult
+from .models import DriftResult, ProjectProfile, WriteResult
 from .redact import redact_local_paths
 from .update import build_drift_report, plan_or_apply_update
 
@@ -42,6 +43,16 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
     subparsers = parser.add_subparsers(dest="command")
+
+    inspect = subparsers.add_parser(
+        "inspect",
+        help="show detected project profile without writing files",
+    )
+    inspect.add_argument("--target", type=Path, default=Path.cwd())
+    inspect.add_argument("--package-manager")
+    inspect.add_argument("--command", dest="commands", action="append", default=[])
+    inspect.add_argument("--json", action="store_true")
+    inspect.set_defaults(func=_inspect)
 
     init = subparsers.add_parser("init", help="create missing harness artifacts")
     init.add_argument("--target", type=Path, default=Path.cwd())
@@ -120,6 +131,35 @@ def build_parser() -> argparse.ArgumentParser:
     doctor.set_defaults(func=_doctor)
 
     return parser
+
+
+def _inspect(args: argparse.Namespace) -> int:
+    profile = detect_project(
+        args.target,
+        explicit_package_manager=args.package_manager,
+        explicit_commands=tuple(args.commands),
+    )
+    if args.json:
+        print(json.dumps(_profile_to_dict(profile), indent=2))
+        return 0
+
+    print(f"Target: {profile.name}")
+    print(f"Detected stack: {profile.stack}")
+    print(f"Languages: {_list_or_none(profile.languages)}")
+    print(f"Package managers: {_list_or_none(profile.package_managers)}")
+    print(f"Runtime files: {_list_or_none(profile.runtime_files)}")
+    print("Verification commands:")
+    for command in profile.verification_commands:
+        print(f"  - {command}")
+    print(f"Workspace markers: {_list_or_none(profile.workspace_markers)}")
+    print(f"Routing markers: {_list_or_none(profile.routing_markers)}")
+    print("Components:")
+    if profile.components:
+        for component in profile.components:
+            print(f"  - {component}")
+    else:
+        print("  - none detected")
+    return 0
 
 
 def _init(args: argparse.Namespace) -> int:
@@ -236,6 +276,24 @@ def _doctor(args: argparse.Namespace) -> int:
     else:
         print(format_doctor(report))
     return 1 if args.strict and not report["ok"] else 0
+
+
+def _profile_to_dict(profile: ProjectProfile) -> dict[str, object]:
+    return {
+        "name": profile.name,
+        "detectedStack": profile.stack,
+        "languages": list(profile.languages),
+        "packageManagers": list(profile.package_managers),
+        "runtimeFiles": list(profile.runtime_files),
+        "verificationCommands": list(profile.verification_commands),
+        "components": list(profile.components),
+        "workspaceMarkers": list(profile.workspace_markers),
+        "routingMarkers": list(profile.routing_markers),
+    }
+
+
+def _list_or_none(values: tuple[str, ...]) -> str:
+    return ", ".join(values) if values else "none detected"
 
 
 def _relative(path: Path, root: Path) -> str:

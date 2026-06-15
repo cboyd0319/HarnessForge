@@ -40,6 +40,47 @@ class CliTests(unittest.TestCase):
         self.assertEqual(audit_code, 0)
         self.assertIn("Detected stack", stdout.getvalue())
 
+    def test_inspect_command_reports_profile_without_writing_files(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "pyproject.toml").write_text(
+                "[project]\nname='demo'\n",
+                encoding="utf-8",
+            )
+            stdout = io.StringIO()
+            with contextlib.redirect_stdout(stdout):
+                code = main(["inspect", "--target", str(root)])
+
+            agents_exists = (root / "AGENTS.md").exists()
+
+        self.assertEqual(code, 0)
+        self.assertFalse(agents_exists)
+        self.assertIn("Detected stack: python", stdout.getvalue())
+        self.assertIn("Verification commands:", stdout.getvalue())
+
+    def test_inspect_json_reports_detected_profile(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "Cargo.toml").write_text(
+                "[workspace]\nmembers = ['crates/*']\n",
+                encoding="utf-8",
+            )
+            (root / "justfile").write_text(
+                "ci:\n\tcargo test --workspace\n",
+                encoding="utf-8",
+            )
+            stdout = io.StringIO()
+            with contextlib.redirect_stdout(stdout):
+                code = main(["inspect", "--target", str(root), "--json"])
+
+            payload = json.loads(stdout.getvalue())
+
+        self.assertEqual(code, 0)
+        self.assertEqual(payload["detectedStack"], "rust")
+        self.assertIn("just", payload["packageManagers"])
+        self.assertIn("just ci", payload["verificationCommands"])
+        self.assertIn("justfile", payload["routingMarkers"])
+
     def test_init_can_scaffold_optional_workflows(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

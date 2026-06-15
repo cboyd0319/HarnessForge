@@ -116,6 +116,34 @@ class DetectProjectTests(unittest.TestCase):
         self.assertIn("./validate.sh", profile.verification_commands)
         self.assertNotIn("bundle exec rake test", profile.verification_commands)
 
+    def test_root_python_project_takes_priority_over_docs_site(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "pyproject.toml").write_text(
+                "[project]\nname='demo'\n\n[tool.ruff]\n",
+                encoding="utf-8",
+            )
+            (root / "mkdocs.yml").write_text("site_name: demo\n", encoding="utf-8")
+            (root / "src" / "demo").mkdir(parents=True)
+            (root / "src" / "demo" / "__init__.py").write_text("", encoding="utf-8")
+            (root / "tests").mkdir()
+            (root / "tests" / "test_demo.py").write_text(
+                "import unittest\n",
+                encoding="utf-8",
+            )
+            for index in range(5):
+                (root / "docs").mkdir(exist_ok=True)
+                (root / "docs" / f"page-{index}.md").write_text(
+                    "# Page\n",
+                    encoding="utf-8",
+                )
+
+            profile = detect_project(root)
+
+        self.assertEqual(profile.stack, "python")
+        self.assertIn("python -m ruff check .", profile.verification_commands)
+        self.assertIn("python -m unittest discover", profile.verification_commands)
+
     def test_makefile_commands_use_declared_targets_only(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -128,6 +156,64 @@ class DetectProjectTests(unittest.TestCase):
 
         self.assertIn("make test", profile.verification_commands)
         self.assertNotIn("make check", profile.verification_commands)
+
+    def test_makefile_detects_architecture_lint_target(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "Makefile").write_text(
+                ".PHONY: build test architecture-lint\n\n"
+                "build:\n\t@true\n\n"
+                "test:\n\t@true\n\n"
+                "architecture-lint:\n\t@tools/architecture-lint.sh\n",
+                encoding="utf-8",
+            )
+            (root / "tools").mkdir()
+            (root / "tools" / "architecture-lint.sh").write_text(
+                "#!/usr/bin/env bash\n",
+                encoding="utf-8",
+            )
+
+            profile = detect_project(root)
+
+        self.assertIn("make test", profile.verification_commands)
+        self.assertIn("make architecture-lint", profile.verification_commands)
+        self.assertNotIn("./tools/architecture-lint.sh", profile.verification_commands)
+
+    def test_detects_standalone_architecture_lint_script(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "tools").mkdir()
+            (root / "tools" / "architecture-lint.sh").write_text(
+                "#!/usr/bin/env bash\n",
+                encoding="utf-8",
+            )
+
+            profile = detect_project(root)
+
+        self.assertIn("./tools/architecture-lint.sh", profile.verification_commands)
+
+    def test_detects_justfile_ci_command(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "Cargo.toml").write_text(
+                "[workspace]\nmembers = ['crates/*']\n",
+                encoding="utf-8",
+            )
+            (root / "justfile").write_text(
+                "fmt-check:\n\tcargo fmt --all -- --check\n\n"
+                "lint:\n\tcargo clippy --all-features --all --tests -- -D warnings\n\n"
+                "test:\n\tcargo nextest run --workspace\n\n"
+                "gen-docs-check:\n\tcargo run -p docgen -- --check\n\n"
+                "ci: fmt-check lint test gen-docs-check\n",
+                encoding="utf-8",
+            )
+
+            profile = detect_project(root)
+
+        self.assertIn("just", profile.package_managers)
+        self.assertIn("justfile", profile.runtime_files)
+        self.assertIn("just ci", profile.verification_commands)
+        self.assertIn("justfile", profile.routing_markers)
 
     def test_detects_swift_package_and_make_test(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -468,6 +554,34 @@ class DetectProjectTests(unittest.TestCase):
 
         self.assertEqual(profile.stack, "rust")
         self.assertIn("cargo test --workspace", profile.verification_commands)
+
+    def test_detects_structured_spec_docs_repo(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "README.md").write_text("# Specs\n", encoding="utf-8")
+            (root / "specs" / "architecture").mkdir(parents=True)
+            (root / "specs" / "work-items").mkdir(parents=True)
+            (root / "specs" / "foundation.md").write_text(
+                "# Project Foundation\n",
+                encoding="utf-8",
+            )
+            (root / "specs" / "architecture" / "design.md").write_text(
+                "# Design\n",
+                encoding="utf-8",
+            )
+            (root / "specs" / "work-items" / "0000-template.md").write_text(
+                "# Work Item\n",
+                encoding="utf-8",
+            )
+            (root / "images" / "diagram.png").parent.mkdir()
+            (root / "images" / "diagram.png").write_bytes(b"not-a-real-png")
+
+            profile = detect_project(root)
+
+        self.assertEqual(profile.stack, "docs")
+        self.assertIn("docs", profile.languages)
+        self.assertIn("structured project specs", profile.workspace_markers)
+        self.assertIn("structured project specs", profile.routing_markers)
 
     def test_detects_polyglot_build_orchestrators(self) -> None:
         cases = (

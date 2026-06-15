@@ -48,11 +48,24 @@ and the required AGENTS instruction format.
 - `tests/test_pins.py`
 - `docs/harness/evaluator-rubric.md`
 - `docs/harness/sources.md`
+- `docs/harness/reference-mining-notes.md`
 - `.gitignore`
 
 ## Blockers
 
 - No known blockers.
+- Current HarnessForge-adjacent research and UX batch mined local `awman`,
+  `aspec`, and `maki`, plus public HarnessForge-like and harness-engineering
+  sources. Accepted generic improvements: structured project spec detection,
+  Just task-runner detection, architecture-lint routing without duplicate
+  commands, generated-doc drift context, read-only `harnessforge inspect` with
+  JSON output, and root Python-package priority over docs-site classification.
+  The boundary remains explicit: HarnessForge detects and surfaces useful
+  repo-local control planes, but it does not generate sibling-repo
+  instructions, personal tool mandates, large skill trees, blueprints, MCP
+  setup, or extra agent adapters by default. Current verification passes full
+  unit discovery with 138 tests, compile, pin check, self-audit `100/100`, and
+  diff hygiene.
 - Current expanded reference-repo quality batch ran shadow generation and
   content review against agent-governance-toolkit, apple-container,
   Bluepeak-AI, JobSentinel, nhl-betting-analytics, persona, RunHaven,
@@ -382,10 +395,10 @@ and the required AGENTS instruction format.
 
 ## Next Session
 
-Review and commit the reference-repo compatibility slice when ready. Push local
-commits only at an explicit batch/release boundary or user request. Remaining
-product decisions before public release: component-directed monorepo
-verification commands, path/package exclusions for intentionally vulnerable
-training repos, Maven/Gradle dependency pin parsing, selective update semantics
-for generated-owned files, manual macOS/Windows platform CI, `v1` Action tag,
-and release-time SBOM/provenance gates.
+Review and commit the reference-repo compatibility and UX research slice when
+ready. Push local commits only at an explicit batch/release boundary or user
+request. Remaining product decisions before public release:
+component-directed monorepo verification commands, path/package exclusions for
+intentionally vulnerable training repos, Maven/Gradle dependency pin parsing,
+selective update semantics for generated-owned files, manual macOS/Windows
+platform CI, `v1` Action tag, and release-time SBOM/provenance gates.

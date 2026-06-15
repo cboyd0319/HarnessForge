@@ -277,12 +277,22 @@ maintenance loop.
   multi-stage alias handling. Default init still preserves existing instruction
   files; the supported easy path for such repos is now explicitly surfaced as
   `--agent-file HARNESSFORGE_AGENTS.md`.
+- Completed additional HarnessForge-adjacent research against local `awman`,
+  `aspec`, and `maki`, plus public HarnessForge-like and harness-engineering
+  sources. Accepted generic improvements: structured project spec detection,
+  Just task-runner detection, architecture-lint routing without duplicate
+  commands, generated-doc drift context, read-only `harnessforge inspect` with
+  JSON output, and Python-project priority over docs-site classification.
+  Deferred blueprints, MCP setup, memory schemas, large generated skill trees,
+  LLM-assisted init, and extra agent adapter files until they are explicit
+  opt-ins with current source evidence.
 
 ## Recommended Next Step
 
-Review and commit the reference-repo compatibility slice when ready. Push local
-commits only at an explicit batch/release boundary or user request. Remaining
-product decisions before a first public Action release: whether to add
+Review and commit the reference-repo compatibility and UX research slice when
+ready. Push local commits only at an explicit batch/release boundary or user
+request. Remaining product decisions before a first public Action release:
+whether to add
 component-directed monorepo verification commands, path/package exclusions for
 intentionally vulnerable training repos, Maven/Gradle dependency pin parsing,
 and selective update semantics for generated-owned files. Then run the manual
@@ -291,6 +301,19 @@ which release-time SBOM/provenance controls should become blocking.
 
 ## Verification Evidence
 
+- `PYTHONPATH=src:. python3 -m unittest discover -s tests` passed with
+  138 tests after adding generic structured-spec, Just, architecture-lint,
+  generated-doc context, `inspect`, and Python-package/docs-site detection
+  changes.
+- `PYTHONPATH=src:. python3 -m compileall src tests scripts`,
+  `PYTHONPATH=src:. python3 scripts/check_pins.py --root .`,
+  `PYTHONPATH=src:. python3 -m harnessforge audit --target . --min-score 85`,
+  and `git diff --check` passed; self-audit stayed `100/100`.
+- Temporary shadow generation against local `awman`, `aspec`, and `maki`
+  confirmed improved command/context quality without copying their local
+  formats into generated output. Inspecting a temporary public HarnessForge-like
+  clone confirmed root Python projects with docs sites detect as Python projects,
+  not docs-only repositories.
 - `PYTHONPATH=src:. python3 -m unittest discover -s tests` passed with
   116 tests after the reference-repo compatibility pass. Compile, pin check,
   JSON parsing, self-audit `100/100`, `git diff --check`, rendered
