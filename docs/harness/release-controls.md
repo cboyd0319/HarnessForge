@@ -8,6 +8,12 @@ or other externally visible release steps.
 ## Release Gate
 
 - Run `./init.sh` and `pwsh -NoProfile -File ./init.ps1`.
+- Run `harnessforge verify --target . --json --run` and store the verify --run
+  report under a target-relative path such as
+  `docs/harness/evidence/verify-<date>.json`, or record why runnable project
+  verification could not run.
+- Review any failed, timed_out, or blocked check with owner, risk, and next
+  action before promotion.
 - Run `python scripts/check_pins.py --root .`.
 - Run `python -m harnessforge audit --target . --min-score 85`.
 - Run the manual macOS and Windows `workflow_dispatch` platform CI check when
@@ -26,6 +32,7 @@ or other externally visible release steps.
 | Item | Evidence |
 | --- | --- |
 | Local verification | Command, date, result |
+| Verify run review | Report path, verdict, owner, risk, and next action for unresolved checks |
 | Manual platform check | Runner or host, command, result |
 | SBOM | Path, generator, or reason not applicable |
 | Provenance | Signing, attestation, or reason not applicable |
@@ -34,7 +41,8 @@ or other externally visible release steps.
 
 ## Release Notes
 
-- Separate structural harness score from real task effectiveness.
+- Separate structural harness score, audit score, runnable check evidence, and
+  real-agent effectiveness.
 - Link representative agent/session results when release claims depend on agent
   behavior.
 - Keep deferred release controls in `progress.md` or the active plan with owner,

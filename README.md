@@ -303,6 +303,13 @@ Command execution is explicit opt-in through `--run`. Run mode uses argument
 lists rather than a shell, rejects shell control syntax, runs from the target
 repository root, and applies a per-command timeout.
 
+Generated harnesses now route verify-run reports into
+`docs/harness/verification-matrix.md`, `docs/harness/evidence-log.md`, and
+`docs/harness/release-controls.md`. Those docs ask projects to store
+target-relative JSON evidence, review failed, timed-out, or blocked checks, and
+keep runnable check evidence separate from structural audit score and real
+agent-effectiveness evidence.
+
 ## Blueprint Mode
 
 Blueprints are optional operating-model overlays for repos that need more than

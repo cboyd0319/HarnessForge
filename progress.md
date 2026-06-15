@@ -381,18 +381,37 @@ maintenance loop.
   `verify-run: "true"`, newline-separated `verify-command`, per-command
   `verify-timeout-seconds`, target-contained verify JSON reports, and
   `verify-verdict` output for CI routing.
+- Added generated verification evidence guidance for target repos. Generated
+  `verification-matrix.md`, `evidence-log.md`, and `release-controls.md` now
+  explain how to capture and review explicit `verify --run` JSON evidence,
+  store it under target-relative paths, handle failed, timed-out, or blocked
+  checks before promotion, and keep runnable check evidence separate from
+  structural audit score and real-agent effectiveness.
 
 ## Recommended Next Step
 
 Continue the robust-mode buildout before returning to release prep. The next
-highest-value slice is a generated verification evidence contract for target
-repos: make generated harness docs explain how to capture, store, and review
-`verify --run` evidence without confusing it with structural audit or
-real-agent effectiveness.
+highest-value slice is local verify report persistence: add a CLI option such
+as `harnessforge verify --json-report <target-relative-path>` so users do not
+need shell redirection to create durable verify evidence, with the same
+target-contained path rules already used by the Action.
 Push local commits only at an explicit batch/release boundary or user request.
 
 ## Verification Evidence
 
+- `PYTHONPATH=src:. python3 -m unittest
+  tests.test_generate_audit.GenerateAuditTests.test_generated_evidence_docs_route_verify_run_reports`
+  failed before the template changes and passed after them. `PYTHONPATH=src:.
+  python3 -m unittest tests.test_generate_audit` passed with 43 tests, and
+  full unit discovery passed with 190 tests. `python3 -m compileall src tests
+  scripts`, JSON parsing for `feature_list.json` and
+  `docs/harness/manifest.json`, `PYTHONPATH=src:. python3 scripts/check_pins.py
+  --root .`, `PYTHONPATH=src:. python3 scripts/refresh_research.py --root .
+  --check`, self-audit `100/100`, `git diff --check`, and the exact local-path
+  scan all passed. An initial explicit verify-run smoke using `python` failed
+  because no `python` binary is on PATH; rerunning with `python3` passed.
+  `./init.sh` and `pwsh -NoProfile -File ./init.ps1` both passed with 190 tests,
+  pin check, research source check, and self-audit `100/100`.
 - `PYTHONPATH=src:. python3 -m unittest tests.test_cli.CliTests.test_verify_json_plan_reports_checks_without_running tests.test_cli.CliTests.test_verify_json_blocks_missing_verification tests.test_cli.CliTests.test_verify_run_executes_explicit_command tests.test_cli.CliTests.test_verify_run_reports_failed_command tests.test_cli.CliTests.test_verify_run_blocks_missing_verification tests.test_cli.CliTests.test_verify_run_reports_timeout`
   passed with 6 focused verify tests after adding explicit run mode.
   `PYTHONPATH=src:. python3 -m unittest tests.test_verify_contract` passed,

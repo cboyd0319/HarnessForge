@@ -569,6 +569,41 @@ class GenerateAuditTests(unittest.TestCase):
                     content = (root / relative_path).read_text(encoding="utf-8")
                     self.assertIn("REVIEW REQUIRED", content)
 
+    def test_generated_evidence_docs_route_verify_run_reports(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "pyproject.toml").write_text(
+                "[project]\nname='demo'\n",
+                encoding="utf-8",
+            )
+            create_harness(root)
+            matrix = (root / "docs/harness/verification-matrix.md").read_text(
+                encoding="utf-8"
+            )
+            evidence = (root / "docs/harness/evidence-log.md").read_text(
+                encoding="utf-8"
+            )
+            release = (root / "docs/harness/release-controls.md").read_text(
+                encoding="utf-8"
+            )
+
+        self.assertIn("harnessforge verify --target . --json --run", matrix)
+        self.assertIn("docs/harness/evidence/verify-<date>.json", matrix)
+        self.assertIn("`failed`, `timed_out`, or `blocked`", matrix)
+        self.assertIn("does not replace `harnessforge audit", matrix)
+        self.assertIn("does not prove real-agent effectiveness", matrix)
+
+        self.assertIn("target-relative report path", evidence)
+        self.assertIn("harnessforge verify --target . --json --run", evidence)
+        self.assertIn("Do not paste full stdout", evidence)
+        self.assertIn("failed, timed_out, or blocked", evidence)
+
+        self.assertIn("verify --run", release)
+        self.assertIn("failed, timed_out, or blocked", release)
+        self.assertIn("owner, risk, and next action", release)
+        self.assertIn("audit score", release)
+        self.assertIn("real-agent effectiveness", release)
+
     def test_missing_verification_placeholder_blocks_generated_init(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

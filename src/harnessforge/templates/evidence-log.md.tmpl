@@ -5,9 +5,14 @@ Use this for compact current evidence. Keep raw logs out of this file.
 | Date | Scope | Command Or Review | Result | Notes |
 | --- | --- | --- | --- | --- |
 | {{generated_date}} | Harness initialization | `harnessforge init --target .` | pending | REVIEW REQUIRED: replace with actual verification evidence. |
+| {{generated_date}} | Project verification evidence | `harnessforge verify --target . --json --run > docs/harness/evidence/verify-<date>.json` | pending | REVIEW REQUIRED: record the target-relative report path, verdict, and any failed, timed_out, or blocked checks. |
 
 Rules:
 
 - Record command name, scope, result, and risk.
+- For verify reports, record the target-relative report path, verdict, failed,
+  timed_out, or blocked checks, and skipped manual or platform checks.
 - Do not paste secrets, local absolute paths, or long command output.
+- Do not paste full stdout or stderr. Link the JSON report and summarize the
+  risk.
 - Prefer one current row per meaningful verification event.

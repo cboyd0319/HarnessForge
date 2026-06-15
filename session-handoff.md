@@ -44,6 +44,9 @@ and advanced product modes.
 - `src/harnessforge/templates/copilot-instructions.md.tmpl`
 - `src/harnessforge/templates/change-contract.md.tmpl`
 - `src/harnessforge/templates/component-inventory.md.tmpl`
+- `src/harnessforge/templates/verification-matrix.md.tmpl`
+- `src/harnessforge/templates/evidence-log.md.tmpl`
+- `src/harnessforge/templates/release-controls.md.tmpl`
 - `src/harnessforge/templates/research-sources.json.tmpl`
 - `src/harnessforge/templates/sources.md.tmpl`
 - `tests/test_cli.py`
@@ -518,7 +521,11 @@ JSON output, ownership metadata, and six built-in packs. `harnessforge verify
 --run` executes planned checks explicitly, records structured JSON evidence,
 and keeps normal verify plan mode read-only. The composite Action mirrors that
 boundary with `command: verify`, `verify-run`, `verify-command`,
-`verify-timeout-seconds`, `json-report`, and `verify-verdict`.
+`verify-timeout-seconds`, `json-report`, and `verify-verdict`. Generated target
+harness docs now explain how to capture, store, and review explicit verify-run
+evidence in `verification-matrix.md`, `evidence-log.md`, and
+`release-controls.md`, while keeping runnable check evidence separate from
+structural audit score and real-agent effectiveness.
 `scripts/refresh_research.py --check` validates duplicate source IDs and URLs,
 required fields, placeholder text, canonical URL shape, arXiv `/abs/` URLs,
 lock-file consistency, and local-path leakage before any metadata fetch. Root
@@ -538,16 +545,18 @@ primary-source evidence for platform-impacting changes. The primary-source
 review checked Python version status, GitHub hosted runner labels, and the
 GitHub runner-images Windows VS2026 migration notice.
 Current robust-mode verification passes: 6 focused blueprint tests, 6 focused
-verify run-mode tests, 15 focused GitHub Action tests, full unit discovery with
-189 tests, compile, JSON parse, pin check, research source check, `verify
---json` plan/run smokes, Action verify report smokes, blueprint JSON/apply
-smokes, self-audit `100/100`, local-path scan, and diff hygiene. `sync --check`
+verify run-mode tests, 15 focused GitHub Action tests, focused generated
+verify-evidence coverage, full unit discovery with 190 tests, compile, JSON
+parse, pin check, research source check, `verify --json` plan/run smokes,
+Action verify report smokes, blueprint JSON/apply smokes, self-audit
+`100/100`, local-path scan, and diff hygiene. `./init.sh` and
+`pwsh -NoProfile -File ./init.ps1` both pass with 190 tests. `sync --check`
 returns the expected warning for local workflow and instruction review surfaces
 without blockers or generated drift.
-The next highest-value product slice is generated verification evidence
-guidance for target repos: make generated harness docs explain how to capture,
-store, and review `verify --run` evidence without confusing it with structural
-audit or real-agent effectiveness.
+The next highest-value product slice is local verify report persistence: add a
+CLI option such as `harnessforge verify --json-report <target-relative-path>`
+so users do not need shell redirection to create durable verify evidence, with
+the same target-contained path rules already used by the Action.
 Existing eval guidance comes from the Harness Forge, Meta-Harness, Code as
 Agent Harness catalog, and arXiv harness-eval reviews; those sources are mined
 only for product ideas and are not copied into generated target-repo defaults.

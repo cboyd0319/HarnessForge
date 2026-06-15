@@ -115,6 +115,20 @@ Boundary:
 - `html-report` remains unsupported for verify reports.
 - The Action writes `verify-verdict` as an output for CI routing.
 
+## Implemented Generated Verification Evidence Guidance
+
+Generated harnesses now explain how to turn explicit verify runs into durable
+project evidence. `verification-matrix.md` tells maintainers to store
+`harnessforge verify --target . --json --run` output under a target-relative
+report path such as `docs/harness/evidence/verify-<date>.json`, review failed,
+timed-out, or blocked checks, and keep long logs and secrets out of durable
+docs.
+
+`evidence-log.md` and `release-controls.md` now carry the same boundary:
+runnable check evidence is useful release evidence, but it does not replace
+`harnessforge audit` for structural harness score and does not prove
+real-agent effectiveness.
+
 ## Local Reference Findings
 
 ### AWMAN

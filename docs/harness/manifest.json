@@ -153,11 +153,14 @@
       "Change Type",
       "Required Checks",
       "When Checks Cannot Run",
+      "Verification Evidence Reports",
+      "harnessforge verify --target . --json --run",
       "Remote CI",
       "AI/RAG/agent",
       "Agent-generated tests",
       "stubbed",
-      "intentionally vulnerable"
+      "intentionally vulnerable",
+      "does not prove real-agent effectiveness"
     ],
     "docs/harness/component-inventory.md": [
       "Component Inventory",
@@ -199,7 +202,10 @@
     "docs/harness/evidence-log.md": [
       "Date",
       "Scope",
-      "Command Or Review"
+      "Command Or Review",
+      "target-relative report path",
+      "harnessforge verify --target . --json --run",
+      "failed, timed_out, or blocked"
     ],
     "docs/harness/clean-state-checklist.md": [
       "Startup path",
@@ -220,11 +226,14 @@
     ],
     "docs/harness/release-controls.md": [
       "Release Controls",
+      "verify --run",
+      "owner, risk, and next action",
       "Manual platform",
       "SBOM",
       "provenance",
       "isolated directory",
-      "Rollback"
+      "Rollback",
+      "real-agent effectiveness"
     ],
     "docs/harness/self-healing.md": [
       "Self-healing must be reviewable",

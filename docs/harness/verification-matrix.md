@@ -38,6 +38,24 @@ Windows:
 .\init.ps1
 ```
 
+## Verification Evidence Reports
+
+Use `harnessforge verify --target . --json` for a read-only plan. Use
+`harnessforge verify --target . --json --run` only when project checks should
+execute.
+
+When recording runnable evidence:
+
+- Store the JSON report under a target-relative report path such as
+  `docs/harness/evidence/verify-<date>.json`.
+- Review every check with `failed`, `timed_out`, or `blocked` status before
+  claiming success.
+- Treat stdout and stderr previews as diagnostics. Redact secrets and keep long
+  raw logs out of durable docs.
+- The verify report proves configured project checks were planned or run. It
+  does not replace `harnessforge audit --target .` for structural harness score
+  and does not prove real-agent effectiveness.
+
 ## When Checks Cannot Run
 
 Record the command, reason, risk, and next best check in `progress.md` or
