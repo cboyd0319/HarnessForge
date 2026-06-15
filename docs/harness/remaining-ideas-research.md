@@ -359,16 +359,18 @@ Sources:
      roots.
    - Add audit findings for missing routing when specs exist.
 
-3. Design `verify --json` separately from `audit --json`.
+3. Implemented: add `sync --check` as a discoverable preflight.
+   - Wraps readiness, generated-file drift, source-of-truth spec routing,
+     and existing review-required surfaces.
+   - Returns CI-oriented exit codes: ready `0`, warning `1`, blocked `2`.
+   - No write semantics and no target command execution.
+
+4. Design `verify --json` separately from `audit --json`.
    - `audit` scores harness structure.
    - `verify` should report project check results with stable statuses,
      durations, messages, and exit codes.
    - Default should be plan/static mode unless the user explicitly allows
      command execution.
-
-4. Add `sync --check` as a discoverable drift alias.
-   - It should wrap existing drift-report behavior.
-   - No new write semantics.
 
 ### P1: Important After P0
 
@@ -442,8 +444,7 @@ HarnessForge generator behavior:
 
 Implement P0 in this order:
 
-1. `sync --check` alias
-2. design-only issue/doc for `verify --json`
+1. design-only issue/doc for `verify --json`
 
 This sequence improves user experience immediately without expanding the
 generator's default write surface.

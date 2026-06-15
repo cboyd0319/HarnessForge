@@ -8,42 +8,93 @@
 [![Python 3.13+](https://img.shields.io/badge/python-3.13%2B-3776AB)](pyproject.toml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-Create, audit, and maintain repo-owned harnesses for AI coding agents.
+Give AI coding agents a real repo harness, not just another prompt.
 
-A harness is the operating layer that helps an agent understand a repository:
-instructions, project state, verification commands, source evidence, security
-boundaries, and handoff rules. HarnessForge gives teams a practical
-way to add that layer to any project without turning one instruction file into
-a long manual.
+HarnessForge creates the operating layer an agent needs before it can work well
+inside a repository: concise instructions, detected project context, verification
+commands, durable state, source-of-truth routing, security boundaries, and
+handoff rules. It turns agent readiness from scattered tribal knowledge into a
+reviewable product surface that lives with the code.
 
-This repository is both:
+The important design choice is the boundary. HarnessForge generates portable
+harness infrastructure, detects repo-local systems, and routes agents toward the
+right source of truth. It does not copy one repo's personal preferences, local
+research habits, or workflow engines into another project.
 
-- a Python CLI: `harnessforge`
-- a reusable composite GitHub Action: `cboyd0319/harnessforge`
+This repository ships two related surfaces:
 
-The goal is simple: make good agent behavior easier to get, easier to inspect,
-and easier to keep current across macOS, Windows, and Linux.
+- `harnessforge`, a Python CLI for local generation, inspection, audit, and
+  maintenance.
+- `cboyd0319/harnessforge`, a composite GitHub Action that runs the same
+  library code in CI.
 
-## Current Status
+## At A Glance
 
-This is an early implementation with a usable local CLI and Action. The audit is
-structural: it checks that the harness exists, is coherent, and has the expected
-operational surfaces. It does not prove that a specific agent will complete a
-specific project task correctly without real task runs and review.
+| Need | HarnessForge answer |
+| --- | --- |
+| Help agents orient in a repo | Generate compact instruction routers and durable project state |
+| Avoid overwriting local work | Preserve existing files by default and track generated ownership |
+| Know whether a repo is ready | Run read-only readiness and sync preflight checks |
+| Keep generated harnesses honest | Audit structure, drift, security boundaries, and lifecycle controls |
+| Respect existing spec systems | Detect `.specify`, `specs/`, `aspec/`, work-item templates, and workflow surfaces |
+| Run the same checks in CI | Use the composite GitHub Action backed by the same Python library |
 
-## Why Use It
+## Status
 
-- Start faster: generate the files agents need to orient in a repo.
-- Stay safer: preserve existing files by default and reject unsafe generated
-  paths.
-- Keep state durable: create explicit progress, feature, evidence, and handoff
-  surfaces.
-- Verify consistently: install one local check path for humans, agents, and CI.
-- Support common agent entry points: generated harnesses use `AGENTS.md`, and
-  this repo also includes Claude, Gemini, and GitHub Copilot compatibility files
-  that route back to the same operating model.
-- Keep research visible: record source URLs, refresh metadata, and unresolved
-  research items in the harness itself.
+HarnessForge is usable for local harness generation and structural assessment.
+It is still pre-`v1`.
+
+The core loop is already useful: inspect a repo, preview a harness, create
+missing files, audit the result, and keep drift visible over time. The audit
+score is structural. It checks whether a harness is coherent, portable,
+reviewable, and wired to useful feedback loops. It does not prove that a
+specific agent will complete a specific project task correctly. Real agent
+effectiveness still needs representative task runs and human review.
+
+## What Makes It Different
+
+- It treats agent readiness as repository infrastructure, not a one-off prompt.
+- It separates generated harness files from repo-local instructions and
+  preferences.
+- It improves existing instruction surfaces without taking ownership away from
+  the project.
+- It detects source-of-truth systems before generating guidance, including
+  Spec Kit-style SDD, ASPEC-style folders, work items, and workflow definitions.
+- It gives humans and CI the same read-only readiness signal through
+  `sync --check`.
+- It keeps the default runtime boring: Python standard library, explicit file
+  writes, pinned build tooling, and no network access for normal generation.
+
+## Core Capabilities
+
+- Detects repository shape, stacks, package managers, verification commands,
+  monorepo markers, source-of-truth docs, Spec Kit-style SDD surfaces,
+  ASPEC-style folders, work-item templates, and workflow control surfaces.
+- Generates a compact harness with agent entrypoints, project state files,
+  local verification scripts, security boundaries, evidence docs, lifecycle
+  docs, and a manifest.
+- Preserves existing files by default.
+- Can append a reviewed HarnessForge quality addendum to existing instruction
+  files with `--enhance-existing`.
+- Audits harness structure and reports actionable failures.
+- Reports generated-file drift and static readiness without running target
+  project commands.
+- Provides a composite GitHub Action for audit, init, update, and doctor
+  workflows.
+
+## Default Boundaries
+
+- It does not overwrite existing project files unless `--force` is supplied.
+- It does not generate user-specific research mandates, local tool
+  preferences, MCP configs, memory trees, or platform permission files.
+- It does not install Spec Kit, `.specify`, slash commands, presets,
+  extensions, catalogs, ASPEC, AWMAN, Maki, or workflow engines into target
+  repositories.
+- It does not create autonomous push, PR, self-heal, setup, or teardown
+  workflows unless optional workflow scaffolds are explicitly requested.
+- It does not run target repository commands during `inspect`, `sync --check`,
+  `audit`, or `update --drift-report`.
+- It does not use structural scores as proof of real task performance.
 
 ## Platform Contract
 
@@ -55,13 +106,16 @@ specific project task correctly without real task runs and review.
 | Linux | Ubuntu 22.04 or newer as the explicit floor |
 | Runtime dependencies | Python standard library only |
 | Build backend | `setuptools==82.0.1`, hard pinned |
-| CI coverage | Push/PR: Ubuntu 22.04 on Python 3.13.14. Manual platform check: macOS 15 and `windows-2025-vs2026` on Python 3.13.14 |
+| Push/PR CI | Ubuntu 22.04 on Python 3.13.14 |
+| Manual platform CI | macOS 15 and `windows-2025-vs2026` on Python 3.13.14 |
 
 Other modern Linux distributions should work when Python 3.13+ is available.
-They are not the stated support floor until they are covered by CI or equivalent
+They are not the stated support floor until covered by CI or equivalent
 contract tests.
 
-## Install From A Clone
+## Install
+
+From a clone:
 
 ```bash
 git clone https://github.com/cboyd0319/harnessforge.git
@@ -70,53 +124,127 @@ python -m pip install --editable .
 harnessforge --help
 ```
 
-## Create A Harness
+For local development without installing:
 
-Inspect what HarnessForge detects before writing files:
+```bash
+PYTHONPATH=src python -m harnessforge --help
+```
+
+## Quick Start
+
+The normal flow is inspect, check readiness, preview, generate, audit:
+
+Inspect a repository before writing anything:
 
 ```bash
 harnessforge inspect --target /path/to/repo
 harnessforge inspect --target /path/to/repo --json
+```
+
+Run the read-only readiness report:
+
+```bash
 harnessforge inspect --target /path/to/repo --readiness
 harnessforge inspect --target /path/to/repo --readiness --json
 ```
 
-Readiness mode is static and read-only. It reports whether the target appears
-ready, warning-only, or blocked based on detected verification commands,
-generated-file drift, existing instruction files, source-of-truth docs, and
-agent governance surfaces. For spec-driven repos, it also reports static
-quality gaps such as unresolved clarifications, incomplete checklists, missing
-plan/task artifacts, and workflow surfaces that need review. It does not run
-target repository commands.
+Run the CI-oriented sync preflight:
 
-Preview the files first:
+```bash
+harnessforge sync --check --target /path/to/repo
+harnessforge sync --check --target /path/to/repo --json
+```
+
+Preview generated files:
 
 ```bash
 harnessforge init --target /path/to/repo --dry-run
 ```
 
-Write missing files:
+Create missing harness files:
 
 ```bash
 harnessforge init --target /path/to/repo
 ```
 
-Opt into reviewed workflow scaffolds only when wanted:
+Audit the result:
+
+```bash
+harnessforge audit --target /path/to/repo --min-score 85
+```
+
+## Readiness And Sync
+
+`inspect --readiness` and `sync --check` are static and read-only. They do not
+run target repository commands and do not write files.
+
+Readiness reports:
+
+- `verdict`: `ready`, `warning`, or `blocked`
+- `blockedReasons`
+- `warnings`
+- `nextActions`
+- `sourceOfTruth`
+- `runnableChecks`
+- `generatedDrift`
+- `reviewRequired`
+
+`sync --check` wraps the same readiness report in a CI-friendly command with
+stable exit codes:
+
+| Verdict | Exit code | Meaning |
+| --- | ---: | --- |
+| `ready` | 0 | No blockers, warnings, review-required surfaces, or generated drift were detected |
+| `warning` | 1 | The repo can be inspected, but drift or review-required surfaces need human attention |
+| `blocked` | 2 | HarnessForge could not identify a safe verification path or another blocking condition exists |
+
+For spec-driven repos, readiness also reports static quality gaps such as
+unresolved clarification markers, incomplete requirement checklists, missing
+plan/task artifacts, weak FR/SC traceability, tasks without explicit file
+paths, and workflow surfaces that need review.
+
+## Generation Boundary
+
+`init` creates missing HarnessForge-owned files. It preserves existing project
+files by default:
+
+```bash
+harnessforge init --target /path/to/repo
+```
+
+Use `--dry-run` first when reviewing a new target:
+
+```bash
+harnessforge init --target /path/to/repo --dry-run
+```
+
+Use `--enhance-existing` when an existing instruction file should keep its
+project text but receive a reviewed HarnessForge quality addendum:
+
+```bash
+harnessforge init --target /path/to/repo --enhance-existing
+```
+
+Use `--force` only after reviewing the target diff:
+
+```bash
+harnessforge init --target /path/to/repo --force
+```
+
+Optional workflow scaffolds are off by default:
 
 ```bash
 harnessforge init --target /path/to/repo --with-ci-workflow
 harnessforge init --target /path/to/repo --with-self-heal-workflow
 ```
 
-By default, `init` only writes missing generated files. It does not overwrite
-existing project files. Use `--force` only when replacing generated harness
-surfaces is intentional and reviewed.
-Use `--enhance-existing` when existing instruction files should keep their
-project text but receive a reviewed HarnessForge quality addendum.
-Workflow scaffolds use manual triggers by default and must be reviewed and
-pinned before relying on them.
+Those workflows use manual triggers and placeholder Action pins. Review their
+permissions, triggers, branches, credential surfaces, and full-length commit
+SHAs before relying on them.
 
-The generated harness includes:
+## Generated Files
+
+The default generated harness includes:
 
 | Area | Key files |
 | --- | --- |
@@ -129,10 +257,14 @@ The generated harness includes:
 | Research | `sources.md`, `research-sources.json`, `research-inbox.md` |
 | Lifecycle | `self-healing.md`, `entropy-control.md`, `clean-state-checklist.md` |
 
-See [docs/harness/manifest.json](docs/harness/manifest.json) for the complete
-generated inventory and required-file contract.
+Each generated file is recorded in `docs/harness/manifest.json` with ownership
+metadata and hashes. Project-owned existing files are tracked separately so
+drift reporting can distinguish generated changes from preserved local content.
 
-## Audit A Harness
+See [docs/harness/manifest.json](docs/harness/manifest.json) for this repo's
+current generated inventory and required-file contract.
+
+## Audit
 
 ```bash
 harnessforge audit --target /path/to/repo
@@ -144,26 +276,42 @@ harnessforge audit --target /path/to/repo --min-score 85
 The audit returns:
 
 - an overall 0-100 score
-- the lowest-scoring harness domain
+- the bottleneck domain
+- per-domain checks
 - failed checks
 - concrete recommendations
 
-The score covers structure, portability, source hygiene, state surfaces,
-verification coverage, security boundaries, and lifecycle controls. Treat it as
-a readiness signal, not a substitute for code review or real task evaluation.
+The score covers instructions, tools, environment, state, feedback, scope, and
+lifecycle controls. Treat it as a harness quality signal, not as a substitute
+for code review, security review, or real agent task evaluation.
 
-## Apply Safe Corrections
+## Update And Drift
+
+Plan safe missing-file corrections without writing:
 
 ```bash
 harnessforge update --target /path/to/repo
+```
+
+Apply safe missing-file corrections:
+
+```bash
 harnessforge update --target /path/to/repo --apply
 ```
 
-`update` is conservative. Without `--apply`, it reports what it would change.
-With `--apply`, it creates missing generated artifacts. Existing files are left
-alone unless `--force` is also provided.
+Report generated-file drift:
 
-## Use The GitHub Action
+```bash
+harnessforge update --target /path/to/repo --drift-report
+harnessforge update --target /path/to/repo --drift-report --json
+```
+
+`update --apply` creates missing generated artifacts. Existing files are left
+alone unless `--force` is supplied.
+
+## GitHub Action
+
+Minimal audit workflow:
 
 ```yaml
 name: Harness Audit
@@ -190,18 +338,19 @@ jobs:
           json-report: harness-report.json
 ```
 
-For production workflows, pin this Action and other third-party Actions to a
-reviewed full-length commit SHA. See [docs/action.md](docs/action.md) for every
-input, output, and update mode.
+For production workflows, pin this Action and third-party Actions to reviewed
+full-length commit SHAs. See [docs/action.md](docs/action.md) for every Action
+input, output, and command mode.
 
 ## Command Reference
 
 | Command | Purpose |
 | --- | --- |
 | `harnessforge inspect` | Show detected project profile or readiness without writing files |
+| `harnessforge sync --check` | Run a read-only CI preflight with readiness exit codes |
 | `harnessforge init` | Create missing harness artifacts |
 | `harnessforge audit` | Score an existing repo harness |
-| `harnessforge update` | Plan or apply safe missing-file corrections |
+| `harnessforge update` | Plan or apply safe missing-file corrections, or report generated drift |
 | `harnessforge doctor` | Check local runtime support |
 
 Run `harnessforge <command> --help` for command-specific options.
@@ -212,8 +361,9 @@ People may run this tool on personal machines and private repositories, so the
 default posture is intentionally restrictive. See [SECURITY.md](SECURITY.md)
 for vulnerability reporting, scope, and severity guidance.
 
-- Normal `init`, `audit`, `update`, and `doctor` commands use the Python
-  standard library and do not install runtime dependencies.
+- Normal `init`, `inspect`, `sync --check`, `audit`, `update`, and `doctor`
+  commands use the Python standard library and do not install runtime
+  dependencies.
 - Existing files are preserved unless `--force` is explicitly supplied.
 - `--enhance-existing` appends reviewed instruction addenda without replacing
   existing project text.
@@ -249,11 +399,15 @@ private-address targets, private DNS resolutions, and unsafe redirects are
 rejected. Connections are opened to validated public DNS results while
 preserving the original host for TLS verification.
 
-## Self-Healing
+## Self-Healing In This Repo
 
-This repo includes a scheduled self-healing workflow in
-[.github/workflows/harness-self-heal.yml](.github/workflows/harness-self-heal.yml).
-It refreshes research metadata, applies only safe harness updates, runs
+This repository has its own local maintenance workflows. Those workflows are
+repo-local and are not the same thing as the generated harness for other
+repositories.
+
+The scheduled workflow in
+[.github/workflows/harness-self-heal.yml](.github/workflows/harness-self-heal.yml)
+refreshes research metadata, applies only safe harness updates, runs
 verification, and opens a pull request when changes are detected. It does not
 silently mutate `main`. Fetched titles, headings, and hashes are treated as
 untrusted metadata for human review, not executable instructions. Metadata that
@@ -294,19 +448,24 @@ The default push/PR CI path runs Ubuntu 22.04 with Python 3.13.14. Use the
 manual `workflow_dispatch` CI run for macOS and Windows platform confirmation
 at release or risk-based checkpoints.
 
-For focused checks:
+Focused checks:
 
 ```bash
-PYTHONPATH=src python -m unittest discover -s tests
-PYTHONPATH=src python scripts/check_pins.py --root .
-PYTHONPATH=src python -m harnessforge audit --target . --min-score 85
+PYTHONPATH=src:. python -m unittest discover -s tests
+PYTHONPATH=src:. python scripts/check_pins.py --root .
+PYTHONPATH=src:. python -m harnessforge audit --target . --min-score 85
+PYTHONPATH=src:. python -m harnessforge sync --check --target . --json
 ```
+
+The final command currently returns warning exit code `1` in this repository
+because local instruction files need review. That is expected and not a
+readiness blocker.
 
 ## Repository Layout
 
 | Path | Purpose |
 | --- | --- |
-| `src/harnessforge/` | CLI, generator, auditor, updater, Action entry point |
+| `src/harnessforge/` | CLI, generator, auditor, updater, readiness checks, Action entry point |
 | `src/harnessforge/templates/` | Files copied into target repositories |
 | `docs/harness/` | This repo's own harness and research ledger |
 | `tests/` | Unit and regression tests |

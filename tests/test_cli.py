@@ -300,6 +300,76 @@ class CliTests(unittest.TestCase):
         self.assertIn("Readiness: blocked", stdout.getvalue())
         self.assertIn("Next actions:", stdout.getvalue())
 
+    def test_sync_check_json_reports_ready_without_writing(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "pyproject.toml").write_text(
+                "[project]\nname='demo'\n",
+                encoding="utf-8",
+            )
+            (root / "tests").mkdir()
+            (root / "tests" / "test_demo.py").write_text(
+                "import unittest\n",
+                encoding="utf-8",
+            )
+            stdout = io.StringIO()
+            with contextlib.redirect_stdout(stdout):
+                code = main(["sync", "--check", "--target", str(root), "--json"])
+
+            payload = json.loads(stdout.getvalue())
+            agents_exists = (root / "AGENTS.md").exists()
+
+        self.assertEqual(code, 0)
+        self.assertFalse(agents_exists)
+        self.assertEqual(payload["mode"], "check")
+        self.assertEqual(payload["verdict"], "ready")
+        self.assertEqual(payload["exitCode"], 0)
+        self.assertEqual(payload["readiness"]["generatedDrift"], [])
+        self.assertIn(
+            "python -m unittest discover",
+            payload["readiness"]["runnableChecks"],
+        )
+
+    def test_sync_check_exits_warning_for_generated_drift(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            with contextlib.redirect_stdout(io.StringIO()):
+                init_code = main(["init", "--target", str(root)])
+            (root / "AGENTS.md").write_text("# edited\n", encoding="utf-8")
+            stdout = io.StringIO()
+            with contextlib.redirect_stdout(stdout):
+                code = main(["sync", "--check", "--target", str(root), "--json"])
+
+            payload = json.loads(stdout.getvalue())
+
+        self.assertEqual(init_code, 0)
+        self.assertEqual(code, 1)
+        self.assertEqual(payload["verdict"], "warning")
+        self.assertEqual(payload["exitCode"], 1)
+        drift = {item["path"]: item for item in payload["readiness"]["generatedDrift"]}
+        self.assertEqual(drift["AGENTS.md"]["fileStatus"], "modified")
+
+    def test_sync_check_exits_blocked_for_missing_verification(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "README.md").write_text("# Notes\n", encoding="utf-8")
+            stdout = io.StringIO()
+            with contextlib.redirect_stdout(stdout):
+                code = main(["sync", "--check", "--target", str(root)])
+
+        self.assertEqual(code, 2)
+        self.assertIn("Sync check: blocked", stdout.getvalue())
+        self.assertIn("No project verification", stdout.getvalue())
+
+    def test_sync_requires_check_mode(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            stderr = io.StringIO()
+            with contextlib.redirect_stderr(stderr):
+                code = main(["sync", "--target", tmp])
+
+        self.assertEqual(code, 2)
+        self.assertIn("--check", stderr.getvalue())
+
     def test_init_can_scaffold_optional_workflows(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

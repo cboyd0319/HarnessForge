@@ -11,9 +11,20 @@ from .detect import detect_project
 from .doctor import doctor_json, doctor_report, format_doctor
 from .generate import PLATFORM_CONTRACTS, create_harness
 from .models import DriftResult, ProjectProfile, WriteResult
-from .readiness import format_readiness, inspect_readiness, readiness_to_dict
+from .readiness import (
+    ReadinessReport,
+    format_readiness,
+    inspect_readiness,
+    readiness_to_dict,
+)
 from .redact import redact_local_paths
 from .update import build_drift_report, plan_or_apply_update
+
+SYNC_EXIT_CODES = {
+    "ready": 0,
+    "warning": 1,
+    "blocked": 2,
+}
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -126,6 +137,21 @@ def build_parser() -> argparse.ArgumentParser:
     update.add_argument("--drift-report", action="store_true")
     update.add_argument("--json", action="store_true")
     update.set_defaults(func=_update)
+
+    sync = subparsers.add_parser(
+        "sync",
+        help="check whether safe harness sync would require attention",
+    )
+    sync.add_argument("--target", type=Path, default=Path.cwd())
+    sync.add_argument(
+        "--check",
+        action="store_true",
+        help="run a read-only sync readiness check",
+    )
+    sync.add_argument("--package-manager")
+    sync.add_argument("--command", dest="commands", action="append", default=[])
+    sync.add_argument("--json", action="store_true")
+    sync.set_defaults(func=_sync)
 
     doctor = subparsers.add_parser("doctor", help="check local runtime support")
     doctor.add_argument("--json", action="store_true")
@@ -278,6 +304,23 @@ def _update(args: argparse.Namespace) -> int:
     return 0
 
 
+def _sync(args: argparse.Namespace) -> int:
+    if not args.check:
+        raise ValueError("sync currently supports only --check")
+    profile = detect_project(
+        args.target,
+        explicit_package_manager=args.package_manager,
+        explicit_commands=tuple(args.commands),
+    )
+    report = inspect_readiness(profile)
+    exit_code = SYNC_EXIT_CODES.get(report.verdict, 2)
+    if args.json:
+        print(json.dumps(_sync_check_to_dict(report, exit_code), indent=2))
+    else:
+        print(_format_sync_check(report))
+    return exit_code
+
+
 def _doctor(args: argparse.Namespace) -> int:
     report = doctor_report()
     if args.json:
@@ -285,6 +328,23 @@ def _doctor(args: argparse.Namespace) -> int:
     else:
         print(format_doctor(report))
     return 1 if args.strict and not report["ok"] else 0
+
+
+def _sync_check_to_dict(
+    report: ReadinessReport, exit_code: int
+) -> dict[str, object]:
+    readiness = readiness_to_dict(report)
+    return {
+        "mode": "check",
+        "target": readiness["target"],
+        "verdict": readiness["verdict"],
+        "exitCode": exit_code,
+        "readiness": readiness,
+    }
+
+
+def _format_sync_check(report: ReadinessReport) -> str:
+    return f"Sync check: {report.verdict}\n\n{format_readiness(report)}"
 
 
 def _profile_to_dict(profile: ProjectProfile) -> dict[str, object]:

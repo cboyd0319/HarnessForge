@@ -317,21 +317,42 @@ maintenance loop.
   missing plan/task artifacts, weak FR/SC traceability, tasks without file
   paths, and workflow surfaces requiring review. Audit now fails instruction
   files that do not route agents to detected source-of-truth specs.
+- Implemented `harnessforge sync --check` as a read-only, CI-oriented preflight
+  that wraps readiness, generated-file drift, source-of-truth spec routing,
+  and review-required governance surfaces. Exit codes are `0` for ready, `1`
+  for warning, and `2` for blocked.
+- Reworked the main README to lead with the product value, explain why the
+  project is different, and organize usage around inspect, readiness, sync,
+  generation boundaries, generated files, audit, update/drift, GitHub Action
+  use, security, and verification.
 
 ## Recommended Next Step
 
-Continue the P0 remaining-ideas backlog in this order: `sync --check`, then a
-design-only issue or doc for `verify --json`. Push local commits only at an explicit
-batch/release boundary or user request. Remaining product decisions before a
-first public Action release: whether to add component-directed monorepo
-verification commands, path/package exclusions for intentionally vulnerable
-training repos, Maven/Gradle dependency pin parsing, and selective update
-semantics for generated-owned files. Then run the manual macOS/Windows platform
-CI check and decide whether to cut a `v1` Action tag and which release-time
-SBOM/provenance controls should become blocking.
+Continue the P0 remaining-ideas backlog with a design-only issue or doc for
+`verify --json`. Push local commits only at an explicit batch/release boundary
+or user request. Remaining product decisions before a first public Action
+release: whether to add component-directed monorepo verification commands,
+path/package exclusions for intentionally vulnerable training repos,
+Maven/Gradle dependency pin parsing, and selective update semantics for
+generated-owned files. Then run the manual macOS/Windows platform CI check and
+decide whether to cut a `v1` Action tag and which release-time SBOM/provenance
+controls should become blocking.
 
 ## Verification Evidence
 
+- `PYTHONPATH=src:. python3 -m unittest tests.test_cli` passed with 24 tests,
+  `PYTHONPATH=src:. python3 -m unittest discover -s tests` passed with
+  152 tests, and `PYTHONPATH=src:. python3 -m compileall src tests scripts`
+  passed after adding `sync --check`.
+- `PYTHONPATH=src:. python3 -m harnessforge sync --check --target . --json`
+  returned warning exit code `1`, as expected for this repo because existing
+  local instruction files require review; no generated drift or blockers were
+  reported.
+- `PYTHONPATH=src:. python3 scripts/check_pins.py --root .`,
+  `python3 -m json.tool feature_list.json >/dev/null`, `PYTHONPATH=src:.
+  python3 -m harnessforge audit --target . --min-score 85`, and `git diff
+  --check` passed after the README reorganization and `sync --check` slice.
+  Self-audit stayed `100/100`.
 - `PYTHONPATH=src:. python3 -m unittest discover -s tests` passed with
   148 tests, and `PYTHONPATH=src:. python3 -m compileall src tests scripts`
   passed after adding source-of-truth spec sync detection.

@@ -64,8 +64,11 @@ and the required AGENTS instruction format.
   runnable checks, generated drift, and governance review surfaces.
   Implemented the second P0 item: source-of-truth spec sync detection across
   `.specify`, active feature metadata, `specs/`, `aspec/`, work-item
-  templates, and repo workflow definitions. Remaining P0 candidates:
-  `sync --check` and a design-only `verify --json` contract. P1 candidates:
+  templates, and repo workflow definitions. Implemented the third P0 item:
+  read-only `sync --check`, which wraps readiness, generated drift,
+  source-of-truth spec routing, and review-required surfaces with exit codes
+  `0` ready, `1` warning, and `2` blocked. Remaining P0 candidate: a
+  design-only `verify --json` contract. P1 candidates:
   workflow/work-item inventory, context-budget and duplication audit,
   permission/governance inventory, and guided first-run UX. P2 candidates:
   opt-in blueprints, real-agent evals, source-verified platform adapters, and
@@ -82,10 +85,10 @@ and the required AGENTS instruction format.
   repo-local control planes, but it does not generate sibling-repo
   instructions, personal tool mandates, large skill trees, blueprints, MCP
   setup, or extra agent adapters by default. Current verification passes full
-  unit discovery with 148 tests, compile, pin check, self-audit `100/100`,
-  diff hygiene, and a read-only readiness smoke against this repo. Readiness is
-  warning-only because existing local instruction files need review; there are
-  no readiness blockers.
+  unit discovery with 152 tests, compile, pin check, self-audit `100/100`,
+  diff hygiene, a read-only readiness smoke, and `sync --check` smoke against
+  this repo. Readiness and sync check are warning-only because existing local
+  instruction files need review; there are no readiness blockers.
 - Current SDD research supplement reviewed the GitHub Spec Kit article, the
   supplied local Spec Kit checkout, Fowler's SDD tools article, and
   specdriven.ai. Accepted generic ideas: detect `.specify/`, active feature
@@ -101,6 +104,12 @@ and the required AGENTS instruction format.
   files route agents to detected source-of-truth specs. It also keeps ASPEC
   and AWMAN-derived ideas in scope through `aspec/`, work-item template, and
   repo workflow definition detection without copying their formats.
+- Current sync preflight implementation is a CLI-only read path. It does not
+  add mutation semantics, run target checks, or change generator output.
+- The main README has been reorganized to make the project easier to understand
+  from the outside: value proposition first, then at-a-glance outcomes,
+  differentiators, boundaries, quickstart, readiness/sync, generated files,
+  audit/update, Action use, security, and verification.
 - Current expanded reference-repo quality batch ran shadow generation and
   content review against agent-governance-toolkit, apple-container,
   Bluepeak-AI, JobSentinel, nhl-betting-analytics, persona, RunHaven,
@@ -430,9 +439,9 @@ and the required AGENTS instruction format.
 
 ## Next Session
 
-Continue the P0 remaining-ideas backlog: `sync --check`, then a design-only
-`verify --json` contract. Push local commits only at an explicit batch/release
-boundary or user request. Remaining product decisions before public release:
+Continue the P0 remaining-ideas backlog with a design-only `verify --json`
+contract. Push local commits only at an explicit batch/release boundary or user
+request. Remaining product decisions before public release:
 component-directed monorepo verification commands, path/package exclusions for
 intentionally vulnerable training repos, Maven/Gradle dependency pin parsing,
 selective update semantics for generated-owned files, manual macOS/Windows
