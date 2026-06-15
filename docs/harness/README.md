@@ -21,7 +21,7 @@ agent sessions.
 | Tools | `harnessforge`, `action.yml`, `init.sh`, `init.ps1`, `scripts/check_pins.py` | Creation, audit, update, CI action, local checks, and pin enforcement |
 | Environment | `pyproject.toml`, CI matrix, `component-inventory.md`, `dependency-change-policy.md` | Python, OS, package, component, and Action support contract |
 | State | `feature_list.json`, `progress.md`, `evidence-log.md` | Current objective, evidence, and restart state |
-| Feedback | tests, self-audit, CI, `evaluator-rubric.md`, `verify-json-contract.md`, `effectiveness-eval-contract.md`, research refresh | Deterministic quality checks, planned machine-readable verification output, benchmark-claim boundaries, and source drift signal |
+| Feedback | tests, self-audit, CI, `verification-matrix.md`, `sensor-registry.md`, `evaluator-rubric.md`, `verify-json-contract.md`, `effectiveness-eval-contract.md`, research refresh | Deterministic quality checks, sensor ownership, machine-readable verification output, benchmark-claim boundaries, and source drift signal |
 | Scope | `docs/harness/change-contract.md`, `security-boundary-map.md`, `feature-privacy-labels.json` | Acceptance, rollback, security, and data-flow discipline |
 | Lifecycle | `session-handoff.md`, `clean-state-checklist.md`, `quality-document.md`, `release-controls.md`, `self-healing.md`, entropy control | Restart, release readiness, recurring maintenance, and reviewed automation |
 
@@ -32,13 +32,14 @@ agent sessions.
 3. Check `component-inventory.md` when a task touches nested project boundaries.
 4. Use `change-contract.md` for non-trivial behavior or template changes.
 5. Implement the smallest coherent slice.
-6. Run `./init.sh` or the narrowest relevant subset.
-7. Run `python scripts/check_pins.py --root .` for dependency, Action, or
+6. Review `sensor-registry.md` when adding, deleting, or promoting checks.
+7. Run `./init.sh` or the narrowest relevant subset.
+8. Run `python scripts/check_pins.py --root .` for dependency, Action, or
    workflow changes.
-8. Run `python scripts/refresh_research.py --root . --check` for research
+9. Run `python scripts/refresh_research.py --root . --check` for research
    source ledger or source-doc changes.
-9. Use `clean-state-checklist.md` before ending non-trivial sessions.
-10. Update state and handoff files when durable facts change.
+10. Use `clean-state-checklist.md` before ending non-trivial sessions.
+11. Update state and handoff files when durable facts change.
 
 ## Assessment And Updates
 

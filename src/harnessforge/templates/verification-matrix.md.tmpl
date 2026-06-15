@@ -4,6 +4,8 @@ Use the smallest check set that can catch likely regressions for the change.
 Prefer local checks during active development. Remote CI is for reviewed
 branches, release/batch checkpoints, platform-specific confirmation, and cases
 where local checks cannot cover the risk.
+Use `sensor-registry.md` to confirm owner, source, purpose, and retirement
+conditions before promoting a check into a recurring gate.
 The default push/PR CI path should stay small; keep macOS and Windows remote
 checks as manual or release/batch platform checks unless this repo's risk
 requires every-push coverage.

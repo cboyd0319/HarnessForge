@@ -53,6 +53,7 @@ and advanced product modes.
 - `src/harnessforge/templates/evidence-log.md.tmpl`
 - `src/harnessforge/templates/release-controls.md.tmpl`
 - `src/harnessforge/templates/research-sources.json.tmpl`
+- `src/harnessforge/templates/sensor-registry.md.tmpl`
 - `src/harnessforge/templates/sources.md.tmpl`
 - `tests/test_cli.py`
 - `tests/test_detect.py`
@@ -68,6 +69,7 @@ and advanced product modes.
 - `docs/harness/evidence-log.md`
 - `docs/harness/manifest.json`
 - `docs/harness/sources.md`
+- `docs/harness/sensor-registry.md`
 - `docs/harness/verification-matrix.md`
 - `docs/harness/reference-mining-notes.md`
 - `docs/harness/remaining-ideas-research.md`
@@ -123,8 +125,8 @@ and advanced product modes.
   The boundary remains explicit: HarnessForge detects and surfaces useful
   repo-local control planes, but it does not generate sibling-repo
   instructions, personal tool mandates, large skill trees, MCP
-  setup, or extra agent adapters by default. Current verification passes full
-  unit discovery and POSIX/PowerShell entrypoints with 189 tests, compile, pin
+  setup, or extra agent adapters by default. That batch passed full unit
+  discovery and POSIX/PowerShell entrypoints with 189 tests, compile, pin
   check, research source check, verify plan/run JSON smokes, blueprint
   JSON/apply smokes, self-audit `100/100`, local path scan, and diff hygiene.
   Readiness and sync check are warning-only
@@ -147,6 +149,11 @@ and advanced product modes.
   repo workflow definition detection without copying their formats.
 - Current sync preflight implementation is a CLI-only read path. It does not
   add mutation semantics, run target checks, or change generator output.
+- Current sensor registry implementation adds a review-required generated
+  `docs/harness/sensor-registry.md`, manifest required-file and snippet
+  coverage, generated ownership metadata, and live harness ownership/source/
+  purpose/retirement records for recurring checks. It does not execute target
+  commands or claim real-agent effectiveness.
 - The main README has been reorganized to make the project easier to understand
   from the outside: value proposition first, then at-a-glance outcomes,
   differentiators, boundaries, quickstart, readiness/sync, generated files,
@@ -521,12 +528,12 @@ and advanced product modes.
   files with git, maps them to detected or explicit project verification
   checks, reports matched files, unmatched files, and reasons, and does not
   execute target commands. Current verification passes full unit discovery and
-  POSIX/PowerShell entrypoints with 208 tests, compile, pin check, research
+  POSIX/PowerShell entrypoints with 209 tests, compile, pin check, research
   source check, JSON validation, session and plan JSON smokes, changed-file
   local-path scan, diff hygiene, and self-audit `100/100`. Remaining
-  high-value, non-default product ideas are sensor registry support,
-  source-record schema support, and benchmark/score commands only when backed
-  by representative effectiveness evidence.
+  high-value, non-default product ideas are source-record schema support and
+  benchmark/score commands only when backed by representative effectiveness
+  evidence.
 
 ## Next Session
 
@@ -584,6 +591,12 @@ a read-only changed-file planner. It combines `git diff --name-only` with
 untracked files from `git ls-files --others --exclude-standard`, maps changed
 files to detected or explicit checks, reports unmatched files, and leaves
 execution to `verify --run`.
+The latest sensor registry slice added generated
+`docs/harness/sensor-registry.md` as a review-required artifact, manifest
+required-file and snippet coverage, generated ownership metadata, generated
+README/matrix routing, and live owner/source/purpose/retirement records for
+recurring checks. It does not execute target commands or prove real-agent
+effectiveness.
 `scripts/refresh_research.py --check` validates duplicate source IDs and URLs,
 required fields, placeholder text, canonical URL shape, arXiv `/abs/` URLs,
 lock-file consistency, and local-path leakage before any metadata fetch. Root
@@ -605,17 +618,19 @@ GitHub runner-images Windows VS2026 migration notice.
 Current robust-mode verification passes: focused generated workflow and CLI
 warning tests, focused GitHub Action tests, focused generated verify-evidence
 coverage, focused verify report-persistence tests, focused verify-evidence gate
-tests, focused Action sync tests, focused session tests, full unit discovery
-with 208 tests, compile, JSON/YAML validation, pin check, research source
-check, rendered optional workflow audit and pin smoke, session and plan JSON
-smokes, expected-warning sync JSON smoke, self-audit `100/100`, changed-file
-local-path scan, and diff hygiene. `./init.sh` and `pwsh -NoProfile -File
-./init.ps1` both pass with 208 tests, pin check, research source check, and self-audit
-`100/100`. `sync --check` returns the expected warning for local workflow and
-instruction review surfaces without blockers or generated drift.
-The robust-mode backlog item for generated workflow sync preflight is closed.
-The next highest-value non-release slice is a review-required sensor registry
-for check ownership, source, purpose, and retirement conditions.
+tests, focused Action sync tests, focused session tests, focused sensor-registry
+generator test, full unit discovery with 209 tests, compile, JSON/YAML
+validation, pin check, research source check, rendered optional workflow audit
+and pin smoke, session and plan JSON smokes, expected-warning sync JSON smoke,
+self-audit `100/100`, changed-file local-path scan, and diff hygiene.
+`./init.sh` and `pwsh -NoProfile -File ./init.ps1` both pass with 209 tests,
+pin check, research source check, and self-audit `100/100`. `sync --check`
+returns the expected warning for local workflow and instruction review surfaces
+without blockers or generated drift.
+The robust-mode backlog items for generated workflow sync preflight and sensor
+registry are closed. The next highest-value non-release slice is source-record
+schema support, or score/benchmark commands only with representative
+effectiveness evidence.
 Existing eval guidance comes from the Harness Forge, Meta-Harness, Code as
 Agent Harness catalog, and arXiv harness-eval reviews; those sources are mined
 only for product ideas and are not copied into generated target-repo defaults.

@@ -4,6 +4,8 @@ Use the smallest check set that proves the changed behavior.
 Prefer local checks during active development. Remote CI is for reviewed
 branches, release/batch checkpoints, platform-specific confirmation, and cases
 where local checks cannot cover the risk.
+Use `sensor-registry.md` to confirm owner, source, purpose, and retirement
+conditions before promoting a check into a recurring gate.
 The default push/PR CI path runs Ubuntu 22.04 with Python 3.13.14; macOS and
 Windows remote checks are manual `workflow_dispatch` platform checks.
 

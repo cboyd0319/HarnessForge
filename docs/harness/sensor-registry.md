@@ -1,0 +1,35 @@
+# Sensor Registry
+
+Status: live
+
+REVIEW REQUIRED: update owner, source, purpose, retirement condition, and
+review cadence whenever a check is added, removed, renamed, or promoted into a
+release, sync, or self-heal gate.
+
+This registry records the checks and signals HarnessForge uses for local
+completion, release prep, and recurring maintenance. It is not a command
+runner. Use `verification-matrix.md` to choose checks for a change and
+`harnessforge verify --target . --run` only when command execution is intended.
+
+## Registered Sensors
+
+| Sensor | Source | Purpose | Owner | Retire When | Review Cadence |
+| --- | --- | --- | --- | --- | --- |
+| `PYTHONPATH=src:. python3 -m unittest discover -s tests` | `AGENTS.md`, `verification-matrix.md`, root entrypoints | Proves Python behavior covered by the unit suite. | HarnessForge maintainer | Replace when the test runner or package layout changes. | Every behavior or template slice |
+| `PYTHONPATH=src:. python3 -m compileall src tests scripts` | Root entrypoints | Catches syntax/import parse failures across runtime, tests, and scripts. | HarnessForge maintainer | Replace if compile coverage moves into a stronger local gate. | Every non-doc slice |
+| `PYTHONPATH=src:. python3 scripts/check_pins.py --root .` | Pin policy, root entrypoints | Verifies package, workflow, Action, and dependency pin policy. | HarnessForge maintainer | Replace if pin policy moves to a different reviewed checker. | Dependency, workflow, Action, or packaging changes |
+| `PYTHONPATH=src:. python3 scripts/refresh_research.py --root . --check` | Research source policy, root entrypoints | Validates fixed research-source metadata without network refresh. | HarnessForge maintainer | Replace if source-ledger validation moves into product tests. | Research source or source-doc changes |
+| `PYTHONPATH=src:. python3 -m harnessforge audit --target . --min-score 85` | Generated harness manifest, self-audit policy | Checks live harness structure, snippets, drift-sensitive boundaries, and score floor. | HarnessForge maintainer | Replace if audit scoring contract changes. | Every harness-affecting slice |
+| `PYTHONPATH=src:. python3 -m harnessforge plan --target . --since HEAD --json` | Diff-aware planner contract | Confirms the read-only planner emits parseable JSON for the current diff. | HarnessForge maintainer | Replace if planner smoke moves into a dedicated integration gate. | Planner, detection, or routing changes |
+| `PYTHONPATH=src:. python3 -m harnessforge session --target . --json` | Session snapshot contract | Confirms the read-only restart report emits parseable JSON. | HarnessForge maintainer | Replace if session output is folded into another restart contract. | Session, readiness, or state-file changes |
+| `./init.sh` | POSIX root entrypoint | Runs the local macOS/Linux verification contract. | HarnessForge maintainer | Replace if POSIX support or entrypoint policy changes. | End of non-trivial slices and release prep |
+| `pwsh -NoProfile -File ./init.ps1` | Windows/PowerShell root entrypoint | Runs the local Windows-compatible verification contract from PowerShell. | HarnessForge maintainer | Replace if Windows support or entrypoint policy changes. | End of non-trivial slices and release prep |
+
+## Rules
+
+- A sensor is a signal, not a guarantee. It does not prove real-agent effectiveness.
+- Do not add a recurring gate without an owner, source, purpose, retirement
+  condition, and review cadence.
+- Keep source paths target-relative and portable.
+- Remove sensors that no longer catch meaningful regressions or that duplicate
+  a stronger reviewed gate.

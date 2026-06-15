@@ -6,6 +6,7 @@ import shlex
 import stat
 from datetime import UTC, datetime
 from hashlib import sha256
+from html import escape as html_escape
 from importlib.resources import files
 from pathlib import Path
 
@@ -23,6 +24,7 @@ REVIEW_REQUIRED_FILES = (
     "docs/harness/evidence-log.md",
     "docs/harness/quality-document.md",
     "docs/harness/release-controls.md",
+    "docs/harness/sensor-registry.md",
 )
 PLATFORM_SOURCE_REVIEW_DATE = "2026-06-15"
 PLATFORM_SOURCE_REVIEW = (
@@ -174,6 +176,7 @@ def _template_specs(
             ("harness-readme.md.tmpl", "docs/harness/README.md", False),
             ("change-contract.md.tmpl", "docs/harness/change-contract.md", False),
             ("verification-matrix.md.tmpl", "docs/harness/verification-matrix.md", False),
+            ("sensor-registry.md.tmpl", "docs/harness/sensor-registry.md", False),
             ("component-inventory.md.tmpl", "docs/harness/component-inventory.md", False),
             (
                 "dependency-change-policy.md.tmpl",
@@ -385,6 +388,7 @@ def _template_context(
         ),
         "generated_date": now,
         "commands_markdown": "\n".join(f"- `{command}`" for command in commands),
+        "sensor_rows_markdown": _sensor_rows_markdown(commands),
         "verification_entrypoints_markdown": _verification_entrypoints_markdown(
             platform_contract
         ),
@@ -1005,6 +1009,39 @@ def _is_missing_verification_command(command: str) -> bool:
     return command == MISSING_VERIFICATION_COMMAND
 
 
+def _sensor_rows_markdown(commands: tuple[str, ...]) -> str:
+    rows = [
+        "| Sensor | Source | Purpose | Owner | Retire When | Review Cadence |",
+        "| --- | --- | --- | --- | --- | --- |",
+    ]
+    for command in commands:
+        if _is_missing_verification_command(command):
+            source = "HarnessForge placeholder"
+            purpose = (
+                "REVIEW REQUIRED: replace with the smallest reliable project "
+                "verification check."
+            )
+        else:
+            source = "Detected or explicitly supplied project command"
+            purpose = "REVIEW REQUIRED: define the decision this sensor supports."
+        rows.append(
+            "| "
+            f"{_markdown_code_cell(command)} | "
+            f"{source} | "
+            f"{purpose} | "
+            "REVIEW REQUIRED: assign owner. | "
+            "REVIEW REQUIRED: state when to retire or replace this sensor. | "
+            "REVIEW REQUIRED: set review cadence. |"
+        )
+    return "\n".join(rows)
+
+
+def _markdown_code_cell(value: str) -> str:
+    compact = " ".join(value.split())
+    escaped = html_escape(compact, quote=False).replace("|", "&#124;")
+    return f"<code>{escaped}</code>"
+
+
 def _python_command_args(command: str) -> str | None:
     for executable in ("python", "python3"):
         if command == executable:
@@ -1054,6 +1091,7 @@ def _manifest_content(
         "docs/harness/README.md",
         "docs/harness/change-contract.md",
         "docs/harness/verification-matrix.md",
+        "docs/harness/sensor-registry.md",
         "docs/harness/component-inventory.md",
         "docs/harness/dependency-change-policy.md",
         "docs/harness/security-boundary-map.md",
@@ -1122,6 +1160,15 @@ def _manifest_content(
             "Agent-generated tests",
             "stubbed",
             "intentionally vulnerable",
+            "does not prove real-agent effectiveness",
+        ],
+        "docs/harness/sensor-registry.md": [
+            "Sensor Registry",
+            "REVIEW REQUIRED",
+            "Owner",
+            "Source",
+            "Purpose",
+            "Retire When",
             "does not prove real-agent effectiveness",
         ],
         "docs/harness/component-inventory.md": [

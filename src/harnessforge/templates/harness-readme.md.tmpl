@@ -22,7 +22,7 @@ checks, and leave evidence for the next session.
 | Tools | `init.sh`, `init.ps1` when generated | Local verification entrypoints for the declared platform contract |
 | Environment | package/runtime manifests, `component-inventory.md`, `dependency-change-policy.md` | Versions, dependency managers, setup facts, project boundaries, and pin policy |
 | State | `feature_list.json`, `progress.md`, `evidence-log.md` | Current objective, feature status, and evidence |
-| Feedback | `verification-matrix.md`, `evaluator-rubric.md`, local checks | Deterministic signals before claiming completion |
+| Feedback | `verification-matrix.md`, `sensor-registry.md`, `evaluator-rubric.md`, local checks | Deterministic signals, ownership, and lifecycle before claiming completion |
 | Scope | `change-contract.md`, `security-boundary-map.md`, `feature-privacy-labels.json` | Problem, non-goals, acceptance, rollback, and data boundaries |
 | Lifecycle | `session-handoff.md`, `clean-state-checklist.md`, `quality-document.md`, `release-controls.md`, `self-healing.md`, `entropy-control.md` | Restart, release readiness, and recurring harness upkeep |
 
@@ -33,9 +33,10 @@ checks, and leave evidence for the next session.
 3. Use `change-contract.md` for non-trivial work.
 4. Implement the smallest coherent slice.
 5. Run the relevant checks from `verification-matrix.md`.
-6. Use `clean-state-checklist.md` before ending non-trivial sessions.
-7. Record evidence, blockers, skipped checks, and next steps.
-8. Update this harness when repeated failures show a missing guide or sensor.
+6. Review `sensor-registry.md` when adding, deleting, or promoting checks.
+7. Use `clean-state-checklist.md` before ending non-trivial sessions.
+8. Record evidence, blockers, skipped checks, and next steps.
+9. Update this harness when repeated failures show a missing guide or sensor.
 
 ## Assessment And Updates
 

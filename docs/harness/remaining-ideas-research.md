@@ -27,10 +27,10 @@ blueprint`, which keeps richer operating-model guidance separate from normal
 `init` output.
 
 The dedicated harness-docs and AGENTS supplement added two read-only UX slices:
-`harnessforge session` and `harnessforge plan`. The best remaining candidates
-are sensor registry support, structured project-source records, and any score
-or benchmark commands only when backed by representative effectiveness
-evidence.
+`harnessforge session` and `harnessforge plan`. Sensor registry support is now
+implemented as a review-required generated artifact. The best remaining
+candidates are structured project-source records and any score or benchmark
+commands only when backed by representative effectiveness evidence.
 
 ## Highest-Value Next Ideas
 
@@ -49,7 +49,6 @@ evidence.
 | Short `sync --check` alias | Public HarnessForge quickstart, current drift-report UX | Add a discoverable CI-oriented alias for `update --drift-report --json` | Alias only; no new mutation semantics |
 | Session snapshot | JobSentinel `harness:session`, Bluepeak-AI and JobSentinel state docs | Implemented as read-only `harnessforge session` | Must not write files or run target checks |
 | Diff-aware verification planner | JobSentinel `harness:plan -- --since` | Implemented as read-only `harnessforge plan --since` | Uses detected or explicit project checks; command execution remains explicit through `verify --run` |
-| Sensor registry | JobSentinel sensor ownership audit | Add review-required sensor ownership, source, purpose, and retirement metadata | Blueprint or review-required artifact before default generation |
 | Source-record schema | Bluepeak-AI structured provenance records | Add optional project-source record schema for curated source ledgers | Keep separate from HarnessForge's own fixed research allowlist |
 
 ## Implemented Session Snapshot
@@ -94,6 +93,22 @@ Boundary:
   baseline checks when no file-specific match is available.
 - Reports unmatched changed files when some files match focused checks and
   others do not.
+
+## Implemented Sensor Registry
+
+Generated harnesses now include `docs/harness/sensor-registry.md` as a
+review-required artifact. It seeds detected verification commands, requires the
+project to review owner, source, purpose, retirement condition, and review
+cadence, and states that configured sensors do not prove real-agent
+effectiveness.
+
+Boundary:
+
+- Review-required before relying on the listed checks as completion, release,
+  self-heal, or automation gates.
+- Does not execute target repository commands.
+- Does not infer human ownership or retirement conditions.
+- Does not promote structural or runnable-check evidence into benchmark claims.
 
 ## Implemented Explicit Blueprint Mode
 
@@ -781,7 +796,8 @@ HarnessForge generator behavior:
 ## Suggested Next Step
 
 If continuing product build-out before release prep, the next best slice is a
-review-required sensor registry for check ownership, source, purpose, and
-retirement conditions. If release prep resumes instead, the remaining release
-work is manual macOS/Windows platform CI, the `v1` Action tag decision, and
-release-time SBOM/provenance gates.
+source-record schema for project-curated provenance records, or score/benchmark
+commands only if backed by representative effectiveness evidence. If release
+prep resumes instead, the remaining release work is manual macOS/Windows
+platform CI, the `v1` Action tag decision, and release-time SBOM/provenance
+gates.

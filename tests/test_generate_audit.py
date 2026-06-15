@@ -547,6 +547,7 @@ class GenerateAuditTests(unittest.TestCase):
         self.assertIn("scripts/check_pins.py", manifest["requiredFiles"])
         self.assertIn("docs/harness/release-controls.md", manifest["requiredFiles"])
         self.assertIn("docs/harness/research-sources.json", manifest["requiredFiles"])
+        self.assertIn("docs/harness/sensor-registry.md", manifest["requiredFiles"])
         self.assertIn("detectedComponents", manifest)
 
     def test_manifest_records_generated_file_ownership_metadata(self) -> None:
@@ -626,6 +627,36 @@ class GenerateAuditTests(unittest.TestCase):
         self.assertIn("owner, risk, and next action", release)
         self.assertIn("audit score", release)
         self.assertIn("real-agent effectiveness", release)
+
+    def test_generated_sensor_registry_requires_project_review(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            create_harness(
+                root,
+                commands=("python -m pytest", "python -m ruff check ."),
+            )
+            registry = (root / "docs/harness/sensor-registry.md").read_text(
+                encoding="utf-8"
+            )
+            manifest = json.loads(
+                (root / "docs/harness/manifest.json").read_text(encoding="utf-8")
+            )
+
+        self.assertIn("docs/harness/sensor-registry.md", manifest["requiredFiles"])
+        self.assertIn("docs/harness/sensor-registry.md", manifest["reviewRequired"])
+        self.assertEqual(
+            manifest["generatedFiles"]["docs/harness/sensor-registry.md"]["ownership"],
+            "generated",
+        )
+        self.assertIn("# Sensor Registry", registry)
+        self.assertIn("REVIEW REQUIRED", registry)
+        self.assertIn("Owner", registry)
+        self.assertIn("Source", registry)
+        self.assertIn("Purpose", registry)
+        self.assertIn("Retire When", registry)
+        self.assertIn("python -m pytest", registry)
+        self.assertIn("python -m ruff check .", registry)
+        self.assertIn("does not prove real-agent effectiveness", registry)
 
     def test_missing_verification_placeholder_blocks_generated_init(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -1034,6 +1065,7 @@ class GenerateAuditTests(unittest.TestCase):
             "docs/harness/self-healing.md",
             "docs/harness/agent-operating-model.md",
             "docs/harness/entropy-control.md",
+            "docs/harness/sensor-registry.md",
         }
         live_snippets = live["requiredHarnessSnippets"]
         for file_name in sorted(shared_controls):

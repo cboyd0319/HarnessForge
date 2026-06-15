@@ -46,6 +46,7 @@
     "docs/harness/README.md",
     "docs/harness/change-contract.md",
     "docs/harness/verification-matrix.md",
+    "docs/harness/sensor-registry.md",
     "docs/harness/component-inventory.md",
     "docs/harness/dependency-change-policy.md",
     "docs/harness/security-boundary-map.md",
@@ -165,6 +166,15 @@
       "Agent-generated tests",
       "stubbed",
       "intentionally vulnerable",
+      "does not prove real-agent effectiveness"
+    ],
+    "docs/harness/sensor-registry.md": [
+      "Sensor Registry",
+      "REVIEW REQUIRED",
+      "Owner",
+      "Source",
+      "Purpose",
+      "Retire When",
       "does not prove real-agent effectiveness"
     ],
     "docs/harness/component-inventory.md": [

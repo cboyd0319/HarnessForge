@@ -1,0 +1,25 @@
+# Sensor Registry
+
+Status: draft
+
+REVIEW REQUIRED: confirm owner, source, purpose, retirement condition, and
+review cadence before relying on these sensors for completion, release, or
+maintenance decisions.
+
+This registry records the checks and signals agents and humans use to decide
+whether work is ready. HarnessForge can seed detected commands, but the target
+project owns the meaning and lifecycle of each sensor.
+
+## Registered Sensors
+
+{{sensor_rows_markdown}}
+
+## Rules
+
+- A sensor is a signal, not a guarantee. It does not prove real-agent effectiveness.
+- Do not run commands only because they appear here. Use
+  `harnessforge plan --target . --since HEAD` to choose relevant checks and
+  `harnessforge verify --target . --run` when command execution is intended.
+- Keep owner, source, purpose, and retire conditions current before promoting
+  a check into release, self-heal, or automation gates.
+- Remove or replace sensors that no longer catch meaningful regressions.

@@ -151,6 +151,8 @@ Accepted or already implemented in HarnessForge:
   code-as-harness catalog work.
 - Keep structural harness score separate from real task performance or
   benchmark claims.
+- Add a review-required sensor registry for check ownership, source, purpose,
+  and retirement metadata.
 
 Accepted in this pass:
 
@@ -166,10 +168,6 @@ Accepted in this pass:
 
 High-value ideas to consider next:
 
-- Sensor registry. JobSentinel's audit calls out the need for sensor ownership,
-  source, reason, and retire conditions. HarnessForge could generate a
-  review-required `docs/harness/sensor-registry.md` or add it as a blueprint
-  artifact before making it default.
 - Source-record schema. Bluepeak uses a source-record schema for structured
   provenance when Markdown notes are not enough. HarnessForge already has
   research source JSON, but a smaller generated source-record schema may help

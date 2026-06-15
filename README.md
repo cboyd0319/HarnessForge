@@ -333,11 +333,12 @@ target-relative path to write the same verify payload to a file without shell
 redirection.
 
 Generated harnesses now route verify-run reports into
-`docs/harness/verification-matrix.md`, `docs/harness/evidence-log.md`, and
-`docs/harness/release-controls.md`. Those docs ask projects to store
-target-relative JSON evidence, review failed, timed-out, or blocked checks, and
-keep runnable check evidence separate from structural audit score and real
-agent-effectiveness evidence.
+`docs/harness/verification-matrix.md`, `docs/harness/sensor-registry.md`,
+`docs/harness/evidence-log.md`, and `docs/harness/release-controls.md`. Those
+docs ask projects to store target-relative JSON evidence, review failed,
+timed-out, or blocked checks, assign sensor ownership, and keep runnable check
+evidence separate from structural audit score and real agent-effectiveness
+evidence.
 
 ## Blueprint Mode
 
@@ -421,7 +422,7 @@ The default generated harness includes:
 | Agent instructions | `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, `.github/copilot-instructions.md` |
 | Project state | `feature_list.json`, `progress.md`, `session-handoff.md` |
 | Local checks | `init.sh`, `init.ps1`, `scripts/check_pins.py` |
-| Harness docs | `docs/harness/README.md`, `verification-matrix.md`, `change-contract.md` |
+| Harness docs | `docs/harness/README.md`, `verification-matrix.md`, `sensor-registry.md`, `change-contract.md` |
 | Security and privacy | `security-boundary-map.md`, `feature-privacy-labels.json` |
 | Evidence and quality | `evidence-log.md`, `quality-document.md`, `release-controls.md`, `evaluator-rubric.md` |
 | Research | `sources.md`, `research-sources.json`, `research-inbox.md` |

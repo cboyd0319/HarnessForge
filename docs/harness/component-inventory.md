@@ -57,5 +57,7 @@ inventory, not permission to mutate nested projects.
 - `src/harnessforge/planner.py`: read-only diff-aware verification planner used
   by the CLI. It maps changed files to detected or explicit project checks and
   does not execute target commands.
+- `docs/harness/sensor-registry.md`: review-required ownership, source,
+  purpose, and retirement record for checks and recurring gates.
 - `src/harnessforge/sync.py`: shared read-only sync preflight payload and exit
   code helpers used by both the CLI and composite Action.

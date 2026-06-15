@@ -428,22 +428,38 @@ maintenance loop.
   --since <ref>` inspects tracked and untracked changed files with git, maps
   them to detected or explicit project verification checks, and reports
   matched files, unmatched files, and reasons without running target commands.
+- Added a generated review-required sensor registry. Generated harnesses now
+  include `docs/harness/sensor-registry.md`, generated manifests mark it as
+  required and review-required with generated ownership metadata, and the live
+  harness tracks owner, source, purpose, retirement condition, and review
+  cadence for recurring checks.
 - Current verification passes full unit discovery and POSIX/PowerShell
-  entrypoints with 208 tests, compile, pin check, research source check, JSON
+  entrypoints with 209 tests, compile, pin check, research source check, JSON
   validation, session and plan JSON smokes, self-audit `100/100`, changed-file
   local-path scan, and diff hygiene.
 
 ## Recommended Next Step
 
 If continuing product build-out before release prep, the next best slice is a
-review-required sensor registry for check ownership, source, purpose, and
-retirement conditions. If release prep resumes instead, review the current
-diff, run the release checklist, rebuild the isolated package smoke, and decide
-whether to trigger manual macOS and Windows platform CI.
+source-record schema for project-curated provenance records, or score/benchmark
+commands only if backed by representative effectiveness evidence. If release
+prep resumes instead, review the current diff, run the release checklist,
+rebuild the isolated package smoke, and decide whether to trigger manual macOS
+and Windows platform CI.
 Push local commits only at an explicit batch/release boundary or user request.
 
 ## Verification Evidence
 
+- `PYTHONPATH=src:. python3 -m unittest
+  tests.test_generate_audit.GenerateAuditTests.test_generated_sensor_registry_requires_project_review`
+  first failed because generated harnesses did not include
+  `docs/harness/sensor-registry.md`, then passed after adding the
+  review-required template, manifest registration, and sensor row rendering.
+  `PYTHONPATH=src:. python3 -m unittest tests.test_generate_audit` passed with
+  44 tests. Full unit discovery and both POSIX/PowerShell entrypoints passed
+  with 209 tests. `PYTHONPATH=src:. python3 -m compileall src tests scripts`,
+  pin check, research source check, JSON parsing, plan/session JSON smokes,
+  self-audit `100/100`, local-path scan, and diff hygiene passed.
 - `PYTHONPATH=src:. python3 -m unittest
   tests.test_generate_audit.GenerateAuditTests.test_optional_workflow_scaffolds_are_explicit
   tests.test_cli.CliTests.test_init_can_scaffold_optional_workflows` first
