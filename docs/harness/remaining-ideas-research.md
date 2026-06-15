@@ -5,7 +5,9 @@ Reviewed: 2026-06-15 UTC.
 Scope: local `awman`, `aspec`, and `maki`; the public
 `jcaiagent7143-ui/harnessforge`; OpenAI, Martin Fowler, LangChain,
 OpenHarness, Walking Labs, spec-driven-development sources, and current
-harness-engineering research sources.
+harness-engineering research sources. A later local supplement reviewed the
+supplied paper catalog, Bluepeak-AI `docs/harness`, JobSentinel `docs/harness`,
+and root `AGENTS.md` files where present.
 
 This note is repo-local product research. It is not generated into target
 repositories. No AGY review was used for this pass.
@@ -24,6 +26,12 @@ review. The first explicit product-mode implementation is `harnessforge
 blueprint`, which keeps richer operating-model guidance separate from normal
 `init` output.
 
+The dedicated harness-docs and AGENTS supplement added one more implemented
+read-only UX slice: `harnessforge session`. The best remaining candidates are
+diff-aware verification planning, sensor registry support, structured
+project-source records, and any score or benchmark commands only when backed by
+representative effectiveness evidence.
+
 ## Highest-Value Next Ideas
 
 | Idea | Source signal | HarnessForge fit | Boundary |
@@ -39,6 +47,31 @@ blueprint`, which keeps richer operating-model guidance separate from normal
 | Real-agent evaluation harness | Public HarnessForge A/B benchmark, OpenAI/Fowler feedback-loop claims | Build a repeatable local benchmark protocol for generated harness quality | Do not market structural audit as real agent effectiveness |
 | Config precedence report | AWMAN layered config model | Show which overrides shaped detection: CLI flags, detected files, generated manifest, existing project ownership | Keep deterministic; no LLM refinement needed |
 | Short `sync --check` alias | Public HarnessForge quickstart, current drift-report UX | Add a discoverable CI-oriented alias for `update --drift-report --json` | Alias only; no new mutation semantics |
+| Session snapshot | JobSentinel `harness:session`, Bluepeak-AI and JobSentinel state docs | Implemented as read-only `harnessforge session` | Must not write files or run target checks |
+| Diff-aware verification planner | JobSentinel `harness:plan -- --since` | Add a read-only planner that maps changed files to focused checks | Use target-owned verification matrix data; command execution remains explicit |
+| Sensor registry | JobSentinel sensor ownership audit | Add review-required sensor ownership, source, purpose, and retirement metadata | Blueprint or review-required artifact before default generation |
+| Source-record schema | Bluepeak-AI structured provenance records | Add optional project-source record schema for curated source ledgers | Keep separate from HarnessForge's own fixed research allowlist |
+
+## Implemented Session Snapshot
+
+`harnessforge session` adopts the useful restart pattern from the local
+harness-docs and AGENTS review without generating repo-specific scripts into
+target repositories.
+
+Current command shape:
+
+- `harnessforge session --target <repo>`
+- `harnessforge session --target <repo> --json`
+
+Boundary:
+
+- Read-only.
+- Does not run target verification commands.
+- Does not write state files.
+- Redacts target roots from portable JSON output.
+- Reports git status, latest commit, detected stack, readiness verdict,
+  harness audit summary when a harness exists, selected state-file presence,
+  and next actions.
 
 ## Implemented Explicit Blueprint Mode
 
@@ -688,6 +721,14 @@ Sources:
     - `governanceInventory` now reports devcontainers, sandbox configs, and
       container runtime files as review-required surfaces.
 
+13. Implemented: session snapshot mode.
+    - Dedicated harness-docs and AGENTS mining reviewed Bluepeak-AI and
+      JobSentinel root `AGENTS.md` files plus their harness docs. The supplied
+      paper catalog checkout had no root `AGENTS.md`.
+    - `harnessforge session` gives a restart snapshot of git state, readiness,
+      harness audit summary, state-file presence, and next actions.
+    - It stays read-only, writes nothing, and does not execute target checks.
+
 ## Rejected Defaults
 
 These ideas can be useful in specific products, but should not be default
@@ -709,6 +750,8 @@ HarnessForge generator behavior:
 
 ## Suggested Next Step
 
-The non-release backlog from this research pass is closed for the first public
-Action release. Remaining work is release prep: manual macOS/Windows platform
-CI, `v1` Action tag decision, and release-time SBOM/provenance gates.
+If continuing product build-out before release prep, the next best slice is a
+read-only diff-aware verification planner that maps changed files to
+target-owned checks. If release prep resumes instead, the remaining release
+work is manual macOS/Windows platform CI, the `v1` Action tag decision, and
+release-time SBOM/provenance gates.

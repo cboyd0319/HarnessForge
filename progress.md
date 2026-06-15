@@ -417,13 +417,26 @@ maintenance loop.
   advisory, and stops only when readiness is blocked. Generated and root docs
   now call out that boundary, and generation-time warnings make the default
   verify-evidence policy visible.
+- Completed a dedicated local harness-docs and AGENTS mining pass against the
+  supplied paper catalog, Bluepeak-AI, and JobSentinel references. Bluepeak-AI
+  and JobSentinel root `AGENTS.md` files were reviewed; the paper catalog
+  checkout had no root `AGENTS.md`. Accepted the portable restart UX as
+  read-only `harnessforge session`, which reports git state, readiness, harness
+  audit summary, state-file presence, and next actions without writing files or
+  running target checks.
+- Current verification passes full unit discovery and POSIX/PowerShell
+  entrypoints with 204 tests, compile, pin check, research source check, JSON
+  validation, session JSON smoke, self-audit `100/100`, changed-file local-path
+  scan, and diff hygiene.
 
 ## Recommended Next Step
 
-The robust-mode backlog item for generated workflow sync preflight is closed.
-Return to release prep with a fresh release-candidate pass: review the current
-diff, run the release checklist, rebuild the isolated package smoke, and decide
-whether to trigger manual macOS and Windows platform CI.
+If continuing product build-out before release prep, the next best slice is a
+read-only diff-aware verification planner that maps changed files to
+target-owned checks without executing them. If release prep resumes instead,
+review the current diff, run the release checklist, rebuild the isolated
+package smoke, and decide whether to trigger manual macOS and Windows platform
+CI.
 Push local commits only at an explicit batch/release boundary or user request.
 
 ## Verification Evidence

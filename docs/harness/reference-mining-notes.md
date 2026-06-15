@@ -116,3 +116,76 @@ Ideas to defer unless a target repo opts in:
 - Large generated `SKILLS/` trees.
 - LLM-assisted init-time profile refinement.
 - Overwriting or replacing coherent existing repo-local spec systems.
+
+## Dedicated Harness-Docs Mining Pass
+
+Reviewed local references:
+
+- Awesome Code as Agent Harness Papers: `README.md`, `CONTRIBUTING.md`,
+  `TODO.md`, `MISSING_URLS.md`, and figure inventory. No root `AGENTS.md` was
+  present in the local checkout.
+- Bluepeak-AI: root `AGENTS.md` plus `docs/harness/`.
+- JobSentinel: root `AGENTS.md` plus `docs/harness/`.
+
+Accepted or already implemented in HarnessForge:
+
+- Keep root `AGENTS.md` as a short loader and route durable detail to harness
+  docs. Bluepeak and JobSentinel both reinforce this pattern.
+- Keep platform and local-path boundaries visible in root instructions and
+  generated docs. Both sibling agent files treat local absolute paths as
+  private or non-portable data.
+- Use manifest-owned required-file and required-snippet policy. HarnessForge
+  already records generated ownership and required snippets; the sibling
+  harnesses reinforce keeping policy data out of mixed validator logic.
+- Keep generated loaders short for Claude, Gemini, and Copilot, and do not
+  duplicate durable rules in each platform file.
+- Maintain change contracts with observable acceptance criteria, verification,
+  rollback, harness impact, and security/privacy risk.
+- Keep multi-agent orchestration explicit: coordinator ownership, disjoint file
+  scopes, off-limits paths, verification per slice, and coordinator review.
+- Keep entropy controls focused on promotion and deletion rules, not more prose.
+- Treat evidence as compact command/status/risk records, not raw logs.
+- Keep source catalogs clean: canonical URLs, missing-citation records,
+  placeholder detection, venue or stale-source review, and dedup decisions.
+  HarnessForge already applies this through research source checks and the
+  code-as-harness catalog work.
+- Keep structural harness score separate from real task performance or
+  benchmark claims.
+
+Accepted in this pass:
+
+- Add a read-only `harnessforge session` command. JobSentinel's
+  `harness:session` showed that one command can reduce restart ambiguity by
+  summarizing git state, active state, harness score, and next work without
+  making users read every plan file. HarnessForge now exposes the generic
+  version as a CLI report instead of generating a repo-specific script.
+
+High-value ideas to consider next:
+
+- Diff-aware verification planning. JobSentinel's `harness:plan -- --since`
+  maps changed files to focused checks. HarnessForge can provide a generic
+  read-only planner later, but it should use target-owned verification matrix
+  data and avoid executing commands by default.
+- Sensor registry. JobSentinel's audit calls out the need for sensor ownership,
+  source, reason, and retire conditions. HarnessForge could generate a
+  review-required `docs/harness/sensor-registry.md` or add it as a blueprint
+  artifact before making it default.
+- Source-record schema. Bluepeak uses a source-record schema for structured
+  provenance when Markdown notes are not enough. HarnessForge already has
+  research source JSON, but a smaller generated source-record schema may help
+  projects that curate their own source ledgers.
+- Harness score and benchmark commands. JobSentinel's score and benchmark
+  commands are useful for its repo-native harness, but HarnessForge should not
+  claim benchmark value without representative task evidence. Keep this tied
+  to the existing effectiveness evidence contract.
+
+Deferred as project-specific:
+
+- Bluepeak's fixed-operator, billing, GCP, Cloudflare, Gemini-first review,
+  local daemon, and hosted-dashboard rules.
+- JobSentinel's Rule 0, external AI gateway, public wiki, support-report,
+  Quiet Shield design, Tauri, Playwright budget, and broad-audience product
+  rules.
+- Awesome-list publication tasks such as badge ownership, named maintainers,
+  awesome.re submission, venue relabeling cadence, and individual-paper
+  citation snippets.

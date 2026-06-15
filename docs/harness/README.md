@@ -46,6 +46,7 @@ Use:
 
 ```bash
 harnessforge quickstart --target .
+harnessforge session --target .
 harnessforge audit --target .
 harnessforge update --target .
 harnessforge sync --check --target . --json
@@ -55,6 +56,10 @@ harnessforge verify --target . --json
 `quickstart` is a read-only guided first-run view. It composes detection,
 readiness, dry-run generation planning, preserved-file reporting, review
 placeholder reporting, and next commands without writing files.
+
+`session` is a read-only restart snapshot. It reports git state when available,
+detected stack, readiness verdict, harness audit score when a harness surface is
+present, state-file presence, and next actions without running target commands.
 
 `update` reports recommended safe corrections unless `--apply` is passed.
 Existing files are skipped unless `--force` is passed.

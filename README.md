@@ -161,6 +161,13 @@ harnessforge inspect --target /path/to/repo
 harnessforge inspect --target /path/to/repo --json
 ```
 
+Get a compact restart snapshot for an existing repo:
+
+```bash
+harnessforge session --target /path/to/repo
+harnessforge session --target /path/to/repo --json
+```
+
 Run the read-only readiness report:
 
 ```bash
@@ -506,6 +513,7 @@ and explicit `verify-run: "true"` execution.
 | --- | --- |
 | `harnessforge quickstart` | Guide the first safe run without writing files |
 | `harnessforge inspect` | Show detected project profile or readiness without writing files |
+| `harnessforge session` | Show a read-only restart snapshot with git, readiness, audit, and state-file status |
 | `harnessforge sync --check` | Run a read-only CI preflight with readiness exit codes |
 | `harnessforge verify` | Report planned project checks, or run them explicitly with `--run` |
 | `harnessforge blueprint` | List, inspect, or apply optional review-required operating-model overlays |

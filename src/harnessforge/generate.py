@@ -1098,6 +1098,7 @@ def _manifest_content(
             "Assessment And Updates",
             "project-owned generated files",
             "command: sync",
+            "harnessforge session",
         ],
         "docs/harness/change-contract.md": [
             "Problem",

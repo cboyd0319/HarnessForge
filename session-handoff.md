@@ -38,6 +38,7 @@ and advanced product modes.
 - `src/harnessforge/models.py`
 - `src/harnessforge/readiness.py`
 - `src/harnessforge/reports.py`
+- `src/harnessforge/session.py`
 - `src/harnessforge/sync.py`
 - `src/harnessforge/verify_evidence.py`
 - `src/harnessforge/spec_system.py`
@@ -507,6 +508,20 @@ and advanced product modes.
   `100/100`.
 - Research metadata refresh currently tracks 76 sources with one recorded Red
   Hat 403 fetch failure.
+- Current dedicated harness-docs and AGENTS mining pass reviewed the local
+  paper catalog plus Bluepeak-AI and JobSentinel harness references without
+  AGY. Bluepeak-AI and JobSentinel root `AGENTS.md` files were reviewed; the
+  paper catalog checkout had no root `AGENTS.md`. Accepted the generic restart
+  experience as read-only `harnessforge session`, which summarizes git state,
+  readiness, harness audit score, state-file presence, and next actions without
+  writing files or running target checks. Current verification passes full unit
+  discovery and POSIX/PowerShell entrypoints with 204 tests, compile, pin
+  check, research source check, JSON validation, session JSON smoke,
+  changed-file local-path scan, diff hygiene, and self-audit `100/100`.
+  Remaining high-value, non-default product ideas are diff-aware verification
+  planning, a sensor registry, source-record schema support, and
+  benchmark/score commands only when backed by representative effectiveness
+  evidence.
 
 ## Next Session
 
@@ -553,6 +568,12 @@ by default, records `docs/harness/evidence/sync-preflight.json`, treats warning
 verdicts as advisory, and stops only on blocked readiness using bracket-safe
 Action output syntax for `sync-exit-code`. Generated and root docs describe
 that boundary, and CLI generation warnings call out the default policy.
+The latest harness-docs and AGENTS mining supplement added `harnessforge
+session`, a read-only restart snapshot that reports git state, readiness,
+harness audit summary, state-file presence, and next actions without writing
+files or running target checks. Bluepeak-AI and JobSentinel root `AGENTS.md`
+files were reviewed; the supplied paper catalog checkout had no root
+`AGENTS.md`.
 `scripts/refresh_research.py --check` validates duplicate source IDs and URLs,
 required fields, placeholder text, canonical URL shape, arXiv `/abs/` URLs,
 lock-file consistency, and local-path leakage before any metadata fetch. Root
@@ -574,18 +595,17 @@ GitHub runner-images Windows VS2026 migration notice.
 Current robust-mode verification passes: focused generated workflow and CLI
 warning tests, focused GitHub Action tests, focused generated verify-evidence
 coverage, focused verify report-persistence tests, focused verify-evidence gate
-tests, focused Action sync tests, full unit discovery with 202 tests, compile,
-JSON/YAML validation, pin check, research source check, rendered optional
-workflow audit and pin smoke, expected-warning sync JSON smoke, self-audit
-`100/100`, changed-file local-path scan, and diff hygiene. `./init.sh` and
-`pwsh -NoProfile -File ./init.ps1` both pass with 202 tests, pin check,
-research source check, and self-audit `100/100`. `sync --check` returns the
-expected warning for local workflow and instruction review surfaces without
-blockers or generated drift.
+tests, focused Action sync tests, focused session tests, full unit discovery
+with 204 tests, compile, JSON/YAML validation, pin check, research source
+check, rendered optional workflow audit and pin smoke, session JSON smoke,
+expected-warning sync JSON smoke, self-audit `100/100`, changed-file local-path
+scan, and diff hygiene. `./init.sh` and `pwsh -NoProfile -File ./init.ps1`
+both pass with 204 tests, pin check, research source check, and self-audit
+`100/100`. `sync --check` returns the expected warning for local workflow and
+instruction review surfaces without blockers or generated drift.
 The robust-mode backlog item for generated workflow sync preflight is closed.
-The next highest-value slice is release prep: review the current diff, run the
-release checklist, rebuild the isolated package smoke, and decide whether to
-trigger manual macOS and Windows platform CI.
+The next highest-value non-release slice is a read-only diff-aware verification
+planner that maps changed files to target-owned checks without executing them.
 Existing eval guidance comes from the Harness Forge, Meta-Harness, Code as
 Agent Harness catalog, and arXiv harness-eval reviews; those sources are mined
 only for product ideas and are not copied into generated target-repo defaults.

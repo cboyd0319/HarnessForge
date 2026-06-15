@@ -175,6 +175,62 @@ class CliTests(unittest.TestCase):
         self.assertEqual(payload["verifyEvidence"]["reports"], [])
         self.assertIn("python -m unittest discover", payload["runnableChecks"])
 
+    def test_session_json_reports_restart_snapshot_without_writing(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            stdout = io.StringIO()
+            with contextlib.redirect_stdout(io.StringIO()):
+                init_code = main(
+                    [
+                        "init",
+                        "--target",
+                        str(root),
+                        "--command",
+                        "python -m compileall .",
+                    ]
+                )
+            before = sorted(path.relative_to(root).as_posix() for path in root.rglob("*"))
+            with contextlib.redirect_stdout(stdout):
+                code = main(["session", "--target", str(root), "--json"])
+            after = sorted(path.relative_to(root).as_posix() for path in root.rglob("*"))
+
+            payload = json.loads(stdout.getvalue())
+
+        self.assertEqual(init_code, 0)
+        self.assertEqual(code, 0)
+        self.assertEqual(before, after)
+        self.assertEqual(payload["schemaVersion"], "harnessforge.session.v1")
+        self.assertEqual(payload["target"]["root"], None)
+        self.assertEqual(payload["detectedStack"], "python")
+        self.assertEqual(payload["readiness"]["verdict"], "ready")
+        self.assertEqual(payload["harnessAudit"]["overall"], 100)
+        state = {item["path"]: item["present"] for item in payload["stateFiles"]}
+        self.assertTrue(state["feature_list.json"])
+        self.assertTrue(state["progress.md"])
+        self.assertTrue(state["session-handoff.md"])
+        self.assertIn("docs/harness/evidence-log.md", state)
+        self.assertIn("git", payload)
+
+    def test_session_text_reports_snapshot_without_git(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            with contextlib.redirect_stdout(io.StringIO()):
+                main(["init", "--target", str(root), "--command", "python -m compileall ."])
+            stdout = io.StringIO()
+            with contextlib.redirect_stdout(stdout):
+                code = main(["session", "--target", str(root)])
+
+            text = stdout.getvalue()
+
+        self.assertEqual(code, 0)
+        self.assertIn("Session snapshot:", text)
+        self.assertIn("Git: unavailable", text)
+        self.assertIn("Detected stack: python", text)
+        self.assertIn("Readiness: ready", text)
+        self.assertIn("Harness audit: 100/100", text)
+        self.assertIn("State files:", text)
+        self.assertIn("Next actions:", text)
+
     def test_inspect_readiness_reports_stored_verify_evidence(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

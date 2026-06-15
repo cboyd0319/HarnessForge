@@ -26,6 +26,7 @@ from .readiness import (
 )
 from .redact import redact_local_paths
 from .reports import write_json_payload
+from .session import build_session_report, format_session_report, session_report_to_dict
 from .sync import format_sync_check, sync_check_to_dict, sync_exit_code
 from .update import build_drift_report, plan_or_apply_update
 from .verify import (
@@ -192,6 +193,14 @@ def build_parser() -> argparse.ArgumentParser:
     )
     sync.add_argument("--json", action="store_true")
     sync.set_defaults(func=_sync)
+
+    session = subparsers.add_parser(
+        "session",
+        help="show a read-only restart snapshot for a target repository",
+    )
+    session.add_argument("--target", type=Path, default=Path.cwd())
+    session.add_argument("--json", action="store_true")
+    session.set_defaults(func=_session)
 
     verify = subparsers.add_parser(
         "verify",
@@ -442,6 +451,15 @@ def _sync(args: argparse.Namespace) -> int:
     else:
         print(format_sync_check(report))
     return exit_code
+
+
+def _session(args: argparse.Namespace) -> int:
+    report = build_session_report(args.target)
+    if args.json:
+        print(json.dumps(session_report_to_dict(report), indent=2))
+    else:
+        print(format_session_report(report))
+    return 0
 
 
 def _verify(args: argparse.Namespace) -> int:

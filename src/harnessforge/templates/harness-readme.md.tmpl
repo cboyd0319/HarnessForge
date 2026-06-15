@@ -42,9 +42,14 @@ checks, and leave evidence for the next session.
 Use HarnessForge for regular structural checks:
 
 ```bash
+harnessforge session --target .
 harnessforge audit --target .
 harnessforge update --target .
 ```
+
+`harnessforge session --target .` is a read-only restart snapshot with git
+state when available, detected stack, readiness verdict, harness audit score
+when a harness surface is present, state-file presence, and next actions.
 
 Run `harnessforge update --target . --apply` only when you want safe missing-file
 corrections. Existing files are preserved unless `--force` is passed.
