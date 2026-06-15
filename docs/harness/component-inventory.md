@@ -59,5 +59,9 @@ inventory, not permission to mutate nested projects.
   does not execute target commands.
 - `docs/harness/sensor-registry.md`: review-required ownership, source,
   purpose, and retirement record for checks and recurring gates.
+- `docs/harness/source-record.schema.json`: generated schema for project-owned
+  source provenance records, separate from the fixed research allowlist.
+- `docs/harness/source-record-example.json`: review-required starter record for
+  project-owned source provenance.
 - `src/harnessforge/sync.py`: shared read-only sync preflight payload and exit
   code helpers used by both the CLI and composite Action.

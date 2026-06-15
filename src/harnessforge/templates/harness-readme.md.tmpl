@@ -23,6 +23,7 @@ checks, and leave evidence for the next session.
 | Environment | package/runtime manifests, `component-inventory.md`, `dependency-change-policy.md` | Versions, dependency managers, setup facts, project boundaries, and pin policy |
 | State | `feature_list.json`, `progress.md`, `evidence-log.md` | Current objective, feature status, and evidence |
 | Feedback | `verification-matrix.md`, `sensor-registry.md`, `evaluator-rubric.md`, local checks | Deterministic signals, ownership, and lifecycle before claiming completion |
+| Research | `sources.md`, `research-sources.json`, `source-record.schema.json`, `source-record-example.json` | Fixed research allowlist, reviewed provenance, and project-owned source records |
 | Scope | `change-contract.md`, `security-boundary-map.md`, `feature-privacy-labels.json` | Problem, non-goals, acceptance, rollback, and data boundaries |
 | Lifecycle | `session-handoff.md`, `clean-state-checklist.md`, `quality-document.md`, `release-controls.md`, `self-healing.md`, `entropy-control.md` | Restart, release readiness, and recurring harness upkeep |
 
@@ -56,6 +57,10 @@ when a harness surface is present, state-file presence, and next actions.
 `harnessforge plan --target . --since HEAD` is a read-only diff-aware
 verification planner. It maps changed files to detected or explicit project
 checks and does not execute them.
+
+Project-owned source records use `source-record.schema.json` and
+`source-record-example.json`. Keep them separate from the fixed
+`research-sources.json` allowlist.
 
 Run `harnessforge update --target . --apply` only when you want safe missing-file
 corrections. Existing files are preserved unless `--force` is passed.

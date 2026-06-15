@@ -25,6 +25,7 @@ REVIEW_REQUIRED_FILES = (
     "docs/harness/quality-document.md",
     "docs/harness/release-controls.md",
     "docs/harness/sensor-registry.md",
+    "docs/harness/source-record-example.json",
 )
 PLATFORM_SOURCE_REVIEW_DATE = "2026-06-15"
 PLATFORM_SOURCE_REVIEW = (
@@ -203,6 +204,16 @@ def _template_specs(
             ("quality-document.md.tmpl", "docs/harness/quality-document.md", False),
             ("release-controls.md.tmpl", "docs/harness/release-controls.md", False),
             ("self-healing.md.tmpl", "docs/harness/self-healing.md", False),
+            (
+                "source-record.schema.json.tmpl",
+                "docs/harness/source-record.schema.json",
+                False,
+            ),
+            (
+                "source-record-example.json.tmpl",
+                "docs/harness/source-record-example.json",
+                False,
+            ),
             ("research-sources.json.tmpl", "docs/harness/research-sources.json", False),
             ("research-inbox.md.tmpl", "docs/harness/research-inbox.md", False),
             (
@@ -1102,6 +1113,8 @@ def _manifest_content(
         "docs/harness/quality-document.md",
         "docs/harness/release-controls.md",
         "docs/harness/self-healing.md",
+        "docs/harness/source-record.schema.json",
+        "docs/harness/source-record-example.json",
         "docs/harness/research-sources.json",
         "docs/harness/research-inbox.md",
         "docs/harness/manifest.json",
@@ -1253,6 +1266,19 @@ def _manifest_content(
             "HarnessForge Action",
             "Safe Loop",
             "Promotion Rule",
+        ],
+        "docs/harness/source-record.schema.json": [
+            "HarnessForge Project Source Record",
+            "targetRelativePath",
+            "machine-local absolute paths",
+            "docs/harness/research-sources.json",
+            "harnessUsage",
+        ],
+        "docs/harness/source-record-example.json": [
+            "source-record-example",
+            "REVIEW REQUIRED",
+            "docs/architecture.md",
+            "harnessUsage",
         ],
         "docs/harness/research-sources.json": [
             "openai-harness-engineering",

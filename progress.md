@@ -433,23 +433,43 @@ maintenance loop.
   required and review-required with generated ownership metadata, and the live
   harness tracks owner, source, purpose, retirement condition, and review
   cadence for recurring checks.
+- Added generated project source-record schema support. Generated harnesses now
+  include `docs/harness/source-record.schema.json` and review-required
+  `docs/harness/source-record-example.json`, keeping project-curated
+  provenance records separate from the fixed HarnessForge research allowlist.
+- Added a new high-priority backlog item for large-codebase analysis and
+  indexing research. The work should review open source code indexing,
+  repo-map, semantic search, static-analysis, language-server, dependency-graph,
+  and monorepo navigation systems before HarnessForge adds heavier indexing
+  behavior for existing repos.
 - Current verification passes full unit discovery and POSIX/PowerShell
-  entrypoints with 209 tests, compile, pin check, research source check, JSON
+  entrypoints with 210 tests, compile, pin check, research source check, JSON
   validation, session and plan JSON smokes, self-audit `100/100`, changed-file
   local-path scan, and diff hygiene.
 
 ## Recommended Next Step
 
 If continuing product build-out before release prep, the next best slice is a
-source-record schema for project-curated provenance records, or score/benchmark
-commands only if backed by representative effectiveness evidence. If release
-prep resumes instead, review the current diff, run the release checklist,
-rebuild the isolated package smoke, and decide whether to trigger manual macOS
-and Windows platform CI.
+large-codebase analysis and indexing research. After that, the remaining
+product slice is a score or benchmark command only if backed by representative
+effectiveness evidence. If release prep resumes instead, review the current
+diff, run the release checklist, rebuild the isolated package smoke, and decide
+whether to trigger manual macOS and Windows platform CI.
 Push local commits only at an explicit batch/release boundary or user request.
 
 ## Verification Evidence
 
+- `PYTHONPATH=src:. python3 -m unittest
+  tests.test_generate_audit.GenerateAuditTests.test_generated_source_record_schema_guides_project_sources`
+  first failed because generated harnesses did not include a source-record
+  schema, then passed after adding `source-record.schema.json`,
+  `source-record-example.json`, generated manifest registration, and
+  review-required example metadata. `PYTHONPATH=src:. python3 -m unittest
+  tests.test_generate_audit` passed with 45 tests. Full unit discovery and
+  both POSIX/PowerShell entrypoints passed with 210 tests. `PYTHONPATH=src:.
+  python3 -m compileall src tests scripts`, pin check, research source check,
+  JSON parsing, plan/session JSON smokes, self-audit `100/100`, local-path
+  scan, and diff hygiene passed.
 - `PYTHONPATH=src:. python3 -m unittest
   tests.test_generate_audit.GenerateAuditTests.test_generated_sensor_registry_requires_project_review`
   first failed because generated harnesses did not include

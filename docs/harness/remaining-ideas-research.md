@@ -28,14 +28,18 @@ blueprint`, which keeps richer operating-model guidance separate from normal
 
 The dedicated harness-docs and AGENTS supplement added two read-only UX slices:
 `harnessforge session` and `harnessforge plan`. Sensor registry support is now
-implemented as a review-required generated artifact. The best remaining
-candidates are structured project-source records and any score or benchmark
-commands only when backed by representative effectiveness evidence.
+implemented as a review-required generated artifact. Structured project-source
+records are now implemented as a generated schema and review-required example.
+The highest-value remaining product risk is accurate analysis and indexing of
+large existing codebases before HarnessForge designs or improves a harness. Any
+score or benchmark command remains a later candidate, and only when backed by
+representative effectiveness evidence.
 
 ## Highest-Value Next Ideas
 
 | Idea | Source signal | HarnessForge fit | Boundary |
 | --- | --- | --- | --- |
+| Large-codebase analysis and indexing research | Reference-repo quality exercises exposed weak existing-repo understanding as a major risk | Research open source code indexing, repo-map, semantic search, static-analysis, language-server, and dependency-graph systems, then design a portable indexing strategy for HarnessForge | Research first; do not add networked indexers, heavyweight services, or generated repo metadata until privacy, scale, freshness, and platform costs are reviewed |
 | Readiness report mode | AWMAN `ready`, OpenHarness `--dry-run` readiness verdicts | Add a read-only `ready` or `inspect --readiness` path that reports `ready`, `warning`, or `blocked` with next actions | Must not execute project commands by default |
 | Project verification contract | Public HarnessForge verify protocol, OpenAI feedback loops, Fowler sensors | Add a stable project-check JSON contract separate from harness `audit` | Running target repo commands must be explicit because commands are executable code |
 | Existing-spec sync checks | ASPEC source-of-truth model, AWMAN's `aspec/` usage | Detect structured specs and report whether generated/enhanced instructions route agents to them | Do not impose ASPEC folder names or rewrite spec systems |
@@ -49,7 +53,39 @@ commands only when backed by representative effectiveness evidence.
 | Short `sync --check` alias | Public HarnessForge quickstart, current drift-report UX | Add a discoverable CI-oriented alias for `update --drift-report --json` | Alias only; no new mutation semantics |
 | Session snapshot | JobSentinel `harness:session`, Bluepeak-AI and JobSentinel state docs | Implemented as read-only `harnessforge session` | Must not write files or run target checks |
 | Diff-aware verification planner | JobSentinel `harness:plan -- --since` | Implemented as read-only `harnessforge plan --since` | Uses detected or explicit project checks; command execution remains explicit through `verify --run` |
-| Source-record schema | Bluepeak-AI structured provenance records | Add optional project-source record schema for curated source ledgers | Keep separate from HarnessForge's own fixed research allowlist |
+| Source-record schema | Bluepeak-AI structured provenance records | Implemented as generated schema plus review-required example | Keep separate from HarnessForge's own fixed research allowlist |
+
+## New Backlog: Large-Codebase Analysis And Indexing
+
+Problem:
+
+- HarnessForge can generate and audit structure, but existing large repos need
+  better automatic analysis before the generated harness can be truly tailored.
+- Weak indexing can miss important components, ownership boundaries, generated
+  code, tests, local tools, package relationships, and source-of-truth docs.
+- A bad harness for a large repo is often caused by incomplete repo
+  understanding, not by missing template text.
+
+Research task:
+
+- Review current open source solutions for code search, semantic indexing,
+  repo maps, call/dependency graphs, language-server indexes, static analysis,
+  and monorepo navigation.
+- Compare how they handle scale, offline operation, privacy, incremental
+  updates, language coverage, generated files, vendored code, and cross-platform
+  setup.
+- Mine ideas that can improve HarnessForge detection, generated context,
+  preserved-file enhancement, and review-required summaries without forcing a
+  heavyweight service into target repos.
+
+Boundary:
+
+- No networked indexing service by default.
+- No committed embeddings, private code summaries, or machine-local paths in
+  generated harnesses.
+- No dependency on one language server, one code host, or one monorepo tool.
+- Any optional index cache must be target-contained, reviewable, ignored or
+  explicitly owned, and safe to delete.
 
 ## Implemented Session Snapshot
 
@@ -109,6 +145,25 @@ Boundary:
 - Does not execute target repository commands.
 - Does not infer human ownership or retirement conditions.
 - Does not promote structural or runnable-check evidence into benchmark claims.
+
+## Implemented Source-Record Schema
+
+Generated harnesses now include `docs/harness/source-record.schema.json` and
+`docs/harness/source-record-example.json`. The schema gives projects a
+structured way to record source owner, purpose, trust boundary, review status,
+claims, limitations, usage, and retirement condition for project-curated
+provenance records.
+
+Boundary:
+
+- Project-owned source records are separate from HarnessForge's fixed
+  `research-sources.json` allowlist.
+- The generated example is review-required and must be replaced before a
+  project relies on it.
+- Records must use target-relative paths or reviewed URLs, not machine-local
+  absolute paths.
+- Records do not make structural audit score or runnable checks into
+  real-agent effectiveness claims.
 
 ## Implemented Explicit Blueprint Mode
 
@@ -796,8 +851,8 @@ HarnessForge generator behavior:
 ## Suggested Next Step
 
 If continuing product build-out before release prep, the next best slice is a
-source-record schema for project-curated provenance records, or score/benchmark
-commands only if backed by representative effectiveness evidence. If release
-prep resumes instead, the remaining release work is manual macOS/Windows
-platform CI, the `v1` Action tag decision, and release-time SBOM/provenance
-gates.
+large-codebase analysis and indexing research. After that, the remaining
+product slice is a score or benchmark command only if backed by representative
+effectiveness evidence. If release prep resumes instead, the remaining release
+work is manual macOS/Windows platform CI, the `v1` Action tag decision, and
+release-time SBOM/provenance gates.

@@ -59,6 +59,8 @@
     "docs/harness/self-healing.md",
     "docs/harness/manifest.json",
     "docs/harness/sources.md",
+    "docs/harness/source-record.schema.json",
+    "docs/harness/source-record-example.json",
     "docs/harness/research-sources.json",
     "docs/harness/research-sources.lock.json",
     "docs/harness/research-inbox.md",
@@ -259,6 +261,19 @@
       "HarnessForge Action",
       "Safe Loop",
       "Promotion Rule"
+    ],
+    "docs/harness/source-record.schema.json": [
+      "HarnessForge Project Source Record",
+      "targetRelativePath",
+      "machine-local absolute paths",
+      "docs/harness/research-sources.json",
+      "harnessUsage"
+    ],
+    "docs/harness/source-record-example.json": [
+      "source-record-example",
+      "REVIEW REQUIRED",
+      "docs/architecture.md",
+      "harnessUsage"
     ],
     "docs/harness/research-sources.json": [
       "openai-harness-engineering",

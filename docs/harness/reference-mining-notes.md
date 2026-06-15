@@ -153,6 +153,8 @@ Accepted or already implemented in HarnessForge:
   benchmark claims.
 - Add a review-required sensor registry for check ownership, source, purpose,
   and retirement metadata.
+- Add generated source-record schema support for project-owned provenance
+  records.
 
 Accepted in this pass:
 
@@ -168,10 +170,6 @@ Accepted in this pass:
 
 High-value ideas to consider next:
 
-- Source-record schema. Bluepeak uses a source-record schema for structured
-  provenance when Markdown notes are not enough. HarnessForge already has
-  research source JSON, but a smaller generated source-record schema may help
-  projects that curate their own source ledgers.
 - Harness score and benchmark commands. JobSentinel's score and benchmark
   commands are useful for its repo-native harness, but HarnessForge should not
   claim benchmark value without representative task evidence. Keep this tied

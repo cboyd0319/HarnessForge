@@ -22,6 +22,7 @@ agent sessions.
 | Environment | `pyproject.toml`, CI matrix, `component-inventory.md`, `dependency-change-policy.md` | Python, OS, package, component, and Action support contract |
 | State | `feature_list.json`, `progress.md`, `evidence-log.md` | Current objective, evidence, and restart state |
 | Feedback | tests, self-audit, CI, `verification-matrix.md`, `sensor-registry.md`, `evaluator-rubric.md`, `verify-json-contract.md`, `effectiveness-eval-contract.md`, research refresh | Deterministic quality checks, sensor ownership, machine-readable verification output, benchmark-claim boundaries, and source drift signal |
+| Research | `sources.md`, `research-sources.json`, `source-record.schema.json`, `source-record-example.json` | Fixed research allowlist, source provenance, and project-owned source records |
 | Scope | `docs/harness/change-contract.md`, `security-boundary-map.md`, `feature-privacy-labels.json` | Acceptance, rollback, security, and data-flow discipline |
 | Lifecycle | `session-handoff.md`, `clean-state-checklist.md`, `quality-document.md`, `release-controls.md`, `self-healing.md`, entropy control | Restart, release readiness, recurring maintenance, and reviewed automation |
 
@@ -73,6 +74,10 @@ Existing files are skipped unless `--force` is passed.
 `verify --json` is implemented in plan mode and documented in
 `verify-json-contract.md`, with schema and example artifacts beside it. It
 reports detected or explicit checks without running target repository commands.
+
+Project-owned source records use `source-record.schema.json` and
+`source-record-example.json`. Keep them separate from the fixed
+`research-sources.json` allowlist.
 
 Readiness also includes advisory workflow and work-item inventory. Treat
 detected setup, teardown, remediation, push, pull-request, CI polling, and

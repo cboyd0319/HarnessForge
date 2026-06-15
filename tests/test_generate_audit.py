@@ -548,6 +548,8 @@ class GenerateAuditTests(unittest.TestCase):
         self.assertIn("docs/harness/release-controls.md", manifest["requiredFiles"])
         self.assertIn("docs/harness/research-sources.json", manifest["requiredFiles"])
         self.assertIn("docs/harness/sensor-registry.md", manifest["requiredFiles"])
+        self.assertIn("docs/harness/source-record.schema.json", manifest["requiredFiles"])
+        self.assertIn("docs/harness/source-record-example.json", manifest["requiredFiles"])
         self.assertIn("detectedComponents", manifest)
 
     def test_manifest_records_generated_file_ownership_metadata(self) -> None:
@@ -657,6 +659,49 @@ class GenerateAuditTests(unittest.TestCase):
         self.assertIn("python -m pytest", registry)
         self.assertIn("python -m ruff check .", registry)
         self.assertIn("does not prove real-agent effectiveness", registry)
+
+    def test_generated_source_record_schema_guides_project_sources(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            create_harness(root)
+            schema = json.loads(
+                (root / "docs/harness/source-record.schema.json").read_text(
+                    encoding="utf-8"
+                )
+            )
+            example = json.loads(
+                (root / "docs/harness/source-record-example.json").read_text(
+                    encoding="utf-8"
+                )
+            )
+            manifest = json.loads(
+                (root / "docs/harness/manifest.json").read_text(encoding="utf-8")
+            )
+
+        self.assertIn(
+            "docs/harness/source-record.schema.json",
+            manifest["requiredFiles"],
+        )
+        self.assertIn(
+            "docs/harness/source-record-example.json",
+            manifest["requiredFiles"],
+        )
+        self.assertIn(
+            "docs/harness/source-record-example.json",
+            manifest["reviewRequired"],
+        )
+        self.assertEqual(schema["title"], "HarnessForge Project Source Record")
+        schema_text = json.dumps(schema)
+        self.assertIn("targetRelativePath", schema_text)
+        self.assertIn("machine-local absolute paths", schema_text)
+        self.assertIn("docs/harness/research-sources.json", schema_text)
+        self.assertEqual(example["id"], "source-record-example")
+        self.assertEqual(example["reviewStatus"], "REVIEW REQUIRED")
+        self.assertEqual(
+            example["source"]["targetRelativePath"],
+            "docs/architecture.md",
+        )
+        self.assertIn("REVIEW REQUIRED", json.dumps(example))
 
     def test_missing_verification_placeholder_blocks_generated_init(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -1066,6 +1111,8 @@ class GenerateAuditTests(unittest.TestCase):
             "docs/harness/agent-operating-model.md",
             "docs/harness/entropy-control.md",
             "docs/harness/sensor-registry.md",
+            "docs/harness/source-record.schema.json",
+            "docs/harness/source-record-example.json",
         }
         live_snippets = live["requiredHarnessSnippets"]
         for file_name in sorted(shared_controls):

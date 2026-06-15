@@ -54,6 +54,8 @@ and advanced product modes.
 - `src/harnessforge/templates/release-controls.md.tmpl`
 - `src/harnessforge/templates/research-sources.json.tmpl`
 - `src/harnessforge/templates/sensor-registry.md.tmpl`
+- `src/harnessforge/templates/source-record.schema.json.tmpl`
+- `src/harnessforge/templates/source-record-example.json.tmpl`
 - `src/harnessforge/templates/sources.md.tmpl`
 - `tests/test_cli.py`
 - `tests/test_detect.py`
@@ -70,6 +72,8 @@ and advanced product modes.
 - `docs/harness/manifest.json`
 - `docs/harness/sources.md`
 - `docs/harness/sensor-registry.md`
+- `docs/harness/source-record.schema.json`
+- `docs/harness/source-record-example.json`
 - `docs/harness/verification-matrix.md`
 - `docs/harness/reference-mining-notes.md`
 - `docs/harness/remaining-ideas-research.md`
@@ -528,12 +532,11 @@ and advanced product modes.
   files with git, maps them to detected or explicit project verification
   checks, reports matched files, unmatched files, and reasons, and does not
   execute target commands. Current verification passes full unit discovery and
-  POSIX/PowerShell entrypoints with 209 tests, compile, pin check, research
+  POSIX/PowerShell entrypoints with 210 tests, compile, pin check, research
   source check, JSON validation, session and plan JSON smokes, changed-file
   local-path scan, diff hygiene, and self-audit `100/100`. Remaining
-  high-value, non-default product ideas are source-record schema support and
-  benchmark/score commands only when backed by representative effectiveness
-  evidence.
+  high-value, non-default product ideas are benchmark/score commands only when
+  backed by representative effectiveness evidence.
 
 ## Next Session
 
@@ -597,6 +600,19 @@ required-file and snippet coverage, generated ownership metadata, generated
 README/matrix routing, and live owner/source/purpose/retirement records for
 recurring checks. It does not execute target commands or prove real-agent
 effectiveness.
+The latest source-record schema slice added generated
+`docs/harness/source-record.schema.json` and review-required
+`docs/harness/source-record-example.json`, manifest required-file and snippet
+coverage, generated README routing, and live schema/example files. This gives
+projects a structured provenance record shape while keeping project-curated
+records separate from HarnessForge's fixed `research-sources.json` allowlist.
+The newest backlog addition is large-codebase analysis and indexing research.
+This should review open source code indexing, repo-map, semantic search,
+static-analysis, language-server, dependency-graph, and monorepo navigation
+systems before HarnessForge adds heavier indexing behavior for existing repos.
+Boundaries: no networked indexing service by default, no committed embeddings
+or private code summaries in generated harnesses, no machine-local paths, and
+any optional cache must be target-contained, reviewable, and safe to delete.
 `scripts/refresh_research.py --check` validates duplicate source IDs and URLs,
 required fields, placeholder text, canonical URL shape, arXiv `/abs/` URLs,
 lock-file consistency, and local-path leakage before any metadata fetch. Root
@@ -619,18 +635,19 @@ Current robust-mode verification passes: focused generated workflow and CLI
 warning tests, focused GitHub Action tests, focused generated verify-evidence
 coverage, focused verify report-persistence tests, focused verify-evidence gate
 tests, focused Action sync tests, focused session tests, focused sensor-registry
-generator test, full unit discovery with 209 tests, compile, JSON/YAML
-validation, pin check, research source check, rendered optional workflow audit
-and pin smoke, session and plan JSON smokes, expected-warning sync JSON smoke,
-self-audit `100/100`, changed-file local-path scan, and diff hygiene.
-`./init.sh` and `pwsh -NoProfile -File ./init.ps1` both pass with 209 tests,
+generator test, focused source-record generator test, full unit discovery with
+210 tests, compile, JSON/YAML validation, pin check, research source check,
+rendered optional workflow audit and pin smoke, session and plan JSON smokes,
+expected-warning sync JSON smoke, self-audit `100/100`, changed-file
+local-path scan, and diff hygiene.
+`./init.sh` and `pwsh -NoProfile -File ./init.ps1` both pass with 210 tests,
 pin check, research source check, and self-audit `100/100`. `sync --check`
 returns the expected warning for local workflow and instruction review surfaces
 without blockers or generated drift.
-The robust-mode backlog items for generated workflow sync preflight and sensor
-registry are closed. The next highest-value non-release slice is source-record
-schema support, or score/benchmark commands only with representative
-effectiveness evidence.
+The robust-mode backlog items for generated workflow sync preflight, sensor
+registry, and source-record schema support are closed. The next highest-value
+non-release slice is large-codebase analysis and indexing research, followed by
+score/benchmark commands only with representative effectiveness evidence.
 Existing eval guidance comes from the Harness Forge, Meta-Harness, Code as
 Agent Harness catalog, and arXiv harness-eval reviews; those sources are mined
 only for product ideas and are not copied into generated target-repo defaults.

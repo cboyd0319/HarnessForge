@@ -425,7 +425,7 @@ The default generated harness includes:
 | Harness docs | `docs/harness/README.md`, `verification-matrix.md`, `sensor-registry.md`, `change-contract.md` |
 | Security and privacy | `security-boundary-map.md`, `feature-privacy-labels.json` |
 | Evidence and quality | `evidence-log.md`, `quality-document.md`, `release-controls.md`, `evaluator-rubric.md` |
-| Research | `sources.md`, `research-sources.json`, `research-inbox.md` |
+| Research | `sources.md`, `research-sources.json`, `research-inbox.md`, `source-record.schema.json`, `source-record-example.json` |
 | Lifecycle | `self-healing.md`, `entropy-control.md`, `clean-state-checklist.md` |
 
 Each generated file is recorded in `docs/harness/manifest.json` with ownership
@@ -600,6 +600,13 @@ Research sources are tracked in:
 - [docs/harness/research-sources.json](docs/harness/research-sources.json)
 - [docs/harness/research-sources.lock.json](docs/harness/research-sources.lock.json)
 - [docs/harness/research-inbox.md](docs/harness/research-inbox.md)
+
+Project-owned source records use
+[docs/harness/source-record.schema.json](docs/harness/source-record.schema.json)
+and
+[docs/harness/source-record-example.json](docs/harness/source-record-example.json).
+They are for curated project provenance and stay separate from the fixed
+HarnessForge research allowlist.
 
 ## Verify This Repository
 

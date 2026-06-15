@@ -1,0 +1,30 @@
+{
+  "$schema": "./source-record.schema.json",
+  "schemaVersion": 1,
+  "id": "source-record-example",
+  "title": "REVIEW REQUIRED: replace with a project source title",
+  "sourceType": "project-document",
+  "source": {
+    "targetRelativePath": "docs/architecture.md",
+    "section": "REVIEW REQUIRED: optional section, heading, or anchor"
+  },
+  "owner": "REVIEW REQUIRED: assign a project owner",
+  "purpose": "REVIEW REQUIRED: explain why this source should guide agents or maintainers",
+  "reviewedOn": "{{generated_date}}",
+  "reviewCadence": "REVIEW REQUIRED: set cadence, trigger, or release checkpoint",
+  "reviewStatus": "REVIEW REQUIRED",
+  "trustBoundary": "repo-owned",
+  "harnessUsage": [
+    "instructions",
+    "verification"
+  ],
+  "claims": [
+    {
+      "claim": "REVIEW REQUIRED: summarize the source-backed claim",
+      "evidence": "REVIEW REQUIRED: cite the exact source section or artifact",
+      "limitations": "REVIEW REQUIRED: record stale, partial, or unverified assumptions"
+    }
+  ],
+  "retireWhen": "REVIEW REQUIRED: state when this source record should be retired or replaced",
+  "notes": "Project-owned source records are separate from docs/harness/research-sources.json."
+}
