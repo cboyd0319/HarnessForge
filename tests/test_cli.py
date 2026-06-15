@@ -849,6 +849,213 @@ class CliTests(unittest.TestCase):
             any("No project verification" in item for item in payload["blockedReasons"])
         )
 
+    def test_blueprint_list_and_show_json(self) -> None:
+        list_stdout = io.StringIO()
+        with contextlib.redirect_stdout(list_stdout):
+            list_code = main(["blueprint", "list", "--json"])
+        show_stdout = io.StringIO()
+        with contextlib.redirect_stdout(show_stdout):
+            show_code = main(["blueprint", "show", "agentic-app", "--json"])
+
+        list_payload = json.loads(list_stdout.getvalue())
+        show_payload = json.loads(show_stdout.getvalue())
+
+        self.assertEqual(list_code, 0)
+        self.assertEqual(show_code, 0)
+        ids = {item["id"] for item in list_payload["blueprints"]}
+        self.assertIn("agentic-app", ids)
+        self.assertIn("spec-driven", ids)
+        self.assertEqual(show_payload["id"], "agentic-app")
+        self.assertIn("reviewQuestions", show_payload)
+        self.assertIn("generatedFiles", show_payload)
+
+    def test_blueprint_apply_dry_run_does_not_write(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            stdout = io.StringIO()
+            with contextlib.redirect_stdout(stdout):
+                code = main(
+                    [
+                        "blueprint",
+                        "apply",
+                        "agentic-app",
+                        "--target",
+                        str(root),
+                        "--dry-run",
+                        "--json",
+                    ]
+                )
+
+            payload = json.loads(stdout.getvalue())
+            blueprint_file = root / "docs/harness/blueprints/agentic-app.md"
+
+        self.assertEqual(code, 0)
+        self.assertFalse(blueprint_file.exists())
+        writes = {item["path"]: item for item in payload["writes"]}
+        self.assertEqual(
+            writes["docs/harness/blueprints/agentic-app.md"]["status"],
+            "would_write",
+        )
+
+    def test_blueprint_apply_writes_reviewed_artifacts_and_preserves_existing(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            stdout = io.StringIO()
+            with contextlib.redirect_stdout(stdout):
+                apply_code = main(
+                    [
+                        "blueprint",
+                        "apply",
+                        "agentic-app",
+                        "--target",
+                        str(root),
+                        "--json",
+                    ]
+                )
+            first_payload = json.loads(stdout.getvalue())
+            blueprint_file = root / "docs/harness/blueprints/agentic-app.md"
+            manifest_file = root / "docs/harness/blueprints/manifest.json"
+            blueprint_text = blueprint_file.read_text(encoding="utf-8")
+            manifest = json.loads(manifest_file.read_text(encoding="utf-8"))
+            blueprint_file.write_text("local blueprint edits\n", encoding="utf-8")
+            second_stdout = io.StringIO()
+            with contextlib.redirect_stdout(second_stdout):
+                second_code = main(
+                    [
+                        "blueprint",
+                        "apply",
+                        "agentic-app",
+                        "--target",
+                        str(root),
+                        "--json",
+                    ]
+                )
+            second_payload = json.loads(second_stdout.getvalue())
+            final_blueprint_text = blueprint_file.read_text(encoding="utf-8")
+
+        self.assertEqual(apply_code, 0)
+        self.assertEqual(second_code, 0)
+        self.assertIn("Agentic Application Blueprint", blueprint_text)
+        self.assertIn("Review Required", blueprint_text)
+        self.assertIn("agentic-app", manifest["appliedBlueprints"])
+        first_writes = {item["path"]: item for item in first_payload["writes"]}
+        self.assertEqual(
+            first_writes["docs/harness/blueprints/agentic-app.md"]["status"],
+            "written",
+        )
+        second_writes = {item["path"]: item for item in second_payload["writes"]}
+        self.assertEqual(
+            second_writes["docs/harness/blueprints/agentic-app.md"]["status"],
+            "skipped",
+        )
+        self.assertEqual(final_blueprint_text, "local blueprint edits\n")
+
+    def test_blueprint_apply_force_overwrites_existing_blueprint(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            blueprint_file = root / "docs/harness/blueprints/agentic-app.md"
+            blueprint_file.parent.mkdir(parents=True)
+            blueprint_file.write_text("local blueprint edits\n", encoding="utf-8")
+            stdout = io.StringIO()
+            with contextlib.redirect_stdout(stdout):
+                code = main(
+                    [
+                        "blueprint",
+                        "apply",
+                        "agentic-app",
+                        "--target",
+                        str(root),
+                        "--force",
+                        "--json",
+                    ]
+                )
+            payload = json.loads(stdout.getvalue())
+            blueprint_text = blueprint_file.read_text(encoding="utf-8")
+
+        self.assertEqual(code, 0)
+        writes = {item["path"]: item for item in payload["writes"]}
+        self.assertEqual(
+            writes["docs/harness/blueprints/agentic-app.md"]["status"],
+            "updated",
+        )
+        self.assertIn("Agentic Application Blueprint", blueprint_text)
+
+    def test_blueprint_apply_preserves_non_generated_manifest(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            manifest_file = root / "docs/harness/blueprints/manifest.json"
+            manifest_file.parent.mkdir(parents=True)
+            manifest_file.write_text('{"owner":"project"}\n', encoding="utf-8")
+            stdout = io.StringIO()
+            with contextlib.redirect_stdout(stdout):
+                code = main(
+                    [
+                        "blueprint",
+                        "apply",
+                        "agentic-app",
+                        "--target",
+                        str(root),
+                        "--json",
+                    ]
+                )
+            payload = json.loads(stdout.getvalue())
+            manifest_text = manifest_file.read_text(encoding="utf-8")
+
+        self.assertEqual(code, 0)
+        writes = {item["path"]: item for item in payload["writes"]}
+        self.assertEqual(
+            writes["docs/harness/blueprints/manifest.json"]["status"],
+            "skipped",
+        )
+        self.assertEqual(manifest_text, '{"owner":"project"}\n')
+
+    def test_blueprint_apply_does_not_claim_skipped_existing_blueprint(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            blueprint_file = root / "docs/harness/blueprints/agentic-app.md"
+            blueprint_file.parent.mkdir(parents=True)
+            blueprint_file.write_text("project-owned blueprint\n", encoding="utf-8")
+            stdout = io.StringIO()
+            with contextlib.redirect_stdout(stdout):
+                code = main(
+                    [
+                        "blueprint",
+                        "apply",
+                        "agentic-app",
+                        "--target",
+                        str(root),
+                        "--json",
+                    ]
+                )
+            payload = json.loads(stdout.getvalue())
+            manifest = json.loads(
+                (root / "docs/harness/blueprints/manifest.json").read_text(
+                    encoding="utf-8"
+                )
+            )
+
+        self.assertEqual(code, 0)
+        writes = {item["path"]: item for item in payload["writes"]}
+        self.assertEqual(
+            writes["docs/harness/blueprints/agentic-app.md"]["status"],
+            "skipped",
+        )
+        blueprint_manifest = manifest["appliedBlueprints"]["agentic-app"]
+        self.assertNotIn(
+            "docs/harness/blueprints/agentic-app.md",
+            blueprint_manifest["generatedFiles"],
+        )
+        self.assertEqual(
+            blueprint_manifest["preservedFiles"][
+                "docs/harness/blueprints/agentic-app.md"
+            ]["ownership"],
+            "project-owned-preserved",
+        )
+
     def test_init_can_scaffold_optional_workflows(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

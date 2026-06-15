@@ -51,4 +51,6 @@ inventory, not permission to mutate nested projects.
 
 ## Manual Additions
 
-No manual component additions yet.
+- `src/harnessforge/blueprints.py`: optional blueprint registry and safe
+  blueprint artifact writer. This is product code, not generated target-repo
+  template content.

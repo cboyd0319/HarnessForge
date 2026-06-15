@@ -363,17 +363,39 @@ maintenance loop.
   training paths; governance inventory reports container runtime files; and
   P2 blueprint/default-generation work is explicitly deferred until validators
   and real eval evidence justify it.
+- Shifted from conservative release-prep posture into explicit robust-mode
+  buildout. The first slice is `harnessforge blueprint`, with `list`, `show`,
+  and `apply` subcommands. Built-in packs cover agentic applications,
+  spec-driven projects, web services, data/ML, security-sensitive repos, and
+  workflow automation. Blueprint artifacts are opt-in, generated under
+  `docs/harness/blueprints/`, marked review-required, recorded in a generated
+  ownership manifest, and preserved unless `--force` is explicit.
 
 ## Recommended Next Step
 
-The non-release backlog from the remaining-ideas research pass is closed for
-the first public Action release. Continue with release prep: manual
-macOS/Windows platform CI, the `v1` Action tag decision, and release-time
-SBOM/provenance gates.
+Continue the robust-mode buildout before returning to release prep. The next
+highest-value slice is an explicit project-verification execution mode that
+runs declared checks only when requested, records machine-readable evidence,
+and keeps command execution separate from structural audit and read-only
+readiness.
 Push local commits only at an explicit batch/release boundary or user request.
 
 ## Verification Evidence
 
+- `PYTHONPATH=src:. python3 -m unittest tests.test_cli.CliTests.test_blueprint_list_and_show_json tests.test_cli.CliTests.test_blueprint_apply_dry_run_does_not_write tests.test_cli.CliTests.test_blueprint_apply_writes_reviewed_artifacts_and_preserves_existing tests.test_cli.CliTests.test_blueprint_apply_force_overwrites_existing_blueprint tests.test_cli.CliTests.test_blueprint_apply_preserves_non_generated_manifest tests.test_cli.CliTests.test_blueprint_apply_does_not_claim_skipped_existing_blueprint`
+  passed with 6 focused blueprint tests. `PYTHONPATH=src:. python3 -m unittest
+  discover -s tests` passed with 181 tests, `python3 -m compileall src tests
+  scripts` passed, `PYTHONPATH=src:. python3 scripts/check_pins.py --root .`
+  passed, `PYTHONPATH=src:. python3 scripts/refresh_research.py --root .
+  --check` passed, `PYTHONPATH=src:. python3 -m harnessforge audit --target .
+  --min-score 85` passed with self-audit `100/100`, `PYTHONPATH=src:.
+  python3 -m harnessforge verify --target . --json` produced valid JSON,
+  blueprint list/show/apply JSON smokes passed, dry-run did not write files,
+  actual temp-target apply wrote review-required blueprint artifacts, `git diff
+  --check` passed, and the exact local-path scan passed after adding explicit
+  blueprint mode. `./init.sh` and `pwsh -NoProfile -File ./init.ps1` also
+  passed with 181 tests, pin check, research source check, and self-audit
+  `100/100`.
 - `PYTHONPATH=src:. python3 -m unittest discover -s tests` passed with
   175 tests, `python3 -m compileall src tests scripts` passed,
   `PYTHONPATH=src:. python3 scripts/check_pins.py --root .` passed,

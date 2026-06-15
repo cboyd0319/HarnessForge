@@ -7,6 +7,13 @@ from pathlib import Path
 
 from . import __version__
 from .audit import audit_target, audit_to_dict, format_audit, render_html_report
+from .blueprints import (
+    apply_blueprint,
+    blueprint_to_dict,
+    get_blueprint,
+    list_blueprints,
+    list_blueprints_to_dict,
+)
 from .detect import detect_project
 from .doctor import doctor_json, doctor_report, format_doctor
 from .generate import PLATFORM_CONTRACTS, REVIEW_REQUIRED_FILES, create_harness
@@ -184,6 +191,38 @@ def build_parser() -> argparse.ArgumentParser:
     verify.add_argument("--command", dest="commands", action="append", default=[])
     verify.add_argument("--json", action="store_true")
     verify.set_defaults(func=_verify)
+
+    blueprint = subparsers.add_parser(
+        "blueprint",
+        help="list, inspect, or apply optional harness blueprints",
+    )
+    blueprint_subparsers = blueprint.add_subparsers(dest="blueprint_command")
+
+    blueprint_list = blueprint_subparsers.add_parser(
+        "list",
+        help="list built-in blueprint packs",
+    )
+    blueprint_list.add_argument("--json", action="store_true")
+    blueprint_list.set_defaults(func=_blueprint_list)
+
+    blueprint_show = blueprint_subparsers.add_parser(
+        "show",
+        help="show a built-in blueprint pack",
+    )
+    blueprint_show.add_argument("blueprint_id", choices=_blueprint_ids())
+    blueprint_show.add_argument("--json", action="store_true")
+    blueprint_show.set_defaults(func=_blueprint_show)
+
+    blueprint_apply = blueprint_subparsers.add_parser(
+        "apply",
+        help="write optional blueprint artifacts for project review",
+    )
+    blueprint_apply.add_argument("blueprint_id", choices=_blueprint_ids())
+    blueprint_apply.add_argument("--target", type=Path, default=Path.cwd())
+    blueprint_apply.add_argument("--dry-run", action="store_true")
+    blueprint_apply.add_argument("--force", action="store_true")
+    blueprint_apply.add_argument("--json", action="store_true")
+    blueprint_apply.set_defaults(func=_blueprint_apply)
 
     doctor = subparsers.add_parser("doctor", help="check local runtime support")
     doctor.add_argument("--json", action="store_true")
@@ -394,6 +433,70 @@ def _doctor(args: argparse.Namespace) -> int:
     return 1 if args.strict and not report["ok"] else 0
 
 
+def _blueprint_list(args: argparse.Namespace) -> int:
+    if args.json:
+        print(json.dumps(list_blueprints_to_dict(), indent=2))
+        return 0
+    print("Available blueprints:")
+    for blueprint in list_blueprints():
+        domains = ", ".join(blueprint.domains)
+        print(f"  - {blueprint.id}: {blueprint.title} ({domains})")
+    return 0
+
+
+def _blueprint_show(args: argparse.Namespace) -> int:
+    blueprint = get_blueprint(args.blueprint_id)
+    if args.json:
+        print(json.dumps(blueprint_to_dict(blueprint), indent=2))
+        return 0
+    print(f"{blueprint.title} ({blueprint.id})")
+    print(blueprint.summary)
+    print("")
+    print("Review questions:")
+    for question in blueprint.review_questions:
+        print(f"  - {question}")
+    print("")
+    print("Generated files:")
+    for path in blueprint.generated_files:
+        print(f"  - {path}")
+    return 0
+
+
+def _blueprint_apply(args: argparse.Namespace) -> int:
+    blueprint, writes = apply_blueprint(
+        args.target,
+        args.blueprint_id,
+        dry_run=args.dry_run,
+        force=args.force,
+    )
+    if args.json:
+        payload = {
+            "schemaVersion": "harnessforge.blueprintApply.v1",
+            "blueprint": blueprint_to_dict(blueprint),
+            "target": {"root": None},
+            "dryRun": args.dry_run,
+            "force": args.force,
+            "writes": [
+                {
+                    "path": _relative(write.path, args.target),
+                    "status": write.status,
+                    "reason": write.reason,
+                }
+                for write in writes
+            ],
+        }
+        print(json.dumps(payload, indent=2))
+        return 0
+    action = "would apply" if args.dry_run else "applied"
+    print(f"Blueprint {action}: {blueprint.id}")
+    for write in writes:
+        suffix = f" ({write.reason})" if write.reason else ""
+        print(f"  - {write.status.upper()} {_relative(write.path, args.target)}{suffix}")
+    if any(write.status == "skipped" for write in writes):
+        print("Existing files preserved. Re-run with --force only after review.")
+    return 0
+
+
 def _sync_check_to_dict(
     report: ReadinessReport, exit_code: int
 ) -> dict[str, object]:
@@ -594,3 +697,7 @@ def _preserved_file_warnings(
             "or use --force only after review"
         ),
     )
+
+
+def _blueprint_ids() -> tuple[str, ...]:
+    return tuple(blueprint.id for blueprint in list_blueprints())

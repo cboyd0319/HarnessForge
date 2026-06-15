@@ -20,7 +20,9 @@ priority over docs-site classification.
 The remaining good ideas are mostly not more default generated files. They are
 product modes, audit signals, and opt-in checks that help users understand what
 HarnessForge detected, what is safe to rely on, and what still needs project
-review.
+review. The first explicit product-mode implementation is `harnessforge
+blueprint`, which keeps richer operating-model guidance separate from normal
+`init` output.
 
 ## Highest-Value Next Ideas
 
@@ -33,9 +35,40 @@ review.
 | Workflow surface detection | AWMAN TOML/YAML workflow schema | Detect repo-owned workflow definitions and report setup/teardown/remediation surfaces | Do not become an AWMAN runtime or generate autonomous workflows by default |
 | Context budget and duplication audit | Maki context-efficiency focus, OpenAI short repo maps | Add audit signals for oversized/duplicative instruction surfaces and router files | Avoid brittle token counting claims; use approximate size and duplication signals |
 | Permission/governance inventory | Maki permissions, OpenHarness governance, GitHub governing-agents guide | Detect MCP configs, agent settings, permission files, and setup-step workflow files as security-critical surfaces | Do not author platform permission files until current primary docs are verified |
+| Explicit blueprint mode | Public HarnessForge profile/blueprint split, local Harness Forge, ASPEC/AWMAN boundary review | Add opt-in blueprint packs for deeper operating models without changing normal generated harness defaults | Keep blueprint artifacts review-required and preserve existing project edits unless forced |
 | Real-agent evaluation harness | Public HarnessForge A/B benchmark, OpenAI/Fowler feedback-loop claims | Build a repeatable local benchmark protocol for generated harness quality | Do not market structural audit as real agent effectiveness |
 | Config precedence report | AWMAN layered config model | Show which overrides shaped detection: CLI flags, detected files, generated manifest, existing project ownership | Keep deterministic; no LLM refinement needed |
 | Short `sync --check` alias | Public HarnessForge quickstart, current drift-report UX | Add a discoverable CI-oriented alias for `update --drift-report --json` | Alias only; no new mutation semantics |
+
+## Implemented Explicit Blueprint Mode
+
+`harnessforge blueprint` is the first deliberately robust opt-in product mode.
+It is separate from `harnessforge init` so the base generator remains portable
+and conservative while advanced users can apply richer project guidance with a
+clear review boundary.
+
+Current command shape:
+
+- `harnessforge blueprint list`
+- `harnessforge blueprint show <blueprint-id>`
+- `harnessforge blueprint apply <blueprint-id> --target <repo> --dry-run`
+- `harnessforge blueprint apply <blueprint-id> --target <repo> --force`
+
+Current built-in packs:
+
+- `agentic-app`
+- `spec-driven`
+- `web-service`
+- `data-ml`
+- `security-sensitive`
+- `workflow-automation`
+
+Generated blueprint artifacts live under `docs/harness/blueprints/`, include
+ownership metadata, and are explicitly marked review-required. Existing files
+are preserved unless `--force` is supplied after review. This adopts the useful
+profile/blueprint and source-of-truth ideas from the research pass without
+copying ASPEC, AWMAN, Maki, MCP, memory, or platform permission systems into
+target repos by default.
 
 ## Local Reference Findings
 

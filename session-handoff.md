@@ -4,10 +4,9 @@ Last Updated: 2026-06-15 UTC
 
 ## Current Objective
 
-Set up HarnessForge as a credible, cross-platform harness creation and
-assessment tool, including the deep local-source pass, secure pinning,
-self-healing, component-boundary improvements, a high-quality public README,
-and the required AGENTS instruction format.
+Build HarnessForge into a robust, explicit, opt-in harness platform while
+preserving the boundary between portable base generation, repo-local policy,
+and advanced product modes.
 
 ## Files
 
@@ -31,6 +30,7 @@ and the required AGENTS instruction format.
 - `scripts/check_pins.py`
 - `pins.toml`
 - `src/harnessforge/audit.py`
+- `src/harnessforge/blueprints.py`
 - `src/harnessforge/cli.py`
 - `src/harnessforge/detect.py`
 - `src/harnessforge/generate.py`
@@ -88,8 +88,13 @@ and the required AGENTS instruction format.
   plan mode, config-precedence reporting, selective generated-owned update
   refresh, Java pin parsing, intentionally vulnerable training-path pin-scan
   exclusions, nested JVM wrapper preference, container runtime inventory, and
-  source-verified platform metadata. The non-release backlog from this research
-  pass is implemented or explicitly deferred before release prep.
+  source-verified platform metadata. The first robust opt-in product mode is
+  now implemented: `harnessforge blueprint list/show/apply`, with built-in
+  packs for agentic apps, spec-driven projects, web services, data/ML,
+  security-sensitive repos, and workflow automation. Blueprint output is
+  separate from normal `init`, writes under `docs/harness/blueprints/`, records
+  ownership metadata, preserves project edits by default, and requires
+  `--force` for replacement.
   Rejected defaults remain large
   skill/memory trees, platform permission config, LLM-assisted init,
   autonomous push/PR workflows, and copied ASPEC/AWMAN/Maki templates.
@@ -101,13 +106,14 @@ and the required AGENTS instruction format.
   JSON output, and root Python-package priority over docs-site classification.
   The boundary remains explicit: HarnessForge detects and surfaces useful
   repo-local control planes, but it does not generate sibling-repo
-  instructions, personal tool mandates, large skill trees, blueprints, MCP
+  instructions, personal tool mandates, large skill trees, MCP
   setup, or extra agent adapters by default. Current verification passes full
-  unit discovery with 160 tests, compile, pin check, self-audit `100/100`,
-  diff hygiene, a read-only readiness smoke, and `sync --check` smoke against
-  this repo. Readiness and sync check are warning-only because existing local
-  instruction files and the two repo-local GitHub workflow definitions need
-  review; there are no readiness blockers.
+  unit discovery and POSIX/PowerShell entrypoints with 181 tests, compile, pin
+  check, research source check, verify JSON smoke, blueprint JSON/apply smokes,
+  self-audit `100/100`, local path scan, and diff hygiene. Readiness and sync
+  check are warning-only
+  because existing local instruction files and the two repo-local GitHub
+  workflow definitions need review; there are no readiness blockers.
 - Current SDD research supplement reviewed the GitHub Spec Kit article, the
   supplied local Spec Kit checkout, Fowler's SDD tools article, and
   specdriven.ai. Accepted generic ideas: detect `.specify/`, active feature
@@ -490,18 +496,21 @@ and the required AGENTS instruction format.
 
 ## Next Session
 
-The non-release backlog from the remaining-ideas research pass is closed for
-the first public Action release. The latest slices added `verify --json` plan
-mode, config-precedence reporting, selective generated-owned update refresh,
+The next session should continue the robust-mode buildout, not return straight
+to release prep. The latest slices added `verify --json` plan mode,
+config-precedence reporting, selective generated-owned update refresh,
 Maven/Gradle dependency pin parsing, intentionally vulnerable training-path
 pin-scan exclusions, nested JVM wrapper preference, container runtime
 governance inventory, a no-network research source hygiene gate, a
-machine-readable effectiveness evidence contract, and source-reviewed platform
-adapter metadata. `scripts/refresh_research.py --check` validates duplicate
-source IDs and URLs, required fields, placeholder text, canonical URL shape,
-arXiv `/abs/` URLs, lock-file consistency, and local-path leakage before any
-metadata fetch. Root POSIX and PowerShell entrypoints now run that gate after
-pin checks.
+machine-readable effectiveness evidence contract, source-reviewed platform
+adapter metadata, and explicit blueprint mode. `harnessforge blueprint`
+currently supports list/show/apply, dry-run, force-only replacement,
+project-edit preservation, JSON output, ownership metadata, and six built-in
+packs.
+`scripts/refresh_research.py --check` validates duplicate source IDs and URLs,
+required fields, placeholder text, canonical URL shape, arXiv `/abs/` URLs,
+lock-file consistency, and local-path leakage before any metadata fetch. Root
+POSIX and PowerShell entrypoints now run that gate after pin checks.
 `effectiveness-evidence.schema.json` and
 `effectiveness-evidence-example.json` define the local review shape for
 harness-effectiveness claims: claim scope, baseline/candidate snapshots,
@@ -516,14 +525,16 @@ image assumptions. Generated change contracts now ask for current
 primary-source evidence for platform-impacting changes. The primary-source
 review checked Python version status, GitHub hosted runner labels, and the
 GitHub runner-images Windows VS2026 migration notice.
-Current backlog-closure verification passes: focused regression tests, full
-unit discovery with 175 tests, compile, pin check, research source check,
-`verify --json` smoke, self-audit `100/100`, local-path scan, diff hygiene,
-and POSIX and PowerShell entrypoints with 175 tests each. `sync --check`
+Current robust-mode verification passes: 6 focused blueprint tests, full unit
+discovery and POSIX/PowerShell entrypoints with 181 tests, compile, pin check,
+research source check, `verify --json` smoke, blueprint JSON/apply smokes,
+self-audit `100/100`, local-path scan, and diff hygiene. `sync --check`
 returns the expected warning for local workflow and instruction review surfaces
 without blockers or generated drift.
-Continue release prep with manual macOS/Windows platform CI, the `v1` Action
-tag decision, and release-time SBOM/provenance gates.
+The next highest-value product slice is explicit project verification
+execution: run declared checks only when requested, capture machine-readable
+evidence, and keep command execution separate from structural audit and
+read-only readiness.
 Existing eval guidance comes from the Harness Forge, Meta-Harness, Code as
 Agent Harness catalog, and arXiv harness-eval reviews; those sources are mined
 only for product ideas and are not copied into generated target-repo defaults.
@@ -534,5 +545,5 @@ ownership boundaries, and source-ledger hygiene. Keep these as local eval
 guidance unless a later release decision turns a narrow piece into generated
 starter guidance.
 Push local commits only at an explicit batch/release boundary or user request.
-Remaining work before public release is release prep: manual macOS/Windows
-platform CI, `v1` Action tag, and release-time SBOM/provenance gates.
+Release prep remains later: manual macOS/Windows platform CI, `v1` Action tag,
+and release-time SBOM/provenance gates.

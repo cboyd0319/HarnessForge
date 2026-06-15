@@ -37,6 +37,7 @@ This repository ships two related surfaces:
 | Know whether a repo is ready | Run read-only readiness and sync preflight checks |
 | Keep generated harnesses honest | Audit structure, drift, security boundaries, and lifecycle controls |
 | Respect existing spec systems | Detect `.specify`, `specs/`, `aspec/`, work-item templates, and workflow surfaces |
+| Build deeper project operating models | Apply optional blueprints for agentic apps, SDD, web services, data/ML, security, and automation |
 | Run the same checks in CI | Use the composite GitHub Action backed by the same Python library |
 
 ## Status
@@ -82,6 +83,9 @@ effectiveness still needs representative task runs and human review.
 - Audits harness structure and reports actionable failures.
 - Reports generated-file drift and static readiness without running target
   project commands.
+- Provides explicit blueprint mode for richer project operating models. Built-in
+  packs cover agentic applications, spec-driven projects, web services,
+  data/ML, security-sensitive repos, and workflow automation.
 - Provides a composite GitHub Action for audit, init, update, and doctor
   workflows.
 
@@ -93,6 +97,8 @@ effectiveness still needs representative task runs and human review.
 - It does not install Spec Kit, `.specify`, slash commands, presets,
   extensions, catalogs, ASPEC, AWMAN, Maki, or workflow engines into target
   repositories.
+- It does not apply richer blueprint guidance during normal `init`. Blueprints
+  are explicit opt-ins and land in a separate review area.
 - It does not create autonomous push, PR, self-heal, setup, or teardown
   workflows unless optional workflow scaffolds are explicitly requested.
 - It does not run target repository commands during `inspect`, `sync --check`,
@@ -173,6 +179,19 @@ Report planned project verification checks without running them:
 ```bash
 harnessforge verify --target /path/to/repo --json
 harnessforge verify --target /path/to/repo --json --command "python -m pytest"
+```
+
+Review optional blueprint packs:
+
+```bash
+harnessforge blueprint list
+harnessforge blueprint show agentic-app
+```
+
+Preview a richer operating-model overlay without writing files:
+
+```bash
+harnessforge blueprint apply agentic-app --target /path/to/repo --dry-run
 ```
 
 Preview generated files:
@@ -272,6 +291,36 @@ and [docs/harness/verify-json-example.json](docs/harness/verify-json-example.jso
 
 Command execution remains intentionally unavailable. Future execution must be
 explicit opt-in.
+
+## Blueprint Mode
+
+Blueprints are optional operating-model overlays for repos that need more than
+the base generated harness. They are intentionally separate from `init` so a
+normal harness run stays portable and does not inherit project-specific
+preferences.
+
+```bash
+harnessforge blueprint list
+harnessforge blueprint show agentic-app --json
+harnessforge blueprint apply agentic-app --target /path/to/repo --dry-run
+harnessforge blueprint apply agentic-app --target /path/to/repo
+```
+
+Built-in blueprints:
+
+| Blueprint | Use when |
+| --- | --- |
+| `agentic-app` | The repo has agent runtime behavior, tool calls, model-mediated outputs, or autonomous actions |
+| `spec-driven` | The repo uses specs, plans, tasks, and traceability as the source of truth |
+| `web-service` | The repo exposes web apps, APIs, UI flows, or server-backed product workflows |
+| `data-ml` | The repo has data pipelines, notebooks, models, benchmarks, or result artifacts |
+| `security-sensitive` | The repo handles auth, secrets, permissions, infrastructure, or sensitive data |
+| `workflow-automation` | The repo has CI, scheduled jobs, bots, self-heal flows, or PR automation |
+
+`blueprint apply` writes under `docs/harness/blueprints/` and records ownership
+metadata in `docs/harness/blueprints/manifest.json`. Existing blueprint files
+are preserved unless `--force` is explicit. Treat generated blueprint docs as
+review-required project drafts, not automatic policy.
 
 ## Generation Boundary
 
@@ -420,6 +469,7 @@ input, output, and command mode.
 | `harnessforge inspect` | Show detected project profile or readiness without writing files |
 | `harnessforge sync --check` | Run a read-only CI preflight with readiness exit codes |
 | `harnessforge verify` | Report planned project checks without executing target commands |
+| `harnessforge blueprint` | List, inspect, or apply optional review-required operating-model overlays |
 | `harnessforge init` | Create missing harness artifacts |
 | `harnessforge audit` | Score an existing repo harness |
 | `harnessforge update` | Plan or apply safe missing-file corrections, or report generated drift |
