@@ -15,12 +15,19 @@ boundaries it preserves. See [Usage](usage.md) for commands and
 - Generates a compact harness with agent entrypoints, project state files,
   local verification scripts, security boundaries, evidence docs, lifecycle
   docs, and a manifest.
+- Treats a harness as five core subsystems: instructions, tools, environment,
+  state, and feedback. Generated docs make feedback and verification commands
+  the first repair target when agent output is weak.
+- Treats changes to instruction, tool, filesystem, git, startup, verification,
+  hook, lint/sensor, workflow-permission, and evaluator-loop surfaces as
+  effective-agent changes.
 - Adds a review-required first-agent task so the first agent session in a newly
   harnessed repo can deepen component boundaries, verification routing,
   source-of-truth guidance, evidence sensors, and security notes.
 - Preserves existing files by default.
 - Can append a reviewed HarnessForge quality addendum to existing instruction
-  files with `--enhance-existing`.
+  files with `--enhance-existing`, including smallest-correct-change discipline
+  for assumptions, scope, dependencies, and verification.
 - Audits harness structure and reports actionable failures.
 - Reports generated-file drift and static readiness without running target
   project commands.
@@ -56,7 +63,7 @@ The default generated harness includes:
 | Agent instructions | `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, `.github/copilot-instructions.md` |
 | Project state | `feature_list.json`, `progress.md`, `session-handoff.md` |
 | Local checks | `init.sh`, `init.ps1`, `scripts/check_pins.py` |
-| Harness docs | `docs/harness/README.md`, `verification-matrix.md`, `sensor-registry.md`, `change-contract.md` |
+| Harness docs | `docs/harness/README.md`, `roadmap.md`, `verification-matrix.md`, `sensor-registry.md`, `change-contract.md` |
 | First-agent improvement | `docs/harness/first-agent-task.md` |
 | Security and privacy | `security-boundary-map.md`, `feature-privacy-labels.json` |
 | Evidence and quality | `evidence-log.md`, `quality-document.md`, `release-controls.md`, `evaluator-rubric.md` |
@@ -66,6 +73,9 @@ The default generated harness includes:
 Each generated file is recorded in `docs/harness/manifest.json` with ownership
 metadata and hashes. Project-owned existing files are tracked separately so
 drift reporting can distinguish generated changes from preserved local content.
+Generated instructions and review docs include a smallest-correct-change gate:
+surface assumptions, avoid speculative scope, prefer existing behavior and
+dependencies before new code, and verify non-trivial logic with focused checks.
 
 See [harness/manifest.json](harness/manifest.json) for this repo's current
 generated inventory and required-file contract.

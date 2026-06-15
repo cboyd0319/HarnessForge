@@ -33,11 +33,12 @@ packaging, CI, or platform support changes.
 | `actions/setup-python` docs | Explicit Python 3.13 setup in the reusable action |
 | `actions/checkout` and `actions/setup-python` tag refs | Verified full-length SHA pins for v6 on 2026-06-14 |
 | PyPI setuptools JSON API | Verified `setuptools==82.0.1` as latest stable on 2026-06-14 |
-| Walking Labs learn-harness-engineering full English course | Five-subsystem harness framing, feature-list primitive, clean-state checklist, evaluator rubric, quality document, and initial creator script baseline |
-| Walking Labs Lecture 02, skills, and harness-creator skill | Scoring the harness tuple, generic creator structure, validator/report scripts, and compatibility artifacts |
+| Walking Labs learn-harness-engineering public repository, `https://github.com/walkinglabs/learn-harness-engineering` | Canonical harness-pattern source for five-subsystem framing, feature-list primitive, clean-state checklist, evaluator rubric, quality document, startup flow, and initializer baseline |
+| Walking Labs English lectures, resources, skills, and harness-creator skill | Canonical harness-pattern source for five-subsystem scoring, repo-as-system-of-record, instruction splitting, continuity, initialization, scope control, feature-state gating, termination checks, full-pipeline verification, observability, and clean-state discipline |
 | AgentPatterns.ai, "GitHub Copilot: Harness Engineering for Agent-Ready Code" | Backpressure, repo legibility, mechanical enforcement, multi-session scaffolding, and rollback-first operations |
 | Epsilla, "The Repository is the OS" and agent-control harness writing | Repo-as-operating-system framing, codified implicit rules, and validation logic inside the repository |
 | Charles Anim `harness-engineering` skill repo | OpenAI-style harness setup packaged as an agent skill for multiple coding agents |
+| Karpathy-inspired coding discipline guidance and examples | Assumption surfacing, simplicity first, surgical changes, and goal-driven verification |
 | "AI Harness Engineering: A Runtime Substrate for Foundation-Model Software Agents" | Task state, observability, verification, permissions, entropy auditing, and episode evidence |
 | "Observability-Driven Automatic Evolution of Coding-Agent Harnesses" | Observability and feedback-driven harness correction loop |
 | "Code as Agent Harness" | Executable, verifiable, stateful agent harness direction |
@@ -86,20 +87,27 @@ packaging, CI, or platform support changes.
 
 - Bluepeak-AI `docs/harness` local sibling reference.
 - JobSentinel `docs/harness` local sibling reference.
-- Walking Labs `learn-harness-engineering` local sibling reference.
+- Walking Labs `learn-harness-engineering` public repository:
+  `https://github.com/walkinglabs/learn-harness-engineering`. Treat this as the
+  canonical harness-pattern source for generic harness, startup, task-list,
+  quality-score, and initializer behavior.
 - Persona `AGENTS.md` local sibling reference for source/docs/tests/contracts
   alignment and research-first routing.
 - pi-harness local sibling reference for exact dependency pins, lockfile review,
   package install safety, and harness-as-product discipline.
 - JobSentinel `docs/harness/sources.md` local sibling reference for dated
   harness source inventory and refresh checklist.
-- Walking Labs `docs/en/resources`, `docs/en/projects`, `projects`, and
-  `skills/harness-creator` local sibling references for initializer flow,
-  structural benchmarking, project progression, and skill-packaged harness
-  validation patterns.
+- Walking Labs `docs/en/lectures`, `docs/en/resources`, `docs/en/projects`,
+  `projects`, and `skills/harness-creator` local sibling references for
+  initializer flow, structural benchmarking, project progression,
+  skill-packaged harness validation patterns, feature-state gates,
+  observability, and clean-state discipline.
 - Awesome Code as Agent Harness Papers local sibling reference for the
   harness-paper taxonomy, source-list release controls, and missing-citation
   handling.
+- Local minimal-change instruction reference and Karpathy-style examples for
+  smallest-correct work gates, hidden-assumption checks, over-abstraction
+  avoidance, surgical edits, and verification-first goals.
 
 Generated harnesses must use portable URLs, repo-relative paths, or
 project-owned docs instead of machine-specific absolute paths.
@@ -228,11 +236,45 @@ project-owned docs instead of machine-specific absolute paths.
   reviewable: generated pin checking, generated release controls, optional
   manual workflow scaffolds, manifest drift tests, and a generated-harness
   `100/100` quality gate.
+- The Walking Labs learn-harness-engineering public repository carries higher
+  weight than sibling-project examples for generic harness pattern decisions.
+  Sibling repos are still valuable field examples, but when they conflict with
+  the canonical harness resources, the canonical harness resources should shape
+  the default generated pattern unless target-repo evidence justifies a narrower
+  local override.
+- The Walking Labs English lectures add several portable harness-quality
+  controls now reflected in the roadmap and generated templates: fresh-session
+  tests, instruction source/applicability/retirement metadata, dedicated
+  initialization before feature work, evidence-gated feature and roadmap state,
+  completion evidence ladders, agent-oriented repair messages, runtime plus
+  process observability, immediate cleanup, periodic cleanup, and harness
+  simplification by representative task evidence.
+- Walking Labs Lecture 02 reinforces the five-subsystem contract now made
+  explicit in live and generated harness docs: instructions need project
+  overview, stack, first-run commands, hard constraints, and links; tools need
+  enough access for real work under least privilege; environment facts should
+  be self-describing; state should record done, in-progress, and blocked work;
+  feedback has the highest return and should prioritize explicit verification
+  commands; controlled-variable exclusion tests are only supporting evidence
+  unless paired with failure attribution; and harness debt should be audited
+  like code debt.
+- Effective-agent boundary guidance now treats model behavior as model plus
+  harness. Changes to system prompts, instruction files, shell/file tools, git
+  access, filesystem scope, startup scripts, verification commands, stop hooks,
+  lint/sensor checks, workflow permissions, or evaluator loops are harness
+  product changes that need scope, verification, and rollback.
 - Deferred heavier Walking Labs ideas for project-specific opt-ins rather than
   default generation: architecture/layer scanners, memory index cap checks,
   memory topic cleanup, and agent-specific tool-permission config validation.
   These need repo ownership and false-positive review before becoming generic
   harness output.
+- Minimal-change and Karpathy-style instruction references add portable coding
+  discipline now reflected in live and generated harness surfaces: surface
+  assumptions before coding; prefer no change, deletion, docs, config,
+  standard library, native platform features, and existing dependencies before
+  new code; avoid speculative features and single-use abstractions; keep edits
+  traceable to the current objective; record simplification ceilings and
+  upgrade paths; and require focused runnable checks for non-trivial logic.
 - Local sibling harness comparison covered macos-container-agents,
   Bluepeak-AI, persona, pi-harness, WormsWMD-macOS-Fix, unifi-configs,
   JobSentinel, and cboyd0319. Imported controls are deliberately generic:

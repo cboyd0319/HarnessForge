@@ -22,8 +22,18 @@ runner. Use `verification-matrix.md` to choose checks for a change and
 | `PYTHONPATH=src:. python3 -m harnessforge audit --target . --min-score 85` | Generated harness manifest, self-audit policy | Checks live harness structure, snippets, drift-sensitive boundaries, and score floor. | HarnessForge maintainer | Replace if audit scoring contract changes. | Every harness-affecting slice |
 | `PYTHONPATH=src:. python3 -m harnessforge plan --target . --since HEAD --json` | Diff-aware planner contract | Confirms the read-only planner emits parseable JSON for the current diff. | HarnessForge maintainer | Replace if planner smoke moves into a dedicated integration gate. | Planner, detection, or routing changes |
 | `PYTHONPATH=src:. python3 -m harnessforge session --target . --json` | Session snapshot contract | Confirms the read-only restart report emits parseable JSON. | HarnessForge maintainer | Replace if session output is folded into another restart contract. | Session, readiness, or state-file changes |
+| `docs/roadmap.md` | README start-here table, `progress.md`, `session-handoff.md` | Tracks accepted roadmap and backlog scope so product decisions do not live only in chat or research notes. | HarnessForge maintainer | Replace if roadmap state moves into a stronger issue tracker or generated planning contract. | Brainstorm acceptance, backlog reshaping, release-prep scope changes |
 | `./init.sh` | POSIX root entrypoint | Runs the local macOS/Linux verification contract. | HarnessForge maintainer | Replace if POSIX support or entrypoint policy changes. | End of non-trivial slices and release prep |
 | `pwsh -NoProfile -File ./init.ps1` | Windows/PowerShell root entrypoint | Runs the local Windows-compatible verification contract from PowerShell. | HarnessForge maintainer | Replace if Windows support or entrypoint policy changes. | End of non-trivial slices and release prep |
+
+## Agent-Oriented Failure Feedback
+
+For custom checks, prefer failure messages with:
+
+- what failed;
+- why the project boundary or invariant matters;
+- where an agent should look first to repair it;
+- which evidence should be recorded after the fix.
 
 ## Rules
 

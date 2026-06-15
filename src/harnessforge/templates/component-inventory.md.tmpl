@@ -5,6 +5,14 @@ Generated: {{generated_date}}
 This file records the project boundaries the harness knows about. It is an
 inventory, not permission to mutate nested projects.
 
+## Effective Agent Boundary
+
+The model is separate from the harness. The harness includes instruction files,
+shell and file tools, git access, local filesystem scope, startup scripts,
+verification commands, stop hooks, lint/sensor checks, workflow permissions,
+and evaluator loops. Changing any of these changes the effective agent, so
+route the change through `change-contract.md` and `verification-matrix.md`.
+
 ## Detected Workspace Markers
 
 {{workspace_markers_markdown}}
@@ -37,6 +45,12 @@ inventory, not permission to mutate nested projects.
 - Do not install dependencies, run package scripts, or write generated files in
   nested components unless the task needs it and the command is documented.
 - Preserve the declared platform contract: {{platform_contract_summary}}
+
+## Harness Artifacts
+
+- `docs/harness/roadmap.md`: accepted roadmap and backlog boundary. Keep it in
+  sync with `progress.md`, `session-handoff.md`, and `sensor-registry.md` when
+  work is accepted, deferred, or completed.
 
 ## Manual Additions
 

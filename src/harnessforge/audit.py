@@ -218,6 +218,7 @@ def _load_known_files(root: Path, manifest: dict[str, Any]) -> dict[str, str]:
         "docs/installation.md",
         "docs/usage.md",
         "docs/capabilities.md",
+        "docs/roadmap.md",
         "pyproject.toml",
         "package.json",
         "Package.swift",

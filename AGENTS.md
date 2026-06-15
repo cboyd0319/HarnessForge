@@ -6,12 +6,23 @@ HarnessForge is a Python 3.13+ CLI and composite GitHub Action for
 creating, assessing, and safely updating AI coding-agent harnesses in arbitrary
 repositories.
 
+Core harness contract: instructions, tools, environment, state, and feedback
+are all required. Keep instructions map-like, tool access sufficient but least
+privileged, environment facts self-describing, state current across sessions,
+and verification commands explicit. Feedback usually has the best return, so
+fix missing or weak checks before adding broader process.
+Changing instruction, tool, filesystem, git, startup, verification, hook, lint,
+or evaluator surfaces changes the effective agent. Treat those as harness
+product changes.
+
 Startup path:
 
 1. Confirm the working directory.
 2. Read this file, `README.md`, and `docs/harness/README.md`.
 3. Read `feature_list.json`, `progress.md`, and `session-handoff.md`.
-4. Check `docs/harness/component-inventory.md` before changing component
+4. Read `docs/roadmap.md` before selecting, deferring, or reshaping backlog,
+   release-prep, or product-scope work.
+5. Check `docs/harness/component-inventory.md` before changing component
    boundaries, generated files, or verification routing.
 
 This repo is itself a harnessed project. Keep root instructions short and place
@@ -70,6 +81,32 @@ real cost.
   commits intended for review.
 - Keep this file as a map. Move long-running policy, research, and operational
   detail into `docs/harness/`.
+
+### Implementation Discipline
+
+Before writing code, stop at the first rung that solves the request:
+
+1. Do not build if the goal can be met by no change, deletion, documentation,
+   configuration, or existing behavior.
+2. Use the standard library before custom code.
+3. Use native platform features before new libraries.
+4. Use existing project dependencies before adding dependencies.
+5. Prefer one clear local change over a new abstraction.
+6. Only then write the minimum code that satisfies the contract.
+
+Rules:
+
+- State assumptions and tradeoffs before coding when the request is ambiguous.
+- Do not add speculative features, configurability, abstractions, workflows, or
+  dependencies.
+- Keep every changed line traceable to the current objective. Avoid drive-by
+  refactors, style churn, and unrelated cleanup.
+- If an intentional simplification has a known ceiling, record the ceiling and
+  the upgrade path in nearby code, docs, or handoff notes.
+- Do not cut input validation at trust boundaries, data-loss prevention,
+  security, accessibility, platform parity, or explicit user requirements.
+- Non-trivial logic needs one focused runnable check. Trivial one-line edits can
+  rely on the existing relevant check.
 
 ## Testing instructions
 

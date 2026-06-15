@@ -34,6 +34,7 @@
     "docs/installation.md",
     "docs/usage.md",
     "docs/capabilities.md",
+    "docs/roadmap.md",
     "docs/assets/logo.png",
     "pyproject.toml",
     "pins.toml",
@@ -111,9 +112,15 @@
       "macOS 15+",
       "Windows 11+",
       "Ubuntu 22.04+",
+      "Core harness contract",
+      "effective agent",
+      "Implementation Discipline",
+      "standard library",
+      "intentional simplification",
       "Definition Of Done",
       "full-length commit SHAs",
       "personal machines",
+      "roadmap",
       "remote CI",
       "stubbed"
     ],
@@ -170,15 +177,39 @@
       "Security Model",
       "Repo-Local Self-Healing"
     ],
+    "docs/roadmap.md": [
+      "Surface Impact Checklist",
+      "Source Weighting",
+      "Smallest Correct Work Gate",
+      "Task-List Patterns To Adopt",
+      "Unified Report Command",
+      "SBOM-Aware Indexing",
+      "Feature-State Gate And Scope Surface",
+      "Instruction Lifecycle And SNR Review",
+      "Runtime And Process Observability",
+      "Better `--enhance-existing` Mode",
+      "Golden Public-Repo Fixture Corpus",
+      "Suggested Build Order"
+    ],
     "docs/harness/README.md": [
+      "Five Core Subsystems",
+      "Effective Agent Boundary",
+      "The model is the LLM",
+      "instructions + tools + environment + state + feedback",
       "Operating Loop",
       "Assessment And Updates",
+      "Bottleneck And Harness Debt",
+      "controlled-variable exclusion tests",
+      "roadmap",
       "first-agent-task.md",
       "harnessforge index",
       "harnessforge effectiveness",
       "self-healing workflow"
     ],
     "docs/harness/change-contract.md": [
+      "Build Necessity Gate",
+      "standard library",
+      "intentional simplification",
       "Acceptance Criteria",
       "Verification",
       "Rollback",
@@ -193,6 +224,8 @@
       "harnessforge plan --target . --since HEAD",
       "harnessforge verify --target . --json --run",
       "--json-report docs/harness/evidence/verify-<date>.json",
+      "evidence ladder",
+      "agent-oriented failure messages",
       "Remote CI",
       "AI/RAG/agent",
       "Agent-generated tests",
@@ -203,18 +236,23 @@
     "docs/harness/sensor-registry.md": [
       "Sensor Registry",
       "REVIEW REQUIRED",
+      "roadmap",
       "Owner",
       "Source",
       "Purpose",
       "Retire When",
+      "Agent-Oriented Failure Feedback",
       "does not prove real-agent effectiveness"
     ],
     "docs/harness/component-inventory.md": [
       "Component Inventory",
+      "Effective Agent Boundary",
+      "changes the effective agent",
       "Detected Workspace Markers",
       "Detected Routing Markers",
       "Detected Components",
-      "Routing Rules"
+      "Routing Rules",
+      "roadmap"
     ],
     "docs/harness/dependency-change-policy.md": [
       "latest stable",
@@ -262,6 +300,9 @@
       "verification matrix",
       "evidence log",
       "security boundary",
+      "fresh-session test",
+      "source-of-truth locale",
+      "runtime and process observability",
       "Do not overwrite project-owned instructions",
       "Do not run target commands"
     ],
@@ -274,12 +315,19 @@
       "Correctness",
       "Verification",
       "Handoff Readiness",
+      "system or user-flow checks",
       "high-signal defects",
-      "test integrity"
+      "test integrity",
+      "unnecessary abstractions"
     ],
     "docs/harness/quality-document.md": [
       "Quality Document",
       "Domain Grades",
+      "Harness Subsystem Health",
+      "Feedback",
+      "Clean-State Dimensions",
+      "Complexity and scope stayed minimal",
+      "Benchmark Or Task Evidence",
       "Harness Simplification"
     ],
     "docs/harness/release-controls.md": [
@@ -347,6 +395,9 @@
       "Delegate",
       "Review",
       "Own",
+      "Smallest Correct Change",
+      "standard library",
+      "intentional simplification",
       "GitHub Action behavior",
       "least privilege",
       "human approval",

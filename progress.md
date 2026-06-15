@@ -507,12 +507,48 @@ maintenance loop.
   self-audit `100/100`, local-path scan, and diff hygiene. The audit known-file
   list now includes the new top-level docs so their local links and path hygiene
   are checked.
+- Captured the accepted post-brainstorm product roadmap in `docs/roadmap.md`
+  and linked it from the README. The roadmap accepts unified reporting,
+  compact repo maps, SBOM-aware indexing as opt-in evidence, first-agent task
+  lifecycle tracking, a public-repo quality corpus, deeper
+  `--enhance-existing` quality work, interactive quickstart/init UX, optional
+  index adapters, Action summaries, release evidence automation, maturity
+  levels, and expanded policy presets. The roadmap is now part of the live
+  harness: required by the manifest, included in audit known files, listed in
+  the component inventory, routed from harness operations, and registered as a
+  recurring sensor with review cadence. Generated target harnesses now also
+  include review-required `docs/harness/roadmap.md`, route startup and harness
+  operations to it, register it in the generated sensor registry, and require
+  each roadmap item to classify the affected surface before implementation:
+  local harness, generated harness, CLI/runtime, existing project files, GitHub
+  Action, optional workflow scaffolds, tests/fixtures, release/package,
+  research/source ledger, security/privacy, platform contracts, and docs/UX.
+- Reviewed task-list and planning doc patterns from JobSentinel, Bluepeak,
+  Persona, RunHaven, and learn-harness-engineering resources. Adopted the
+  portable patterns into local and generated roadmap guidance: compact active
+  status, active/completed/archive buckets, explicit status lifecycle,
+  execution gates, owner/evidence/retirement fields, technical-debt separation,
+  candidate-vs-commitment boundaries, generated-evidence promotion rules,
+  failure-mode maps, and a pre-release health lane.
+- Clarified source weighting for task-list and harness patterns. The
+  learn-harness-engineering resources are now documented as a canonical
+  higher-weight harness-pattern source for generic startup, task-list,
+  quality-score, and initializer behavior. Sibling repos remain field examples;
+  target-repo files, commands, platform contracts, and maintainer decisions
+  still control project-specific overrides.
+- Confirmed the canonical public source location for Walking Labs
+  learn-harness-engineering as
+  `https://github.com/walkinglabs/learn-harness-engineering` and updated the
+  human-readable source ledger and roadmap wording to point at that public repo
+  instead of treating the local checkout as the durable source.
 
 ## Recommended Next Step
 
-Return to release prep. Review the current diff, run the release checklist,
-rebuild the isolated package smoke, and decide whether to trigger manual macOS
-and Windows platform CI.
+Continue with the accepted roadmap work before release prep if the product
+scope remains expanded. The highest-value first implementation candidates are
+`harnessforge report`, first-agent task lifecycle evidence, the improved
+`--enhance-existing` plan, and the public-repo quality corpus. Return to release
+prep when those roadmap items are intentionally deferred or completed.
 Push local commits only at an explicit batch/release boundary or user request.
 
 ## Verification Evidence
@@ -1377,3 +1413,89 @@ Push local commits only at an explicit batch/release boundary or user request.
   switching the CI matrix to `windows-2025-vs2026`.
 - `git diff --check` passed after switching the CI matrix to
   `windows-2025-vs2026`.
+
+## Latest Pass: Walking Labs Lecture Mining
+
+- Re-read the refreshed Walking Labs English lecture corpus from the canonical
+  learn-harness-engineering source and compared it against the current
+  HarnessForge roadmap, generated templates, and live harness docs.
+- Accepted portable patterns into local and generated guidance: fresh-session
+  tests, instruction source/applicability/retirement metadata, dedicated
+  initialization before feature work, evidence-gated feature and roadmap state,
+  completion evidence ladders, agent-oriented repair messages, runtime plus
+  process observability, clean-state dimensions, benchmark/task evidence, and
+  harness simplification.
+- Updated `docs/roadmap.md`, `docs/harness/sources.md`, generated roadmap and
+  first-agent templates, verification matrix, sensor registry, evaluator
+  rubric, quality document, and manifest snippet expectations.
+- Focused verification passed: `PYTHONPATH=src:. python3 -m unittest
+  tests.test_generate_audit` with 52 tests, `PYTHONPATH=src:. python3 -m
+  compileall src tests scripts`, `PYTHONPATH=src:. python3
+  scripts/refresh_research.py --root . --check`, `python3 -m json.tool`
+  checks for `docs/harness/manifest.json` and `feature_list.json`,
+  `PYTHONPATH=src:. python3 -m harnessforge audit --target . --min-score 85`
+  with self-audit `100/100`, and `git diff --check`.
+
+## Latest Pass: Minimal-Change Instruction Discipline
+
+- Reviewed the local minimal-change instruction reference and Karpathy-style
+  coding-discipline skill/examples. Accepted portable guidance only: surface
+  assumptions and tradeoffs before coding, avoid speculative scope and
+  single-use abstractions, keep edits traceable to the current objective,
+  prefer no change, deletion, documentation, configuration, standard library,
+  native platform features, and existing dependencies before new code, record
+  simplification ceilings and upgrade paths, and leave focused checks for
+  non-trivial logic.
+- Added the guidance to local `AGENTS.md`, generated `AGENTS.md`,
+  `--enhance-existing` quality addenda, local and generated change contracts,
+  operating-model docs, roadmap docs, quality documents, evaluator rubrics,
+  public capabilities/usage docs, source ledger, manifest snippets, and
+  generated-content tests.
+- Preserved the boundary: generated target repos receive generic engineering
+  discipline, not local path references, local tool mandates, or project-branded
+  instruction names.
+- Verification passed: `PYTHONPATH=src:. python3 -m unittest
+  tests.test_generate_audit` with 52 tests; full `PYTHONPATH=src:. python3 -m
+  unittest discover -s tests` with 230 tests; `PYTHONPATH=src:. python3 -m
+  compileall src tests scripts`; JSON validation for `feature_list.json` and
+  `docs/harness/manifest.json`; `PYTHONPATH=src:. python3
+  scripts/refresh_research.py --root . --check`; `PYTHONPATH=src:. python3
+  scripts/check_pins.py --root .`; `PYTHONPATH=src:. python3 -m harnessforge
+  audit --target . --min-score 85` with self-audit `100/100`; `git diff
+  --check`; and the durable local-path scan.
+
+## Latest Pass: Lecture 02 Five-Subsystem Contract
+
+- Re-read the Walking Labs Lecture 02 harness definition and promoted the
+  five-subsystem model into local and generated harness surfaces:
+  instructions, tools, environment, state, and feedback are all required.
+- Added compact root-instruction guidance that feedback commands should stay
+  explicit, tool access should be sufficient but least-privilege, environment
+  facts should be self-describing, and state must remain current across
+  sessions.
+- Added a generated/local harness README section for five core subsystems,
+  feedback-first repair, blanket-disabled shell access versus unrestricted
+  access, controlled-variable exclusion tests, failure attribution, and harness
+  debt.
+- Added subsystem health review rows to the quality document so recurring
+  cleanup can identify whether instructions, tools, environment, state, or
+  feedback is the bottleneck.
+- Updated capabilities docs, source ledger, manifest snippets, and
+  generated-content tests. Focused verification passed:
+  `PYTHONPATH=src:. python3 -m unittest tests.test_generate_audit` with 52
+  tests.
+
+## Latest Pass: Effective-Agent Boundary
+
+- Added explicit guidance that the model is only the LLM, while the effective
+  coding agent is model plus harness.
+- Updated local and generated instructions, harness README docs, component
+  inventory docs, capabilities docs, source ledger, manifest snippets, and
+  generated-content tests to treat system prompts, instruction files,
+  shell/file tools, git access, local filesystem scope, startup scripts,
+  verification commands, stop hooks, lint/sensor checks, workflow permissions,
+  and evaluator loops as harness pieces that change effective agent behavior.
+- Routed those changes through change-contract and verification-matrix guidance
+  so they are handled as product changes with scope, verification, and rollback.
+- Focused verification passed: `PYTHONPATH=src:. python3 -m unittest
+  tests.test_generate_audit` with 52 tests.

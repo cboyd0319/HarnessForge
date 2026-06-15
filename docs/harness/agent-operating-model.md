@@ -13,6 +13,14 @@ Agents in this repo should work as maintainers of a CLI product.
 - Keep runtime dependencies at zero unless there is a clear product reason.
 - Preserve cross-platform behavior in code and generated scripts.
 - Treat generated templates as user-facing API.
+- State assumptions before coding when multiple interpretations exist.
+- Prefer no change, deletion, documentation, configuration, standard library,
+  native platform features, and existing dependencies before new code.
+- Do not add speculative features, one-off abstractions, unrequested
+  configurability, new workflows, or dependencies.
+- Keep every changed line traceable to the current objective; avoid drive-by
+  refactors, style churn, and unrelated cleanup.
+- Record any intentional simplification with its known ceiling and upgrade path.
 - Keep live repo harness controls, generated target harness artifacts, and
   published GitHub Action behavior separate. Do not satisfy one surface by
   importing requirements from another unless that is an explicit product
@@ -34,6 +42,21 @@ Agents in this repo should work as maintainers of a CLI product.
   unless the user explicitly requests remediation for that scope.
 - Use local verification for normal checkpoints. Keep pushes and remote PR
   automation to explicit project checkpoints, release points, or user requests.
+
+## Smallest Correct Change
+
+Use this order before adding code or harness surface area:
+
+1. No change, deletion, documentation, configuration, or existing behavior.
+2. Standard library or built-in language feature.
+3. Native platform feature.
+4. Existing project dependency.
+5. One clear local change.
+6. Minimum new code that satisfies the contract.
+
+This shortcut is not allowed to cut input validation at trust boundaries,
+data-loss prevention, security, accessibility, platform parity, or explicit
+user requirements.
 
 ## Delegate Review Own
 

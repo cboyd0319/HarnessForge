@@ -30,6 +30,8 @@ practice change over time.
   vulnerable fixture boundaries, threat-model freshness, and assurance-program
   control mapping
 - Walking Labs learn-harness-engineering course and harness-creator skill
+- Karpathy-inspired coding discipline guidance and examples for assumption
+  surfacing, simplicity first, surgical changes, and goal-driven verification
 - AI Harness Engineering runtime substrate and observability papers
 - Reviewed production harness patterns for dependency pinning, security boundary
   maps, privacy labels, evidence logs, and reviewed self-healing loops
@@ -42,6 +44,12 @@ practice change over time.
 - Preserve existing files unless forced.
 - Track feature behavior, verification, status, and evidence in
   `feature_list.json`.
+- Keep the five core harness subsystems visible: instructions, tools,
+  environment, state, and feedback. Treat feedback as the first repair target
+  when verification commands are missing, stale, or vague.
+- Treat instruction, tool, filesystem, git, startup, verification, hook,
+  lint/sensor, workflow-permission, and evaluator-loop changes as effective
+  agent behavior changes.
 - Include clean-state, evaluator, and quality-review artifacts for lifecycle
   control.
 - Check local Markdown links so harness docs remain navigable and portable.
@@ -81,6 +89,11 @@ practice change over time.
   canonical checked-in instruction file. Ignore local override files and treat
   platform auto-memory as personal state until stable facts are promoted into
   reviewed harness docs.
+- Surface assumptions before coding; prefer no change, deletion, docs, config,
+  standard library, native platform features, and existing dependencies before
+  new code; avoid speculative features and single-use abstractions; keep edits
+  traceable to the current objective; and record ceilings and upgrade paths for
+  intentional simplifications.
 - Spell out Delegate/Review/Own boundaries across planning, design/build,
   testing, review/docs, and deploy/maintain work.
 - Review agent-written tests for intent and integrity. Reject stubbed or

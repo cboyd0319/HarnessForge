@@ -8,10 +8,20 @@ Score each category from 0 to 2.
 | --- | --- | --- | --- |
 | Correctness | Target behavior is missing or contradicted | Partially works with known gaps | Matches requested behavior |
 | Verification | No relevant check ran | Some checks ran but coverage or evidence is incomplete | Required checks ran with evidence |
-| Scope Discipline | Changed unrelated behavior or files | Mostly scoped with minor drift | Stayed within the selected objective |
+| Scope Discipline | Hidden assumptions, unrelated behavior, drive-by refactors, or style churn | Mostly scoped with minor drift | Stayed within the selected objective and surfaced assumptions |
 | Reliability | Fails restart, repeat run, or common platform path | Works in one path with stated risk | Survives restart and expected platform paths |
-| Maintainability | Hard to understand or extends drift | Understandable but needs cleanup | Fits project patterns and reduces confusion |
+| Maintainability | Over-abstracted, speculative, dependency-heavy, or hard to understand | Understandable but needs cleanup | Fits project patterns, avoids unnecessary abstractions, and reduces confusion |
 | Handoff Readiness | Next session must infer state | Handoff exists but has gaps | State, blockers, files, and next step are clear |
+
+For cross-component or user-visible changes, verification should include the
+highest relevant evidence layer: static checks, runtime/startup checks, and
+system or user-flow checks. A passing unit test alone is not enough when the
+changed behavior depends on component interaction.
+
+Scope and maintainability review should flag speculative features,
+unrequested configurability, new dependencies, broad rewrites, or cleanup that
+does not trace to the current objective. Intentional simplifications should
+record the known ceiling and upgrade path.
 
 ## Verdict
 

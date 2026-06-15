@@ -13,18 +13,43 @@ surfaces to any repository while staying honest about what the tool can prove.
 The CLI can score structure. Real effectiveness still requires representative
 agent sessions.
 
+## Five Core Subsystems
+
+Harness = instructions + tools + environment + state + feedback. Missing any
+one of these makes the harness incomplete.
+
+| Subsystem | This Harness Provides | Review Question |
+| --- | --- | --- |
+| Instructions | `AGENTS.md` plus short platform routers | Does the agent see purpose, stack, first-run commands, hard constraints, and links to detail? |
+| Tools | Local shell entrypoints, HarnessForge commands, Action wiring | Can the agent do useful work with least privilege instead of either blanket-disabled shell access or unrestricted access? |
+| Environment | `pyproject.toml`, CI matrix, component inventory, dependency policy | Are versions, dependencies, setup facts, and reproducible environment choices self-describing? |
+| State | `feature_list.json`, `progress.md`, `session-handoff.md`, `docs/roadmap.md` | Can a new session see what is done, in progress, blocked, and next? |
+| Feedback | Tests, verification matrix, sensor registry, evidence log, local checks | Are verification commands explicit, runnable, and prioritized before broader process? |
+
+Treat feedback as the highest-return subsystem. When agent output is weak, fix
+missing, stale, or vague verification commands before adding more instructions.
+
+## Effective Agent Boundary
+
+The model is the LLM. The effective coding agent is the model plus the harness:
+system prompts, instruction files, shell and file tools, git access, local
+filesystem scope, startup scripts, verification commands, stop hooks,
+lint/sensor checks, workflow permissions, and evaluator loops. Changing any of
+these changes effective agent behavior. Treat those changes as product changes
+with scope, verification, and rollback.
+
 ## Practical Harness Map
 
 | Domain | Artifact | Purpose |
 | --- | --- | --- |
-| Instructions | `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, `.github/copilot-instructions.md` | Startup path, hard requirements, verification, and platform routing |
+| Instructions | `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, `.github/copilot-instructions.md` | Startup path, hard requirements, smallest-correct-change discipline, verification, and platform routing |
 | Tools | `harnessforge`, `action.yml`, `init.sh`, `init.ps1`, `scripts/check_pins.py` | Creation, audit, update, CI action, local checks, and pin enforcement |
 | Environment | `pyproject.toml`, CI matrix, `component-inventory.md`, `dependency-change-policy.md` | Python, OS, package, component, and Action support contract |
-| State | `feature_list.json`, `progress.md`, `evidence-log.md` | Current objective, evidence, and restart state |
+| State | `feature_list.json`, `progress.md`, `evidence-log.md`, `docs/roadmap.md` | Current objective, accepted roadmap, evidence, and restart state |
 | Feedback | tests, self-audit, CI, `first-agent-task.md`, `verification-matrix.md`, `sensor-registry.md`, `evaluator-rubric.md`, `verify-json-contract.md`, `effectiveness-eval-contract.md`, research refresh | First-agent harness improvement, deterministic quality checks, sensor ownership, machine-readable verification output, benchmark-claim boundaries, and source drift signal |
 | Research | `sources.md`, `research-sources.json`, `source-record.schema.json`, `source-record-example.json` | Fixed research allowlist, source provenance, and project-owned source records |
 | Scope | `docs/harness/change-contract.md`, `security-boundary-map.md`, `feature-privacy-labels.json` | Acceptance, rollback, security, and data-flow discipline |
-| Lifecycle | `session-handoff.md`, `clean-state-checklist.md`, `quality-document.md`, `release-controls.md`, `self-healing.md`, entropy control | Restart, release readiness, recurring maintenance, and reviewed automation |
+| Lifecycle | `session-handoff.md`, `clean-state-checklist.md`, `quality-document.md`, `release-controls.md`, `self-healing.md`, entropy control | Restart, roadmap freshness, release readiness, recurring maintenance, and reviewed automation |
 
 ## Operating Loop
 
@@ -32,17 +57,19 @@ agent sessions.
 2. Use `first-agent-task.md` when a newly generated harness needs its first
    repo-specific improvement pass.
 3. Check `feature_list.json`, `progress.md`, and `session-handoff.md`.
-4. Check `component-inventory.md` when a task touches nested project boundaries.
-5. Use `change-contract.md` for non-trivial behavior or template changes.
-6. Implement the smallest coherent slice.
-7. Review `sensor-registry.md` when adding, deleting, or promoting checks.
-8. Run `./init.sh` or the narrowest relevant subset.
-9. Run `python scripts/check_pins.py --root .` for dependency, Action, or
+4. Check `docs/roadmap.md` when selecting, deferring, or reshaping backlog,
+   release-prep, or product-scope work.
+5. Check `component-inventory.md` when a task touches nested project boundaries.
+6. Use `change-contract.md` for non-trivial behavior or template changes.
+7. Implement the smallest coherent slice.
+8. Review `sensor-registry.md` when adding, deleting, or promoting checks.
+9. Run `./init.sh` or the narrowest relevant subset.
+10. Run `python scripts/check_pins.py --root .` for dependency, Action, or
    workflow changes.
-10. Run `python scripts/refresh_research.py --root . --check` for research
+11. Run `python scripts/refresh_research.py --root . --check` for research
    source ledger or source-doc changes.
-11. Use `clean-state-checklist.md` before ending non-trivial sessions.
-12. Update state and handoff files when durable facts change.
+12. Use `clean-state-checklist.md` before ending non-trivial sessions.
+13. Update state and handoff files when durable facts change.
 
 ## Assessment And Updates
 
@@ -103,6 +130,10 @@ Project-owned source records use `source-record.schema.json` and
 `source-record-example.json`. Keep them separate from the fixed
 `research-sources.json` allowlist.
 
+`docs/roadmap.md` is the accepted product roadmap and backlog boundary. Update
+it when brainstorming decisions become accepted work, when roadmap items are
+implemented or intentionally deferred, and when release prep scope changes.
+
 Readiness also includes advisory workflow and work-item inventory. Treat
 detected setup, teardown, remediation, push, pull-request, CI polling, and
 credential surfaces as review inputs before agent automation relies on them.
@@ -136,6 +167,18 @@ the same exit codes as the CLI and optional `require-verify-evidence` gating.
 The optional generated CI workflow scaffold uses that sync preflight before
 audit, keeps verify-evidence gating off by default, treats warning verdicts as
 advisory, and stops only when readiness is blocked.
+
+## Bottleneck And Harness Debt
+
+Harness rots like code. Audit it regularly, keep stale instructions and unused
+sensors out, and pay down harness debt when failures repeat.
+
+When evaluating a harness change, controlled-variable exclusion tests can help:
+hold the model and task fixed, remove one subsystem at a time, and observe the
+performance drop. Use that as supporting evidence only. Locate the real
+bottleneck from failure records and attribution: unclear task, missing context,
+unreproducible environment, missing feedback, broken state, or tool access that
+is too narrow or too broad.
 
 Run `./init.sh --no-env` or `.\init.ps1 -NoEnv` when checks should run without
 common AI, cloud, or GitHub credentials in the process environment.

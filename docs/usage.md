@@ -236,6 +236,10 @@ project text but receive a reviewed HarnessForge quality addendum:
 harnessforge init --target /path/to/repo --enhance-existing
 ```
 
+The addendum routes agents to the canonical harness files and adds
+smallest-correct-change guidance for assumptions, speculative scope,
+dependencies, simplification ceilings, and focused verification.
+
 Use `--force` only after reviewing the target diff:
 
 ```bash

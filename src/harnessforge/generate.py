@@ -25,6 +25,7 @@ REVIEW_REQUIRED_FILES = (
     "docs/harness/first-agent-task.md",
     "docs/harness/quality-document.md",
     "docs/harness/release-controls.md",
+    "docs/harness/roadmap.md",
     "docs/harness/sensor-registry.md",
     "docs/harness/source-record-example.json",
 )
@@ -177,6 +178,7 @@ def _template_specs(
             ("check-pins.py.tmpl", "scripts/check_pins.py", True),
             ("harness-readme.md.tmpl", "docs/harness/README.md", False),
             ("first-agent-task.md.tmpl", "docs/harness/first-agent-task.md", False),
+            ("roadmap.md.tmpl", "docs/harness/roadmap.md", False),
             ("change-contract.md.tmpl", "docs/harness/change-contract.md", False),
             ("verification-matrix.md.tmpl", "docs/harness/verification-matrix.md", False),
             ("sensor-registry.md.tmpl", "docs/harness/sensor-registry.md", False),
@@ -977,7 +979,9 @@ Startup path:
 1. Confirm the working directory.
 2. Read `{agent_file}` and `docs/harness/README.md`.
 3. Read `feature_list.json`, `progress.md`, and `session-handoff.md`.
-4. Check `docs/harness/component-inventory.md` before changing component
+4. Check `docs/harness/roadmap.md` before selecting, deferring, or reshaping
+   backlog, release-prep, or product-scope work.
+5. Check `docs/harness/component-inventory.md` before changing component
    boundaries or verification routing.
 
 Build and test commands:
@@ -986,6 +990,15 @@ Build and test commands:
   `docs/harness/verification-matrix.md`, or the generated init entrypoint.
 - Prefer local checks before remote CI. Push or open remote CI only at an
   explicit checkpoint, release point, or user request.
+
+Implementation discipline:
+
+- State assumptions and tradeoffs before coding when the request is ambiguous.
+- Do not build speculative features, abstractions, workflows, or dependencies.
+- Prefer no change, deletion, documentation, configuration, standard library,
+  native platform features, or existing dependencies before new code.
+- Keep every changed line traceable to the current objective.
+- Record the ceiling and upgrade path for intentional simplifications.
 
 Definition Of Done: behavior is implemented, relevant checks ran, skipped checks
 have a reason and risk, and durable state is updated.
@@ -1199,6 +1212,7 @@ def _manifest_content(
         "scripts/check_pins.py",
         "docs/harness/README.md",
         "docs/harness/first-agent-task.md",
+        "docs/harness/roadmap.md",
         "docs/harness/change-contract.md",
         "docs/harness/verification-matrix.md",
         "docs/harness/sensor-registry.md",
@@ -1230,10 +1244,16 @@ def _manifest_content(
     required_snippets: dict[str, list[str]] = {
         agent_file: [
             "Startup",
+            "Core harness contract",
+            "effective agent",
             "Build and test commands",
+            "Implementation Discipline",
+            "standard library",
+            "intentional simplification",
             "Definition Of Done",
             "feature_list.json",
             "progress.md",
+            "roadmap",
             "remote CI",
             "stubbed",
         ],
@@ -1243,11 +1263,18 @@ def _manifest_content(
             "Security boundary map",
         ],
         "docs/harness/README.md": [
+            "Five Core Subsystems",
+            "Effective Agent Boundary",
+            "The model is the LLM",
+            "instructions + tools + environment + state + feedback",
             "Operating Loop",
             "When To Add Harness",
             "Assessment And Updates",
+            "Bottleneck And Harness Debt",
+            "controlled-variable exclusion tests",
             "project-owned generated files",
             "first-agent-task.md",
+            "roadmap",
             "command: sync",
             "harnessforge index",
             "harnessforge effectiveness",
@@ -1262,11 +1289,35 @@ def _manifest_content(
             "verification matrix",
             "evidence log",
             "security boundary",
+            "fresh-session test",
+            "source-of-truth locale",
+            "runtime and process observability",
             "Do not overwrite project-owned instructions",
             "Do not run target commands",
         ],
+        "docs/harness/roadmap.md": [
+            "Harness Roadmap",
+            "REVIEW REQUIRED",
+            "Source And Evidence Weighting",
+            "Smallest Correct Work Gate",
+            "Task Buckets",
+            "Status Lifecycle",
+            "Surface Impact Checklist",
+            "Fresh-Session Test",
+            "Instruction Rule Lifecycle",
+            "Completion Evidence Ladder",
+            "Roadmap Items",
+            "Surfaces In Scope",
+            "Execution Gate",
+            "Done Or Retire When",
+            "progress.md",
+            "session-handoff.md",
+        ],
         "docs/harness/change-contract.md": [
             "Problem",
+            "Build Necessity Gate",
+            "standard library",
+            "intentional simplification",
             "Acceptance Criteria",
             "Verification",
             "Rollback",
@@ -1281,6 +1332,8 @@ def _manifest_content(
             "harnessforge plan --target . --since HEAD",
             "harnessforge verify --target . --json --run",
             "--json-report docs/harness/evidence/verify-<date>.json",
+            "evidence ladder",
+            "agent-oriented failure messages",
             "Remote CI",
             "AI/RAG/agent",
             "Agent-generated tests",
@@ -1291,14 +1344,18 @@ def _manifest_content(
         "docs/harness/sensor-registry.md": [
             "Sensor Registry",
             "REVIEW REQUIRED",
+            "roadmap",
             "Owner",
             "Source",
             "Purpose",
             "Retire When",
+            "Agent-Oriented Failure Feedback",
             "does not prove real-agent effectiveness",
         ],
         "docs/harness/component-inventory.md": [
             "Component Inventory",
+            "Effective Agent Boundary",
+            "changes the effective agent",
             "Detected Workspace Markers",
             "Detected Routing Markers",
             "Detected Components",
@@ -1351,12 +1408,19 @@ def _manifest_content(
             "Correctness",
             "Verification",
             "Handoff Readiness",
+            "system or user-flow checks",
             "high-signal defects",
             "test integrity",
+            "unnecessary abstractions",
         ],
         "docs/harness/quality-document.md": [
             "Quality Document",
             "Domain Grades",
+            "Harness Subsystem Health",
+            "Feedback",
+            "Clean-State Dimensions",
+            "Complexity and scope stayed minimal",
+            "Benchmark Or Task Evidence",
             "Harness Simplification",
         ],
         "docs/harness/release-controls.md": [
@@ -1417,6 +1481,9 @@ def _manifest_content(
             "Delegate",
             "Review",
             "Own",
+            "Smallest Correct Change",
+            "standard library",
+            "intentional simplification",
             "GitHub Action behavior",
             "least privilege",
             "human approval",

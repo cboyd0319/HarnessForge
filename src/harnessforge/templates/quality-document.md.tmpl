@@ -25,6 +25,42 @@ unsafe to rely on without repair.
 | --- | --- | --- | --- |
 | Repo harness | Documented | `harnessforge audit --target .` | Keep root instructions short and detail in `docs/harness/` |
 
+## Harness Subsystem Health
+
+Review instructions, tools, environment, state, and feedback separately. Treat
+feedback as the first subsystem to repair when verification commands are
+missing, stale, or vague.
+
+| Subsystem | Status | Evidence | Next Improvement |
+| --- | --- | --- | --- |
+| Instructions | REVIEW REQUIRED | Pending evidence | Pending improvement |
+| Tools | REVIEW REQUIRED | Pending evidence | Pending improvement |
+| Environment | REVIEW REQUIRED | Pending evidence | Pending improvement |
+| State | REVIEW REQUIRED | Pending evidence | Pending improvement |
+| Feedback | REVIEW REQUIRED | Pending evidence | Pending improvement |
+
+## Clean-State Dimensions
+
+Track these dimensions at session exit and during periodic cleanup.
+
+| Dimension | Status | Evidence | Gap |
+| --- | --- | --- | --- |
+| Build or static checks pass | REVIEW REQUIRED | Pending evidence | Pending gap |
+| Tests or behavior checks pass | REVIEW REQUIRED | Pending evidence | Pending gap |
+| Progress and feature state are current | REVIEW REQUIRED | Pending evidence | Pending gap |
+| Complexity and scope stayed minimal | REVIEW REQUIRED | Pending evidence | Pending gap |
+| Temporary or stale artifacts are removed or documented | REVIEW REQUIRED | Pending evidence | Pending gap |
+| Standard startup path still works | REVIEW REQUIRED | Pending evidence | Pending gap |
+
+## Benchmark Or Task Evidence
+
+Use fixed representative tasks when making claims about harness quality,
+cleanup impact, or agent effectiveness.
+
+| Evidence Date | Harness Variant | Task Set | Completion Rate | Retries Or Cost | Defects Caught Before Review | Notes |
+| --- | --- | --- | --- | --- | --- | --- |
+| REVIEW REQUIRED | Baseline or candidate | Pending task set | Pending | Pending | Pending | Structural scores alone are not enough |
+
 ## Harness Simplification
 
 At least monthly, review one harness component and decide whether it is still

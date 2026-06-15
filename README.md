@@ -35,6 +35,7 @@ This repository ships two related surfaces:
 | Install the CLI or verify this repo | [Installation](docs/installation.md) |
 | Run HarnessForge against a repository | [Usage](docs/usage.md) |
 | Understand what it creates and does not create | [Capabilities](docs/capabilities.md) |
+| See accepted improvements and build order | [Roadmap](docs/roadmap.md) |
 | Use the composite GitHub Action | [GitHub Action](docs/action.md) |
 | Understand this repo's own harness | [Harness operations](docs/harness/README.md) |
 | Report a vulnerability | [Security](SECURITY.md) |

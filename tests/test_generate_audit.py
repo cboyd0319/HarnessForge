@@ -66,6 +66,11 @@ class GenerateAuditTests(unittest.TestCase):
             ]
             self.assertEqual(headings, AGENTS_SECTION_ORDER)
             self.assertIn("Startup", content)
+            self.assertIn("Core harness contract", content)
+            self.assertIn("effective agent", content)
+            self.assertIn("Implementation Discipline", content)
+            self.assertIn("standard library", content)
+            self.assertIn("intentional simplification", content)
             self.assertIn("Definition Of Done", content)
             self.assertIn("End of Session", content)
             self.assertIn("personal machines", content)
@@ -377,6 +382,16 @@ class GenerateAuditTests(unittest.TestCase):
         self.assertIn("Workflow surfaces", security)
         self.assertIn("published HarnessForge composite Action", security)
         self.assertIn("does not schedule, commit, push, or open pull requests", security)
+        self.assertIn("Five Core Subsystems", readme)
+        self.assertIn("Effective Agent Boundary", readme)
+        self.assertIn("The model is the LLM", readme)
+        self.assertIn("changes effective agent behavior", readme)
+        self.assertIn("instructions + tools + environment + state + feedback", readme)
+        self.assertIn("least privilege", readme)
+        self.assertIn("verification commands explicit", readme)
+        self.assertIn("Bottleneck And Harness Debt", readme)
+        self.assertIn("controlled-variable exclusion tests", readme)
+        self.assertIn("failure records and attribution", readme)
         self.assertIn("project-owned generated files", readme)
         self.assertIn(
             "Workflow Boundary",
@@ -547,6 +562,7 @@ class GenerateAuditTests(unittest.TestCase):
         self.assertIn("scripts/check_pins.py", manifest["requiredFiles"])
         self.assertIn("docs/harness/release-controls.md", manifest["requiredFiles"])
         self.assertIn("docs/harness/research-sources.json", manifest["requiredFiles"])
+        self.assertIn("docs/harness/roadmap.md", manifest["requiredFiles"])
         self.assertIn("docs/harness/sensor-registry.md", manifest["requiredFiles"])
         self.assertIn("docs/harness/source-record.schema.json", manifest["requiredFiles"])
         self.assertIn("docs/harness/source-record-example.json", manifest["requiredFiles"])
@@ -616,6 +632,9 @@ class GenerateAuditTests(unittest.TestCase):
         )
         self.assertIn("docs/harness/evidence/verify-<date>.json", matrix)
         self.assertIn("`failed`, `timed_out`, or `blocked`", matrix)
+        self.assertIn("evidence ladder", matrix)
+        self.assertIn("System/user-flow checks", matrix)
+        self.assertIn("agent-oriented failure messages", matrix)
         self.assertIn("does not replace `harnessforge audit", matrix)
         self.assertIn("does not prove real-agent effectiveness", matrix)
 
@@ -658,6 +677,9 @@ class GenerateAuditTests(unittest.TestCase):
         self.assertIn("Retire When", registry)
         self.assertIn("python -m pytest", registry)
         self.assertIn("python -m ruff check .", registry)
+        self.assertIn("docs/harness/roadmap.md", registry)
+        self.assertIn("Agent-Oriented Failure Feedback", registry)
+        self.assertIn("what failed", registry)
         self.assertIn("Pending project-specific decision.", registry)
         self.assertIn("Pending owner.", registry)
         self.assertIn("Pending retirement condition.", registry)
@@ -692,10 +714,102 @@ class GenerateAuditTests(unittest.TestCase):
         self.assertIn("verification matrix", task)
         self.assertIn("evidence log", task)
         self.assertIn("security boundary", task)
+        self.assertIn("fresh-session test", task)
+        self.assertIn("source-of-truth locale", task)
+        self.assertIn("runtime and process observability", task)
+        self.assertIn("Behavior, verification, status, and evidence", task)
         self.assertIn("Do not overwrite project-owned instructions", task)
         self.assertIn("Do not run target commands", task)
         self.assertNotIn("Antigravity", task)
         self.assertNotIn("AGY", task)
+
+    def test_generated_roadmap_tracks_harness_work_boundaries(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            create_harness(root)
+            roadmap = (root / "docs/harness/roadmap.md").read_text(
+                encoding="utf-8"
+            )
+            manifest = json.loads(
+                (root / "docs/harness/manifest.json").read_text(encoding="utf-8")
+            )
+
+        self.assertIn("docs/harness/roadmap.md", manifest["requiredFiles"])
+        self.assertIn("docs/harness/roadmap.md", manifest["reviewRequired"])
+        self.assertEqual(
+            manifest["generatedFiles"]["docs/harness/roadmap.md"]["ownership"],
+            "generated",
+        )
+        self.assertIn("# Harness Roadmap", roadmap)
+        self.assertIn("REVIEW REQUIRED", roadmap)
+        self.assertIn("Source And Evidence Weighting", roadmap)
+        self.assertIn("Smallest Correct Work Gate", roadmap)
+        self.assertIn("standard library", roadmap)
+        self.assertIn("native platform feature", roadmap)
+        self.assertIn("Task Buckets", roadmap)
+        self.assertIn("Status Lifecycle", roadmap)
+        self.assertIn("Surface Impact Checklist", roadmap)
+        self.assertIn("Fresh-Session Test", roadmap)
+        self.assertIn("Instruction Rule Lifecycle", roadmap)
+        self.assertIn("Completion Evidence Ladder", roadmap)
+        self.assertIn("Generated or owned harness files", roadmap)
+        self.assertIn("CI or hosted automation", roadmap)
+        self.assertIn("Roadmap Items", roadmap)
+        self.assertIn("Surfaces In Scope", roadmap)
+        self.assertIn("Execution Gate", roadmap)
+        self.assertIn("Technical Debt And Drift", roadmap)
+        self.assertIn("Failure-Mode Map", roadmap)
+        self.assertIn("source-of-truth locale", roadmap)
+        self.assertIn("agent-oriented", roadmap)
+        self.assertIn("progress.md", roadmap)
+        self.assertIn("session-handoff.md", roadmap)
+
+    def test_generated_quality_docs_track_clean_state_and_evidence_layers(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            create_harness(root)
+            quality = (root / "docs/harness/quality-document.md").read_text(
+                encoding="utf-8"
+            )
+            rubric = (root / "docs/harness/evaluator-rubric.md").read_text(
+                encoding="utf-8"
+            )
+            contract = (root / "docs/harness/change-contract.md").read_text(
+                encoding="utf-8"
+            )
+            operating = (
+                root / "docs/harness/agent-operating-model.md"
+            ).read_text(encoding="utf-8")
+            manifest = json.loads(
+                (root / "docs/harness/manifest.json").read_text(encoding="utf-8")
+            )
+
+        self.assertIn("docs/harness/quality-document.md", manifest["requiredFiles"])
+        self.assertIn("docs/harness/quality-document.md", manifest["reviewRequired"])
+        self.assertIn("Harness Subsystem Health", quality)
+        self.assertIn("Instructions", quality)
+        self.assertIn("Tools", quality)
+        self.assertIn("Environment", quality)
+        self.assertIn("State", quality)
+        self.assertIn("Feedback", quality)
+        self.assertIn("verification commands", quality)
+        self.assertIn("Clean-State Dimensions", quality)
+        self.assertIn("Benchmark Or Task Evidence", quality)
+        self.assertIn("Complexity and scope stayed minimal", quality)
+        self.assertIn("Standard startup path still works", quality)
+        self.assertIn("Structural scores alone are not enough", quality)
+        self.assertIn("static checks", rubric)
+        self.assertIn("runtime/startup checks", rubric)
+        self.assertIn("system or user-flow checks", rubric)
+        self.assertIn("unnecessary abstractions", rubric)
+        self.assertIn("drive-by refactors", rubric)
+        self.assertIn("Build Necessity Gate", contract)
+        self.assertIn("standard library", contract)
+        self.assertIn("intentional simplification", contract)
+        self.assertIn("Smallest Correct Change", operating)
+        self.assertIn("existing dependencies before new code", operating)
 
     def test_generated_source_record_schema_guides_project_sources(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -968,6 +1082,9 @@ class GenerateAuditTests(unittest.TestCase):
         self.assertEqual(statuses[".claude/CLAUDE.md"], "enhanced")
         self.assertIn("Keep local operating rules.", agents)
         self.assertIn("HarnessForge Quality Addendum", agents)
+        self.assertIn("Implementation discipline", agents)
+        self.assertIn("standard library", agents)
+        self.assertIn("intentional simplifications", agents)
         self.assertIn("Definition Of Done", agents)
         self.assertIn("feature_list.json", agents)
         self.assertIn("remote CI", agents)
@@ -1298,6 +1415,9 @@ class GenerateAuditTests(unittest.TestCase):
             )
 
         self.assertIn("## Detected Workspace Markers", inventory)
+        self.assertIn("## Effective Agent Boundary", inventory)
+        self.assertIn("shell and file tools", inventory)
+        self.assertIn("changes the effective agent", inventory)
         self.assertIn("## Detected Routing Markers", inventory)
         self.assertIn("package.json workspaces", inventory)
         self.assertIn("pnpm-workspace.yaml", inventory)

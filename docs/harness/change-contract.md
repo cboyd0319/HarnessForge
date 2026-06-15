@@ -7,6 +7,21 @@ platform support.
 
 What user problem or harness failure is being addressed?
 
+## Build Necessity Gate
+
+Answer before editing:
+
+- Can the request be satisfied by no change, deletion, documentation,
+  configuration, existing behavior, the standard library, native platform
+  features, or an existing dependency?
+- What assumptions, interpretations, or tradeoffs need to be surfaced before
+  coding?
+- What is the smallest change that satisfies the acceptance criteria?
+- What abstraction, configurability, workflow, dependency, or cleanup is
+  explicitly out of scope?
+- If an intentional simplification has a known ceiling, where will the ceiling
+  and upgrade path be recorded?
+
 ## Scope
 
 In scope:

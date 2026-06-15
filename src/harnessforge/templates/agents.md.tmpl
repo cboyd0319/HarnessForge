@@ -5,6 +5,15 @@
 {{project_name}} uses a repo harness so coding agents can start with the right
 context, stay scoped, verify work, and leave a clean restart path.
 
+Core harness contract: instructions, tools, environment, state, and feedback
+are all required. Keep instructions map-like, tool access sufficient but least
+privileged, environment facts self-describing, state current across sessions,
+and verification commands explicit. Feedback usually has the best return, so
+fix missing or weak checks before adding broader process.
+Changing instruction, tool, filesystem, git, startup, verification, hook, lint,
+or evaluator surfaces changes the effective agent. Treat those as harness
+product changes.
+
 Detected stack: {{detected_stack}}
 Languages: {{languages}}
 Package managers: {{package_managers}}
@@ -19,12 +28,14 @@ Startup path:
 1. Confirm the working directory.
 2. Read this file and `docs/harness/README.md`.
 3. Read `feature_list.json`, `progress.md`, and `session-handoff.md`.
-4. Check `docs/harness/component-inventory.md` before changing component
+4. Check `docs/harness/roadmap.md` before selecting, deferring, or reshaping
+   backlog, release-prep, or product-scope work.
+5. Check `docs/harness/component-inventory.md` before changing component
    boundaries or verification routing.
-5. For the first agent session after harness generation, review
+6. For the first agent session after harness generation, review
    `docs/harness/first-agent-task.md` and improve the harness before unrelated
    feature work.
-6. Pick one current objective before editing.
+7. Pick one current objective before editing.
 
 ## Build and test commands
 
@@ -58,6 +69,32 @@ has real cost.
   exact versions; external GitHub Actions use full-length commit SHAs with
   version comments.
 - Keep this file as a map. Durable detail belongs in `docs/harness/`.
+
+### Implementation Discipline
+
+Before writing code, stop at the first rung that solves the request:
+
+1. Do not build if the goal can be met by no change, deletion, documentation,
+   configuration, or existing behavior.
+2. Use the standard library before custom code.
+3. Use native platform features before new libraries.
+4. Use existing project dependencies before adding dependencies.
+5. Prefer one clear local change over a new abstraction.
+6. Only then write the minimum code that satisfies the contract.
+
+Rules:
+
+- State assumptions and tradeoffs before coding when the request is ambiguous.
+- Do not add speculative features, configurability, abstractions, workflows, or
+  dependencies.
+- Keep every changed line traceable to the current objective. Avoid drive-by
+  refactors, style churn, and unrelated cleanup.
+- If an intentional simplification has a known ceiling, record the ceiling and
+  the upgrade path in nearby code, docs, or handoff notes.
+- Do not cut input validation at trust boundaries, data-loss prevention,
+  security, accessibility, platform parity, or explicit user requirements.
+- Non-trivial logic needs one focused runnable check. Trivial one-line edits can
+  rely on the existing relevant check.
 
 ## Testing instructions
 

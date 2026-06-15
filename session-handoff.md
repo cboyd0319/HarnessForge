@@ -725,6 +725,81 @@ and convergence requirements, adaptive promotion loops, domain-harness
 ownership boundaries, and source-ledger hygiene. Keep these as local eval
 guidance unless a later release decision turns a narrow piece into generated
 starter guidance.
+Accepted roadmap ideas are now captured in `docs/roadmap.md` and linked from
+the root README. The roadmap includes unified reporting, compact repo maps,
+SBOM-aware indexing with default detection and optional generation adapters,
+first-agent task lifecycle tracking, a public open-source quality corpus,
+major `--enhance-existing` quality improvements, interactive quickstart/init
+UX, optional index adapters, Action summary polish, release evidence
+automation, evidence-gated maturity levels, and expanded policy presets.
+`docs/roadmap.md` is also part of the live harness: it is required by the
+manifest, included in audit known files, listed in the component inventory,
+routed from harness operations, and registered as a recurring sensor with review
+cadence.
+Generated target harnesses now include review-required
+`docs/harness/roadmap.md`. Generated startup instructions, harness operations,
+progress scaffolding, component inventory, sensor registry, and manifest
+metadata route to it. Roadmap items must classify impact across local harness,
+generated harness, CLI/runtime, existing project files, GitHub Action, optional
+workflow scaffolds, tests/fixtures, release/package, research/source ledger,
+security/privacy, platform contracts, and docs/UX before implementation.
+Task-list doc patterns were reviewed from JobSentinel, Bluepeak, Persona,
+RunHaven, and learn-harness-engineering resources. Adopted portable patterns
+into local and generated roadmap guidance: compact active status,
+active/completed/archive buckets, explicit status lifecycle, execution gates,
+owner/evidence/retirement fields, technical-debt separation,
+candidate-vs-commitment boundaries, generated-evidence promotion rules,
+failure-mode maps, and a pre-release health lane.
+Source weighting is now explicit: learn-harness-engineering resources are a
+canonical higher-weight harness-pattern source for generic startup, task-list,
+quality-score, and initializer behavior. Sibling repos remain field examples.
+Target-repo files, commands, platform contracts, and maintainer decisions still
+control project-specific overrides.
+The canonical public source location is
+`https://github.com/walkinglabs/learn-harness-engineering`; the local checkout
+is only a review aid and should not be treated as the durable source in repo
+docs.
+The refreshed Walking Labs English lecture corpus was re-read directly and
+treated as canonical generic harness guidance. Accepted portable ideas were
+added to `docs/roadmap.md`, `docs/harness/sources.md`, live harness docs, and
+generated templates: fresh-session tests, instruction lifecycle metadata,
+dedicated initialization, evidence-gated feature state, completion evidence
+ladders, agent-oriented repair messages, runtime plus process observability,
+clean-state dimensions, benchmark/task evidence, and harness simplification.
+Generated-content coverage was tightened in `tests/test_generate_audit.py`.
+Focused verification passed with 52 generated/audit tests, compile, research
+source check, manifest and feature JSON validation, self-audit `100/100`, and
+diff hygiene.
+Minimal-change and Karpathy-style instruction guidance has now been promoted
+as portable harness discipline. Local and generated instructions,
+`--enhance-existing` addenda, change contracts, roadmaps, operating-model docs,
+quality docs, evaluator rubrics, source ledger, public capabilities/usage docs,
+manifest snippets, and generated-content tests now enforce smallest-correct
+change behavior: surface assumptions, avoid speculative scope, prefer existing
+behavior and dependencies before new code, keep edits traceable, record
+simplification ceilings, and verify non-trivial logic. Generated target repos
+receive generic guidance only; do not add local path references, local tool
+mandates, or project-branded instruction names.
+Verification for this latest pass passed full unit discovery with 230 tests,
+compile, feature and manifest JSON validation, research source check, pin
+check, self-audit `100/100`, diff hygiene, and the durable local-path scan.
+Walking Labs Lecture 02 five-subsystem guidance has also been promoted into the
+local and generated harness: root instructions now name instructions, tools,
+environment, state, and feedback as required subsystems; harness README docs
+include feedback-first repair, least-privilege tool access, self-describing
+environment state, progress tracking, controlled-variable exclusion tests with
+failure attribution, and recurring harness-debt audits; quality docs now track
+subsystem health. Focused generator/audit tests passed with 52 tests.
+Effective-agent boundary guidance has now been promoted too: the model is the
+LLM, while the effective coding agent is model plus harness. Local and generated
+instructions, harness README docs, component inventory docs, capabilities docs,
+source ledger, manifest snippets, and tests now treat system prompts,
+instruction files, shell/file tools, git access, filesystem scope, startup
+scripts, verification commands, stop hooks, lint/sensor checks, workflow
+permissions, and evaluator loops as harness pieces that change effective agent
+behavior. Focused generator/audit tests passed with 52 tests.
 Push local commits only at an explicit batch/release boundary or user request.
-Release prep remains later: manual macOS/Windows platform CI, `v1` Action tag,
-and release-time SBOM/provenance gates.
+Next implementation candidates before release prep are `harnessforge report`,
+first-agent lifecycle evidence, the improved `--enhance-existing` plan, and the
+public-repo quality corpus. Release prep remains later: manual macOS/Windows
+platform CI, `v1` Action tag, and release-time SBOM/provenance gates.

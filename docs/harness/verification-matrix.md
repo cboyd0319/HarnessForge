@@ -9,6 +9,16 @@ conditions before promoting a check into a recurring gate.
 The default push/PR CI path runs Ubuntu 22.04 with Python 3.13.14; macOS and
 Windows remote checks are manual `workflow_dispatch` platform checks.
 
+Use an evidence ladder for completion:
+
+1. Static checks: formatting, lint, type, compile, schema, docs links.
+2. Runtime/startup checks: app, service, package, CLI, or tool starts and runs.
+3. System/user-flow checks: integration, end-to-end, benchmark slice, screenshot,
+   trace, or other full-pipeline evidence when behavior crosses components.
+
+Skipping a required layer means the change is not complete. Record the reason,
+risk, and next best evidence when a layer cannot run.
+
 | Change Type | Required Checks |
 | --- | --- |
 | CLI parser or command output | Focused unit tests plus `python -m harnessforge --help` |
@@ -66,6 +76,8 @@ When recording runnable evidence:
   claiming success.
 - Treat stdout and stderr previews as diagnostics. Redact secrets and keep long
   raw logs out of durable docs.
+- Prefer agent-oriented failure messages for custom sensors: what failed, why
+  the boundary matters, and where to repair.
 - The verify report proves configured project checks were planned or run. It
   does not replace `harnessforge audit --target .` for structural harness score
   and does not prove real-agent effectiveness.
