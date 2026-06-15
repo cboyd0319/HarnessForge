@@ -26,7 +26,13 @@ from .readiness import (
 )
 from .redact import redact_local_paths
 from .update import build_drift_report, plan_or_apply_update
-from .verify import build_verify_plan, format_verify_plan, verify_report_to_dict
+from .verify import (
+    DEFAULT_TIMEOUT_SECONDS,
+    build_verify_plan,
+    format_verify_plan,
+    run_verify_checks,
+    verify_report_to_dict,
+)
 
 SYNC_EXIT_CODES = {
     "ready": 0,
@@ -190,6 +196,17 @@ def build_parser() -> argparse.ArgumentParser:
     verify.add_argument("--package-manager")
     verify.add_argument("--command", dest="commands", action="append", default=[])
     verify.add_argument("--json", action="store_true")
+    verify.add_argument(
+        "--run",
+        action="store_true",
+        help="execute planned checks explicitly instead of reporting plan mode",
+    )
+    verify.add_argument(
+        "--timeout-seconds",
+        type=float,
+        default=DEFAULT_TIMEOUT_SECONDS,
+        help="per-command timeout for --run",
+    )
     verify.set_defaults(func=_verify)
 
     blueprint = subparsers.add_parser(
@@ -411,17 +428,32 @@ def _sync(args: argparse.Namespace) -> int:
 
 
 def _verify(args: argparse.Namespace) -> int:
+    if args.timeout_seconds <= 0:
+        raise ValueError("--timeout-seconds must be greater than 0")
     profile = detect_project(
         args.target,
         explicit_package_manager=args.package_manager,
         explicit_commands=tuple(args.commands),
     )
-    report = build_verify_plan(profile, explicit_commands=tuple(args.commands))
+    if args.run:
+        report = run_verify_checks(
+            profile,
+            explicit_commands=tuple(args.commands),
+            timeout_seconds=args.timeout_seconds,
+        )
+    else:
+        report = build_verify_plan(profile, explicit_commands=tuple(args.commands))
     if args.json:
         print(json.dumps(verify_report_to_dict(report), indent=2))
     else:
         print(format_verify_plan(report))
-    return 0
+    if not args.run:
+        return 0
+    if report.verdict == "passed":
+        return 0
+    if report.verdict == "failed":
+        return 1
+    return 2
 
 
 def _doctor(args: argparse.Namespace) -> int:

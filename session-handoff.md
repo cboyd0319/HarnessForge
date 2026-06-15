@@ -94,7 +94,12 @@ and advanced product modes.
   security-sensitive repos, and workflow automation. Blueprint output is
   separate from normal `init`, writes under `docs/harness/blueprints/`, records
   ownership metadata, preserves project edits by default, and requires
-  `--force` for replacement.
+  `--force` for replacement. The second robust opt-in slice is explicit
+  verification execution: default `harnessforge verify` remains plan-only, and
+  `harnessforge verify --run` executes checks only when requested, with
+  per-command timeout, no-shell argument-list execution, run-mode JSON timing
+  metadata, capped stdout/stderr previews, timeout reporting, and exit-code
+  mapping.
   Rejected defaults remain large
   skill/memory trees, platform permission config, LLM-assisted init,
   autonomous push/PR workflows, and copied ASPEC/AWMAN/Maki templates.
@@ -108,10 +113,10 @@ and advanced product modes.
   repo-local control planes, but it does not generate sibling-repo
   instructions, personal tool mandates, large skill trees, MCP
   setup, or extra agent adapters by default. Current verification passes full
-  unit discovery and POSIX/PowerShell entrypoints with 181 tests, compile, pin
-  check, research source check, verify JSON smoke, blueprint JSON/apply smokes,
-  self-audit `100/100`, local path scan, and diff hygiene. Readiness and sync
-  check are warning-only
+  unit discovery and POSIX/PowerShell entrypoints with 185 tests, compile, pin
+  check, research source check, verify plan/run JSON smokes, blueprint
+  JSON/apply smokes, self-audit `100/100`, local path scan, and diff hygiene.
+  Readiness and sync check are warning-only
   because existing local instruction files and the two repo-local GitHub
   workflow definitions need review; there are no readiness blockers.
 - Current SDD research supplement reviewed the GitHub Spec Kit article, the
@@ -503,10 +508,12 @@ Maven/Gradle dependency pin parsing, intentionally vulnerable training-path
 pin-scan exclusions, nested JVM wrapper preference, container runtime
 governance inventory, a no-network research source hygiene gate, a
 machine-readable effectiveness evidence contract, source-reviewed platform
-adapter metadata, and explicit blueprint mode. `harnessforge blueprint`
-currently supports list/show/apply, dry-run, force-only replacement,
-project-edit preservation, JSON output, ownership metadata, and six built-in
-packs.
+adapter metadata, explicit blueprint mode, and explicit verification run mode.
+`harnessforge blueprint` currently supports list/show/apply, dry-run,
+force-only replacement, project-edit preservation, JSON output, ownership
+metadata, and six built-in packs. `harnessforge verify --run` executes planned
+checks explicitly, records structured JSON evidence, and keeps normal verify
+plan mode read-only.
 `scripts/refresh_research.py --check` validates duplicate source IDs and URLs,
 required fields, placeholder text, canonical URL shape, arXiv `/abs/` URLs,
 lock-file consistency, and local-path leakage before any metadata fetch. Root
@@ -525,16 +532,16 @@ image assumptions. Generated change contracts now ask for current
 primary-source evidence for platform-impacting changes. The primary-source
 review checked Python version status, GitHub hosted runner labels, and the
 GitHub runner-images Windows VS2026 migration notice.
-Current robust-mode verification passes: 6 focused blueprint tests, full unit
-discovery and POSIX/PowerShell entrypoints with 181 tests, compile, pin check,
-research source check, `verify --json` smoke, blueprint JSON/apply smokes,
-self-audit `100/100`, local-path scan, and diff hygiene. `sync --check`
-returns the expected warning for local workflow and instruction review surfaces
-without blockers or generated drift.
-The next highest-value product slice is explicit project verification
-execution: run declared checks only when requested, capture machine-readable
-evidence, and keep command execution separate from structural audit and
-read-only readiness.
+Current robust-mode verification passes: 6 focused blueprint tests, 6 focused
+verify run-mode tests, full unit discovery and POSIX/PowerShell entrypoints
+with 185 tests, compile, pin check, research source check, `verify --json`
+plan/run smokes, blueprint JSON/apply smokes, self-audit `100/100`, local-path
+scan, and diff hygiene. `sync --check` returns the expected warning for local
+workflow and instruction review surfaces without blockers or generated drift.
+The next highest-value product slice is the Action/CI bridge for verification
+evidence: decide whether the composite Action should expose verify plan/run
+modes, and if so add explicit inputs that preserve the current
+command-execution boundary.
 Existing eval guidance comes from the Harness Forge, Meta-Harness, Code as
 Agent Harness catalog, and arXiv harness-eval reviews; those sources are mined
 only for product ideas and are not copied into generated target-repo defaults.

@@ -4,11 +4,16 @@ import contextlib
 import hashlib
 import io
 import json
+import sys
 import tempfile
 import unittest
 from pathlib import Path
 
 from harnessforge.cli import main
+
+
+def _python_command(script: str) -> str:
+    return f"{json.dumps(sys.executable)} -c {json.dumps(script)}"
 
 
 class CliTests(unittest.TestCase):
@@ -848,6 +853,123 @@ class CliTests(unittest.TestCase):
         self.assertTrue(
             any("No project verification" in item for item in payload["blockedReasons"])
         )
+
+    def test_verify_run_executes_explicit_command(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            marker = root / "ran.txt"
+            command = _python_command(
+                "from pathlib import Path; "
+                "Path('ran.txt').write_text('ran', encoding='utf-8'); "
+                "print('verification ok')"
+            )
+            stdout = io.StringIO()
+            with contextlib.redirect_stdout(stdout):
+                code = main(
+                    [
+                        "verify",
+                        "--target",
+                        str(root),
+                        "--json",
+                        "--run",
+                        "--command",
+                        command,
+                    ]
+                )
+
+            payload = json.loads(stdout.getvalue())
+            marker_exists = marker.exists()
+
+        self.assertEqual(code, 0)
+        self.assertTrue(marker_exists)
+        self.assertEqual(payload["mode"], "run")
+        self.assertEqual(payload["verdict"], "passed")
+        self.assertTrue(payload["execution"]["commandsExecuted"])
+        self.assertIsInstance(payload["execution"]["startedAt"], str)
+        self.assertIsInstance(payload["execution"]["endedAt"], str)
+        self.assertGreaterEqual(payload["execution"]["durationMs"], 0)
+        self.assertEqual(payload["summary"]["passed"], 1)
+        self.assertEqual(payload["checks"][0]["status"], "passed")
+        self.assertEqual(payload["checks"][0]["exitCode"], 0)
+        self.assertIn("verification ok", payload["checks"][0]["stdoutPreview"])
+        self.assertIsNone(payload["target"]["root"])
+
+    def test_verify_run_reports_failed_command(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            command = _python_command(
+                "import sys; "
+                "print('before failure'); "
+                "sys.stderr.write('verification failed\\n'); "
+                "raise SystemExit(7)"
+            )
+            stdout = io.StringIO()
+            with contextlib.redirect_stdout(stdout):
+                code = main(
+                    [
+                        "verify",
+                        "--target",
+                        str(root),
+                        "--json",
+                        "--run",
+                        "--command",
+                        command,
+                    ]
+                )
+
+            payload = json.loads(stdout.getvalue())
+
+        self.assertEqual(code, 1)
+        self.assertEqual(payload["verdict"], "failed")
+        self.assertEqual(payload["summary"]["failed"], 1)
+        self.assertEqual(payload["checks"][0]["status"], "failed")
+        self.assertEqual(payload["checks"][0]["exitCode"], 7)
+        self.assertIn("before failure", payload["checks"][0]["stdoutPreview"])
+        self.assertIn("verification failed", payload["checks"][0]["stderrPreview"])
+
+    def test_verify_run_blocks_missing_verification(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "README.md").write_text("# Demo\n", encoding="utf-8")
+            stdout = io.StringIO()
+            with contextlib.redirect_stdout(stdout):
+                code = main(["verify", "--target", str(root), "--json", "--run"])
+
+            payload = json.loads(stdout.getvalue())
+
+        self.assertEqual(code, 2)
+        self.assertEqual(payload["mode"], "run")
+        self.assertEqual(payload["verdict"], "blocked")
+        self.assertFalse(payload["execution"]["commandsExecuted"])
+        self.assertEqual(payload["summary"]["blocked"], 1)
+
+    def test_verify_run_reports_timeout(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            command = _python_command("import time; time.sleep(2)")
+            stdout = io.StringIO()
+            with contextlib.redirect_stdout(stdout):
+                code = main(
+                    [
+                        "verify",
+                        "--target",
+                        str(root),
+                        "--json",
+                        "--run",
+                        "--timeout-seconds",
+                        "0.1",
+                        "--command",
+                        command,
+                    ]
+                )
+
+            payload = json.loads(stdout.getvalue())
+
+        self.assertEqual(code, 1)
+        self.assertEqual(payload["verdict"], "failed")
+        self.assertEqual(payload["summary"]["timedOut"], 1)
+        self.assertEqual(payload["checks"][0]["status"], "timed_out")
+        self.assertIsNone(payload["checks"][0]["exitCode"])
 
     def test_blueprint_list_and_show_json(self) -> None:
         list_stdout = io.StringIO()

@@ -102,7 +102,8 @@ effectiveness still needs representative task runs and human review.
 - It does not create autonomous push, PR, self-heal, setup, or teardown
   workflows unless optional workflow scaffolds are explicitly requested.
 - It does not run target repository commands during `inspect`, `sync --check`,
-  `audit`, or `update --drift-report`.
+  `audit`, `update --drift-report`, or default `verify`. Use `verify --run`
+  when command execution is explicitly wanted.
 - It does not use structural scores as proof of real task performance.
 
 ## Platform Contract
@@ -179,6 +180,13 @@ Report planned project verification checks without running them:
 ```bash
 harnessforge verify --target /path/to/repo --json
 harnessforge verify --target /path/to/repo --json --command "python -m pytest"
+```
+
+Run project verification checks explicitly:
+
+```bash
+harnessforge verify --target /path/to/repo --json --run
+harnessforge verify --target /path/to/repo --json --run --timeout-seconds 120
 ```
 
 Review optional blueprint packs:
@@ -281,16 +289,19 @@ See [docs/harness/effectiveness-eval-contract.md](docs/harness/effectiveness-eva
 
 ## Verify JSON
 
-HarnessForge has a plan-mode `verify --json` report for project checks. It
+HarnessForge has a `verify --json` report for project checks. Default plan mode
 maps detected or explicitly provided verification commands into a stable JSON
-shape without running target repository commands.
+shape without running target repository commands. Explicit run mode executes
+those checks and records exit codes, durations, capped stdout/stderr previews,
+and timing metadata.
 
 See [docs/harness/verify-json-contract.md](docs/harness/verify-json-contract.md),
 [docs/harness/verify-json.schema.json](docs/harness/verify-json.schema.json),
 and [docs/harness/verify-json-example.json](docs/harness/verify-json-example.json).
 
-Command execution remains intentionally unavailable. Future execution must be
-explicit opt-in.
+Command execution is explicit opt-in through `--run`. Run mode uses argument
+lists rather than a shell, rejects shell control syntax, runs from the target
+repository root, and applies a per-command timeout.
 
 ## Blueprint Mode
 
@@ -468,7 +479,7 @@ input, output, and command mode.
 | `harnessforge quickstart` | Guide the first safe run without writing files |
 | `harnessforge inspect` | Show detected project profile or readiness without writing files |
 | `harnessforge sync --check` | Run a read-only CI preflight with readiness exit codes |
-| `harnessforge verify` | Report planned project checks without executing target commands |
+| `harnessforge verify` | Report planned project checks, or run them explicitly with `--run` |
 | `harnessforge blueprint` | List, inspect, or apply optional review-required operating-model overlays |
 | `harnessforge init` | Create missing harness artifacts |
 | `harnessforge audit` | Score an existing repo harness |

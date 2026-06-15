@@ -370,18 +370,37 @@ maintenance loop.
   workflow automation. Blueprint artifacts are opt-in, generated under
   `docs/harness/blueprints/`, marked review-required, recorded in a generated
   ownership manifest, and preserved unless `--force` is explicit.
+- Added explicit project verification execution. Default `harnessforge verify`
+  remains plan-only and read-only. `harnessforge verify --run` now executes
+  detected or explicit project checks from the target repository root using
+  subprocess argument lists, not a shell. Run mode records timing metadata,
+  exit codes, durations, capped stdout/stderr previews, timeout status, and
+  maps exit codes to passed, failed, or blocked outcomes.
 
 ## Recommended Next Step
 
 Continue the robust-mode buildout before returning to release prep. The next
-highest-value slice is an explicit project-verification execution mode that
-runs declared checks only when requested, records machine-readable evidence,
-and keeps command execution separate from structural audit and read-only
-readiness.
+highest-value slice is the Action/CI bridge for verification evidence: decide
+whether the composite Action should expose verify plan/run modes, and if so
+add explicit inputs that preserve the current command-execution boundary.
 Push local commits only at an explicit batch/release boundary or user request.
 
 ## Verification Evidence
 
+- `PYTHONPATH=src:. python3 -m unittest tests.test_cli.CliTests.test_verify_json_plan_reports_checks_without_running tests.test_cli.CliTests.test_verify_json_blocks_missing_verification tests.test_cli.CliTests.test_verify_run_executes_explicit_command tests.test_cli.CliTests.test_verify_run_reports_failed_command tests.test_cli.CliTests.test_verify_run_blocks_missing_verification tests.test_cli.CliTests.test_verify_run_reports_timeout`
+  passed with 6 focused verify tests after adding explicit run mode.
+  `PYTHONPATH=src:. python3 -m unittest tests.test_verify_contract` passed,
+  and targeted compile of `src/harnessforge/verify.py`,
+  `src/harnessforge/cli.py`, and `tests/test_cli.py` passed. Full unit
+  discovery passed with 185 tests, `python3 -m compileall src tests scripts`
+  passed, JSON parsing passed for feature state and verify contract files,
+  `PYTHONPATH=src:. python3 scripts/check_pins.py --root .` passed,
+  `PYTHONPATH=src:. python3 scripts/refresh_research.py --root . --check`
+  passed, verify run success/failure smokes passed, `PYTHONPATH=src:.
+  python3 -m harnessforge audit --target . --min-score 85` passed with
+  self-audit `100/100`, `git diff --check` passed, and the exact local-path
+  scan passed. `./init.sh` and `pwsh -NoProfile -File ./init.ps1` also passed
+  with 185 tests, pin check, research source check, and self-audit `100/100`.
 - `PYTHONPATH=src:. python3 -m unittest tests.test_cli.CliTests.test_blueprint_list_and_show_json tests.test_cli.CliTests.test_blueprint_apply_dry_run_does_not_write tests.test_cli.CliTests.test_blueprint_apply_writes_reviewed_artifacts_and_preserves_existing tests.test_cli.CliTests.test_blueprint_apply_force_overwrites_existing_blueprint tests.test_cli.CliTests.test_blueprint_apply_preserves_non_generated_manifest tests.test_cli.CliTests.test_blueprint_apply_does_not_claim_skipped_existing_blueprint`
   passed with 6 focused blueprint tests. `PYTHONPATH=src:. python3 -m unittest
   discover -s tests` passed with 181 tests, `python3 -m compileall src tests

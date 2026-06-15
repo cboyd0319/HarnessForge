@@ -1,9 +1,10 @@
 # Verify JSON Contract
 
-Status: implemented plan mode
+Status: implemented plan and explicit run mode
 
 This document defines the `harnessforge verify --json` report contract.
-Plan mode is implemented. Command execution is intentionally not implemented.
+Plan mode is the default. Command execution is implemented only behind the
+explicit `--run` flag.
 
 ## Purpose
 
@@ -14,8 +15,8 @@ machine-readable shape. It is separate from:
 - `inspect --readiness --json`, which reports static readiness.
 - `sync --check --json`, which wraps readiness with CI-oriented exit codes.
 
-The current implementation makes project checks inspectable before making them
-executable.
+The implementation makes project checks inspectable by default and executable
+only when a caller opts in.
 
 ## Execution Boundary
 
@@ -25,11 +26,10 @@ Default mode MUST NOT run target repository commands. It should report detected
 or explicitly provided checks, source, platform applicability, and why each
 check is planned, skipped, or blocked.
 
-Command execution requires an explicit run mode. The eventual explicit run mode
-must be opt-in, visible in the JSON payload, and documented in the CLI help
-before it is enabled.
+Command execution requires explicit run mode. Run mode is opt-in, visible in
+the JSON payload, and documented in the CLI help.
 
-Non-goals for the first implementation:
+Non-goals:
 
 - No hidden shell execution.
 - No package installation.
@@ -40,9 +40,9 @@ Non-goals for the first implementation:
 
 ## Benchmark And Eval Boundary
 
-`verify --json` reports whether project checks are planned or, in a future
-explicit run mode, whether those checks passed. It is not by itself evidence
-that a generated harness improves real agent effectiveness.
+`verify --json` reports whether project checks are planned or, in explicit run
+mode, whether those checks passed. It is not by itself evidence that a
+generated harness improves real agent effectiveness.
 
 Benchmark and real-agent eval reports stay separate from this contract. Use
 `effectiveness-eval-contract.md` and
@@ -71,13 +71,16 @@ harnessforge verify --target <repo> --json
 harnessforge verify --target <repo> --json --command "<repo-owned check>"
 ```
 
-Reserved future explicit execution shape:
+Explicit execution shape:
 
 ```bash
 harnessforge verify --target <repo> --json --run
+harnessforge verify --target <repo> --json --run --timeout-seconds 120
 ```
 
-The `--run` flag is intentionally not implemented.
+Run mode executes each check from the target repository root using an argument
+list, not a shell. Shell control syntax such as `&&`, `||`, pipes, and
+redirection is rejected; pass each check with a separate `--command`.
 
 ## Exit Codes
 
@@ -88,13 +91,13 @@ Plan mode exit codes are about whether the report could be produced:
 | 0 | JSON report was produced |
 | 2 | CLI usage, invalid target, unsafe command, or internal report error |
 
-Future run mode exit codes should represent execution outcome:
+Run mode exit codes represent execution outcome:
 
 | Code | Meaning |
 | ---: | --- |
 | 0 | Required checks passed |
 | 1 | At least one required check failed or timed out |
-| 2 | Checks were blocked, unsafe, or could not be started |
+| 2 | Checks were blocked before execution |
 
 ## JSON Shape
 
@@ -108,7 +111,7 @@ Top-level fields:
 | --- | --- | --- |
 | `schemaVersion` | yes | Stable schema identifier. Current value: `harnessforge.verify.v1` |
 | `target` | yes | Target metadata without unredacted local absolute paths |
-| `mode` | yes | `plan` or future `run` |
+| `mode` | yes | `plan` or `run` |
 | `verdict` | yes | Overall report status |
 | `platform` | yes | Host and runner metadata useful for platform contracts |
 | `execution` | yes | Whether commands were executed and timing metadata |
@@ -129,7 +132,7 @@ Check fields:
 | `workingDirectory` | yes | Target-relative working directory |
 | `required` | yes | Whether failure should affect run-mode exit status |
 | `status` | yes | `planned`, `skipped`, `blocked`, `passed`, `failed`, `timed_out`, or `error` |
-| `exitCode` | yes | Integer exit code in run mode, otherwise `null` |
+| `exitCode` | yes | Integer exit code when the process exits, otherwise `null` |
 | `durationMs` | yes | Runtime duration in milliseconds in run mode, otherwise `null` |
 | `message` | yes | Short explanation for humans and CI logs |
 | `stdoutPreview` | yes | Redacted and capped stdout preview, or `null` |
@@ -141,9 +144,9 @@ The report must not include secrets, environment dumps, credentials, or
 unredacted home-directory paths. Output previews must be capped, redacted, and
 safe to store in CI artifacts.
 
-Commands must be represented as data before execution. Future run mode must use
-explicit subprocess argument lists where practical, a target-relative working
-directory, bounded timeout behavior, and clear platform labels.
+Commands are represented as data before execution. Run mode uses explicit
+subprocess argument lists, the target repository root as the working directory,
+bounded per-command timeout behavior, and clear platform labels.
 
 ## Implementation Notes
 
@@ -151,13 +154,14 @@ The implementation should reuse existing detection and readiness data before
 adding new verification discovery logic. The first useful version can map
 `ProjectProfile.verification_commands` into plan-mode checks.
 
-Before enabling run mode, add tests for:
+Run mode has tests for:
 
 - no command execution in plan mode
 - explicit opt-in for execution
 - exit code mapping
 - timeout behavior
-- stdout and stderr redaction
 - missing verification commands
-- Windows and POSIX path handling
-- generated manifest command sources
+- stdout and stderr previews
+
+Future focused coverage should add Windows path parsing and generated manifest
+command-source cases when those sources become executable inputs.

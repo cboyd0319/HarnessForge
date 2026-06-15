@@ -70,6 +70,29 @@ profile/blueprint and source-of-truth ideas from the research pass without
 copying ASPEC, AWMAN, Maki, MCP, memory, or platform permission systems into
 target repos by default.
 
+## Implemented Explicit Verification Execution
+
+`harnessforge verify --run` closes the first project-verification execution
+slice. Default `verify` remains plan-only and read-only. Run mode is explicit,
+visible in JSON as `"mode": "run"`, and records command status, exit code,
+duration, capped stdout/stderr previews, and overall timing metadata.
+
+Current command shape:
+
+- `harnessforge verify --target <repo> --json`
+- `harnessforge verify --target <repo> --json --run`
+- `harnessforge verify --target <repo> --json --run --timeout-seconds 120`
+- `harnessforge verify --target <repo> --json --run --command "<repo-owned check>"`
+
+Boundary:
+
+- Run mode uses subprocess argument lists, not a shell.
+- Shell control syntax is rejected; use separate `--command` values.
+- Missing verification remains blocked and exits `2` in run mode.
+- Failed or timed-out checks exit `1`.
+- Passing required checks exit `0`.
+- The JSON target root remains `null` for portable artifacts.
+
 ## Local Reference Findings
 
 ### AWMAN
