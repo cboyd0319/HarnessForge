@@ -270,7 +270,6 @@ def _template_specs(
                 harness_path("source_record_example"),
                 False,
             ),
-            ("research-sources.json.tmpl", harness_path("research_sources"), False),
             ("research-inbox.md.tmpl", harness_path("research_inbox"), False),
             (
                 "agent-operating-model.md.tmpl",
@@ -1869,7 +1868,6 @@ def _manifest_content(
         "docs/harness/release/release-controls.md",
         "docs/harness/research/source-record.schema.json",
         "docs/harness/research/source-record-example.json",
-        "docs/harness/research/research-sources.json",
         "docs/harness/research/research-inbox.md",
         "docs/harness/manifest.json",
         "docs/harness/research/sources.md",
@@ -2104,7 +2102,7 @@ def _manifest_content(
             "HarnessForge Project Source Record",
             "targetRelativePath",
             "machine-local absolute paths",
-            "docs/harness/research/research-sources.json",
+            "project-owned records",
             "harnessUsage",
         ],
         "docs/harness/research/source-record-example.json": [
@@ -2112,26 +2110,6 @@ def _manifest_content(
             "REVIEW REQUIRED",
             "docs/architecture.md",
             "harnessUsage",
-        ],
-        "docs/harness/research/research-sources.json": [
-            "openai-harness-engineering",
-            "walkinglabs-course",
-            "github-actions-secure-use",
-            "owasp-ai-agent-security-cheat-sheet",
-            "owasp-mcp-security-cheat-sheet",
-            "owasp-security-shepherd",
-            "owasp-pytm",
-            "owasp-samm",
-            "owasp-rag-security-cheat-sheet",
-            "owasp-secure-coding-with-ai-cheat-sheet",
-            "owasp-llm-top-10",
-            "owasp-agentic-applications-top-10",
-            "owasp-agentic-skills-top-10",
-            "openai-ai-native-engineering",
-            "microsoft-agt-prompt-injection-benchmark",
-            "pnpm-workspaces",
-            "github-actions-workflow-syntax",
-            "terraform-standard-module-structure",
         ],
         "docs/harness/operations/agent-operating-model.md": [
             "Delegate",
@@ -2227,7 +2205,7 @@ def _manifest_content(
         "detectedWorkspaceMarkers": list(profile.workspace_markers),
         "detectedRoutingMarkers": list(profile.routing_markers),
     }
-    return f"{json.dumps(manifest, indent=2)}\n"
+    return f"{json.dumps(manifest, separators=(',', ':'))}\n"
 
 
 def _components_markdown(profile: ProjectProfile) -> str:

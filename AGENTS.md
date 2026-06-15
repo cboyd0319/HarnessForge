@@ -18,12 +18,17 @@ product changes.
 Startup path:
 
 1. Confirm the working directory.
-2. Read this file, `README.md`, and `docs/harness/README.md`.
-3. Read `feature_list.json`, `progress.md`, and `session-handoff.md`.
-4. Read `docs/roadmap.md` before selecting, deferring, or reshaping backlog,
+2. Read this file, `progress.md`, `session-handoff.md`, and
+   `feature_list.json`.
+3. Read `README.md` only for public docs, install/usage, CLI behavior, or
+   product-positioning changes.
+4. Read `docs/harness/README.md` and
+   `docs/harness/authoritative-facts.md` for harness-doc, generated-output,
+   scoring, report, or maintenance-policy changes.
+5. Read `docs/roadmap.md` before selecting, deferring, or reshaping backlog,
    release-prep, or product-scope work.
-5. Check `docs/harness/boundaries/component-inventory.md` before changing component
-   boundaries, generated files, or verification routing.
+6. Check `docs/harness/boundaries/component-inventory.md` before changing
+   component boundaries, generated files, or verification routing.
 
 This repo is itself a harnessed project. Keep root instructions short and place
 durable detail in `docs/harness/`.

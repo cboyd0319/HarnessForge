@@ -6,126 +6,78 @@ REVIEW REQUIRED: replace these placeholders with the target repository's real
 roadmap, backlog boundary, owners, and review cadence before relying on this
 file for planning or release decisions.
 
-This file tracks accepted harness and repository operating-model work. It
-prevents roadmap decisions from living only in chat, issue comments, or
-one-off research notes.
+This file tracks accepted harness and repository operating-model work so
+roadmap decisions do not live only in chat, issue comments, or one-off notes.
 
 ## Source And Evidence Weighting
 
-Use this order when roadmap evidence conflicts:
+When evidence conflicts, use this order: target files/commands/tests and
+maintainer decisions; reviewed repo harness docs; approved harness-learning
+patterns; sibling examples, external ideas, and generated reports. Examples and
+reports are not contracts until promoted into repo-owned docs, tests, schemas,
+templates, or code.
 
-1. Target repository files, commands, tests, platform contract, and maintainer
-   decisions.
-2. Reviewed harness docs generated or accepted by this repository.
-3. Canonical harness patterns from HarnessForge and approved harness-learning
-   resources.
-4. Sibling-project examples, external ideas, and generated reports.
-
-Sibling-project examples and generated reports are useful evidence, but they
-are not contracts until a maintainer promotes the pattern into repo-owned docs,
-tests, schemas, templates, or code.
-
-Default planning rules:
-
-- Run or record the baseline verification path before starting new feature work
-  when practical.
-- Work from one bounded plan, feature, or roadmap item at a time.
-- Apply the smallest-correct work gate before adding code or harness surface
-  area.
-- Use quality score, quality document, or equivalent health state to choose
-  high-leverage work.
-- Promote repeated review feedback into a rule, sensor, test, or durable doc.
-- Keep durable rules reviewable: record why they exist, when they apply, and
-  when they can be removed or replaced.
-- Treat feature and task state as evidence-gated. Behavior, verification,
-  status, and evidence should agree before work is marked passing or shipped.
-- Use a completion evidence ladder: static checks first, runtime/startup checks
-  next, and system or user-flow checks when a change spans components.
-- Make check failures agent-oriented: state what failed, why the boundary
-  matters, and where to repair.
-- Track both runtime observability and process observability. Runtime signals
-  explain what happened; plans, contracts, rubrics, and evidence explain why a
-  change should be accepted.
+Planning rules: one bounded item at a time; baseline verification when
+practical; smallest-correct work gate before new surface area; repeated review
+feedback becomes a rule, sensor, test, or durable doc; behavior, verification,
+status, and evidence must agree before passing or shipped. Make check failures
+agent-oriented: what failed, why it matters, and where to repair. Track runtime
+and process observability.
 
 ## Smallest Correct Work Gate
 
-Use this gate for each accepted roadmap item before implementation starts:
-
-1. Can the outcome be met by no change, deletion, documentation,
-   configuration, or existing behavior?
-2. Can the standard library or built-in language feature cover it?
-3. Can a native platform feature cover it?
-4. Can an existing project dependency cover it without new configuration?
-5. Can one clear local change satisfy the contract?
-6. Only then add the minimum new code or harness surface area.
-
-Do not add speculative features, unrequested configurability, one-off
-abstractions, new workflows, or dependencies unless they are explicit in the
-item scope. Do not use this gate to cut input validation at trust boundaries,
-data-loss prevention, security, accessibility, platform parity, or explicit
-user requirements. If an intentional simplification has a known ceiling, record
-the ceiling and upgrade path in the item notes or handoff.
+Use this gate before implementation: no change, deletion, documentation,
+configuration, existing behavior, standard library, native platform feature,
+existing dependency, one clear local change, then minimum new code or harness
+surface area. Do not add speculative features, configurability, one-off
+abstractions, workflows, or dependencies unless the item names them. Do not cut
+trust-boundary validation, data-loss prevention, security, accessibility,
+platform parity, or explicit user requirements. Record the ceiling and upgrade
+path for intentional simplification.
 
 ## Task Buckets
 
-Use small buckets so agents do not treat every old idea as active work.
-
-- `active`: work currently being executed.
-- `accepted`: agreed work that is not started yet.
-- `candidate`: useful idea that still needs owner, scope, or evidence.
-- `debt`: recurring cleanup or drift that should become a sensor, test, or
-  release gate when stable.
-- `completed`: shipped work whose durable behavior has moved into docs, tests,
-  schemas, templates, or code.
-- `archived`: historical context kept for provenance, not restart priority.
+Use small buckets so old ideas do not all look active: `active`, `accepted`,
+`candidate`, `debt`, `completed`, and `archived`.
 
 ## Status Lifecycle
 
-Use explicit statuses on roadmap items:
-
-- `candidate`: possible work, not committed.
-- `accepted`: agreed direction, needs sequencing.
-- `planned`: scoped with an execution gate.
-- `in_progress`: currently owned.
-- `blocked`: cannot continue without named input or state change.
-- `validated`: implementation finished and evidence recorded.
-- `shipped`: adopted, released, or merged into the durable repo surface.
-- `superseded`: replaced by another item or plan.
-- `abandoned`: intentionally dropped.
+Use explicit statuses on roadmap items: `candidate`, `accepted`, `planned`,
+`in_progress`, `blocked`, `validated`, `shipped`, `superseded`, or
+`abandoned`.
 
 ## Surface Impact Checklist
 
 For every accepted roadmap item, classify which surfaces are in scope before
 implementation starts.
 
-| Surface | Question |
+| Surface | Scope Prompt |
 | --- | --- |
-| Local repo harness | Does this affect this repo's instructions, state files, harness docs, sensors, or release controls? |
-| Generated or owned harness files | Should the project add or update a harness file, section, manifest rule, or review-required placeholder? |
-| CLI or tool runtime | Does this add or change a command, flag, JSON contract, exit code, report, or default behavior? |
-| Existing project files | Could this modify project-owned instructions, specs, workflows, scripts, or docs? |
-| CI or hosted automation | Should CI workflows, Action usage, summaries, reports, permissions, or artifacts change? |
-| Optional workflow scaffolds | Should setup, teardown, push, or PR automation stay opt-in? |
-| Tests and fixtures | Which local checks, generated snapshots, fixtures, or representative task runs prove the change? |
-| Release surface | Does this affect packaging, tags, SBOM or provenance evidence, release notes, or rollback? |
-| Research and source records | Does this need current primary-source evidence or project-owned source records? |
-| Security and privacy | Could this expose secrets, local paths, private code, tool permissions, network access, or cost? |
-| Platform contracts | Does this affect macOS, Windows, Linux, language runtimes, runner labels, or adapters? |
-| Docs and UX | Which user-facing docs, help output, startup instructions, and first-run guidance need to change? |
+| Local repo harness | Instructions, state, harness docs, sensors, release controls |
+| Generated or owned harness files | Harness file, section, manifest rule, review-required placeholder |
+| CLI or tool runtime | Command, flag, JSON, exit code, report, default |
+| Existing project files | Project instructions, specs, workflows, scripts, docs |
+| CI or hosted automation | Workflows, Action usage, summaries, reports, permissions, artifacts |
+| Optional workflow scaffolds | Setup, teardown, push, or PR automation remains opt-in |
+| Tests and fixtures | Local checks, generated snapshots, fixtures, representative task runs |
+| Release surface | Packaging, tag, SBOM, provenance, release notes, rollback |
+| Research and source records | Primary-source evidence, project-owned source records |
+| Security and privacy | Secrets, local paths, private code, permissions, network, cost |
+| Platform contracts | macOS, Windows, Linux, runtimes, runner labels, adapters |
+| Docs and UX | User docs, help output, startup instructions, first-run guidance |
 
-If a surface is out of scope, say so in the item notes. Do not let target-local
-preferences, generated harness defaults, and CI automation drift into each
-other silently.
+If a surface is out of scope, say so. Do not let target-local preferences,
+generated defaults, and CI automation drift into each other silently.
 
 ## Roadmap Items
 
 | Item | Status | User Outcome | Surfaces In Scope | Execution Gate | Owner | Verification Evidence | Done Or Retire When |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| REVIEW REQUIRED: first accepted roadmap item | candidate | What gets better for users or maintainers | Local repo harness, generated harness, CLI, CI, docs, or other surfaces | Pending gate. | Pending owner. | Pending check or evidence. | Pending completion or retirement condition. |
+| REVIEW REQUIRED: first accepted roadmap item | candidate | Pending user or maintainer outcome | Local repo harness, generated harness, CLI, CI, docs, or other surfaces | Pending gate. | Pending owner. | Pending evidence. | Pending completion or retirement condition. |
 
 ## Fresh-Session Test
 
-Use this when reviewing whether the harness is actually useful to a new agent.
+Use this to check whether the harness is useful to a new agent.
 
 | Question | Current Answer Source | Gap Or Action |
 | --- | --- | --- |
@@ -137,12 +89,12 @@ Use this when reviewing whether the harness is actually useful to a new agent.
 
 ## Instruction Rule Lifecycle
 
-Use this table for durable rules that survive beyond one task. Keep the root
-instruction file as a router; move topic detail into focused docs.
+Use this for durable rules that survive beyond one task. Keep the root
+instruction file as a router; move detail into focused docs.
 
 | Rule Or Topic | Source | Applies When | Mechanical Check | Retire Or Replace When |
 | --- | --- | --- | --- | --- |
-| REVIEW REQUIRED: first durable rule | Why this rule exists | When agents should load or follow it | Check, sensor, or manual review | Condition for deletion or replacement |
+| REVIEW REQUIRED: first durable rule | Why it exists | When agents follow it | Check, sensor, or review | Deletion or replacement condition |
 
 ## Completion Evidence Ladder
 
@@ -152,14 +104,13 @@ instruction file as a router; move topic detail into focused docs.
 | Runtime/startup | The app, package, service, CLI, or tool must start or execute | startup command, smoke test, local command run, health check |
 | System/user flow | A change crosses components or affects user-visible behavior | end-to-end flow, integration scenario, benchmark slice, screenshot or trace |
 
-Skipping a required layer means the item is not complete. Record the reason,
-risk, and next best evidence when a layer cannot run.
+Skipping a required layer means the item is not complete. Record reason, risk,
+and next best evidence when a layer cannot run.
 
 ## Technical Debt And Drift
 
-Use this section for cleanup, docs drift, stale generated content, duplicated
-instructions, or verification gaps that are visible but not yet scoped as
-accepted roadmap work.
+Use this for cleanup, docs drift, stale generated content, duplicated
+instructions, or verification gaps not yet accepted as roadmap work.
 
 | Item | Evidence | Risk | Next Step | Status |
 | --- | --- | --- | --- | --- |
@@ -167,41 +118,28 @@ accepted roadmap work.
 
 ## Failure-Mode Map
 
-Connect each recurring planning artifact to the problem it prevents.
-
 | Failure Mode | First Artifact To Check |
 | --- | --- |
-| Cold-start confusion | `progress.md` and `session-handoff.md` |
-| Scope sprawl | `feature_list.json` and this roadmap |
-| Premature completion | `clean-state-checklist.md` and `verification-matrix.md` |
-| Fragile startup | generated init entrypoint and `docs/harness/README.md` |
-| Weak handoff | `session-handoff.md` |
-| Subjective review | `evaluator-rubric.md` and recorded evidence |
-| Overbuilt solution | smallest-correct work gate and change contract |
-| Knowledge visibility gap | fresh-session test and module-near source-of-truth docs |
-| Instruction bloat | instruction rule lifecycle and topic-doc routing |
-| Missing runtime signal | verification matrix, sensor registry, and evidence log |
-| Entropy growth | clean-state checklist, quality document, and periodic cleanup sensors |
+| Cold-start confusion or weak handoff | `progress.md`, `session-handoff.md` |
+| Scope sprawl or overbuilt solution | `feature_list.json`, this roadmap, change contract |
+| Premature completion or missing runtime signal | `verification-matrix.md`, `sensor-registry.md`, evidence log |
+| Fragile startup or knowledge visibility gap | generated init entrypoint, fresh-session test, module docs |
+| Instruction bloat or entropy growth | instruction rule lifecycle, topic-doc routing, quality document |
 
 ## Rules
 
 - Keep roadmap entries target-relative and portable.
 - Record accepted work here when it changes harness behavior, generated files,
   CI behavior, release evidence, or recurring maintenance.
-- Keep candidate ideas separate from accepted commitments.
+- Keep candidate ideas separate from commitments.
 - Do not mark work passing, validated, shipped, or complete from agent
-  assertion alone. Record verification evidence.
+  assertion alone; record verification evidence.
 - Do not promote speculative features, abstractions, workflows, dependencies, or
-  broad cleanup unless the accepted item names them.
-- Record ceilings and upgrade paths for intentional simplifications.
-- Move completed behavior into durable docs, tests, schemas, templates, or code
-  instead of leaving the roadmap as the only source of truth.
+  broad cleanup unless the item names them.
+- Move completed behavior into durable docs, tests, schemas, templates, or code.
 - Update `progress.md` and `session-handoff.md` when roadmap state changes.
-- Preserve existing project-owned planning systems. If the repo already has a
-  roadmap, issue tracker, spec system, or workflow board, link to it instead of
-  replacing it.
-- If this repo has localized docs, identify the source-of-truth locale or docs
-  root before editing translated copies.
-- Keep sensor and validation error messages actionable for agents: what failed,
-  why it matters, and where to repair.
+- Preserve existing project-owned planning systems by linking to them.
+- If localized docs exist, identify the source-of-truth locale or docs root
+  before editing translated copies.
+- Keep sensor and validation messages actionable for agents.
 - Do not turn structural audit score into proof of real-agent effectiveness.

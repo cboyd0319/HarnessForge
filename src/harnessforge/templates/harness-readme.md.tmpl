@@ -11,59 +11,44 @@ Platform contract: {{platform_contract_summary}}
 ## Purpose
 
 Make each coding session restartable, scoped, and verifiable. Agents should
-find the current objective, understand what they may change, run the right
-checks, and leave evidence for the next session.
+find the objective, know what they may change, run the right checks, and leave
+evidence for the next session.
 
 ## Five Core Subsystems
 
 Harness = instructions + tools + environment + state + feedback. Missing any
-one of these makes the harness incomplete.
+one of these makes the harness incomplete. Keep instruction files map-like,
+tool access least privilege but useful, environment facts self-describing,
+state current, and verification commands explicit. Treat feedback as the
+highest-return repair target.
 
-| Subsystem | This Harness Provides | Review Question |
-| --- | --- | --- |
-| Instructions | `{{agent_file}}` plus short platform routers | Does the agent see purpose, stack, first-run commands, hard constraints, and links to detail? |
-| Tools | Local shell entrypoints, HarnessForge commands, optional Action workflows | Can the agent do useful work with least privilege instead of either blanket-disabled shell access or unrestricted access? |
-| Environment | Runtime/package manifests, component inventory, dependency policy | Are versions, dependencies, setup facts, and reproducible environment choices self-describing? |
-| State | `feature_list.json`, `progress.md`, `session-handoff.md`, `roadmap.md` | Can a new session see what is done, in progress, blocked, and next? |
-| Feedback | Verification matrix, sensor registry, evidence log, local checks | Are verification commands explicit, runnable, and prioritized before broader process? |
-
-Treat feedback as the highest-return subsystem. When agent output is weak, fix
-missing, stale, or vague verification commands before adding more instructions.
+| Subsystem | Primary Files |
+| --- | --- |
+| Instructions | `{{agent_file}}`, platform routers |
+| Tools | `init.sh`, `init.ps1`, optional owner tools |
+| Environment | manifests, component inventory, dependency policy |
+| State | `feature_list.json`, `progress.md`, `session-handoff.md`, roadmap |
+| Feedback | verification matrix, sensor registry, evidence log |
 
 ## Effective Agent Boundary
 
 The model is the LLM. The effective coding agent is the model plus the harness:
-system prompts, instruction files, shell and file tools, git access, local
-filesystem scope, startup scripts, verification commands, stop hooks,
-lint/sensor checks, workflow permissions, and evaluator loops. Changing any of
-these changes effective agent behavior. Treat those changes as product changes
-with scope, verification, and rollback.
-
-## Practical Harness Map
-
-| Domain | Artifact | Purpose |
-| --- | --- | --- |
-| Instructions | `{{agent_file}}`, `CLAUDE.md`, `GEMINI.md`, `.github/copilot-instructions.md` | Startup path, invariants, definition of done, and platform routing |
-| Tools | `init.sh`, `init.ps1` when generated | Local verification entrypoints for the declared platform contract |
-| Environment | package/runtime manifests, `component-inventory.md`, `dependency-change-policy.md` | Versions, dependency managers, setup facts, project boundaries, and pin policy |
-| State | `feature_list.json`, `progress.md`, `evidence-log.md`, `roadmap.md` | Current objective, accepted roadmap, feature status, and evidence |
-| Feedback | `verification-matrix.md`, `sensor-registry.md`, `evaluator-rubric.md`, local checks | Deterministic signals, ownership, and lifecycle before claiming completion |
-| Research | `sources.md`, `research-sources.json`, `source-record.schema.json`, `source-record-example.json` | Fixed research allowlist, reviewed provenance, and project-owned source records |
-| Scope | `change-contract.md`, `security-boundary-map.md`, `feature-privacy-labels.json` | Problem, non-goals, acceptance, rollback, and data boundaries |
-| Lifecycle | `session-handoff.md`, `clean-state-checklist.md`, `quality-document.md`, `release-controls.md`, `entropy-control.md` | Restart, roadmap freshness, release readiness, and recurring harness upkeep |
+system prompts, instructions, shell/file tools, git access, filesystem scope,
+startup scripts, verification commands, stop hooks, lint/sensor checks,
+workflow permissions, and evaluator loops. Changing any of these changes effective agent behavior and needs scope, verification, and rollback.
 
 ## Directory Layout
 
 | Path | Use |
 | --- | --- |
-| `docs/harness/README.md` | Human landing page and operating map |
+| `docs/harness/README.md` | Landing page and operating map |
 | `docs/harness/manifest.json` | Machine-readable generated-file ownership and required snippets |
 | `docs/harness/authoritative-facts.md` | Fact ownership and docs fan-out routing |
-| `docs/harness/boundaries/` | Component, security, dependency, privacy, and change-contract boundaries |
-| `docs/harness/feedback/` | Verification matrix, sensor registry, rubric, and quality snapshot |
-| `docs/harness/state/` | First-agent task, harness roadmap, restart checklist, and drift-control notes |
-| `docs/harness/evidence/` | Evidence log and optional persisted verify/report evidence |
-| `docs/harness/research/` | Research/source ledgers and source-record schema/example |
+| `docs/harness/boundaries/` | Component, security, dependency, privacy, change contract |
+| `docs/harness/feedback/` | Verification matrix, sensor registry, rubric, quality |
+| `docs/harness/state/` | First-agent task, roadmap, restart, drift control |
+| `docs/harness/evidence/` | Evidence log and optional persisted reports |
+| `docs/harness/research/` | Source ledgers and source-record schema/example |
 | `docs/harness/operations/` | Agent operating model and multi-agent coordination guidance |
 | `docs/harness/release/` | Release controls |
 | `docs/harness/schemas/` | JSON schemas for generated state files |
@@ -89,106 +74,50 @@ with scope, verification, and rollback.
 
 Contributors should be able to use this harness without installing
 HarnessForge. Use repo-owned commands from `verification-matrix.md` first. If
-the repo owner has HarnessForge installed, or has opted into the HarnessForge
-Action, these optional structural checks can help maintain the harness:
+the repo owner has HarnessForge installed or uses the HarnessForge Action,
+these optional read-only checks can help maintain the harness:
 
-```bash
-harnessforge index --target . --json
-harnessforge effectiveness --target . --json
-harnessforge session --target .
-harnessforge report --target .
-harnessforge plan --target . --since HEAD
-harnessforge audit --target .
-harnessforge update --target .
-```
+| Need | Optional command |
+| --- | --- |
+| Structural repo map | `harnessforge index --target . --json` |
+| Stored effectiveness evidence | `harnessforge effectiveness --target . --json` |
+| Restart snapshot | `harnessforge session --target .` |
+| Unified review artifact | `harnessforge report --target .` |
+| Diff-aware check selection | `harnessforge plan --target . --since HEAD` |
+| Existing instruction review | `harnessforge enhance --target .` |
+| Structural harness score | `harnessforge audit --target .` |
+| Generated drift or missing-file corrections | `harnessforge update --target .` |
 
-`harnessforge index --target . --json` is a read-only structural repo map. It
-reports file class, language, manifest, component, source-of-truth, entrypoint,
-generated, vendor, workflow, and review-required signals without command
-execution, writes, local absolute paths, code excerpts, embeddings, or network
-access.
+Rules:
 
-`harnessforge effectiveness --target . --json` is a read-only assessor for
-stored real-agent or benchmark evidence. It scans target-contained
-`docs/harness/evidence/effectiveness*.json` reports, or an explicit
-target-relative `--evidence` path, and reports whether evidence is reviewable,
-inconclusive, not better, or blocked without running benchmarks or turning
-structural scores into performance claims.
-
-`harnessforge session --target .` is a read-only restart snapshot with git
-state when available, detected stack, readiness verdict, harness audit score
-when a harness surface is present, state-file presence, and next actions.
-
-`harnessforge report --target .` is an optional read-only unified harness
-status artifact.
-It composes readiness, audit, generated drift, structural index summary,
-verify evidence, effectiveness evidence, first-agent task status, and platform
-contract without running target commands. Use `--json-report` or
-`--markdown-report` with a target-relative path to persist review evidence.
-
-`harnessforge plan --target . --since HEAD` is a read-only diff-aware
-verification planner. It maps changed files to detected or explicit project
-checks and does not execute them.
-
-Project-owned source records use `source-record.schema.json` and
-`source-record-example.json`. Keep them separate from the fixed
-`research-sources.json` allowlist.
-
-`roadmap.md` is the harness-owned roadmap and backlog boundary. Update it when
-planning decisions become accepted work, when roadmap items are implemented or
-intentionally deferred, and when release-prep scope changes.
-
-Run `harnessforge update --target . --apply` only when you want safe missing-file
-corrections. Existing files are preserved unless `--force` is passed.
-Treat generated files as project-owned generated files after review; use the
-manifest and drift report to distinguish template-owned changes from local
-project edits.
-
-Before enhancing project-owned instruction files, run
-`harnessforge enhance --target .` or
-`harnessforge enhance --target . --json`. The plan reports proposed addendum
-writes, canonical section coverage, review-required section/finding cleanup
-edits, placeholder patch previews, and findings for duplicate instructions,
-local absolute paths, user-specific tool mandates, and verification conflicts
-before files are changed. Patch previews are review-only and are not applied
-automatically. Use `harnessforge init --target . --enhance-existing` only when
-you are ready to append the reviewed HarnessForge quality addendum.
-
-Use `authoritative-facts.md` before updating more than one durable doc or state
-file for a routine change. It maps fact owners, product boundary types, and
-change-to-doc routing so the harness does not require broad manual doc edits
-for small changes.
-
-The optional CI workflow scaffold is a project-owned generated file. It is
-separate from the published HarnessForge Action runtime and from HarnessForge's
-live repository maintenance workflows.
-When that scaffold is generated, it runs a read-only `command: sync`
-preflight before audit. Verify-evidence gating is off by default, warning
-verdicts are advisory, and blocked readiness stops the workflow.
-
-Run `./init.sh --no-env` or `.\init.ps1 -NoEnv` when checks should run without
-common AI, cloud, or GitHub credentials in the process environment.
+- Treat generated files as project-owned generated files after review; use the
+  manifest and drift report to distinguish template-owned changes from local
+  project edits.
+- Use `authoritative-facts.md` before updating more than one durable doc or
+  state file for a routine change.
+- Keep `roadmap.md` as the harness-owned roadmap and backlog boundary unless
+  the project promotes a stronger planning system.
+- Keep project-owned source records in `source-record.schema.json` /
+  `source-record-example.json`; do not copy product-level source ledgers into
+  the target repo unless the owner adopts them.
+- The optional CI workflow scaffold is separate from the published HarnessForge
+  Action. When generated, it runs read-only `command: sync`; warning verdicts
+  are advisory, blocked readiness stops the workflow, and verify-evidence
+  gating is off by default.
+- Run `./init.sh --no-env` or `.\init.ps1 -NoEnv` when checks should run
+  without common AI, cloud, or GitHub credentials in the process environment.
 
 ## When To Add Harness
 
-Add a doc, script, test, or manifest rule when:
-
-- A setup or verification step is repeated.
-- A failure would be expensive if rediscovered in the next session.
-- A privacy, security, cost, data-loss, or release rule needs a hard gate.
-- A reviewer needs evidence that a claim matches current code.
-
-Do not add harness for style preference alone. Prefer the smallest durable guide
-or sensor that prevents the observed failure.
+Add a doc, script, test, or manifest rule only when a setup/check repeats, a
+rediscovered failure would be expensive, a privacy/security/cost/data-loss or
+release rule needs a hard gate, or a reviewer needs evidence that a claim
+matches current code. Prefer the smallest durable guide or sensor that prevents
+the observed failure.
 
 ## Bottleneck And Harness Debt
 
-Harness rots like code. Audit it regularly, keep stale instructions and unused
-sensors out, and pay down harness debt when failures repeat.
-
-When evaluating a harness change, controlled-variable exclusion tests can help:
-hold the model and task fixed, remove one subsystem at a time, and observe the
-performance drop. Use that as supporting evidence only. Locate the real
-bottleneck from failure records and attribution: unclear task, missing context,
-unreproducible environment, missing feedback, broken state, or tool access that
-is too narrow or too broad.
+Harness rots like code. Audit it regularly, remove stale instructions and
+unused sensors, and pay down harness debt when failures repeat. Use controlled-variable exclusion tests to support a harness change: hold the model and task
+fixed, remove one subsystem at a time, and observe the performance drop. Locate
+the real bottleneck from failure records and attribution.

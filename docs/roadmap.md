@@ -364,6 +364,13 @@ Surface impact:
   duplicate fact reporting, Action/CLI fan-out enforcement, and organized
   harness layout; avoid adding tests for every prose copy.
 
+Latest local startup compaction replaced append-only root state logs with
+current-state snapshots, reducing `progress.md` and `session-handoff.md` from
+2,557 combined lines to 153 combined lines while self-audit stays `100/100`.
+Local and generated startup routes now read compact state first and open
+heavier README, harness README, roadmap, and component-inventory docs only when
+the task touches those surfaces.
+
 Done condition met for the current pre-release contract. Reopen only if a
 routine low-risk change again needs broad manual doc/state edits.
 
@@ -413,13 +420,24 @@ Latest optimization evidence:
   `docs/harness/`: `README.md`, `authoritative-facts.md`, and `manifest.json`.
 - RunHaven's current flat harness has 29 top-level files under `docs/harness/`,
   which made manual review harder.
-- The generated file count is currently 37 because the zero-install repo skill
-  adds one file. Further token/file-write savings should come from deliberate
-  consolidation of overlapping lifecycle/status docs, not from deleting
-  review-required safety surfaces blindly.
+- The generated write count is currently 36 for the representative Python
+  target after removing the product-local source allowlist. Further token and
+  file-write savings should come from deliberate consolidation of overlapping
+  lifecycle/status docs, not from deleting review-required safety surfaces
+  blindly.
 - A rendered target with a real verification command audited at `100/100`, had
   zero stale flat-path references, and generated `AGENTS.md` stayed at 140
   lines.
+- Generated Markdown footprint was reduced from 85,839 bytes and 1,730 lines
+  to 69,009 bytes and 1,454 lines while preserving generated audit `100/100`.
+- Generated total artifact footprint is now 136,337 bytes and 2,911 lines,
+  down from 160,684 bytes and 4,190 lines at the start of the second
+  optimization pass. Generated targets no longer receive this repo's
+  product-local research source allowlist, and generated manifests are compact
+  machine-readable JSON.
+- Regression tests now cap generated Markdown below 70,000 bytes and 1,500
+  lines, and total generated output below 140,000 bytes and 3,000 lines for the
+  representative Python target.
 
 Surface impact:
 
@@ -436,9 +454,10 @@ Surface impact:
 
 Done condition met for the current generated-harness contract: generated docs
 distinguish project-owned canonical state from optional HarnessForge checks,
-and generated targets include a compact target-owned maintenance skill.
-Reopen only if quality passes show recurring confusion or unnecessary generated
-file churn.
+generated targets include a compact target-owned maintenance skill, and the
+default generated Markdown footprint is guarded. Reopen only if quality passes
+show recurring confusion, unnecessary generated file churn, or meaningful token
+bloat.
 
 ### Repo-Local Harness Layout Convergence
 

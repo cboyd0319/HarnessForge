@@ -1,14 +1,9 @@
 # Verification Matrix
 
-Use the smallest check set that can catch likely regressions for the change.
-Prefer local checks during active development. Remote CI is for reviewed
-branches, release/batch checkpoints, platform-specific confirmation, and cases
-where local checks cannot cover the risk.
-Use `sensor-registry.md` to confirm owner, source, purpose, and retirement
-conditions before promoting a check into a recurring gate.
-The default push/PR CI path should stay small; keep macOS and Windows remote
-checks as manual or release/batch platform checks unless this repo's risk
-requires every-push coverage.
+Use the smallest check set that can catch likely regressions. Prefer local
+checks during active development. Remote CI is for reviewed branches,
+release/batch checkpoints, platform confirmation, and gaps local checks cannot
+cover. Use `sensor-registry.md` before promoting a check into a recurring gate.
 
 Use an evidence ladder for completion:
 
@@ -24,7 +19,7 @@ risk, and next best evidence when a layer cannot run.
 | --- | --- |
 | Harness docs or templates | Inspect generated diff and run repo-owned docs or script checks; optionally run `harnessforge audit --target .` if available |
 | Python code | `python -m compileall .` plus project tests |
-| Node or web code | package manager `test`, `lint`, `typecheck`, or `build` scripts when present |
+| Node or web code | package manager `test`, `lint`, `typecheck`, or `build` when present |
 | Go code | `go test ./...` |
 | Rust code | `cargo test` |
 | Java code | `mvn test`, `./gradlew test`, or project equivalent |
@@ -33,8 +28,8 @@ risk, and next best evidence when a layer cannot run.
 | Agent-generated tests | Review test intent before implementation, reject stubbed or assertion-free tests, and confirm new tests fail before the fix when practical |
 | Security, auth, secrets, data loss, or billing | Focused tests, human review, rollback path, and least-privilege check |
 | Dependencies, tool versions, or workflow Actions | Pin check, primary-source version evidence, install smoke, and affected tests |
-| AI/RAG/agent tools, external data flow, auth, secrets, or deployment boundary | Update security boundary/threat model evidence, run focused abuse-case tests, self-audit, and affected local tests |
-| Training, demo, or intentionally vulnerable fixtures | Confirm owner/path and accepted risk, avoid automatic remediation unless in scope, and run targeted fixture tests |
+| AI/RAG/agent tools, external data, auth, secrets, or deployment | Update security boundary/threat model evidence and run focused abuse-case tests |
+| Training, demo, or intentionally vulnerable fixtures | Confirm owner/path/risk, avoid automatic remediation unless in scope, and run targeted fixture tests |
 
 ## Detected Commands
 
@@ -43,20 +38,14 @@ risk, and next best evidence when a layer cannot run.
 ## Verification Evidence Reports
 
 Use repo-owned commands as the default verification path. If HarnessForge is
-available, `harnessforge verify --target . --json` can produce a read-only
-plan, and `harnessforge verify --target . --json --run` can execute those
-checks explicitly.
+available, optional helper commands are:
 
-If HarnessForge is available, use `harnessforge plan --target . --since HEAD`
-to map changed files to a read-only verification plan before choosing which
-project checks to run. It uses `git diff` and does not execute target commands.
-
-If HarnessForge is available, use `harnessforge report --target .` when a
-reviewer needs one read-only snapshot that composes readiness, audit, drift,
-index, verify evidence, effectiveness evidence, first-agent status, and
-platform contract. Persist JSON or Markdown with target-relative
-`--json-report` or `--markdown-report` paths when the report is release or
-handoff evidence.
+| Need | Command |
+| --- | --- |
+| Read-only verify plan | `harnessforge verify --target . --json` |
+| Explicit runnable verify evidence | `harnessforge verify --target . --json --run` |
+| Diff-aware check selection | `harnessforge plan --target . --since HEAD` |
+| Unified review snapshot | `harnessforge report --target .` |
 
 To store runnable HarnessForge evidence without shell redirection when
 HarnessForge is available:
@@ -65,26 +54,13 @@ HarnessForge is available:
 harnessforge verify --target . --run --json-report docs/harness/evidence/verify-<date>.json
 ```
 
-When recording runnable evidence:
-
-- Store the JSON report under a target-relative report path such as
-  `docs/harness/evidence/verify-<date>.json`.
-- Review every check with `failed`, `timed_out`, or `blocked` status before
-  claiming success.
-- Treat stdout and stderr previews as diagnostics. Redact secrets and keep long
-  raw logs out of durable docs.
-- Prefer agent-oriented failure messages for custom sensors: what failed, why
-  the boundary matters, and where to repair.
-- The verify report proves configured project checks were planned or run. It
-  does not prove real-agent effectiveness, and it is optional unless the repo
-  owner adopts HarnessForge or its Action as a gate.
+When recording runnable evidence, store JSON under a target-relative report
+path such as `docs/harness/evidence/verify-<date>.json`; review every check
+with `failed`, `timed_out`, or `blocked` status before claiming success; redact
+secrets and keep long raw logs out of durable docs; prefer agent-oriented failure messages: what failed, why the boundary matters, and where to repair.
+Verify report output proves configured checks were planned or run; it does not prove real-agent effectiveness. It is optional unless the repo owner adopts HarnessForge or its Action as a gate.
 
 ## When Checks Cannot Run
 
-Record:
-
-- The command that could not run.
-- The exact reason.
-- The risk.
-- The next best check that did run.
-- Whether remote CI was intentionally skipped to control cost.
+Record the command, exact reason, risk, next best check that ran, and whether
+remote CI was intentionally skipped to control cost.

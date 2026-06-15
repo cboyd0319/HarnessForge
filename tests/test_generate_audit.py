@@ -136,6 +136,50 @@ class GenerateAuditTests(unittest.TestCase):
         self.assertNotIn("Invoke-Expression", init_ps1)
         self.assertEqual(result.overall, 100)
 
+    def test_generated_harness_markdown_footprint_stays_bounded(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "pyproject.toml").write_text(
+                "[project]\nname='demo'\n",
+                encoding="utf-8",
+            )
+            create_harness(
+                root,
+                commands=("python -m unittest discover -s tests",),
+            )
+            markdown = [
+                path
+                for path in root.rglob("*")
+                if path.is_file() and path.suffix.lower() == ".md"
+            ]
+            generated_files = [path for path in root.rglob("*") if path.is_file()]
+            sizes = {
+                path.relative_to(root).as_posix(): len(
+                    path.read_text(encoding="utf-8")
+                )
+                for path in markdown
+            }
+            line_count = sum(
+                len(path.read_text(encoding="utf-8").splitlines())
+                for path in markdown
+            )
+            total_bytes = sum(path.stat().st_size for path in generated_files)
+            total_lines = sum(
+                len(path.read_text(encoding="utf-8").splitlines())
+                for path in generated_files
+            )
+            result = audit_target(root)
+
+        self.assertEqual(result.overall, 100)
+        self.assertLess(total_bytes, 140_000)
+        self.assertLess(total_lines, 3_000)
+        self.assertLess(sum(sizes.values()), 70_000)
+        self.assertLess(line_count, 1_500)
+        self.assertFalse((root / "docs/harness/research/research-sources.json").exists())
+        self.assertLess(sizes["docs/harness/README.md"], 6_500)
+        self.assertLess(sizes["docs/harness/state/roadmap.md"], 8_000)
+        self.assertLess(sizes["AGENTS.md"], 6_000)
+
     def test_audit_respects_declared_macos_only_platform_contract(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -506,7 +550,7 @@ class GenerateAuditTests(unittest.TestCase):
         self.assertIn("docs/harness/boundaries/component-inventory.md", manifest["requiredFiles"])
         self.assertIn("scripts/check_pins.py", manifest["requiredFiles"])
         self.assertIn("docs/harness/release/release-controls.md", manifest["requiredFiles"])
-        self.assertIn("docs/harness/research/research-sources.json", manifest["requiredFiles"])
+        self.assertNotIn("docs/harness/research/research-sources.json", manifest["requiredFiles"])
         self.assertIn("docs/harness/state/roadmap.md", manifest["requiredFiles"])
         self.assertIn("docs/harness/feedback/sensor-registry.md", manifest["requiredFiles"])
         self.assertIn("docs/harness/research/source-record.schema.json", manifest["requiredFiles"])
@@ -808,7 +852,8 @@ class GenerateAuditTests(unittest.TestCase):
         schema_text = json.dumps(schema)
         self.assertIn("targetRelativePath", schema_text)
         self.assertIn("machine-local absolute paths", schema_text)
-        self.assertIn("docs/harness/research/research-sources.json", schema_text)
+        self.assertIn("project-owned records", schema_text)
+        self.assertFalse((root / "docs/harness/research/research-sources.json").exists())
         self.assertEqual(example["id"], "source-record-example")
         self.assertEqual(example["reviewStatus"], "REVIEW REQUIRED")
         self.assertEqual(

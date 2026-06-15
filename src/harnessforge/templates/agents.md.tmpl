@@ -5,14 +5,12 @@
 {{project_name}} uses a repo harness so coding agents can start with the right
 context, stay scoped, verify work, and leave a clean restart path.
 
-Core harness contract: instructions, tools, environment, state, and feedback
-are all required. Keep instructions map-like, tool access sufficient but least
-privileged, environment facts self-describing, state current across sessions,
-and verification commands explicit. Feedback usually has the best return, so
-fix missing or weak checks before adding broader process.
-Changing instruction, tool, filesystem, git, startup, verification, hook, lint,
-or evaluator surfaces changes the effective agent. Treat those as harness
-product changes.
+Core harness contract: instructions, tools, environment, state, and feedback are
+all required. Keep instructions map-like, tool access least privileged but
+useful, environment facts self-describing, state current, and verification
+commands explicit. Feedback usually has the best return. Changing instruction,
+tool, filesystem, git, startup, verification, hook, lint, or evaluator surfaces
+changes the effective agent.
 
 Detected stack: {{detected_stack}}
 Languages: {{languages}}
@@ -26,12 +24,14 @@ Detected project context:
 Startup path:
 
 1. Confirm the working directory.
-2. Read this file and `docs/harness/README.md`.
-3. Read `feature_list.json`, `progress.md`, and `session-handoff.md`.
-4. Check `docs/harness/state/roadmap.md` before selecting, deferring, or reshaping
-   backlog, release-prep, or product-scope work.
-5. Check `docs/harness/boundaries/component-inventory.md` before changing component
-   boundaries or verification routing.
+2. Read this file, `feature_list.json`, `progress.md`, and
+   `session-handoff.md`.
+3. Read `docs/harness/README.md` only when the task changes or reviews the
+   repo harness, generated docs, verification routing, or maintenance policy.
+4. Check `docs/harness/state/roadmap.md` before backlog, release-prep, or
+   product-scope work.
+5. Check `docs/harness/boundaries/component-inventory.md` before changing
+   component boundaries or verification routing.
 6. For harness-maintenance work, use `.agents/skills/harness/SKILL.md`; it is
    the repo-local zero-install playbook for improving this harness from repo
    files.
@@ -57,11 +57,9 @@ has real cost.
 - Follow the repository's existing language, framework, formatting, and helper
   patterns.
 - Prefer the smallest correct change. Preserve user changes and dirty work.
-- One feature or fix at a time unless `docs/harness/operations/multi-agent-orchestration.md`
-  defines separate owners.
+- One feature or fix at a time unless a reviewed plan defines separate owners.
 - Keep project-specific facts in repo docs, not in chat history.
-- Keep platform-specific instruction routers short. They should point to this
-  canonical repo instruction file instead of duplicating durable rules.
+- Keep platform-specific instruction routers short and pointed at this file.
 - Prefer repo-relative paths. Do not commit machine-specific or user-specific
   absolute local paths unless the user explicitly requests that exact path and
   durable evidence records why.
@@ -75,38 +73,25 @@ has real cost.
 
 ### Implementation Discipline
 
-Before writing code, stop at the first rung that solves the request:
+Before writing code, stop at the first rung that solves the request: no change,
+deletion, documentation, configuration, existing behavior, standard library,
+native platform feature, existing dependency, one clear local change, then
+minimum new code.
 
-1. Do not build if the goal can be met by no change, deletion, documentation,
-   configuration, or existing behavior.
-2. Use the standard library before custom code.
-3. Use native platform features before new libraries.
-4. Use existing project dependencies before adding dependencies.
-5. Prefer one clear local change over a new abstraction.
-6. Only then write the minimum code that satisfies the contract.
-
-Rules:
-
-- State assumptions and tradeoffs before coding when the request is ambiguous.
-- Do not add speculative features, configurability, abstractions, workflows, or
-  dependencies.
-- Keep every changed line traceable to the current objective. Avoid drive-by
-  refactors, style churn, and unrelated cleanup.
-- If an intentional simplification has a known ceiling, record the ceiling and
-  the upgrade path in nearby code, docs, or handoff notes.
-- Do not cut input validation at trust boundaries, data-loss prevention,
-  security, accessibility, platform parity, or explicit user requirements.
-- Non-trivial logic needs one focused runnable check. Trivial one-line edits can
-  rely on the existing relevant check.
+Rules: state assumptions for ambiguous work; avoid speculative features,
+configurability, abstractions, workflows, dependencies, drive-by refactors,
+style churn, and unrelated cleanup; record any intentional simplification
+ceiling; keep trust-boundary validation, data-loss prevention, security,
+accessibility, platform parity, and explicit requirements intact. Non-trivial
+logic needs one focused runnable check.
 
 ## Testing instructions
 
 - Do not claim done without verification evidence.
 - Prefer local linting, tests, pin checks, and audit before remote CI.
 - Add or update focused tests for changed behavior when practical.
-- For behavior changes, prefer a separate test-design step when practical.
-  Reject stubbed, assertion-free, or shortcut tests, and confirm new tests fail
-  before implementation when that failure is reliable and cheap to reproduce.
+- Reject stubbed, assertion-free, or shortcut tests; prefer fail-first tests
+  when practical.
 - Record skipped checks with reason and risk in durable state.
 - Definition Of Done: target behavior or documentation change is complete,
   acceptance criteria are satisfied, relevant checks ran, and the next session

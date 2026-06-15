@@ -948,11 +948,13 @@ def _environment_checks(
         "Containerfile",
         ".devcontainer/devcontainer.json",
     )
-    manifest_text = files.get("docs/harness/manifest.json", "")
-    explicit_generic_profile = any(
-        f'"detectedStack": "{stack}"' in manifest_text
-        for stack in ("generic", "docs", "monorepo", "shell", "swift")
-    )
+    explicit_generic_profile = manifest.get("detectedStack") in {
+        "generic",
+        "docs",
+        "monorepo",
+        "shell",
+        "swift",
+    }
     environment_candidates = [
         _manifest_agent_file(manifest),
         "AGENTS.md",
@@ -1279,7 +1281,12 @@ def _lifecycle_checks(
             ("Release Controls", "SBOM", "provenance", "Rollback"),
             "Release controls are documented",
         ),
-        _check(any_existing_key(files, "research_sources"), "Research source list exists"),
+        _check(
+            any_existing_key(files, "research_sources")
+            or any_existing_key(files, "sources")
+            or any_existing_key(files, "source_record_schema"),
+            "Research source list exists",
+        ),
         _check(any_existing_key(files, "entropy_control"), "Harness drift or entropy control doc exists"),
         _contains(lifecycle_text, ("update", "correction", "regular assessment", "audit"), "Ongoing update loop is documented"),
     ]

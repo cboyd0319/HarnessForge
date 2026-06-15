@@ -5,19 +5,17 @@ Last Updated: {{generated_date}}
 REVIEW REQUIRED: replace initial grades and gaps with project-specific quality
 evidence before relying on this document.
 
-Use this as a periodic codebase health snapshot. It is separate from the
-evaluator rubric: the rubric scores one work session, while this document scores
-the repo over time.
+Use this as a periodic codebase health snapshot. The evaluator rubric scores
+one work session; this document scores the repo over time.
 
 ## Domain Grades
 
-| Domain | Grade | Verification Status | Agent Legibility | Key Gaps |
-| --- | --- | --- | --- | --- |
-| Harness | B | Initial checks present | Clear startup path | Replace placeholder state with project-specific evidence |
-| Supply chain | B | Pin policy present | Dependency rules are explicit | Add project-specific lockfile or pin checks where applicable |
+| Domain | Grade | Verification Status | Key Gaps |
+| --- | --- | --- | --- |
+| Harness | B | Initial checks present | Replace placeholder state with project-specific evidence |
+| Supply chain | B | Pin policy present | Add project-specific lockfile or pin checks where applicable |
 
-Grades: A is strong, B is usable with known gaps, C needs targeted cleanup, D is
-unsafe to rely on without repair.
+Grades: A strong, B usable with gaps, C needs cleanup, D unsafe without repair.
 
 ## Architecture Layers
 
@@ -27,9 +25,8 @@ unsafe to rely on without repair.
 
 ## Harness Subsystem Health
 
-Review instructions, tools, environment, state, and feedback separately. Treat
-feedback as the first subsystem to repair when verification commands are
-missing, stale, or vague.
+Review instructions, tools, environment, state, and feedback separately. Repair
+feedback first when verification commands are missing, stale, or vague.
 
 | Subsystem | Status | Evidence | Next Improvement |
 | --- | --- | --- | --- |
@@ -63,9 +60,9 @@ cleanup impact, or agent effectiveness.
 
 ## Harness Simplification
 
-At least monthly, review one harness component and decide whether it is still
-useful. Keep it when it prevents repeated failures. Remove or merge it when it
-adds upkeep without improving verification, restartability, or scope control.
+Regularly review one harness component. Keep it when it prevents repeated
+failures. Remove or merge it when it adds upkeep without improving
+verification, restartability, or scope control.
 
 Structural harness scores do not prove real agent effectiveness. Record
 representative before/after agent-session evidence or benchmark notes before
