@@ -30,8 +30,14 @@ generated harness effectiveness, product-boundary enforcement, or verification.
 
 ## Latest Work
 
-- Reverified the generated/deployed repo skill against
-  `/Users/c/Downloads/specification.md`. The generated `SKILL.md` now keeps
+- Added first-agent lifecycle evidence for generated harnesses. New targets get
+  `docs/harness/evidence/first-agent-review.json`, and `harnessforge report`
+  plus readiness can classify the first deep harness review as pending,
+  completed, retired, blocked, invalid, or stale.
+- Added Agent Skills `.md` source references for the generated repo skill:
+  spec, best practices, description optimization, evaluation, and scripts.
+- Reverified the generated/deployed repo skill against the Agent Skills
+  specification. The generated `SKILL.md` now keeps
   file references one level deep by routing detailed repo paths through
   `.agents/skills/harness/references/repo-harness.md`.
 - Added generated manifest metadata and regression coverage for the bundled
@@ -41,12 +47,13 @@ generated harness effectiveness, product-boundary enforcement, or verification.
   security map, agent operating model, verification matrix, first-agent task,
   quality document, authoritative map, and root instructions.
 - Preserved generated safety surfaces while reducing representative generated
-  Markdown from 85,839 bytes and 1,730 lines to 69,009 bytes and 1,454 lines.
+  Markdown from 85,839 bytes and 1,730 lines to 69,927 bytes after adding
+  first-agent lifecycle evidence.
 - Removed the HarnessForge product-local research source allowlist from
   generated targets, compacted generated/local manifests, and shortened the
   generated harness skill. Representative generated total output is now
-  136,337 bytes and 2,911 lines, down from 160,684 bytes and 4,190 lines at the
-  start of the second pass.
+  139,404 bytes after adding first-agent lifecycle evidence, down from 160,684
+  bytes and 4,190 lines at the start of the second pass.
 - Replaced the 913-line repo-local `remaining-ideas-research.md` history note
   with an 86-line current-state summary. Active `docs/harness` Markdown is now
   2,764 lines, down from 3,589 lines before this pass.
@@ -63,21 +70,24 @@ generated harness effectiveness, product-boundary enforcement, or verification.
 
 ## Verification
 
-Latest spec-alignment verification:
+Latest lifecycle/spec-alignment verification:
 
-- `PYTHONPATH=src:. python3 -m unittest tests.test_generate_audit`
 - `PYTHONPATH=src:. python3 -m unittest discover -s tests`
+- `PYTHONPATH=src:. python3 -m unittest tests.test_cli tests.test_generate_audit`
 - explicit Agent Skills spec validator for fresh render and RunHaven deployed
   skill
 - fresh generated-target `harnessforge audit --min-score 85`
+- HarnessForge `harnessforge audit --target . --min-score 85`
 - RunHaven `harnessforge audit --min-score 85`
 - RunHaven manifest JSON validation
+- JSON validation for `feature_list.json` and `docs/harness/manifest.json`
 - HarnessForge and RunHaven `git diff --check`
 
-Results: 247 unit tests passed, fresh generated skill spec validation passed,
+Results: 250 unit tests passed, focused first-agent lifecycle and generated
+tests passed with 137 tests, fresh generated skill spec validation passed,
 RunHaven deployed skill spec validation passed, fresh generated-target audit
-was `93/100` with only the expected no-project-command warning, RunHaven audit
-was `100/100`, and diff hygiene passed.
+was `100/100`, HarnessForge self-audit was `100/100`, RunHaven audit was
+`100/100`, and diff hygiene passed.
 
 Earlier optimization verification also included:
 
@@ -94,7 +104,6 @@ Earlier optimization verification also included:
 
 Continue accepted pre-release backlog before release prep:
 
-- first-agent lifecycle evidence
 - instruction-quality and signal-to-noise reporting
 - compact repo map and SBOM-aware detection or adapter design
 - Action summary polish

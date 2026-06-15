@@ -8,6 +8,10 @@ from typing import Any
 from .audit import audit_target, audit_to_dict
 from .detect import detect_project
 from .effectiveness import build_effectiveness_assessment
+from .first_agent import (
+    analyze_first_agent_lifecycle,
+    first_agent_lifecycle_to_dict,
+)
 from .harness_paths import existing_harness_path, harness_path
 from .indexer import build_index_report
 from .planner import DiffPlanReport, build_diff_plan
@@ -66,7 +70,8 @@ def build_report(
     readiness_payload = readiness_to_dict(readiness)
     audit_payload = audit_to_dict(audit)
     manifest = _read_manifest(profile.root)
-    first_agent = _first_agent_task_status(profile.root)
+    first_agent_lifecycle = analyze_first_agent_lifecycle(profile.root, profile.files)
+    first_agent = _first_agent_task_status(first_agent_lifecycle)
     diff_plan = (
         build_diff_plan(profile, since=since, explicit_commands=explicit_commands)
         if since
@@ -173,7 +178,9 @@ def format_report(payload: dict[str, Any]) -> str:
             "## First-Agent Task",
             "",
             f"- Status: `{payload['firstAgentTask']['status']}`",
+            f"- Lifecycle: `{payload['firstAgentTask']['lifecycle']['status']}`",
             f"- Path: `{payload['firstAgentTask']['path'] or 'none'}`",
+            f"- Evidence: `{payload['firstAgentTask']['lifecycle']['evidencePath'] or 'none'}`",
             "",
             "## Platform",
             "",
@@ -284,28 +291,12 @@ def _effectiveness_summary(effectiveness: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def _first_agent_task_status(root: Path) -> dict[str, Any]:
-    relative_path = existing_harness_path(root, "first_agent_task")
-    path = root / relative_path
-    if not path.exists():
-        return {
-            "path": None,
-            "status": "absent",
-            "reviewRequired": False,
-        }
-    try:
-        content = path.read_text(encoding="utf-8")
-    except OSError:
-        return {
-            "path": relative_path,
-            "status": "unreadable",
-            "reviewRequired": True,
-        }
-    review_required = "REVIEW REQUIRED" in content
+def _first_agent_task_status(lifecycle: Any) -> dict[str, Any]:
     return {
-        "path": relative_path,
-        "status": "pending_review" if review_required else "reviewed_or_retired",
-        "reviewRequired": review_required,
+        "path": lifecycle.task_path,
+        "status": lifecycle.task_status,
+        "reviewRequired": lifecycle.task_review_required,
+        "lifecycle": first_agent_lifecycle_to_dict(lifecycle),
     }
 
 
@@ -719,11 +710,7 @@ def _next_actions(
             "Review generated-file drift with harnessforge update --target <repo> --drift-report."
         )
     actions.extend(effectiveness["nextActions"])
-    if first_agent["status"] == "pending_review":
-        actions.append(
-            "Complete or retire "
-            f"{first_agent['path']} after repo-specific harness review."
-        )
+    actions.extend(first_agent["lifecycle"]["nextActions"])
     if docs_fanout["authoritativeMap"]["status"] == "missing":
         actions.append(
             "Add docs/harness/authoritative-facts.md to reduce harness docs fan-out."

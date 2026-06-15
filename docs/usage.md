@@ -75,10 +75,10 @@ harnessforge report --target /path/to/repo --markdown-report docs/harness/eviden
 
 `report` combines readiness, structural audit score, generated drift,
 structural index summary, stored verify evidence, stored effectiveness
-evidence, first-agent task status, platform contract, and docs fan-out routing
-status. It is read-only by default, does not run target repository commands,
-and writes files only when a target-relative `--json-report` or
-`--markdown-report` path is supplied.
+evidence, first-agent task lifecycle evidence, platform contract, and docs
+fan-out routing status. It is read-only by default, does not run target
+repository commands, and writes files only when a target-relative
+`--json-report` or `--markdown-report` path is supplied.
 
 Use `--require-verify-evidence` when the report should include release-gate
 verify evidence blockers. Use `--command` when detection cannot infer
@@ -302,8 +302,10 @@ permissions, triggers, branches, credential surfaces, and full-length commit
 SHAs before relying on the generated workflow.
 
 Generated harnesses also include `docs/harness/state/first-agent-task.md` and
+`docs/harness/evidence/first-agent-review.json`, plus
 `.agents/skills/harness/SKILL.md`. Treat them as review-required first
-improvement guidance for the target repo harness, not as automatic policy.
+improvement guidance and evidence for the target repo harness, not as automatic
+policy.
 
 ## Audit
 

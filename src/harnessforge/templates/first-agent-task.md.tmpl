@@ -1,75 +1,61 @@
 # First-Agent Harness Improvement Task
 
 REVIEW REQUIRED: use this during the first agent session after HarnessForge
-generates the harness. Replace or retire this task after the project accepts
-the improved harness.
+generates the harness. Replace or retire it after maintainers accept the
+repo-specific harness.
 
 ## Goal
 
-Deepen this repo's harness beyond what static generation can know. Use the
-generated structure as a starting point, then inspect the real repository to
-improve guidance, readiness signals, checks, ownership, and review boundaries.
+Deepen the generated harness from real repo evidence before unrelated feature
+work. Confirm purpose, organization, startup, verification, current work, and
+source-of-truth routing from repo files.
 
 ## Inputs
 
-Start with `{{agent_file}}`, `docs/harness/README.md`, component inventory,
-change contract, verification matrix, sensor registry, evidence log, security
-boundary map, `feature_list.json`, `progress.md`, and `session-handoff.md`.
+Use `{{agent_file}}`, `feature_list.json`, `progress.md`,
+`session-handoff.md`, `docs/harness/README.md`,
+`docs/harness/evidence/first-agent-review.json`, component inventory,
+verification matrix, sensor registry, evidence log, and security boundary map.
 
 ## Work
 
-1. Confirm the generated harness matches the real repo shape.
-2. Run a fresh-session test from repo files only: identify what the project is,
-   how it is organized, how it starts, how it is verified, and what work is
-   current.
-3. Treat initialization as its own phase: confirm startup, one trustworthy
-   verification path, progress visibility, and source-of-truth routing before
-   unrelated feature work.
-4. Improve omitted component, package, app, service, job, or docs-root
-   boundaries.
-5. Route specs, plans, work items, workflows, ADRs, release notes, localized
-   docs, and project docs to their source of truth. If localized docs exist,
-   identify the source-of-truth locale or canonical docs root first.
-6. Improve verification guidance with repo-owned commands that maintainers can
-   run locally and in CI.
-7. Update the verification matrix, sensor registry, and evidence log with
-   realistic checks, owners, review cadence, and retirement conditions.
-8. Improve runtime and process observability notes so runtime signals show what
-   happened and plans, contracts, rubrics, and evidence show why a change should
-   be accepted.
-9. Improve security boundary notes for secrets, credentials, permissions,
-   deployment, data flows, external services, and cost-incurring tools.
-10. Add source, applicability, and retirement notes for durable rules accepted
-    into root instructions or harness docs.
-11. Record uncertain project-specific assumptions as review-required notes until
-    a maintainer accepts them.
+1. Run a fresh-session test: answer what the project is, how it is organized,
+   how it starts, how it is verified, and what work is current.
+2. Preserve initialization as its own phase. Confirm one trustworthy startup
+   path, one verification path, progress visibility, and source-of-truth locale
+   or docs root before feature work.
+3. Improve omitted component inventory boundaries, readiness signals,
+   verification matrix commands, sensor registry ownership, evidence log
+   routing, security boundary notes, and runtime and process observability.
+4. Add source, applicability, and retirement notes for durable rules accepted
+   into root instructions or harness docs.
+5. Keep uncertain project-specific assumptions as review-required notes until a
+   maintainer accepts them.
+6. Update `docs/harness/evidence/first-agent-review.json` to `completed`,
+   `retired`, or `blocked`, including reviewed surfaces, evidence refs,
+   remaining review, and the task retirement decision.
 
 ## Boundaries
 
-- Do not overwrite project-owned instructions unless the user explicitly asks
-  for that change or passes force behavior.
-- Do not run target commands until the repo has an approved verification route
-  for that command.
-- Do not add user-specific tool preferences, local research mandates, personal
-  memory paths, MCP configs, or machine-specific absolute paths.
-- Do not install dependencies, create autonomous workflows, push branches, open
-  pull requests, rotate secrets, or change cloud resources unless explicitly
-  requested.
+- Do not overwrite project-owned instructions unless the user asks or force
+  behavior is explicit.
+- Do not run target commands until the repo has an approved verification route.
+- Do not add personal tool mandates, local paths, autonomous workflows,
+  credential work, pushes, PRs, installs, or cloud changes unless requested.
 - Do not treat structural audit score as proof of real-agent effectiveness.
-- Do not mark features, roadmap items, or tasks passing from agent confidence
-  alone. Behavior, verification, status, and evidence must agree.
+- Behavior, verification, status, and evidence must agree before passing or
+  shipping.
 
 ## Acceptance
 
 - Root instructions stay compact and route durable detail into `docs/harness/`.
-- Component inventory names important boundaries known after review.
+- Component inventory, verification matrix, sensor registry, evidence log, and
+  security boundary docs reflect the repo after review.
 - The fresh-session test has answer sources for purpose, organization, startup,
-  verification, and current work.
-- The verification matrix identifies the smallest reliable checks.
-- The sensor registry records owner, source, purpose, and retirement condition.
+  verification, current work, and source-of-truth locale.
 - Important failures say what failed, why the boundary matters, and where to
   repair.
-- The evidence log records what was reviewed, what changed, what checks ran,
-  and what still needs maintainer review.
+- `docs/harness/evidence/first-agent-review.json` records the lifecycle
+  outcome and no longer has pending fields after maintainer review.
 - `progress.md` and `session-handoff.md` capture objective, blockers,
   verification evidence, and next step.

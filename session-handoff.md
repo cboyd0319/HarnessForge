@@ -9,18 +9,25 @@ generated harness quality, product boundaries, and verification evidence intact.
 
 ## What Changed
 
-- Generated repo skills were rechecked against
-  `/Users/c/Downloads/specification.md`. `SKILL.md` now uses a one-level
+- First-agent lifecycle evidence is implemented. Generated targets include
+  `docs/harness/evidence/first-agent-review.json`, and report/readiness
+  classify first-agent review as pending, completed, retired, blocked, invalid,
+  or stale.
+- Agent Skills `.md` references are now treated as the canonical source URLs
+  for generated repo skill guidance.
+- Generated repo skills were rechecked against the Agent Skills specification.
+  `SKILL.md` now uses a one-level
   `references/repo-harness.md` route, with detailed repo paths in the bundled
   reference file.
 - RunHaven's deployed skill copy was updated to the same shape during the
   active harness migration; RunHaven audit is now `100/100`.
 - Generated target harness Markdown was compacted without deleting safety
   surfaces.
-- Representative generated Markdown is now 69,009 bytes and 1,454 lines, down
-  from 85,839 bytes and 1,730 lines.
-- Representative generated total output is now 136,337 bytes and 2,911 lines,
-  down from 160,684 bytes and 4,190 lines at the start of the second pass.
+- Representative generated Markdown is now 69,927 bytes after adding
+  first-agent lifecycle evidence, down from 85,839 bytes and 1,730 lines.
+- Representative generated total output is now 139,404 bytes after adding
+  first-agent lifecycle evidence, down from 160,684 bytes and 4,190 lines at
+  the start of the second pass.
 - Generated targets no longer receive this repo's product-local research
   source allowlist; generated manifests are compact machine-readable JSON.
 - Repo-local `remaining-ideas-research.md` was compacted from 913 lines to 86
@@ -42,6 +49,7 @@ generated harness quality, product boundaries, and verification evidence intact.
 - `src/harnessforge/templates/harness-readme.md.tmpl`
 - `src/harnessforge/templates/harness-skill.md.tmpl`
 - `src/harnessforge/templates/harness-skill-reference.md.tmpl`
+- `src/harnessforge/templates/first-agent-review.json.tmpl`
 - `src/harnessforge/templates/quality-document.md.tmpl`
 - `src/harnessforge/templates/roadmap.md.tmpl`
 - `src/harnessforge/templates/security-boundary-map.md.tmpl`
@@ -51,8 +59,12 @@ generated harness quality, product boundaries, and verification evidence intact.
 - `src/harnessforge/templates/verification-matrix.md.tmpl`
 - `src/harnessforge/audit.py`
 - `src/harnessforge/generate.py`
+- `src/harnessforge/first_agent.py`
 - `src/harnessforge/harness_paths.py`
+- `src/harnessforge/readiness.py`
+- `src/harnessforge/report.py`
 - `tests/test_generate_audit.py`
+- `tests/test_cli.py`
 - `docs/harness/manifest.json`
 - `docs/harness/evidence/evidence-log.md`
 - `docs/harness/research/source-record.schema.json`
@@ -66,13 +78,16 @@ generated harness quality, product boundaries, and verification evidence intact.
 Latest checks:
 
 - focused generated/audit tests passed with 56 tests
-- full unit discovery passed with 247 tests
+- focused first-agent lifecycle and generated tests passed with 137 tests
+- full unit discovery passed with 250 tests
 - explicit Agent Skills spec validation passed for a fresh render and the
   RunHaven deployed skill
-- fresh generated-target audit passed threshold at `93/100`; the only warning
-  was the expected lack of a project-specific command in the temporary repo
+- fresh generated-target audit passed at `100/100`
+- HarnessForge self-audit passed at `100/100`
 - RunHaven audit passed at `100/100`
 - HarnessForge and RunHaven `git diff --check` passed
+- representative generated Markdown is 69,927 bytes and total generated output
+  is 139,404 bytes after adding first-agent evidence
 
 Earlier optimization checks also passed before the spec adjustment:
 
@@ -106,6 +121,6 @@ Rerun focused tests after any further template or scoring edit.
 
 ## Next Session
 
-If the user wants more backlog work, continue with first-agent lifecycle
-evidence or instruction-quality and signal-to-noise reporting. If the user asks
-to checkpoint, commit the current optimization slice first.
+If the user wants more backlog work, continue with instruction-quality and
+signal-to-noise reporting. If the user asks to checkpoint, commit the current
+slice first.

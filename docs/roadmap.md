@@ -254,21 +254,25 @@ Optional behavior can add an explicit SBOM adapter later. That adapter should:
 
 ### First-Agent Task Lifecycle
 
-Generated harnesses now include `docs/harness/state/first-agent-task.md`. Add a
-lifecycle around that task so projects can tell whether the first deep harness
-review happened.
+Status: implemented as advisory report/readiness evidence.
 
-Candidate behavior:
+Generated harnesses include `docs/harness/state/first-agent-task.md` and
+`docs/harness/evidence/first-agent-review.json` so projects can tell whether
+the first deep harness review is pending, completed, retired, blocked, invalid,
+or stale.
 
-- readiness warning when the task exists but no review evidence is present;
-- optional review evidence template under `docs/harness/evidence/`;
-- `harnessforge report` summary of completed, pending, or stale first-agent
-  review state;
-- audit or sync checks that keep this advisory unless the target repo opts into
-  making it a gate.
+Implemented behavior:
 
-The task should have a clear retirement path once project maintainers accept
-repo-specific harness improvements.
+- readiness warning when the task exists but first-agent review evidence is
+  missing;
+- generated review evidence placeholder under `docs/harness/evidence/`;
+- `harnessforge report` summary of completed, pending, stale, invalid, blocked,
+  or retired first-agent review state;
+- advisory by default; audit and sync do not hard-gate this unless a future
+  target repo opts into a stricter policy.
+
+The task has a retirement path once project maintainers accept repo-specific
+harness improvements.
 
 The first-agent lifecycle should preserve initialization as its own phase. A
 newly generated harness should ask the first agent to confirm runnable startup,

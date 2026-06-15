@@ -66,9 +66,9 @@ uses `git diff` and does not execute target commands.
 
 Use `harnessforge report --target .` when a reviewer needs one read-only
 snapshot that composes readiness, audit, drift, index, verify evidence,
-effectiveness evidence, first-agent status, and platform contract. Persist
-JSON or Markdown with target-relative `--json-report` or `--markdown-report`
-paths when the report is release or handoff evidence.
+effectiveness evidence, first-agent lifecycle evidence, and platform contract.
+Persist JSON or Markdown with target-relative `--json-report` or
+`--markdown-report` paths when the report is release or handoff evidence.
 
 To store runnable evidence without shell redirection:
 

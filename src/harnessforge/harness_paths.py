@@ -12,6 +12,7 @@ CANONICAL_HARNESS_PATHS = {
     "authoritative_facts": "docs/harness/authoritative-facts.md",
     "feature_list_schema": "docs/harness/schemas/feature-list.schema.json",
     "first_agent_task": "docs/harness/state/first-agent-task.md",
+    "first_agent_review": "docs/harness/evidence/first-agent-review.json",
     "roadmap": "docs/harness/state/roadmap.md",
     "clean_state_checklist": "docs/harness/state/clean-state-checklist.md",
     "evidence_log": "docs/harness/evidence/evidence-log.md",

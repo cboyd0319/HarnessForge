@@ -16,6 +16,11 @@ from .effectiveness_inventory import (
     analyze_effectiveness_inventory,
     effectiveness_item_to_dict,
 )
+from .first_agent import (
+    FirstAgentLifecycleReport,
+    analyze_first_agent_lifecycle,
+    first_agent_lifecycle_to_dict,
+)
 from .governance_inventory import (
     GovernanceItem,
     analyze_governance_inventory,
@@ -76,6 +81,7 @@ class ReadinessReport:
     effectiveness_inventory: tuple[EffectivenessItem, ...]
     verify_evidence: VerifyEvidenceReport
     verify_evidence_required: bool
+    first_agent_lifecycle: FirstAgentLifecycleReport
 
 
 def inspect_readiness(
@@ -90,6 +96,7 @@ def inspect_readiness(
     governance_inventory = analyze_governance_inventory(profile.files)
     effectiveness_inventory = analyze_effectiveness_inventory(profile.files)
     verify_evidence = analyze_verify_evidence(profile.root, profile.files)
+    first_agent_lifecycle = analyze_first_agent_lifecycle(profile.root, profile.files)
     runnable_checks = tuple(
         command
         for command in profile.verification_commands
@@ -137,6 +144,7 @@ def inspect_readiness(
     warnings.extend(governance_inventory.warnings)
     warnings.extend(effectiveness_inventory.warnings)
     warnings.extend(verify_evidence.warnings)
+    warnings.extend(first_agent_lifecycle.warnings)
     if require_verify_evidence:
         verify_evidence_blockers = verify_evidence_gate_blockers(verify_evidence)
         blocked.extend(verify_evidence_blockers)
@@ -167,6 +175,7 @@ def inspect_readiness(
             "Review effectiveness eval inventory before making harness performance claims."
         )
     next_actions.extend(verify_evidence.next_actions)
+    next_actions.extend(first_agent_lifecycle.next_actions)
     instruction_text = _instruction_text(profile.root, file_set)
     if instruction_text and not instruction_routes_to_specs(instruction_text, spec_report):
         review_required.append(
@@ -213,6 +222,7 @@ def inspect_readiness(
         effectiveness_inventory=effectiveness_inventory.items,
         verify_evidence=verify_evidence,
         verify_evidence_required=require_verify_evidence,
+        first_agent_lifecycle=first_agent_lifecycle,
     )
 
 
@@ -244,6 +254,9 @@ def readiness_to_dict(report: ReadinessReport) -> dict[str, Any]:
         ],
         "verifyEvidence": verify_evidence_report_to_dict(report.verify_evidence),
         "verifyEvidenceRequired": report.verify_evidence_required,
+        "firstAgentLifecycle": first_agent_lifecycle_to_dict(
+            report.first_agent_lifecycle
+        ),
     }
 
 

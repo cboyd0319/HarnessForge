@@ -413,6 +413,9 @@ class GenerateAuditTests(unittest.TestCase):
         self.assertNotRegex(generated_text, r"(?i)\bself-heal(?:ing)?\b")
         self.assertNotIn("Local production harness patterns", generated_text)
         self.assertIn("Reviewed production harness patterns", sources)
+        self.assertIn("https://agentskills.io/specification.md", sources)
+        self.assertIn("https://agentskills.io/skill-creation/best-practices.md", sources)
+        self.assertIn("https://agentskills.io/skill-creation/evaluating-skills.md", sources)
         self.assertIn("project checkpoints", generated_text)
 
     def test_generated_pin_checker_is_advisory_unless_strict(self) -> None:
@@ -556,6 +559,7 @@ class GenerateAuditTests(unittest.TestCase):
         self.assertIn("docs/harness/feedback/sensor-registry.md", manifest["requiredFiles"])
         self.assertIn("docs/harness/research/source-record.schema.json", manifest["requiredFiles"])
         self.assertIn("docs/harness/research/source-record-example.json", manifest["requiredFiles"])
+        self.assertIn("docs/harness/evidence/first-agent-review.json", manifest["requiredFiles"])
         self.assertIn(".agents/skills/harness/SKILL.md", manifest["requiredFiles"])
         self.assertIn(
             ".agents/skills/harness/references/repo-harness.md",
@@ -586,6 +590,7 @@ class GenerateAuditTests(unittest.TestCase):
             r"^[0-9a-f]{64}$",
         )
         self.assertIn("docs/harness/boundaries/feature-privacy-labels.json", manifest["reviewRequired"])
+        self.assertIn("docs/harness/evidence/first-agent-review.json", manifest["reviewRequired"])
         self.assertIn(".agents/skills/harness/SKILL.md", manifest["reviewRequired"])
 
     def test_generated_placeholders_mark_project_review_required(self) -> None:
@@ -694,6 +699,11 @@ class GenerateAuditTests(unittest.TestCase):
             task = (root / "docs/harness/state/first-agent-task.md").read_text(
                 encoding="utf-8"
             )
+            review = json.loads(
+                (root / "docs/harness/evidence/first-agent-review.json").read_text(
+                    encoding="utf-8"
+                )
+            )
             skill = (root / ".agents/skills/harness/SKILL.md").read_text(
                 encoding="utf-8"
             )
@@ -708,6 +718,8 @@ class GenerateAuditTests(unittest.TestCase):
         self.assertIn(".agents/skills/harness/SKILL.md", agents)
         self.assertIn("docs/harness/state/first-agent-task.md", manifest["requiredFiles"])
         self.assertIn("docs/harness/state/first-agent-task.md", manifest["reviewRequired"])
+        self.assertIn("docs/harness/evidence/first-agent-review.json", manifest["requiredFiles"])
+        self.assertIn("docs/harness/evidence/first-agent-review.json", manifest["reviewRequired"])
         self.assertIn(".agents/skills/harness/SKILL.md", manifest["requiredFiles"])
         self.assertIn(
             ".agents/skills/harness/references/repo-harness.md",
@@ -733,6 +745,12 @@ class GenerateAuditTests(unittest.TestCase):
         self.assertIn("Behavior, verification, status, and evidence", task)
         self.assertIn("Do not overwrite project-owned instructions", task)
         self.assertIn("Do not run target commands", task)
+        self.assertEqual(review["schemaVersion"], "harnessforge.firstAgentReview.v1")
+        self.assertEqual(review["status"], "pending")
+        self.assertEqual(review["taskPath"], "docs/harness/state/first-agent-task.md")
+        self.assertIn("freshSession", review)
+        self.assertIn("evidenceRefs", review["verification"])
+        self.assertTrue(any("REVIEW REQUIRED" in item for item in review["remainingReview"]))
         self.assertNotIn("Antigravity", task)
         self.assertNotIn("AGY", task)
         self.assertIn("name: harness", skill)

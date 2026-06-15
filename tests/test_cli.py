@@ -61,6 +61,45 @@ def _write_verify_report(
     return path
 
 
+def _write_first_agent_review(
+    root: Path,
+    *,
+    status: str = "completed",
+) -> Path:
+    path = root / "docs/harness/evidence/first-agent-review.json"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    payload = {
+        "schemaVersion": "harnessforge.firstAgentReview.v1",
+        "status": status,
+        "reviewedAt": "2026-06-15T05:00:00Z",
+        "reviewedBy": ["maintainer"],
+        "taskPath": "docs/harness/state/first-agent-task.md",
+        "freshSession": {
+            "purpose": "verified",
+            "organization": "verified",
+            "startup": "verified",
+            "verification": "verified",
+            "currentWork": "verified",
+            "sourceOfTruth": "verified",
+        },
+        "updatedSurfaces": [
+            "AGENTS.md",
+            "docs/harness/feedback/verification-matrix.md",
+        ],
+        "verification": {
+            "commands": ["python -m compileall ."],
+            "evidenceRefs": ["docs/harness/evidence/verify-2026-06-15.json"],
+        },
+        "remainingReview": [],
+        "retirement": {
+            "taskRetired": True,
+            "reason": "Project-specific harness guidance was accepted.",
+        },
+    }
+    path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+    return path
+
+
 def _git(root: Path, *args: str) -> None:
     subprocess.run(
         ["git", "-C", str(root), *args],
@@ -711,6 +750,11 @@ class CliTests(unittest.TestCase):
         self.assertEqual(payload["verifyEvidence"]["latest"]["verdict"], "passed")
         self.assertEqual(payload["effectiveness"]["verdict"], "blocked")
         self.assertEqual(payload["firstAgentTask"]["status"], "pending_review")
+        self.assertEqual(payload["firstAgentTask"]["lifecycle"]["status"], "pending")
+        self.assertEqual(
+            payload["firstAgentTask"]["lifecycle"]["evidencePath"],
+            "docs/harness/evidence/first-agent-review.json",
+        )
         self.assertEqual(payload["platform"]["contract"], "cross-platform")
         self.assertEqual(
             payload["docsFanout"]["authoritativeMap"]["status"], "pending_review"
@@ -725,6 +769,101 @@ class CliTests(unittest.TestCase):
             payload["docsFanout"]["duplicateFacts"]["summary"]["blocks"], 0
         )
         self.assertIn("Run harnessforge report", payload["nextActions"][0])
+        self.assertTrue(
+            any("first-agent-review.json" in item for item in payload["nextActions"])
+        )
+
+    def test_report_json_summarizes_completed_first_agent_review(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            with contextlib.redirect_stdout(io.StringIO()):
+                init_code = main(
+                    [
+                        "init",
+                        "--target",
+                        str(root),
+                        "--command",
+                        "python -m compileall .",
+                    ]
+                )
+            _write_verify_report(root, "docs/harness/evidence/verify-2026-06-15.json")
+            _write_first_agent_review(root)
+            task = root / "docs/harness/state/first-agent-task.md"
+            task.write_text(
+                task.read_text(encoding="utf-8").replace("REVIEW REQUIRED: ", ""),
+                encoding="utf-8",
+            )
+            stdout = io.StringIO()
+            with contextlib.redirect_stdout(stdout):
+                code = main(["report", "--target", str(root), "--json"])
+
+            payload = json.loads(stdout.getvalue())
+
+        self.assertEqual(init_code, 0)
+        self.assertEqual(code, 0)
+        self.assertEqual(payload["firstAgentTask"]["status"], "reviewed_or_retired")
+        lifecycle = payload["firstAgentTask"]["lifecycle"]
+        self.assertEqual(lifecycle["status"], "completed")
+        self.assertTrue(lifecycle["schemaValid"])
+        self.assertEqual(lifecycle["blockers"], [])
+        self.assertEqual(lifecycle["warnings"], [])
+
+    def test_readiness_warns_when_first_agent_evidence_is_missing(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            with contextlib.redirect_stdout(io.StringIO()):
+                main(
+                    [
+                        "init",
+                        "--target",
+                        str(root),
+                        "--command",
+                        "python -m compileall .",
+                    ]
+                )
+            (root / "docs/harness/evidence/first-agent-review.json").unlink()
+            stdout = io.StringIO()
+            with contextlib.redirect_stdout(stdout):
+                code = main(["inspect", "--target", str(root), "--readiness", "--json"])
+
+            payload = json.loads(stdout.getvalue())
+
+        self.assertEqual(code, 0)
+        self.assertEqual(payload["verdict"], "warning")
+        self.assertEqual(payload["firstAgentLifecycle"]["status"], "pending")
+        self.assertTrue(
+            any("first-agent review evidence is missing" in item for item in payload["warnings"])
+        )
+
+    def test_report_json_marks_stale_first_agent_review_evidence(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            with contextlib.redirect_stdout(io.StringIO()):
+                main(
+                    [
+                        "init",
+                        "--target",
+                        str(root),
+                        "--command",
+                        "python -m compileall .",
+                    ]
+                )
+            evidence = root / "docs/harness/evidence/first-agent-review.json"
+            stale_timestamp = 1
+            os.utime(evidence, (stale_timestamp, stale_timestamp))
+            stdout = io.StringIO()
+            with contextlib.redirect_stdout(stdout):
+                code = main(["report", "--target", str(root), "--json"])
+
+            payload = json.loads(stdout.getvalue())
+
+        self.assertEqual(code, 0)
+        lifecycle = payload["firstAgentTask"]["lifecycle"]
+        self.assertEqual(lifecycle["status"], "stale")
+        self.assertEqual(lifecycle["evidenceStatus"], "pending")
+        self.assertTrue(
+            any("stale" in item for item in lifecycle["warnings"])
+        )
 
     def test_report_since_reports_docs_fanout_and_duplicate_facts(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
