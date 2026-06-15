@@ -224,6 +224,219 @@ class CliTests(unittest.TestCase):
             any(item["language"] == "python" for item in payload["languageBreakdown"])
         )
 
+    def test_effectiveness_json_assesses_reviewable_evidence_without_writing(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "pyproject.toml").write_text(
+                "[project]\nname='demo'\n",
+                encoding="utf-8",
+            )
+            evidence_dir = root / "docs" / "harness" / "evidence"
+            evidence_dir.mkdir(parents=True)
+            (evidence_dir / "effectiveness-context.json").write_text(
+                json.dumps(
+                    {
+                        "schemaVersion": "harnessforge.effectivenessEvidence.v1",
+                        "claim": {
+                            "id": "context-router-heldout",
+                            "summary": "Candidate improves held-out task success.",
+                            "scope": "Instruction-router harness surface.",
+                            "verdict": "candidate_better",
+                        },
+                        "target": {"name": "demo", "root": None},
+                        "candidate": {
+                            "id": "candidate-v1",
+                            "description": "Candidate router.",
+                            "changedSurfaces": ["mechanism"],
+                            "snapshot": {
+                                "snapshotId": "candidate-v1",
+                                "artifactRefs": ["AGENTS.md"],
+                            },
+                        },
+                        "baseline": {
+                            "id": "baseline-v1",
+                            "description": "Baseline router.",
+                            "changedSurfaces": [],
+                            "snapshot": {
+                                "snapshotId": "baseline-v1",
+                                "artifactRefs": ["AGENTS.md"],
+                            },
+                        },
+                        "evaluation": {
+                            "id": "heldout-context-routing",
+                            "replayType": "live",
+                            "feedbackChannels": ["test", "trajectory"],
+                            "taskSet": {
+                                "id": "heldout-routing",
+                                "description": "Held-out repo tasks.",
+                                "sampleCount": 6,
+                                "heldOut": True,
+                                "contaminationControls": ["held-out prompts"],
+                            },
+                            "runtimeBudget": {
+                                "wallClockSeconds": 1800,
+                                "modelCalls": 40,
+                                "tokens": 120000,
+                                "toolCalls": 80,
+                                "retries": 1,
+                            },
+                            "workspaceContract": {
+                                "state": "Fresh checkout.",
+                                "dependencies": "Repo-owned setup only.",
+                                "networkAccess": "Disabled.",
+                                "cleanup": "Discard workspace after run.",
+                                "scoringEntrypoint": "python -m unittest discover",
+                            },
+                            "adapterContract": {
+                                "normalization": "Same model and tool policy.",
+                                "agents": ["codex-cli"],
+                                "modelPolicy": "Same supported model.",
+                            },
+                            "reproductionCommand": (
+                                "python scripts/run_effectiveness_eval.py "
+                                "--config evals/context.json"
+                            ),
+                        },
+                        "metrics": {
+                            "primary": {
+                                "name": "task_success_rate",
+                                "candidateSensitive": True,
+                                "direction": "higher_is_better",
+                                "baselineValue": 0.5,
+                                "candidateValue": 0.75,
+                                "unit": "rate",
+                            },
+                            "worstCase": {
+                                "name": "lowest_task_score",
+                                "candidateSensitive": True,
+                                "direction": "higher_is_better",
+                                "baselineValue": 0.3,
+                                "candidateValue": 0.4,
+                                "unit": "score",
+                            },
+                            "doNoHarmFloor": {
+                                "metric": "lowest_task_score",
+                                "minimum": 0.3,
+                                "met": True,
+                            },
+                            "secondary": [],
+                        },
+                        "safety": {
+                            "trajectoryReviewed": True,
+                            "permissionBoundaryReviewed": True,
+                            "violations": [],
+                        },
+                        "cost": {
+                            "optimized": False,
+                            "dimensions": [
+                                {
+                                    "name": "tokens",
+                                    "unit": "tokens",
+                                    "baselineValue": 100000,
+                                    "candidateValue": 95000,
+                                }
+                            ],
+                        },
+                        "evidence": {
+                            "resultArtifacts": [
+                                {
+                                    "path": "evals/results/context.json",
+                                    "kind": "result-log",
+                                    "redacted": True,
+                                }
+                            ],
+                            "reviewedBy": ["maintainer"],
+                            "reviewedAt": "2026-06-15T00:00:00Z",
+                            "notes": ["Reviewed held-out run."],
+                        },
+                        "promotion": {
+                            "status": "promoted",
+                            "humanApproved": True,
+                            "rollback": "Revert candidate router.",
+                        },
+                    },
+                    indent=2,
+                ),
+                encoding="utf-8",
+            )
+            before = sorted(path.relative_to(root).as_posix() for path in root.rglob("*"))
+            stdout = io.StringIO()
+            with contextlib.redirect_stdout(stdout):
+                code = main(["effectiveness", "--target", str(root), "--json"])
+            after = sorted(path.relative_to(root).as_posix() for path in root.rglob("*"))
+
+            raw_payload = stdout.getvalue()
+            payload = json.loads(raw_payload)
+
+        self.assertEqual(code, 0)
+        self.assertEqual(before, after)
+        self.assertNotIn(str(root), raw_payload)
+        self.assertEqual(
+            payload["schemaVersion"], "harnessforge.effectivenessAssessment.v1"
+        )
+        self.assertEqual(payload["target"]["root"], None)
+        self.assertEqual(payload["verdict"], "reviewable")
+        self.assertFalse(payload["execution"]["commandsExecuted"])
+        self.assertFalse(payload["execution"]["writesPerformed"])
+        self.assertEqual(payload["summary"]["reports"], 1)
+        self.assertEqual(payload["summary"]["reviewableReports"], 1)
+        self.assertEqual(payload["blockedReasons"], [])
+        report = payload["reports"][0]
+        self.assertEqual(
+            report["path"], "docs/harness/evidence/effectiveness-context.json"
+        )
+        self.assertTrue(report["schemaValid"])
+        self.assertEqual(report["assessmentStatus"], "reviewable")
+        self.assertEqual(report["claim"]["verdict"], "candidate_better")
+        self.assertEqual(report["primaryMetric"]["delta"], 0.25)
+        self.assertEqual(report["blockers"], [])
+
+    def test_effectiveness_json_blocks_without_representative_evidence(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "pyproject.toml").write_text(
+                "[project]\nname='demo'\n",
+                encoding="utf-8",
+            )
+            stdout = io.StringIO()
+            with contextlib.redirect_stdout(stdout):
+                code = main(["effectiveness", "--target", str(root), "--json"])
+
+            payload = json.loads(stdout.getvalue())
+
+        self.assertEqual(code, 0)
+        self.assertEqual(payload["verdict"], "blocked")
+        self.assertEqual(payload["summary"]["reports"], 0)
+        self.assertEqual(payload["summary"]["reviewableReports"], 0)
+        self.assertTrue(
+            any("No effectiveness evidence" in item for item in payload["blockedReasons"])
+        )
+        self.assertFalse(payload["execution"]["commandsExecuted"])
+        self.assertFalse(payload["execution"]["writesPerformed"])
+
+    def test_effectiveness_rejects_absolute_evidence_paths(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            stderr = io.StringIO()
+            with contextlib.redirect_stderr(stderr):
+                code = main(
+                    [
+                        "effectiveness",
+                        "--target",
+                        str(root),
+                        "--evidence",
+                        str(root / "evidence.json"),
+                    ]
+                )
+
+            error = stderr.getvalue()
+
+        self.assertEqual(code, 2)
+        self.assertIn("--evidence must be a target-relative path", error)
+        self.assertNotIn(str(root), error)
+
     def test_inspect_readiness_json_reports_ready_without_writing(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

@@ -13,6 +13,7 @@ Windows remote checks are manual `workflow_dispatch` platform checks.
 | --- | --- |
 | CLI parser or command output | Focused unit tests plus `python -m harnessforge --help` |
 | Repository index reports | Focused index CLI tests, JSON parse smoke, local-path scan, and self-audit |
+| Effectiveness evidence assessment | Focused effectiveness CLI tests, JSON parse smoke, local-path scan, and self-audit |
 | Verification execution | Focused verify run-mode tests for pass, fail, blocked, timeout, JSON output, and plan-mode no-run behavior |
 | GitHub Action verify bridge | Focused Action tests for verify plan/run/fail/blocked, Action metadata checks, docs boundary checks, and JSON report smoke |
 | Generator or templates | Generator tests, temporary repo integration test, self-audit |

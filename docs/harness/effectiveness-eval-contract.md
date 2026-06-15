@@ -123,6 +123,13 @@ The evidence schema lives at
 representative non-claim example lives at
 [effectiveness-evidence-example.json](effectiveness-evidence-example.json).
 
+Use `harnessforge effectiveness --target . --json` to assess stored
+target-contained evidence reports before making benchmark or real-agent
+effectiveness claims. The command reads
+`docs/harness/evidence/effectiveness*.json` by default, or an explicit
+target-relative `--evidence` path. It is read-only: it does not run benchmarks,
+install dependencies, call models, or create a score when evidence is missing.
+
 The schema is intentionally a review contract, not an eval runner. It records:
 
 - the exact claim and whether the result is promoted, rejected, deferred, or

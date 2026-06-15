@@ -70,6 +70,7 @@
     "docs/harness/multi-agent-orchestration.md",
     "docs/harness/feature-list.schema.json",
     "src/harnessforge/cli.py",
+    "src/harnessforge/effectiveness.py",
     "src/harnessforge/github_action.py",
     "src/harnessforge/indexer.py",
     "src/harnessforge/reports.py",
@@ -149,6 +150,7 @@
       "Operating Loop",
       "Assessment And Updates",
       "harnessforge index",
+      "harnessforge effectiveness",
       "self-healing workflow"
     ],
     "docs/harness/change-contract.md": [

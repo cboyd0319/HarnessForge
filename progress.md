@@ -443,19 +443,25 @@ maintenance loop.
   breakdown, manifests, components, entrypoints, source-of-truth signals,
   review-required placeholders, and no-command/no-write execution metadata
   without network access, embeddings, code excerpts, or local absolute paths.
+- Added read-only `harnessforge effectiveness --target . --json` evidence
+  assessment. The command scans target-contained
+  `docs/harness/evidence/effectiveness*.json` reports or explicit
+  target-relative `--evidence` paths, validates the stored evidence boundary,
+  and reports `reviewable`, `inconclusive`, `not_better`, or `blocked` without
+  running benchmarks, installing dependencies, calling models, writing files,
+  or turning structural audit score into a performance claim.
 - Current verification passes full unit discovery and POSIX/PowerShell
-  entrypoints with 211 tests, focused CLI and generator tests, index JSON and
-  text smokes, compile, pin check, research source check, JSON validation,
-  session/plan/index JSON smokes, self-audit `100/100`, changed-file local-path
-  scan, and diff hygiene.
+  entrypoints with 214 tests, focused CLI, generator, and contract tests,
+  index/effectiveness JSON and text smokes, compile, pin check, research source
+  check, JSON validation, session/plan/index/effectiveness JSON smokes,
+  self-audit `100/100`, changed-file local-path scan, and diff hygiene.
 
 ## Recommended Next Step
 
-If continuing product build-out before release prep, the remaining product
-slice is a score or benchmark command only if backed by representative
-effectiveness evidence. If release prep resumes instead, review the current
-diff, run the release checklist, rebuild the isolated package smoke, and decide
-whether to trigger manual macOS and Windows platform CI.
+The non-release backlog is closed for the current release-prep boundary. If
+release prep resumes, review the current diff, run the release checklist,
+rebuild the isolated package smoke, and decide whether to trigger manual macOS
+and Windows platform CI.
 Push local commits only at an explicit batch/release boundary or user request.
 
 ## Verification Evidence
@@ -481,6 +487,34 @@ Push local commits only at an explicit batch/release boundary or user request.
 - `./init.sh` passed with doctor, compile, 211 tests, pin check, research
   source check, and self-audit `100/100`.
 - `pwsh -NoProfile -File ./init.ps1` passed with doctor, compile, 211 tests,
+  pin check, research source check, and self-audit `100/100`.
+- `PYTHONPATH=src:. python3 -m unittest
+  tests.test_cli.CliTests.test_effectiveness_json_assesses_reviewable_evidence_without_writing`
+  first failed because `effectiveness` was not a recognized subcommand, then
+  passed after adding the standard-library evidence assessor and CLI wiring.
+- `PYTHONPATH=src:. python3 -m unittest
+  tests.test_cli.CliTests.test_effectiveness_json_assesses_reviewable_evidence_without_writing
+  tests.test_cli.CliTests.test_effectiveness_json_blocks_without_representative_evidence
+  tests.test_cli.CliTests.test_effectiveness_rejects_absolute_evidence_paths`
+  passed with 3 tests.
+- `PYTHONPATH=src:. python3 -m unittest tests.test_cli` passed with 64 tests.
+- `PYTHONPATH=src:. python3 -m unittest tests.test_generate_audit` passed with
+  45 tests.
+- `PYTHONPATH=src:. python3 -m unittest tests.test_verify_contract` passed with
+  4 tests.
+- `PYTHONPATH=src:. python3 -m unittest discover -s tests` passed with 214
+  tests.
+- `PYTHONPATH=src:. python3 -m harnessforge effectiveness --target . --json`
+  returned schema `harnessforge.effectivenessAssessment.v1`, `target.root` as
+  `null`, no command execution, no writes, and a blocked verdict because this
+  repo has no real stored effectiveness reports.
+- `PYTHONPATH=src:. python3 -m harnessforge effectiveness --target .
+  --evidence docs/harness/effectiveness-evidence-example.json --json` returned
+  an inconclusive verdict for the example proposal without treating it as
+  promoted evidence.
+- `./init.sh` passed with doctor, compile, 214 tests, pin check, research
+  source check, and self-audit `100/100`.
+- `pwsh -NoProfile -File ./init.ps1` passed with doctor, compile, 214 tests,
   pin check, research source check, and self-audit `100/100`.
 - `PYTHONPATH=src:. python3 -m unittest
   tests.test_generate_audit.GenerateAuditTests.test_generated_source_record_schema_guides_project_sources`

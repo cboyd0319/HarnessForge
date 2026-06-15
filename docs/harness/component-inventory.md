@@ -60,6 +60,9 @@ inventory, not permission to mutate nested projects.
 - `src/harnessforge/indexer.py`: read-only structural repo indexer used by the
   CLI to summarize file classes, languages, manifests, components,
   source-of-truth signals, and review-required placeholders without writes.
+- `src/harnessforge/effectiveness.py`: read-only effectiveness evidence
+  assessor used by the CLI to validate stored benchmark or real-agent evidence
+  without running benchmarks or producing unsupported performance scores.
 - `docs/harness/sensor-registry.md`: review-required ownership, source,
   purpose, and retirement record for checks and recurring gates.
 - `docs/harness/source-record.schema.json`: generated schema for project-owned

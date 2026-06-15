@@ -49,6 +49,7 @@ Use:
 ```bash
 harnessforge quickstart --target .
 harnessforge index --target . --json
+harnessforge effectiveness --target . --json
 harnessforge session --target .
 harnessforge plan --target . --since HEAD
 harnessforge audit --target .
@@ -65,6 +66,13 @@ placeholder reporting, and next commands without writing files.
 language, manifest, component, source-of-truth, entrypoint, generated, vendor,
 workflow, and review-required signals without command execution, writes, local
 absolute paths, code excerpts, embeddings, or network access.
+
+`effectiveness --json` is a read-only assessor for stored real-agent or
+benchmark evidence. It scans target-contained
+`docs/harness/evidence/effectiveness*.json` reports, or an explicit
+target-relative `--evidence` path, and reports whether evidence is reviewable,
+inconclusive, not better, or blocked without running benchmarks or turning
+structural scores into performance claims.
 
 `session` is a read-only restart snapshot. It reports git state when available,
 detected stack, readiness verdict, harness audit score when a harness surface is

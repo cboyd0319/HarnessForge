@@ -638,18 +638,20 @@ warning tests, focused GitHub Action tests, focused generated verify-evidence
 coverage, focused verify report-persistence tests, focused verify-evidence gate
 tests, focused Action sync tests, focused session tests, focused sensor-registry
 generator test, focused source-record generator test, focused index CLI tests,
-full unit discovery and POSIX/PowerShell entrypoints with 211 tests, compile,
-JSON/YAML validation, pin check, research source check, rendered optional
-workflow audit and pin smoke, session, plan, and index JSON smokes,
-expected-warning sync JSON smoke, self-audit `100/100`, changed-file
-local-path scan, and diff hygiene. `sync --check`
+focused effectiveness CLI and contract tests, full unit discovery and
+POSIX/PowerShell entrypoints with 214 tests, compile, JSON/YAML validation, pin
+check, research source check, rendered optional workflow audit and pin smoke,
+session, plan, index, and effectiveness JSON smokes, expected-warning sync JSON
+smoke, self-audit `100/100`, changed-file local-path scan, and diff hygiene.
+`sync --check`
 returns the expected warning for local workflow and instruction review surfaces
 without blockers or generated drift.
 The robust-mode backlog items for generated workflow sync preflight, sensor
 registry, source-record schema support, large-codebase indexing research, and
-the first structural index command are closed. The next highest-value
-non-release slice is score/benchmark commands only with representative
-effectiveness evidence.
+the first structural index command are closed. The final score/benchmark slice
+is closed as read-only `harnessforge effectiveness --target . --json`, which
+assesses stored representative evidence and blocks unsupported performance
+claims instead of running benchmarks or creating synthetic scores.
 Existing eval guidance comes from the Harness Forge, Meta-Harness, Code as
 Agent Harness catalog, and arXiv harness-eval reviews; those sources are mined
 only for product ideas and are not copied into generated target-repo defaults.

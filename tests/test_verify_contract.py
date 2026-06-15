@@ -55,6 +55,7 @@ class VerifyContractTests(unittest.TestCase):
         self.assertIn("canonical URLs", contract)
         self.assertIn("effectiveness-evidence.schema.json", contract)
         self.assertIn("effectiveness-evidence-example.json", contract)
+        self.assertIn("harnessforge effectiveness --target . --json", contract)
 
     def test_effectiveness_evidence_schema_and_example_define_claim_contract(
         self,

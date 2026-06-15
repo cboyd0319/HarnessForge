@@ -167,6 +167,13 @@ Build a read-only structural index for a large existing repo:
 harnessforge index --target /path/to/repo --json
 ```
 
+Assess stored effectiveness evidence before making benchmark claims:
+
+```bash
+harnessforge effectiveness --target /path/to/repo --json
+harnessforge effectiveness --target /path/to/repo --evidence docs/harness/evidence/effectiveness-YYYY-MM-DD.json --json
+```
+
 Get a compact restart snapshot for an existing repo:
 
 ```bash
@@ -317,6 +324,12 @@ HarnessForge has a proposed evidence contract for real-agent or benchmark
 claims. It keeps structural harness quality separate from measured agent
 effectiveness and defines the minimum review surface before promoting an
 evolved, synthesized, or benchmark-winning harness change.
+
+`harnessforge effectiveness --json` is the read-only assessor for that contract.
+It scans target-contained `docs/harness/evidence/effectiveness*.json` reports,
+or an explicit target-relative `--evidence` path, and reports whether evidence
+is reviewable, inconclusive, not better, or blocked. It does not run benchmarks
+or create a score when representative evidence is missing.
 
 See [docs/harness/effectiveness-eval-contract.md](docs/harness/effectiveness-eval-contract.md).
 
@@ -528,6 +541,7 @@ and explicit `verify-run: "true"` execution.
 | `harnessforge quickstart` | Guide the first safe run without writing files |
 | `harnessforge inspect` | Show detected project profile or readiness without writing files |
 | `harnessforge index` | Build a read-only structural repo index for harness design |
+| `harnessforge effectiveness` | Assess stored real-agent effectiveness evidence without running benchmarks |
 | `harnessforge session` | Show a read-only restart snapshot with git, readiness, audit, and state-file status |
 | `harnessforge plan` | Map changed files to a read-only verification plan |
 | `harnessforge sync --check` | Run a read-only CI preflight with readiness exit codes |
@@ -546,9 +560,9 @@ People may run this tool on personal machines and private repositories, so the
 default posture is intentionally restrictive. See [SECURITY.md](SECURITY.md)
 for vulnerability reporting, scope, and severity guidance.
 
-- Normal `init`, `inspect`, `index`, `sync --check`, `audit`, `update`, and
-  `doctor` commands use the Python standard library and do not install runtime
-  dependencies.
+- Normal `init`, `inspect`, `index`, `effectiveness`, `sync --check`, `audit`,
+  `update`, and `doctor` commands use the Python standard library and do not
+  install runtime dependencies.
 - Existing files are preserved unless `--force` is explicitly supplied.
 - `--enhance-existing` appends reviewed instruction addenda without replacing
   existing project text.

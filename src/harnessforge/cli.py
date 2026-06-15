@@ -16,6 +16,10 @@ from .blueprints import (
 )
 from .detect import detect_project
 from .doctor import doctor_json, doctor_report, format_doctor
+from .effectiveness import (
+    build_effectiveness_assessment,
+    format_effectiveness_assessment,
+)
 from .generate import PLATFORM_CONTRACTS, REVIEW_REQUIRED_FILES, create_harness
 from .indexer import build_index_report, format_index_report
 from .models import DriftResult, ProjectProfile, WriteResult
@@ -93,6 +97,20 @@ def build_parser() -> argparse.ArgumentParser:
     index.add_argument("--command", dest="commands", action="append", default=[])
     index.add_argument("--json", action="store_true")
     index.set_defaults(func=_index)
+
+    effectiveness = subparsers.add_parser(
+        "effectiveness",
+        help="assess stored harness effectiveness evidence without running benchmarks",
+    )
+    effectiveness.add_argument("--target", type=Path, default=Path.cwd())
+    effectiveness.add_argument(
+        "--evidence",
+        action="append",
+        default=[],
+        help="target-relative effectiveness evidence JSON path",
+    )
+    effectiveness.add_argument("--json", action="store_true")
+    effectiveness.set_defaults(func=_effectiveness)
 
     quickstart = subparsers.add_parser(
         "quickstart",
@@ -346,6 +364,19 @@ def _index(args: argparse.Namespace) -> int:
         print(json.dumps(report, indent=2))
     else:
         print(format_index_report(report))
+    return 0
+
+
+def _effectiveness(args: argparse.Namespace) -> int:
+    profile = detect_project(args.target)
+    report = build_effectiveness_assessment(
+        profile,
+        evidence_paths=tuple(args.evidence),
+    )
+    if args.json:
+        print(json.dumps(report, indent=2))
+    else:
+        print(format_effectiveness_assessment(report))
     return 0
 
 

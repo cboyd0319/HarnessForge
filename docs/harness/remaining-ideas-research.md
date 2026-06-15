@@ -34,8 +34,10 @@ The highest-value remaining product risk is accurate analysis and indexing of
 large existing codebases before HarnessForge designs or improves a harness. The
 initial research pass is recorded in `large-codebase-indexing-research.md`, and
 the first read-only `harnessforge index --target . --json` structural index is
-implemented. Any score or benchmark command remains a later candidate, and only
-when backed by representative effectiveness evidence.
+implemented. The remaining score/benchmark risk is closed as read-only
+`harnessforge effectiveness --target . --json`, which assesses stored
+representative evidence and blocks unsupported claims instead of running
+benchmarks or creating synthetic performance scores.
 
 ## Highest-Value Next Ideas
 
@@ -49,7 +51,7 @@ when backed by representative effectiveness evidence.
 | Context budget and duplication audit | Maki context-efficiency focus, OpenAI short repo maps | Add audit signals for oversized/duplicative instruction surfaces and router files | Avoid brittle token counting claims; use approximate size and duplication signals |
 | Permission/governance inventory | Maki permissions, OpenHarness governance, GitHub governing-agents guide | Detect MCP configs, agent settings, permission files, and setup-step workflow files as security-critical surfaces | Do not author platform permission files until current primary docs are verified |
 | Explicit blueprint mode | Public HarnessForge profile/blueprint split, local Harness Forge, ASPEC/AWMAN boundary review | Add opt-in blueprint packs for deeper operating models without changing normal generated harness defaults | Keep blueprint artifacts review-required and preserve existing project edits unless forced |
-| Real-agent evaluation harness | Public HarnessForge A/B benchmark, OpenAI/Fowler feedback-loop claims | Build a repeatable local benchmark protocol for generated harness quality | Do not market structural audit as real agent effectiveness |
+| Real-agent evaluation harness | Public HarnessForge A/B benchmark, OpenAI/Fowler feedback-loop claims | Implemented as read-only `harnessforge effectiveness --target . --json` evidence assessment | Does not run benchmarks or market structural audit as real agent effectiveness |
 | Config precedence report | AWMAN layered config model | Show which overrides shaped detection: CLI flags, detected files, generated manifest, existing project ownership | Keep deterministic; no LLM refinement needed |
 | Short `sync --check` alias | Public HarnessForge quickstart, current drift-report UX | Add a discoverable CI-oriented alias for `update --drift-report --json` | Alias only; no new mutation semantics |
 | Session snapshot | JobSentinel `harness:session`, Bluepeak-AI and JobSentinel state docs | Implemented as read-only `harnessforge session` | Must not write files or run target checks |
@@ -89,6 +91,35 @@ Boundary:
 - No dependency on one language server, one code host, or one monorepo tool.
 - Any optional index cache must be target-contained, reviewable, ignored or
   explicitly owned, and safe to delete.
+
+## Implemented Effectiveness Evidence Assessment
+
+`harnessforge effectiveness --target . --json` closes the remaining
+score/benchmark command backlog without weakening the evidence boundary.
+
+Behavior:
+
+- Scans target-contained `docs/harness/evidence/effectiveness*.json` reports,
+  or explicit target-relative `--evidence` paths.
+- Assesses the existing `harnessforge.effectivenessEvidence.v1` contract.
+- Reports `reviewable`, `inconclusive`, `not_better`, or `blocked`.
+- Blocks missing evidence, invalid schema shape, frozen replay used for
+  quality claims, missing held-out tasks, non-candidate-sensitive metrics,
+  unmet do-no-harm floors, unresolved safety violations, unredacted result
+  artifacts, missing rollback, or candidate-better claims without human
+  approval.
+- Reports metric deltas only from stored evidence. It does not run project
+  benchmarks, install dependencies, call models, inspect private code excerpts,
+  or convert structural audit score into real-agent effectiveness.
+
+Boundary:
+
+- A reviewable report means the evidence is ready for human review. It is not
+  automatic promotion.
+- A blocked report means no benchmark or performance claim should be made from
+  that evidence.
+- Real benchmark runners remain repo-owned until HarnessForge has a
+  representative, maintained, target-safe corpus and execution contract.
 
 ## Implemented Session Snapshot
 
@@ -853,8 +884,6 @@ HarnessForge generator behavior:
 
 ## Suggested Next Step
 
-If continuing product build-out before release prep, the remaining product slice
-is a score or benchmark command only if backed by representative effectiveness
-evidence. If release prep resumes instead, the remaining release work is manual
-macOS/Windows platform CI, the `v1` Action tag decision, and release-time
-SBOM/provenance gates.
+The non-release backlog is closed for the current release-prep boundary. The
+remaining release work is manual macOS/Windows platform CI, the `v1` Action tag
+decision, and release-time SBOM/provenance gates.
