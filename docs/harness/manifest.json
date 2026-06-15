@@ -71,6 +71,7 @@
     "docs/harness/feature-list.schema.json",
     "src/harnessforge/cli.py",
     "src/harnessforge/github_action.py",
+    "src/harnessforge/indexer.py",
     "src/harnessforge/reports.py",
     "src/harnessforge/sync.py",
     "src/harnessforge/verify_evidence.py",
@@ -147,6 +148,7 @@
     "docs/harness/README.md": [
       "Operating Loop",
       "Assessment And Updates",
+      "harnessforge index",
       "self-healing workflow"
     ],
     "docs/harness/change-contract.md": [

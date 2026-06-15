@@ -606,14 +606,14 @@ The latest source-record schema slice added generated
 coverage, generated README routing, and live schema/example files. This gives
 projects a structured provenance record shape while keeping project-curated
 records separate from HarnessForge's fixed `research-sources.json` allowlist.
-The newest backlog addition, large-codebase analysis and indexing research, is
-recorded in `docs/harness/large-codebase-indexing-research.md`. It reviewed
-open source code search, semantic indexing, repo-map, static-analysis,
-language-server, code-intelligence, and dependency-graph systems. The next
-implementation slice is read-only `harnessforge index --target . --json` using
-standard-library structural facts first. Boundaries: no networked indexing
-service by default, no committed embeddings or private code summaries in
-generated harnesses, no machine-local paths, and any optional cache must be
+The latest large-codebase analysis and indexing slice is recorded in
+`docs/harness/large-codebase-indexing-research.md` and implemented as read-only
+`harnessforge index --target . --json`. It reports target-relative file
+classes, language breakdown, manifests, components, entrypoints,
+source-of-truth signals, review-required placeholders, and no-command/no-write
+execution metadata. Boundaries: no networked indexing service by default, no
+committed embeddings or private code summaries in generated harnesses, no code
+excerpts, no machine-local paths, and any future optional cache must be
 target-contained, reviewable, and safe to delete.
 `scripts/refresh_research.py --check` validates duplicate source IDs and URLs,
 required fields, placeholder text, canonical URL shape, arXiv `/abs/` URLs,
@@ -637,20 +637,19 @@ Current robust-mode verification passes: focused generated workflow and CLI
 warning tests, focused GitHub Action tests, focused generated verify-evidence
 coverage, focused verify report-persistence tests, focused verify-evidence gate
 tests, focused Action sync tests, focused session tests, focused sensor-registry
-generator test, focused source-record generator test, full unit discovery with
-210 tests, compile, JSON/YAML validation, pin check, research source check,
-rendered optional workflow audit and pin smoke, session and plan JSON smokes,
+generator test, focused source-record generator test, focused index CLI tests,
+full unit discovery and POSIX/PowerShell entrypoints with 211 tests, compile,
+JSON/YAML validation, pin check, research source check, rendered optional
+workflow audit and pin smoke, session, plan, and index JSON smokes,
 expected-warning sync JSON smoke, self-audit `100/100`, changed-file
-local-path scan, and diff hygiene.
-`./init.sh` and `pwsh -NoProfile -File ./init.ps1` both pass with 210 tests,
-pin check, research source check, and self-audit `100/100`. `sync --check`
+local-path scan, and diff hygiene. `sync --check`
 returns the expected warning for local workflow and instruction review surfaces
 without blockers or generated drift.
 The robust-mode backlog items for generated workflow sync preflight, sensor
-registry, source-record schema support, and large-codebase indexing research
-are closed. The next highest-value non-release slice is read-only
-`harnessforge index --target . --json` structural indexing, followed by
-score/benchmark commands only with representative effectiveness evidence.
+registry, source-record schema support, large-codebase indexing research, and
+the first structural index command are closed. The next highest-value
+non-release slice is score/benchmark commands only with representative
+effectiveness evidence.
 Existing eval guidance comes from the Harness Forge, Meta-Harness, Code as
 Agent Harness catalog, and arXiv harness-eval reviews; those sources are mined
 only for product ideas and are not copied into generated target-repo defaults.

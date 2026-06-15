@@ -32,17 +32,15 @@ implemented as a review-required generated artifact. Structured project-source
 records are now implemented as a generated schema and review-required example.
 The highest-value remaining product risk is accurate analysis and indexing of
 large existing codebases before HarnessForge designs or improves a harness. The
-initial research pass is now recorded in
-`large-codebase-indexing-research.md`; the next product slice is a read-only
-`harnessforge index --target . --json` structural index. Any score or benchmark
-command remains a later candidate, and only when backed by representative
-effectiveness evidence.
+initial research pass is recorded in `large-codebase-indexing-research.md`, and
+the first read-only `harnessforge index --target . --json` structural index is
+implemented. Any score or benchmark command remains a later candidate, and only
+when backed by representative effectiveness evidence.
 
 ## Highest-Value Next Ideas
 
 | Idea | Source signal | HarnessForge fit | Boundary |
 | --- | --- | --- | --- |
-| Large-codebase structural index | Indexing research and reference-repo quality exercises | Add read-only `harnessforge index --target . --json` using standard-library structural facts first | No networked indexer, embeddings, language-server startup, or persistent cache by default |
 | Readiness report mode | AWMAN `ready`, OpenHarness `--dry-run` readiness verdicts | Add a read-only `ready` or `inspect --readiness` path that reports `ready`, `warning`, or `blocked` with next actions | Must not execute project commands by default |
 | Project verification contract | Public HarnessForge verify protocol, OpenAI feedback loops, Fowler sensors | Add a stable project-check JSON contract separate from harness `audit` | Running target repo commands must be explicit because commands are executable code |
 | Existing-spec sync checks | ASPEC source-of-truth model, AWMAN's `aspec/` usage | Detect structured specs and report whether generated/enhanced instructions route agents to them | Do not impose ASPEC folder names or rewrite spec systems |
@@ -61,6 +59,8 @@ effectiveness evidence.
 ## New Backlog: Large-Codebase Analysis And Indexing
 
 Research status: completed in `large-codebase-indexing-research.md`.
+Implementation status: first structural `harnessforge index --target . --json`
+slice implemented.
 
 Problem:
 
@@ -79,7 +79,7 @@ Research task:
 - Completed: compared scale, offline operation, privacy, incremental updates,
   language coverage, generated files, vendored code, and cross-platform setup
   at the product-design level.
-- Next: implement the first no-dependency structural index command.
+- Completed: implemented the first no-dependency structural index command.
 
 Boundary:
 
@@ -853,9 +853,8 @@ HarnessForge generator behavior:
 
 ## Suggested Next Step
 
-If continuing product build-out before release prep, the next best slice is
-read-only `harnessforge index --target . --json` structural indexing. After
-that, the remaining product slice is a score or benchmark command only if
-backed by representative effectiveness evidence. If release prep resumes
-instead, the remaining release work is manual macOS/Windows platform CI, the
-`v1` Action tag decision, and release-time SBOM/provenance gates.
+If continuing product build-out before release prep, the remaining product slice
+is a score or benchmark command only if backed by representative effectiveness
+evidence. If release prep resumes instead, the remaining release work is manual
+macOS/Windows platform CI, the `v1` Action tag decision, and release-time
+SBOM/provenance gates.

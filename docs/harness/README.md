@@ -48,6 +48,7 @@ Use:
 
 ```bash
 harnessforge quickstart --target .
+harnessforge index --target . --json
 harnessforge session --target .
 harnessforge plan --target . --since HEAD
 harnessforge audit --target .
@@ -59,6 +60,11 @@ harnessforge verify --target . --json
 `quickstart` is a read-only guided first-run view. It composes detection,
 readiness, dry-run generation planning, preserved-file reporting, review
 placeholder reporting, and next commands without writing files.
+
+`index --json` is a read-only structural repo map. It reports file class,
+language, manifest, component, source-of-truth, entrypoint, generated, vendor,
+workflow, and review-required signals without command execution, writes, local
+absolute paths, code excerpts, embeddings, or network access.
 
 `session` is a read-only restart snapshot. It reports git state when available,
 detected stack, readiness verdict, harness audit score when a harness surface is

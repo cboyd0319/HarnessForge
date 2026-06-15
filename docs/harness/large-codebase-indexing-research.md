@@ -4,6 +4,9 @@ Reviewed: 2026-06-15 UTC.
 
 Status: repo-local research.
 
+Implementation note: the first standard-library structural index slice is
+implemented as `harnessforge index --target . --json`.
+
 This note responds to the current product risk: HarnessForge must understand
 large existing repositories much better before it can generate or improve a
 high-quality harness for them.
@@ -22,10 +25,10 @@ The better shape is a tiered, local, target-contained indexing strategy:
 5. Record confidence, source path, freshness, ignored/generated/vendor status,
    and unknowns for every inferred component boundary.
 
-The next product slice should be a read-only
-`harnessforge index --target . --json` command that emits a deterministic
-structural index. It should not run language servers, build systems, networked
-search services, or embedding models by default.
+The first product slice is a read-only `harnessforge index --target . --json`
+command that emits a deterministic structural index. It does not run language
+servers, build systems, networked search services, or embedding models by
+default.
 
 ## Source Review
 
@@ -73,8 +76,8 @@ Primary source links:
 
 ### Phase 1: Built-In Structural Index
 
-Add a read-only `harnessforge index --target . --json` command with no new
-runtime dependencies. It should report:
+Implemented a read-only `harnessforge index --target . --json` command with no
+new runtime dependencies. It reports:
 
 - repo size, file count, ignored/generated/vendor/test/doc/source splits;
 - detected components and confidence;

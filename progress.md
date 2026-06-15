@@ -437,25 +437,25 @@ maintenance loop.
   include `docs/harness/source-record.schema.json` and review-required
   `docs/harness/source-record-example.json`, keeping project-curated
   provenance records separate from the fixed HarnessForge research allowlist.
-- Completed the first large-codebase analysis and indexing research pass
-  against open source code search, semantic indexing, repo-map, static-analysis,
-  language-server, code-intelligence, and dependency-graph systems. The next
-  implementation slice is read-only `harnessforge index --target . --json`
-  using standard-library structural facts first.
+- Completed the first large-codebase analysis and indexing research pass and
+  implemented read-only `harnessforge index --target . --json` structural
+  indexing. The command reports target-relative file classes, language
+  breakdown, manifests, components, entrypoints, source-of-truth signals,
+  review-required placeholders, and no-command/no-write execution metadata
+  without network access, embeddings, code excerpts, or local absolute paths.
 - Current verification passes full unit discovery and POSIX/PowerShell
-  entrypoints with 210 tests, compile, pin check, research source check, JSON
-  validation, session and plan JSON smokes, self-audit `100/100`, changed-file
-  local-path scan, and diff hygiene.
+  entrypoints with 211 tests, focused CLI and generator tests, index JSON and
+  text smokes, compile, pin check, research source check, JSON validation,
+  session/plan/index JSON smokes, self-audit `100/100`, changed-file local-path
+  scan, and diff hygiene.
 
 ## Recommended Next Step
 
-If continuing product build-out before release prep, the next best slice is a
-read-only `harnessforge index --target . --json` structural indexing. After
-that, the remaining product slice is a score or benchmark command only if
-backed by representative effectiveness evidence. If release prep resumes
-instead, review the current diff, run the release checklist, rebuild the
-isolated package smoke, and decide whether to trigger manual macOS and Windows
-platform CI.
+If continuing product build-out before release prep, the remaining product
+slice is a score or benchmark command only if backed by representative
+effectiveness evidence. If release prep resumes instead, review the current
+diff, run the release checklist, rebuild the isolated package smoke, and decide
+whether to trigger manual macOS and Windows platform CI.
 Push local commits only at an explicit batch/release boundary or user request.
 
 ## Verification Evidence
@@ -466,6 +466,22 @@ Push local commits only at an explicit batch/release boundary or user request.
   Graphs, CodeQL, and Semgrep. Findings are recorded in
   `docs/harness/large-codebase-indexing-research.md`; product direction is a
   no-dependency structural index command before any optional external adapter.
+- `PYTHONPATH=src:. python3 -m unittest
+  tests.test_cli.CliTests.test_index_json_reports_structural_repo_map_without_writing`
+  first failed because `index` was not a recognized subcommand, then passed
+  after adding the standard-library indexer and CLI wiring.
+- `PYTHONPATH=src:. python3 -m unittest tests.test_cli` passed with 61 tests.
+- `PYTHONPATH=src:. python3 -m unittest tests.test_generate_audit` passed with
+  45 tests.
+- `PYTHONPATH=src:. python3 -m unittest discover -s tests` passed with 211
+  tests.
+- `PYTHONPATH=src:. python3 -m harnessforge index --target . --json` returned
+  schema `harnessforge.index.v1`, `target.root` as `null`, no command
+  execution, no writes, and target-relative structural signals.
+- `./init.sh` passed with doctor, compile, 211 tests, pin check, research
+  source check, and self-audit `100/100`.
+- `pwsh -NoProfile -File ./init.ps1` passed with doctor, compile, 211 tests,
+  pin check, research source check, and self-audit `100/100`.
 - `PYTHONPATH=src:. python3 -m unittest
   tests.test_generate_audit.GenerateAuditTests.test_generated_source_record_schema_guides_project_sources`
   first failed because generated harnesses did not include a source-record

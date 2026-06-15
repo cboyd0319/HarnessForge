@@ -1149,6 +1149,7 @@ def _manifest_content(
             "Assessment And Updates",
             "project-owned generated files",
             "command: sync",
+            "harnessforge index",
             "harnessforge session",
             "harnessforge plan",
         ],

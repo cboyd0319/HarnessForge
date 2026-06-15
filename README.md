@@ -161,6 +161,12 @@ harnessforge inspect --target /path/to/repo
 harnessforge inspect --target /path/to/repo --json
 ```
 
+Build a read-only structural index for a large existing repo:
+
+```bash
+harnessforge index --target /path/to/repo --json
+```
+
 Get a compact restart snapshot for an existing repo:
 
 ```bash
@@ -521,6 +527,7 @@ and explicit `verify-run: "true"` execution.
 | --- | --- |
 | `harnessforge quickstart` | Guide the first safe run without writing files |
 | `harnessforge inspect` | Show detected project profile or readiness without writing files |
+| `harnessforge index` | Build a read-only structural repo index for harness design |
 | `harnessforge session` | Show a read-only restart snapshot with git, readiness, audit, and state-file status |
 | `harnessforge plan` | Map changed files to a read-only verification plan |
 | `harnessforge sync --check` | Run a read-only CI preflight with readiness exit codes |
@@ -539,8 +546,8 @@ People may run this tool on personal machines and private repositories, so the
 default posture is intentionally restrictive. See [SECURITY.md](SECURITY.md)
 for vulnerability reporting, scope, and severity guidance.
 
-- Normal `init`, `inspect`, `sync --check`, `audit`, `update`, and `doctor`
-  commands use the Python standard library and do not install runtime
+- Normal `init`, `inspect`, `index`, `sync --check`, `audit`, `update`, and
+  `doctor` commands use the Python standard library and do not install runtime
   dependencies.
 - Existing files are preserved unless `--force` is explicitly supplied.
 - `--enhance-existing` appends reviewed instruction addenda without replacing
@@ -640,6 +647,7 @@ PYTHONPATH=src:. python -m unittest discover -s tests
 PYTHONPATH=src:. python scripts/check_pins.py --root .
 PYTHONPATH=src:. python scripts/refresh_research.py --root . --check
 PYTHONPATH=src:. python -m harnessforge audit --target . --min-score 85
+PYTHONPATH=src:. python -m harnessforge index --target . --json
 PYTHONPATH=src:. python -m harnessforge sync --check --target . --json
 ```
 
@@ -651,7 +659,7 @@ readiness blocker.
 
 | Path | Purpose |
 | --- | --- |
-| `src/harnessforge/` | CLI, generator, auditor, updater, readiness checks, Action entry point |
+| `src/harnessforge/` | CLI, generator, auditor, updater, indexer, readiness checks, Action entry point |
 | `src/harnessforge/templates/` | Files copied into target repositories |
 | `docs/harness/` | This repo's own harness and research ledger |
 | `tests/` | Unit and regression tests |

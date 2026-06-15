@@ -57,6 +57,9 @@ inventory, not permission to mutate nested projects.
 - `src/harnessforge/planner.py`: read-only diff-aware verification planner used
   by the CLI. It maps changed files to detected or explicit project checks and
   does not execute target commands.
+- `src/harnessforge/indexer.py`: read-only structural repo indexer used by the
+  CLI to summarize file classes, languages, manifests, components,
+  source-of-truth signals, and review-required placeholders without writes.
 - `docs/harness/sensor-registry.md`: review-required ownership, source,
   purpose, and retirement record for checks and recurring gates.
 - `docs/harness/source-record.schema.json`: generated schema for project-owned

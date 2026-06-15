@@ -17,6 +17,7 @@ from .blueprints import (
 from .detect import detect_project
 from .doctor import doctor_json, doctor_report, format_doctor
 from .generate import PLATFORM_CONTRACTS, REVIEW_REQUIRED_FILES, create_harness
+from .indexer import build_index_report, format_index_report
 from .models import DriftResult, ProjectProfile, WriteResult
 from .planner import build_diff_plan, diff_plan_to_dict, format_diff_plan
 from .readiness import (
@@ -82,6 +83,16 @@ def build_parser() -> argparse.ArgumentParser:
     )
     inspect.add_argument("--json", action="store_true")
     inspect.set_defaults(func=_inspect)
+
+    index = subparsers.add_parser(
+        "index",
+        help="build a read-only structural repository index",
+    )
+    index.add_argument("--target", type=Path, default=Path.cwd())
+    index.add_argument("--package-manager")
+    index.add_argument("--command", dest="commands", action="append", default=[])
+    index.add_argument("--json", action="store_true")
+    index.set_defaults(func=_index)
 
     quickstart = subparsers.add_parser(
         "quickstart",
@@ -321,6 +332,20 @@ def _inspect(args: argparse.Namespace) -> int:
             print(f"  - {component}")
     else:
         print("  - none detected")
+    return 0
+
+
+def _index(args: argparse.Namespace) -> int:
+    profile = detect_project(
+        args.target,
+        explicit_package_manager=args.package_manager,
+        explicit_commands=tuple(args.commands),
+    )
+    report = build_index_report(profile)
+    if args.json:
+        print(json.dumps(report, indent=2))
+    else:
+        print(format_index_report(report))
     return 0
 
 
