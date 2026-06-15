@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import re
 import subprocess
 import sys
 import tempfile
@@ -556,6 +557,10 @@ class GenerateAuditTests(unittest.TestCase):
         self.assertIn("docs/harness/research/source-record.schema.json", manifest["requiredFiles"])
         self.assertIn("docs/harness/research/source-record-example.json", manifest["requiredFiles"])
         self.assertIn(".agents/skills/harness/SKILL.md", manifest["requiredFiles"])
+        self.assertIn(
+            ".agents/skills/harness/references/repo-harness.md",
+            manifest["requiredFiles"],
+        )
         self.assertIn("detectedComponents", manifest)
 
     def test_manifest_records_generated_file_ownership_metadata(self) -> None:
@@ -692,6 +697,9 @@ class GenerateAuditTests(unittest.TestCase):
             skill = (root / ".agents/skills/harness/SKILL.md").read_text(
                 encoding="utf-8"
             )
+            skill_reference = (
+                root / ".agents/skills/harness/references/repo-harness.md"
+            ).read_text(encoding="utf-8")
             manifest = json.loads(
                 (root / "docs/harness/manifest.json").read_text(encoding="utf-8")
             )
@@ -701,6 +709,10 @@ class GenerateAuditTests(unittest.TestCase):
         self.assertIn("docs/harness/state/first-agent-task.md", manifest["requiredFiles"])
         self.assertIn("docs/harness/state/first-agent-task.md", manifest["reviewRequired"])
         self.assertIn(".agents/skills/harness/SKILL.md", manifest["requiredFiles"])
+        self.assertIn(
+            ".agents/skills/harness/references/repo-harness.md",
+            manifest["requiredFiles"],
+        )
         self.assertIn(".agents/skills/harness/SKILL.md", manifest["reviewRequired"])
         self.assertEqual(
             manifest["generatedFiles"]["docs/harness/state/first-agent-task.md"][
@@ -726,9 +738,70 @@ class GenerateAuditTests(unittest.TestCase):
         self.assertIn("name: harness", skill)
         self.assertIn("Zero-Install Rule", skill)
         self.assertIn("HarnessForge CLI and the HarnessForge GitHub Action are optional", skill)
-        self.assertIn("docs/harness/feedback/verification-matrix.md", skill)
-        self.assertIn("docs/harness/evidence/evidence-log.md", skill)
+        self.assertIn("references/repo-harness.md", skill)
+        self.assertIn(
+            "../../../docs/harness/feedback/verification-matrix.md",
+            skill_reference,
+        )
+        self.assertIn("../../../docs/harness/evidence/evidence-log.md", skill_reference)
         self.assertIn("repo-owned commands", skill)
+
+    def test_generated_harness_skill_matches_agent_skills_spec(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            create_harness(root)
+            skill_path = root / ".agents/skills/harness/SKILL.md"
+            reference_path = (
+                root / ".agents/skills/harness/references/repo-harness.md"
+            )
+            skill = skill_path.read_text(encoding="utf-8")
+            skill_reference = reference_path.read_text(encoding="utf-8")
+
+        lines = skill.splitlines()
+        self.assertEqual(lines[0], "---")
+        frontmatter_end = lines.index("---", 1)
+        frontmatter = {}
+        for line in lines[1:frontmatter_end]:
+            key, value = line.split(":", maxsplit=1)
+            frontmatter[key.strip()] = value.strip()
+
+        name = frontmatter["name"]
+        description = frontmatter["description"]
+        self.assertEqual(name, skill_path.parent.name)
+        self.assertRegex(name, r"^[a-z0-9](?:[a-z0-9-]{0,62}[a-z0-9])?$")
+        self.assertNotIn("--", name)
+        self.assertGreaterEqual(len(description), 1)
+        self.assertLessEqual(len(description), 1024)
+        self.assertLess(len(lines), 500)
+
+        expected_refs = ("references/repo-harness.md",)
+        for ref in expected_refs:
+            self.assertIn(f"`{ref}`", skill)
+
+        root_relative_refs = (
+            "AGENTS.md",
+            "feature_list.json",
+            "progress.md",
+            "session-handoff.md",
+            "docs/harness/README.md",
+            "docs/harness/authoritative-facts.md",
+            "docs/harness/feedback/verification-matrix.md",
+            "docs/harness/evidence/evidence-log.md",
+        )
+        for ref in root_relative_refs:
+            self.assertNotRegex(skill, rf"`{re.escape(ref)}`")
+
+        self.assertIn("../../../AGENTS.md", skill_reference)
+        self.assertIn("../../../feature_list.json", skill_reference)
+        self.assertIn("../../../progress.md", skill_reference)
+        self.assertIn("../../../session-handoff.md", skill_reference)
+        self.assertIn("../../../docs/harness/README.md", skill_reference)
+        self.assertIn("../../../docs/harness/authoritative-facts.md", skill_reference)
+        self.assertIn(
+            "../../../docs/harness/feedback/verification-matrix.md",
+            skill_reference,
+        )
+        self.assertIn("../../../docs/harness/evidence/evidence-log.md", skill_reference)
 
     def test_generated_roadmap_tracks_harness_work_boundaries(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

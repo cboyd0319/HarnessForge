@@ -30,6 +30,13 @@ generated harness effectiveness, product-boundary enforcement, or verification.
 
 ## Latest Work
 
+- Reverified the generated/deployed repo skill against
+  `/Users/c/Downloads/specification.md`. The generated `SKILL.md` now keeps
+  file references one level deep by routing detailed repo paths through
+  `.agents/skills/harness/references/repo-harness.md`.
+- Added generated manifest metadata and regression coverage for the bundled
+  skill reference. Applied the same deployed-skill shape to RunHaven during the
+  active harness migration and fixed its remaining harness Markdown link.
 - Compacted generated harness templates for README, roadmap, source notes,
   security map, agent operating model, verification matrix, first-agent task,
   quality document, authoritative map, and root instructions.
@@ -56,10 +63,24 @@ generated harness effectiveness, product-boundary enforcement, or verification.
 
 ## Verification
 
-Latest optimization verification:
+Latest spec-alignment verification:
 
 - `PYTHONPATH=src:. python3 -m unittest tests.test_generate_audit`
 - `PYTHONPATH=src:. python3 -m unittest discover -s tests`
+- explicit Agent Skills spec validator for fresh render and RunHaven deployed
+  skill
+- fresh generated-target `harnessforge audit --min-score 85`
+- RunHaven `harnessforge audit --min-score 85`
+- RunHaven manifest JSON validation
+- HarnessForge and RunHaven `git diff --check`
+
+Results: 247 unit tests passed, fresh generated skill spec validation passed,
+RunHaven deployed skill spec validation passed, fresh generated-target audit
+was `93/100` with only the expected no-project-command warning, RunHaven audit
+was `100/100`, and diff hygiene passed.
+
+Earlier optimization verification also included:
+
 - `PYTHONPATH=src:. python3 -m compileall -q src tests`
 - `PYTHONPATH=src:. python3 -m harnessforge audit --target . --min-score 85`
 - `python3 -m json.tool feature_list.json`
@@ -68,11 +89,6 @@ Latest optimization verification:
 - `PYTHONPATH=src:. python3 -m harnessforge corpus --min-score 90 --json`
 - stale flat-path scan
 - `git diff --check`
-
-Results: 246 unit tests passed, compile passed, self-audit stayed `100/100`,
-generated-target smoke audit stayed `100/100`, duplicate durable fact blocks
-were `0`, corpus passed across 13 fixtures with minimum score `100`, and diff
-hygiene passed.
 
 ## Recommended Next Step
 

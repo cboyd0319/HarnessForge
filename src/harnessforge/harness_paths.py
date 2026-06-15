@@ -4,6 +4,7 @@ from pathlib import Path
 
 
 HARNESS_SKILL_PATH = ".agents/skills/harness/SKILL.md"
+HARNESS_SKILL_REFERENCE_PATH = ".agents/skills/harness/references/repo-harness.md"
 
 CANONICAL_HARNESS_PATHS = {
     "readme": "docs/harness/README.md",

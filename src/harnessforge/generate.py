@@ -15,6 +15,7 @@ from . import __version__
 from .detect import MISSING_VERIFICATION_COMMAND, detect_project
 from .harness_paths import (
     HARNESS_SKILL_PATH,
+    HARNESS_SKILL_REFERENCE_PATH,
     harness_path,
 )
 from .models import ProjectProfile, WriteResult
@@ -230,6 +231,11 @@ def _template_specs(
                 False,
             ),
             ("harness-skill.md.tmpl", HARNESS_SKILL_PATH, False),
+            (
+                "harness-skill-reference.md.tmpl",
+                HARNESS_SKILL_REFERENCE_PATH,
+                False,
+            ),
             ("first-agent-task.md.tmpl", harness_path("first_agent_task"), False),
             ("roadmap.md.tmpl", harness_path("roadmap"), False),
             ("change-contract.md.tmpl", harness_path("change_contract"), False),
@@ -1846,6 +1852,7 @@ def _manifest_content(
         *([] if agent_file == "GEMINI.md" else ["GEMINI.md"]),
         ".github/copilot-instructions.md",
         HARNESS_SKILL_PATH,
+        HARNESS_SKILL_REFERENCE_PATH,
         "feature_list.json",
         "progress.md",
         "session-handoff.md",
@@ -1894,19 +1901,25 @@ def _manifest_content(
             "progress.md",
             "roadmap",
             HARNESS_SKILL_PATH,
-            "repo skill",
+            "repo-local zero-install playbook",
             "remote CI",
             "stubbed",
         ],
         HARNESS_SKILL_PATH: [
             "name: harness",
-            "zero-install",
+            "Zero-Install Rule",
             "repo-owned",
-            "HarnessForge optional",
+            "HarnessForge CLI and the HarnessForge GitHub Action are optional",
+            "references/repo-harness.md",
+        ],
+        HARNESS_SKILL_REFERENCE_PATH: [
+            agent_file,
+            "feature_list.json",
             "first-agent-task.md",
             "verification-matrix.md",
             "sensor-registry.md",
             "evidence-log.md",
+            "HarnessForge CLI and Action outputs as advisory",
         ],
         ".github/copilot-instructions.md": [
             "source of truth",

@@ -9,6 +9,12 @@ generated harness quality, product boundaries, and verification evidence intact.
 
 ## What Changed
 
+- Generated repo skills were rechecked against
+  `/Users/c/Downloads/specification.md`. `SKILL.md` now uses a one-level
+  `references/repo-harness.md` route, with detailed repo paths in the bundled
+  reference file.
+- RunHaven's deployed skill copy was updated to the same shape during the
+  active harness migration; RunHaven audit is now `100/100`.
 - Generated target harness Markdown was compacted without deleting safety
   surfaces.
 - Representative generated Markdown is now 69,009 bytes and 1,454 lines, down
@@ -35,6 +41,7 @@ generated harness quality, product boundaries, and verification evidence intact.
 - `src/harnessforge/templates/first-agent-task.md.tmpl`
 - `src/harnessforge/templates/harness-readme.md.tmpl`
 - `src/harnessforge/templates/harness-skill.md.tmpl`
+- `src/harnessforge/templates/harness-skill-reference.md.tmpl`
 - `src/harnessforge/templates/quality-document.md.tmpl`
 - `src/harnessforge/templates/roadmap.md.tmpl`
 - `src/harnessforge/templates/security-boundary-map.md.tmpl`
@@ -44,6 +51,7 @@ generated harness quality, product boundaries, and verification evidence intact.
 - `src/harnessforge/templates/verification-matrix.md.tmpl`
 - `src/harnessforge/audit.py`
 - `src/harnessforge/generate.py`
+- `src/harnessforge/harness_paths.py`
 - `tests/test_generate_audit.py`
 - `docs/harness/manifest.json`
 - `docs/harness/evidence/evidence-log.md`
@@ -55,10 +63,19 @@ generated harness quality, product boundaries, and verification evidence intact.
 
 ## Verification To Trust
 
-Already run for this slice:
+Latest checks:
 
-- focused generated/audit tests passed with 55 tests
-- full unit discovery passed with 246 tests
+- focused generated/audit tests passed with 56 tests
+- full unit discovery passed with 247 tests
+- explicit Agent Skills spec validation passed for a fresh render and the
+  RunHaven deployed skill
+- fresh generated-target audit passed threshold at `93/100`; the only warning
+  was the expected lack of a project-specific command in the temporary repo
+- RunHaven audit passed at `100/100`
+- HarnessForge and RunHaven `git diff --check` passed
+
+Earlier optimization checks also passed before the spec adjustment:
+
 - compile passed
 - self-audit passed at `100/100`
 - JSON validation passed for `feature_list.json` and
@@ -66,7 +83,6 @@ Already run for this slice:
 - report smoke passed with no duplicate durable fact blocks
 - public fixture corpus passed with 13 fixtures and minimum score `100`
 - stale flat-path scan was clean
-- `git diff --check` passed
 
 Rerun focused tests after any further template or scoring edit.
 
