@@ -9,6 +9,7 @@ import sys
 import tomllib
 from pathlib import Path
 from typing import Any
+from xml.etree import ElementTree
 
 SHA_RE = re.compile(r"^[0-9a-f]{40}$")
 USES_RE = re.compile(r"^\s*(?:-\s*)?uses:\s*([^#\s]+)(?:\s*#\s*(.+))?\s*$")
@@ -21,6 +22,14 @@ EXACT_PYTHON_RE = re.compile(
     r"==([0-9]+(?:\.[0-9]+)+(?:[A-Za-z0-9_.+-]*)?)(?:\s*;.*)?$"
 )
 EXACT_NPM_RE = re.compile(r"^\d+\.\d+\.\d+(?:[-+][0-9A-Za-z.-]+)?$")
+EXACT_JVM_RE = re.compile(r"^[0-9]+(?:\.[0-9]+)+(?:[-.][0-9A-Za-z]+)*$")
+GRADLE_PLUGIN_RE = re.compile(
+    r"\bid\s*(?:\(\s*)?['\"]([^'\"]+)['\"]\s*\)?\s*version\s*['\"]([^'\"]+)['\"]"
+)
+GRADLE_DEPENDENCY_RE = re.compile(
+    r"\b(?:api|implementation|compileOnly|runtimeOnly|testImplementation|testRuntimeOnly)"
+    r"\s*(?:\(\s*)?['\"]([^:'\"]+):([^:'\"]+):([^'\")]+)['\"]"
+)
 PROFILE_IMAGE_RE = re.compile(
     r"(?:['\"]image['\"]|image)\s*[:=]\s*['\"]([^'\"]+)['\"]"
 )
@@ -39,6 +48,8 @@ INTEGRITY_LEDGER_SECTIONS = (
     "npm_integrity",
     "agent_cli_integrity",
 )
+MAVEN_LEDGER_SECTIONS = ("maven_dependencies", "gradle_dependencies", "java_dependencies")
+GRADLE_PLUGIN_LEDGER_SECTIONS = ("gradle_plugins", "java_plugins")
 NON_REGISTRY_PREFIXES = (
     "file:",
     "git+",
@@ -62,6 +73,15 @@ SCAN_SKIP_DIRS = {
     "dist",
     "node_modules",
     "venv",
+}
+INTENTIONALLY_VULNERABLE_DIR_NAMES = {
+    "intentionally-vulnerable",
+    "intentionally_vulnerable",
+    "vulnerable",
+    "vulnerabilities",
+    "dvwa",
+    "securityshepherd",
+    "juice-shop",
 }
 
 
@@ -91,6 +111,8 @@ def check_root(root: Path) -> list[str]:
     failures.extend(_check_python_requirements(root, ledger))
     failures.extend(_check_package_json_pins(root, ledger))
     failures.extend(_check_package_lock_integrity(root, ledger))
+    failures.extend(_check_maven_pins(root, ledger))
+    failures.extend(_check_gradle_pins(root, ledger))
     failures.extend(_check_profile_image_tags(root, ledger))
     failures.extend(_check_forbidden_build_hooks(root))
     return failures
@@ -393,6 +415,69 @@ def _check_package_lock_integrity(root: Path, ledger: dict[str, Any]) -> list[st
     return failures
 
 
+def _check_maven_pins(root: Path, ledger: dict[str, Any]) -> list[str]:
+    failures: list[str] = []
+    for path in _walk_named_files(root, {"pom.xml"}):
+        relative = path.relative_to(root)
+        try:
+            tree = ElementTree.parse(path)
+        except (ElementTree.ParseError, OSError) as error:
+            failures.append(f"{relative}: invalid Maven XML: {error}")
+            continue
+        root_element = tree.getroot()
+        properties = _maven_properties(root_element)
+        for dependency in root_element.iter():
+            if _xml_local_name(dependency.tag) != "dependency":
+                continue
+            group_id = _child_text(dependency, "groupId")
+            artifact_id = _child_text(dependency, "artifactId")
+            version = _resolve_maven_property(
+                _child_text(dependency, "version"), properties
+            )
+            if not group_id or not artifact_id or not version:
+                continue
+            coordinate = f"{group_id}:{artifact_id}"
+            label = f"{relative}: Maven dependency {coordinate}"
+            if not _is_exact_jvm_version(version):
+                failures.append(f"{label} should use an exact version: {version!r}")
+                continue
+            failures.extend(
+                _check_jvm_ledger(label, coordinate, version, ledger, MAVEN_LEDGER_SECTIONS)
+            )
+    return failures
+
+
+def _check_gradle_pins(root: Path, ledger: dict[str, Any]) -> list[str]:
+    failures: list[str] = []
+    for path in _walk_named_files(root, {"build.gradle", "build.gradle.kts"}):
+        relative = path.relative_to(root)
+        text = path.read_text(encoding="utf-8")
+        for plugin_id, version in GRADLE_PLUGIN_RE.findall(text):
+            label = f"{relative}: Gradle plugin {plugin_id}"
+            if not _is_exact_jvm_version(version):
+                failures.append(f"{label} should use an exact version: {version!r}")
+                continue
+            failures.extend(
+                _check_jvm_ledger(
+                    label,
+                    plugin_id,
+                    version,
+                    ledger,
+                    GRADLE_PLUGIN_LEDGER_SECTIONS,
+                )
+            )
+        for group_id, artifact_id, version in GRADLE_DEPENDENCY_RE.findall(text):
+            coordinate = f"{group_id}:{artifact_id}"
+            label = f"{relative}: Gradle dependency {coordinate}"
+            if not _is_exact_jvm_version(version):
+                failures.append(f"{label} should use an exact version: {version!r}")
+                continue
+            failures.extend(
+                _check_jvm_ledger(label, coordinate, version, ledger, MAVEN_LEDGER_SECTIONS)
+            )
+    return failures
+
+
 def _check_profile_image_tags(root: Path, ledger: dict[str, Any]) -> list[str]:
     if "profile_images" not in ledger:
         return []
@@ -497,6 +582,54 @@ def _check_package_integrity_ledger(
     return []
 
 
+def _check_jvm_ledger(
+    label: str,
+    name: str,
+    version: str,
+    ledger: dict[str, Any],
+    sections: tuple[str, ...],
+) -> list[str]:
+    if not ledger:
+        return []
+    ledger_pin = _lookup_ledger_value(ledger, sections, name)
+    if ledger_pin is None:
+        return [f"{label} {version!r} is not recorded in pins.toml {sections}"]
+    if ledger_pin != version:
+        return [
+            f"{label} version {version!r} does not match pins.toml value "
+            f"{ledger_pin!r}"
+        ]
+    return []
+
+
+def _maven_properties(root_element: ElementTree.Element) -> dict[str, str]:
+    properties: dict[str, str] = {}
+    for child in root_element:
+        if _xml_local_name(child.tag) != "properties":
+            continue
+        for property_node in child:
+            if property_node.text and property_node.text.strip():
+                properties[_xml_local_name(property_node.tag)] = property_node.text.strip()
+    return properties
+
+
+def _resolve_maven_property(value: str, properties: dict[str, str]) -> str:
+    if value.startswith("${") and value.endswith("}"):
+        return properties.get(value[2:-1], value)
+    return value
+
+
+def _child_text(element: ElementTree.Element, name: str) -> str:
+    for child in element:
+        if _xml_local_name(child.tag) == name and child.text:
+            return child.text.strip()
+    return ""
+
+
+def _xml_local_name(tag: str) -> str:
+    return tag.rsplit("}", 1)[-1]
+
+
 def _parse_exact_python_pin(requirement: object) -> tuple[str, str] | None:
     if not isinstance(requirement, str):
         return None
@@ -507,6 +640,13 @@ def _parse_exact_python_pin(requirement: object) -> tuple[str, str] | None:
     if not match:
         return None
     return match.group(1), match.group(2)
+
+
+def _is_exact_jvm_version(version: str) -> bool:
+    value = version.strip()
+    if not EXACT_JVM_RE.match(value):
+        return False
+    return not any(token in value.upper() for token in ("SNAPSHOT", "LATEST", "RELEASE"))
 
 
 def _ledger_section(ledger: dict[str, Any], section: str) -> dict[str, Any]:
@@ -740,7 +880,10 @@ def _walk_matching_files(root: Path, pattern: str) -> list[Path]:
 def _walk_repo(root: Path):
     for current, directories, names in os.walk(root):
         directories[:] = [
-            directory for directory in directories if directory not in SCAN_SKIP_DIRS
+            directory
+            for directory in directories
+            if directory not in SCAN_SKIP_DIRS
+            and directory.lower() not in INTENTIONALLY_VULNERABLE_DIR_NAMES
         ]
         yield current, directories, names
 

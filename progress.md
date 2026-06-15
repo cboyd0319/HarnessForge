@@ -325,10 +325,10 @@ maintenance loop.
   project is different, and organize usage around inspect, readiness, sync,
   generation boundaries, generated files, audit, update/drift, GitHub Action
   use, security, and verification.
-- Added the design-only `verify --json` contract: a markdown contract, JSON
-  schema, and example payload under `docs/harness/`. The contract separates
-  project verification reporting from harness scoring and keeps default mode
-  plan-only with no target command execution.
+- Added `verify --json` plan mode plus the contract docs, JSON schema, and
+  example payload under `docs/harness/`. The command maps detected or explicit
+  project checks into stable planned/blocked JSON without running target
+  repository commands.
 - Added read-only workflow and work-item inventory to readiness. The inventory
   reports `.github/workflows/`, `aspec/workflows/`, and `workflows/` TOML/YAML
   files, visible setup/teardown/remediation/push/pull-request/CI-polling/
@@ -355,26 +355,35 @@ maintenance loop.
   skill/plugin/installer governance surfaces. Extended `governanceInventory`
   to report agent skills, agent plugin manifests, and root installer scripts
   as advisory review-required surfaces.
+- Closed the remaining non-release backlog before release prep. Readiness now
+  reports config precedence; generated drift reports recommended actions; safe
+  `update --apply` refreshes only generated-owned files that are locally
+  unchanged; nested Maven/Gradle component checks prefer root wrappers; pin
+  checks cover Maven and Gradle dependencies and skip intentionally vulnerable
+  training paths; governance inventory reports container runtime files; and
+  P2 blueprint/default-generation work is explicitly deferred until validators
+  and real eval evidence justify it.
 
 ## Recommended Next Step
 
-The P1 backlog from the remaining-ideas research pass is implemented. The
-source-ledger hygiene gate and machine-readable effectiveness-evidence schema
-are now part of local release-prep guidance. Continue release prep by deciding
-whether any remaining P2 item is required before a public Action release, with
-manual macOS/Windows platform CI, the `v1` Action tag, and release-time
-SBOM/provenance gates as the strongest remaining candidates.
+The non-release backlog from the remaining-ideas research pass is closed for
+the first public Action release. Continue with release prep: manual
+macOS/Windows platform CI, the `v1` Action tag decision, and release-time
+SBOM/provenance gates.
 Push local commits only at an explicit batch/release boundary or user request.
-Remaining product decisions before a first public Action release: whether to
-add component-directed monorepo verification commands, path/package exclusions
-for intentionally vulnerable training repos, Maven/Gradle dependency pin
-parsing, and selective update semantics for generated-owned files. Then run
-the manual macOS/Windows platform CI check and decide whether to cut a `v1`
-Action tag and which release-time SBOM/provenance controls should become
-blocking.
 
 ## Verification Evidence
 
+- `PYTHONPATH=src:. python3 -m unittest discover -s tests` passed with
+  175 tests, `python3 -m compileall src tests scripts` passed,
+  `PYTHONPATH=src:. python3 scripts/check_pins.py --root .` passed,
+  `PYTHONPATH=src:. python3 scripts/refresh_research.py --root . --check`
+  passed, `PYTHONPATH=src:. python3 -m harnessforge verify --target . --json`
+  produced a plan-mode report, `PYTHONPATH=src:. python3 -m harnessforge audit
+  --target . --min-score 85` passed with self-audit `100/100`, `git diff
+  --check` and the local-path scan passed, and both `./init.sh` and
+  `pwsh -NoProfile -File ./init.ps1` passed with 175 tests after closing the
+  non-release backlog.
 - `PYTHONPATH=src:. python3 -m unittest tests.test_cli` passed with 24 tests,
   `PYTHONPATH=src:. python3 -m unittest discover -s tests` passed with
   152 tests, and `PYTHONPATH=src:. python3 -m compileall src tests scripts`

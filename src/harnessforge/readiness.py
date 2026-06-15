@@ -62,6 +62,7 @@ class ReadinessReport:
     runnable_checks: tuple[str, ...]
     generated_drift: tuple[DriftResult, ...]
     review_required: tuple[str, ...]
+    config_precedence: tuple[str, ...]
     workflow_inventory: tuple[WorkflowItem, ...]
     work_item_inventory: tuple[WorkItem, ...]
     context_budget: ContextBudgetReport
@@ -183,6 +184,7 @@ def inspect_readiness(profile: ProjectProfile) -> ReadinessReport:
         runnable_checks=runnable_checks,
         generated_drift=drift_items,
         review_required=tuple(_dedupe(review_required)),
+        config_precedence=profile.config_precedence,
         workflow_inventory=inventory.workflows,
         work_item_inventory=inventory.work_items,
         context_budget=context_budget,
@@ -202,6 +204,7 @@ def readiness_to_dict(report: ReadinessReport) -> dict[str, Any]:
         "runnableChecks": list(report.runnable_checks),
         "generatedDrift": [_drift_to_dict(item) for item in report.generated_drift],
         "reviewRequired": list(report.review_required),
+        "configPrecedence": list(report.config_precedence),
         "workflowInventory": [
             workflow_to_dict(item) for item in report.workflow_inventory
         ],
@@ -229,11 +232,13 @@ def format_readiness(report: ReadinessReport) -> str:
         lines,
         "Generated drift",
         tuple(
-            f"{item.path}: file={item.file_status}, template={item.template_status}"
+            f"{item.path}: file={item.file_status}, "
+            f"template={item.template_status}, action={item.recommended_action}"
             for item in report.generated_drift
         ),
     )
     _append_section(lines, "Review required", report.review_required)
+    _append_section(lines, "Config precedence", report.config_precedence)
     _append_section(
         lines,
         "Workflow inventory",
@@ -368,6 +373,7 @@ def _drift_to_dict(item: DriftResult) -> dict[str, str]:
         "fileStatus": item.file_status,
         "templateStatus": item.template_status,
         "reason": item.reason,
+        "recommendedAction": item.recommended_action,
     }
 
 

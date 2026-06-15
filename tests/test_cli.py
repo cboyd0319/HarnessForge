@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import contextlib
+import hashlib
 import io
 import json
 import tempfile
@@ -122,6 +123,42 @@ class CliTests(unittest.TestCase):
             self.assertIn(key, payload)
         self.assertIn("python -m unittest discover", payload["runnableChecks"])
 
+    def test_inspect_readiness_reports_config_precedence(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "package.json").write_text(
+                json.dumps(
+                    {
+                        "packageManager": "npm@10.0.0",
+                        "scripts": {"test": "node --test"},
+                    }
+                ),
+                encoding="utf-8",
+            )
+            stdout = io.StringIO()
+            with contextlib.redirect_stdout(stdout):
+                code = main(
+                    [
+                        "inspect",
+                        "--target",
+                        str(root),
+                        "--readiness",
+                        "--json",
+                        "--package-manager",
+                        "pnpm",
+                        "--command",
+                        "pnpm test",
+                    ]
+                )
+
+            payload = json.loads(stdout.getvalue())
+
+        self.assertEqual(code, 0)
+        precedence = payload["configPrecedence"]
+        self.assertEqual(precedence[0], "CLI --command: pnpm test")
+        self.assertEqual(precedence[1], "CLI --package-manager: pnpm")
+        self.assertIn("package.json packageManager: npm@10.0.0", precedence)
+
     def test_inspect_readiness_blocks_missing_verification(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -213,6 +250,14 @@ class CliTests(unittest.TestCase):
                 "{}\n",
                 encoding="utf-8",
             )
+            (root / "Dockerfile").write_text(
+                "FROM python:3.13\n",
+                encoding="utf-8",
+            )
+            (root / "compose.yaml").write_text(
+                "services: {}\n",
+                encoding="utf-8",
+            )
             (root / ".husky").mkdir()
             (root / ".husky" / "pre-commit").write_text(
                 "#!/bin/sh\n",
@@ -265,6 +310,9 @@ class CliTests(unittest.TestCase):
             inventory[".devcontainer/devcontainer.json"]["category"],
             "devcontainer",
         )
+        self.assertEqual(inventory["Dockerfile"]["category"], "container-runtime")
+        self.assertIn("image-build", inventory["Dockerfile"]["surfaces"])
+        self.assertEqual(inventory["compose.yaml"]["category"], "container-runtime")
         self.assertEqual(inventory[".sandbox/policy.toml"]["category"], "sandbox")
         self.assertEqual(inventory[".env.example"]["category"], "environment-template")
         self.assertEqual(
@@ -745,6 +793,62 @@ class CliTests(unittest.TestCase):
         self.assertEqual(code, 2)
         self.assertIn("--check", stderr.getvalue())
 
+    def test_verify_json_plan_reports_checks_without_running(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            marker = root / "ran.txt"
+            (root / "pyproject.toml").write_text(
+                "[project]\nname='demo'\n",
+                encoding="utf-8",
+            )
+            command = (
+                "python -c \"from pathlib import Path; "
+                "Path('ran.txt').write_text('ran')\""
+            )
+            stdout = io.StringIO()
+            with contextlib.redirect_stdout(stdout):
+                code = main(
+                    [
+                        "verify",
+                        "--target",
+                        str(root),
+                        "--json",
+                        "--command",
+                        command,
+                    ]
+                )
+
+            payload = json.loads(stdout.getvalue())
+
+        self.assertEqual(code, 0)
+        self.assertFalse(marker.exists())
+        self.assertEqual(payload["schemaVersion"], "harnessforge.verify.v1")
+        self.assertEqual(payload["mode"], "plan")
+        self.assertEqual(payload["verdict"], "planned")
+        self.assertFalse(payload["execution"]["commandsExecuted"])
+        self.assertEqual(payload["summary"]["planned"], 1)
+        self.assertEqual(payload["checks"][0]["source"], "explicit")
+        self.assertEqual(payload["checks"][0]["status"], "planned")
+        self.assertIsNone(payload["checks"][0]["exitCode"])
+        self.assertIsNone(payload["target"]["root"])
+
+    def test_verify_json_blocks_missing_verification(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "README.md").write_text("# Demo\n", encoding="utf-8")
+            stdout = io.StringIO()
+            with contextlib.redirect_stdout(stdout):
+                code = main(["verify", "--target", str(root), "--json"])
+
+            payload = json.loads(stdout.getvalue())
+
+        self.assertEqual(code, 0)
+        self.assertEqual(payload["verdict"], "blocked")
+        self.assertEqual(payload["summary"]["blocked"], 1)
+        self.assertTrue(
+            any("No project verification" in item for item in payload["blockedReasons"])
+        )
+
     def test_init_can_scaffold_optional_workflows(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -850,7 +954,39 @@ class CliTests(unittest.TestCase):
         drift = {item["path"]: item for item in payload["drift"]}
         self.assertEqual(drift["AGENTS.md"]["fileStatus"], "modified")
         self.assertEqual(drift["AGENTS.md"]["ownership"], "generated")
+        self.assertEqual(
+            drift["AGENTS.md"]["recommendedAction"],
+            "review-local-edits-before-overwrite",
+        )
         self.assertFalse(claude_text.startswith("# edited"))
+
+    def test_update_apply_refreshes_unchanged_generated_file(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            with contextlib.redirect_stdout(io.StringIO()):
+                init_code = main(["init", "--target", str(root)])
+            old_content = "# old generated agents\n"
+            (root / "AGENTS.md").write_text(old_content, encoding="utf-8")
+            manifest_path = root / "docs/harness/manifest.json"
+            manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+            manifest["generatedFiles"]["AGENTS.md"]["contentSha256"] = (
+                hashlib.sha256(old_content.encode("utf-8")).hexdigest()
+            )
+            manifest["generatedFiles"]["AGENTS.md"]["templateSha256"] = "old-template"
+            manifest_path.write_text(json.dumps(manifest, indent=2), encoding="utf-8")
+            stdout = io.StringIO()
+            with contextlib.redirect_stdout(stdout):
+                update_code = main(["update", "--target", str(root), "--apply", "--json"])
+            payload = json.loads(stdout.getvalue())
+            agents_text = (root / "AGENTS.md").read_text(encoding="utf-8")
+
+        self.assertEqual(init_code, 0)
+        self.assertEqual(update_code, 0)
+        writes = {item["path"]: item for item in payload["writes"]}
+        self.assertEqual(writes["AGENTS.md"]["status"], "updated")
+        self.assertIn("generated-owned template changed", writes["AGENTS.md"]["reason"])
+        self.assertIn("## Project overview", agents_text)
+        self.assertNotEqual(agents_text, old_content)
 
     def test_init_records_existing_files_as_project_owned_without_initial_drift(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

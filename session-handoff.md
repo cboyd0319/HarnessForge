@@ -79,15 +79,18 @@ and the required AGENTS instruction format.
   read-only `sync --check`, which wraps readiness, generated drift,
   source-of-truth spec routing, and review-required surfaces with exit codes
   `0` ready, `1` warning, and `2` blocked. Implemented the final P0 item:
-  design-only `verify --json` contract docs, schema, example, and fixture
-  tests. Implemented the first P1 item: read-only workflow and work-item
+  `verify --json` plan-mode CLI plus contract docs, schema, example, and
+  fixture tests. Implemented the first P1 item: read-only workflow and work-item
   inventory in readiness. Implemented the second P1 item: context-budget and
   duplicate-instruction detection in readiness. Implemented the third P1 item:
   permission/governance inventory in readiness. Implemented the final P1 item:
-  guided first-run UX with `harnessforge quickstart`. The P1 backlog from this
-  research pass is implemented.
-  P2 candidates: opt-in blueprints, real-agent evals, source-verified platform
-  adapters, and sandbox/container readiness. Rejected defaults remain large
+  guided first-run UX with `harnessforge quickstart`. Added `verify --json`
+  plan mode, config-precedence reporting, selective generated-owned update
+  refresh, Java pin parsing, intentionally vulnerable training-path pin-scan
+  exclusions, nested JVM wrapper preference, container runtime inventory, and
+  source-verified platform metadata. The non-release backlog from this research
+  pass is implemented or explicitly deferred before release prep.
+  Rejected defaults remain large
   skill/memory trees, platform permission config, LLM-assisted init,
   autonomous push/PR workflows, and copied ASPEC/AWMAN/Maki templates.
 - Current HarnessForge-adjacent research and UX batch mined local `awman`,
@@ -126,10 +129,10 @@ and the required AGENTS instruction format.
   from the outside: value proposition first, then at-a-glance outcomes,
   differentiators, boundaries, quickstart, readiness/sync, generated files,
   audit/update, Action use, security, and verification.
-- Current `verify --json` work is design-only. It adds
+- Current `verify --json` work is plan-mode only. It adds the CLI command plus
   `docs/harness/verify-json-contract.md`, `verify-json.schema.json`, and
-  `verify-json-example.json`, plus contract fixture tests. It does not add a
-  CLI command or command execution semantics.
+  `verify-json-example.json`. It reports detected or explicit project checks
+  without command execution semantics.
 - Current workflow/work-item inventory work is read-only and advisory. It adds
   `src/harnessforge/workflow_inventory.py`, readiness JSON fields
   `workflowInventory` and `workItemInventory`, and review-required warnings for
@@ -487,8 +490,12 @@ and the required AGENTS instruction format.
 
 ## Next Session
 
-The P1 backlog from the remaining-ideas research pass is implemented. The
-latest release-prep slices added a no-network research source hygiene gate, a
+The non-release backlog from the remaining-ideas research pass is closed for
+the first public Action release. The latest slices added `verify --json` plan
+mode, config-precedence reporting, selective generated-owned update refresh,
+Maven/Gradle dependency pin parsing, intentionally vulnerable training-path
+pin-scan exclusions, nested JVM wrapper preference, container runtime
+governance inventory, a no-network research source hygiene gate, a
 machine-readable effectiveness evidence contract, and source-reviewed platform
 adapter metadata. `scripts/refresh_research.py --check` validates duplicate
 source IDs and URLs, required fields, placeholder text, canonical URL shape,
@@ -509,13 +516,14 @@ image assumptions. Generated change contracts now ask for current
 primary-source evidence for platform-impacting changes. The primary-source
 review checked Python version status, GitHub hosted runner labels, and the
 GitHub runner-images Windows VS2026 migration notice.
-Current verification passes: focused contract, generator, audit, refresh, and
-entrypoint tests, `scripts/refresh_research.py --root . --check`, POSIX and
-PowerShell entrypoints with 167 tests, pin check, and self-audit `100/100`.
-Continue release prep by deciding whether any P2 item is required before a
-public Action release. The strongest remaining release-prep items are manual
-macOS/Windows platform CI, the `v1` Action tag, and release-time
-SBOM/provenance gates.
+Current backlog-closure verification passes: focused regression tests, full
+unit discovery with 175 tests, compile, pin check, research source check,
+`verify --json` smoke, self-audit `100/100`, local-path scan, diff hygiene,
+and POSIX and PowerShell entrypoints with 175 tests each. `sync --check`
+returns the expected warning for local workflow and instruction review surfaces
+without blockers or generated drift.
+Continue release prep with manual macOS/Windows platform CI, the `v1` Action
+tag decision, and release-time SBOM/provenance gates.
 Existing eval guidance comes from the Harness Forge, Meta-Harness, Code as
 Agent Harness catalog, and arXiv harness-eval reviews; those sources are mined
 only for product ideas and are not copied into generated target-repo defaults.
@@ -526,8 +534,5 @@ ownership boundaries, and source-ledger hygiene. Keep these as local eval
 guidance unless a later release decision turns a narrow piece into generated
 starter guidance.
 Push local commits only at an explicit batch/release boundary or user request.
-Remaining product decisions before public release: component-directed monorepo
-verification commands, path/package exclusions for intentionally vulnerable
-training repos, Maven/Gradle dependency pin parsing, selective update semantics
-for generated-owned files, manual macOS/Windows platform CI, `v1` Action tag,
-and release-time SBOM/provenance gates.
+Remaining work before public release is release prep: manual macOS/Windows
+platform CI, `v1` Action tag, and release-time SBOM/provenance gates.

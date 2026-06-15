@@ -829,6 +829,27 @@ class DetectProjectTests(unittest.TestCase):
         self.assertIn("pom.xml <modules>", profile.workspace_markers)
         self.assertIn("composer.json path repositories", profile.workspace_markers)
 
+    def test_nested_jvm_components_prefer_root_wrappers(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "mvnw").write_text("#!/bin/sh\n", encoding="utf-8")
+            (root / "gradlew").write_text("#!/bin/sh\n", encoding="utf-8")
+            (root / "services" / "api").mkdir(parents=True)
+            (root / "services" / "api" / "pom.xml").write_text(
+                "<project />\n",
+                encoding="utf-8",
+            )
+            (root / "apps" / "web").mkdir(parents=True)
+            (root / "apps" / "web" / "build.gradle.kts").write_text(
+                "plugins { java }\n",
+                encoding="utf-8",
+            )
+
+            profile = detect_project(root)
+
+        self.assertIn("./mvnw -f services/api/pom.xml test", profile.verification_commands)
+        self.assertIn("./gradlew -p apps/web test", profile.verification_commands)
+
     def test_detects_terraform_and_harness_routing_markers(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

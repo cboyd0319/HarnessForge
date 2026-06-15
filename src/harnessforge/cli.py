@@ -19,6 +19,7 @@ from .readiness import (
 )
 from .redact import redact_local_paths
 from .update import build_drift_report, plan_or_apply_update
+from .verify import build_verify_plan, format_verify_plan, verify_report_to_dict
 
 SYNC_EXIT_CODES = {
     "ready": 0,
@@ -174,6 +175,16 @@ def build_parser() -> argparse.ArgumentParser:
     sync.add_argument("--json", action="store_true")
     sync.set_defaults(func=_sync)
 
+    verify = subparsers.add_parser(
+        "verify",
+        help="report project verification checks without running them",
+    )
+    verify.add_argument("--target", type=Path, default=Path.cwd())
+    verify.add_argument("--package-manager")
+    verify.add_argument("--command", dest="commands", action="append", default=[])
+    verify.add_argument("--json", action="store_true")
+    verify.set_defaults(func=_verify)
+
     doctor = subparsers.add_parser("doctor", help="check local runtime support")
     doctor.add_argument("--json", action="store_true")
     doctor.add_argument("--strict", action="store_true")
@@ -297,7 +308,8 @@ def _update(args: argparse.Namespace) -> int:
             print(
                 "  - "
                 f"{item.path}: file={item.file_status}, "
-                f"template={item.template_status}{suffix}"
+                f"template={item.template_status}, "
+                f"action={item.recommended_action}{suffix}"
             )
         return 0
     before, profile, writes = plan_or_apply_update(
@@ -357,6 +369,20 @@ def _sync(args: argparse.Namespace) -> int:
     else:
         print(_format_sync_check(report))
     return exit_code
+
+
+def _verify(args: argparse.Namespace) -> int:
+    profile = detect_project(
+        args.target,
+        explicit_package_manager=args.package_manager,
+        explicit_commands=tuple(args.commands),
+    )
+    report = build_verify_plan(profile, explicit_commands=tuple(args.commands))
+    if args.json:
+        print(json.dumps(verify_report_to_dict(report), indent=2))
+    else:
+        print(format_verify_plan(report))
+    return 0
 
 
 def _doctor(args: argparse.Namespace) -> int:
@@ -427,6 +453,7 @@ def _format_quickstart(
     _append_cli_section(lines, "Warnings", report.warnings)
     _append_cli_section(lines, "Source of truth", report.source_of_truth)
     _append_cli_section(lines, "Runnable checks", report.runnable_checks)
+    _append_cli_section(lines, "Config precedence", report.config_precedence)
     _append_cli_section(lines, "Existing files preserved", preserved)
     _append_cli_section(lines, "Files HarnessForge would enhance", would_enhance)
     _append_cli_section(lines, "Files HarnessForge would create", would_create)
@@ -498,6 +525,7 @@ def _profile_to_dict(profile: ProjectProfile) -> dict[str, object]:
         "components": list(profile.components),
         "workspaceMarkers": list(profile.workspace_markers),
         "routingMarkers": list(profile.routing_markers),
+        "configPrecedence": list(profile.config_precedence),
     }
 
 
@@ -528,6 +556,7 @@ def _drift_to_dict(item: DriftResult) -> dict[str, str]:
         "fileStatus": item.file_status,
         "templateStatus": item.template_status,
         "reason": item.reason,
+        "recommendedAction": item.recommended_action,
     }
 
 

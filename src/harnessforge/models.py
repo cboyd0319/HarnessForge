@@ -17,6 +17,7 @@ class ProjectProfile:
     files: tuple[str, ...] = field(repr=False)
     workspace_markers: tuple[str, ...] = ()
     routing_markers: tuple[str, ...] = ()
+    config_precedence: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -33,6 +34,7 @@ class DriftResult:
     file_status: str
     template_status: str
     reason: str = ""
+    recommended_action: str = "none"
 
 
 @dataclass(frozen=True)

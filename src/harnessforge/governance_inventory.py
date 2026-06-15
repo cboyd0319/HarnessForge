@@ -95,6 +95,14 @@ ENV_LOCAL_PREFIXES = (
 )
 
 CONFIG_SUFFIXES = {".json", ".toml", ".yaml", ".yml"}
+CONTAINER_RUNTIME_FILES = {
+    "Containerfile",
+    "Dockerfile",
+    "compose.yaml",
+    "compose.yml",
+    "docker-compose.yaml",
+    "docker-compose.yml",
+}
 
 
 @dataclass(frozen=True)
@@ -220,6 +228,16 @@ def _governance_item(file: str) -> GovernanceItem | None:
                 "mounts, and post-create commands.",
             ),
         )
+    if _is_container_runtime(file):
+        return GovernanceItem(
+            path=file,
+            category="container-runtime",
+            surfaces=("image-build", "runtime-isolation", "filesystem-mounts"),
+            review_required=(
+                f"container runtime file detected at {file}; review base images, "
+                "mounts, network access, and post-start commands.",
+            ),
+        )
     if _is_sandbox_config(file):
         return GovernanceItem(
             path=file,
@@ -259,6 +277,10 @@ def _is_devcontainer(file: str) -> bool:
         path.parts[:1] == (".devcontainer",)
         and path.suffix.lower() in CONFIG_SUFFIXES
     )
+
+
+def _is_container_runtime(file: str) -> bool:
+    return Path(file).name in CONTAINER_RUNTIME_FILES
 
 
 def _is_sandbox_config(file: str) -> bool:

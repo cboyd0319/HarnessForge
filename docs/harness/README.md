@@ -49,6 +49,7 @@ harnessforge quickstart --target .
 harnessforge audit --target .
 harnessforge update --target .
 harnessforge sync --check --target . --json
+harnessforge verify --target . --json
 ```
 
 `quickstart` is a read-only guided first-run view. It composes detection,
@@ -58,9 +59,9 @@ placeholder reporting, and next commands without writing files.
 `update` reports recommended safe corrections unless `--apply` is passed.
 Existing files are skipped unless `--force` is passed.
 
-The planned `verify --json` contract is documented in
-`verify-json-contract.md`, with schema and example artifacts beside it. The
-contract is plan-only until explicit command execution is implemented.
+`verify --json` is implemented in plan mode and documented in
+`verify-json-contract.md`, with schema and example artifacts beside it. It
+reports detected or explicit checks without running target repository commands.
 
 Readiness also includes advisory workflow and work-item inventory. Treat
 detected setup, teardown, remediation, push, pull-request, CI polling, and

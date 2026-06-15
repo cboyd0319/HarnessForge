@@ -24,6 +24,7 @@ def plan_or_apply_update(
     before = audit_target(target)
     if not apply:
         return before, None, ()
+    update_generated_paths = _safe_generated_update_paths(build_drift_report(target))
     profile, writes = create_harness(
         target,
         agent_file=agent_file,
@@ -32,6 +33,7 @@ def plan_or_apply_update(
         with_ci_workflow=with_ci_workflow,
         with_self_heal_workflow=with_self_heal_workflow,
         platform_contract=platform_contract,
+        update_generated_paths=update_generated_paths if not force else frozenset(),
     )
     return before, profile, writes
 
@@ -61,12 +63,14 @@ def build_drift_report(target: Path) -> tuple[DriftResult, ...]:
                     file_status="unsafe-path",
                     template_status="unknown",
                     reason="manifest path points outside target",
+                    recommended_action="review-manifest",
                 )
             )
             continue
         file_status = _file_status(path, metadata)
         template_status = _template_status(metadata)
         reason = _drift_reason(file_status, template_status)
+        action = _drift_recommended_action(ownership, file_status, template_status)
         results.append(
             DriftResult(
                 path=relative_path,
@@ -74,6 +78,7 @@ def build_drift_report(target: Path) -> tuple[DriftResult, ...]:
                 file_status=file_status,
                 template_status=template_status,
                 reason=reason,
+                recommended_action=action,
             )
         )
     return tuple(results)
@@ -108,3 +113,37 @@ def _drift_reason(file_status: str, template_status: str) -> str:
     if template_status in {"changed", "missing"}:
         reasons.append(f"template {template_status}")
     return "; ".join(reasons)
+
+
+def _drift_recommended_action(
+    ownership: str, file_status: str, template_status: str
+) -> str:
+    if file_status == "unsafe-path":
+        return "review-manifest"
+    if ownership != "generated":
+        if file_status == "missing":
+            return "review-project-owned-missing-file"
+        if file_status == "modified":
+            return "preserve-project-owned-file"
+        if template_status in {"changed", "missing"}:
+            return "review-project-owned-template-drift"
+        return "none"
+    if file_status == "missing":
+        return "restore-generated-file"
+    if file_status == "modified":
+        return "review-local-edits-before-overwrite"
+    if template_status == "changed":
+        return "update-from-current-template"
+    if template_status == "missing":
+        return "review-missing-template"
+    return "none"
+
+
+def _safe_generated_update_paths(drift: tuple[DriftResult, ...]) -> frozenset[str]:
+    return frozenset(
+        item.path
+        for item in drift
+        if item.ownership == "generated"
+        and item.file_status == "unchanged"
+        and item.template_status == "changed"
+    )

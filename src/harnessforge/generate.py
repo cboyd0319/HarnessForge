@@ -63,6 +63,7 @@ def create_harness(
     with_ci_workflow: bool = False,
     with_self_heal_workflow: bool = False,
     platform_contract: str = "cross-platform",
+    update_generated_paths: frozenset[str] = frozenset(),
 ) -> tuple[ProjectProfile, tuple[WriteResult, ...]]:
     agent_file = _validate_agent_file(agent_file)
     platform_contract = _validate_platform_contract(platform_contract)
@@ -91,6 +92,7 @@ def create_harness(
         rendered,
         force=force,
         enhance_existing=enhance_existing,
+        update_generated_paths=update_generated_paths,
         agent_file=agent_file,
         project_context_markdown=context["project_context_markdown"],
     )
@@ -120,6 +122,7 @@ def create_harness(
                 executable=executable,
                 force=force,
                 enhance_existing=enhance_existing,
+                update_generated=relative_path in update_generated_paths,
                 dry_run=dry_run,
             )
         )
@@ -634,13 +637,15 @@ def _generated_file_metadata(
     *,
     force: bool,
     enhance_existing: bool,
+    update_generated_paths: frozenset[str],
     agent_file: str,
     project_context_markdown: str,
 ) -> dict[str, dict[str, object]]:
     metadata: dict[str, dict[str, object]] = {}
     for template_name, relative_path, executable in specs:
         destination = root / relative_path
-        existing_project_file = destination.exists() and not force
+        update_generated = relative_path in update_generated_paths
+        existing_project_file = destination.exists() and not force and not update_generated
         enhanced_content = None
         if existing_project_file and enhance_existing:
             enhanced_content = _enhanced_instruction_content(
@@ -663,12 +668,10 @@ def _generated_file_metadata(
             "templateSha256": _template_sha256(template_name),
             "executable": executable,
             "reviewRequired": relative_path in REVIEW_REQUIRED_FILES,
-            "writeStatus": (
-                "enhanced"
-                if enhanced
-                else "skipped-existing"
-                if existing_project_file
-                else "generated"
+            "writeStatus": _generated_write_status(
+                update_generated=update_generated,
+                enhanced=enhanced,
+                existing_project_file=existing_project_file,
             ),
         }
         if enhanced_content is not None:
@@ -679,6 +682,21 @@ def _generated_file_metadata(
             entry["contentSha256"] = _sha256_text(rendered[relative_path])
         metadata[relative_path] = entry
     return metadata
+
+
+def _generated_write_status(
+    *,
+    update_generated: bool,
+    enhanced: bool,
+    existing_project_file: bool,
+) -> str:
+    if update_generated:
+        return "updated"
+    if enhanced:
+        return "enhanced"
+    if existing_project_file:
+        return "skipped-existing"
+    return "generated"
 
 
 def _sha256_text(text: str) -> str:
@@ -714,10 +732,27 @@ def _write_file(
     executable: bool,
     force: bool,
     enhance_existing: bool,
+    update_generated: bool,
     dry_run: bool,
 ) -> WriteResult:
     if not is_inside_root(path, root):
         raise ValueError(f"refusing to write outside target repository: {path}")
+    if path.exists() and update_generated and not force:
+        if dry_run:
+            return WriteResult(
+                path=path,
+                status="would_update",
+                reason="generated-owned template changed and file unchanged",
+            )
+        path.write_text(content, encoding="utf-8", newline="\n")
+        if executable and os.name != "nt":
+            current = path.stat().st_mode
+            path.chmod(current | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
+        return WriteResult(
+            path=path,
+            status="updated",
+            reason="generated-owned template changed and file unchanged",
+        )
     if path.exists() and not force:
         if enhance_existing:
             enhanced = _enhanced_instruction_content(

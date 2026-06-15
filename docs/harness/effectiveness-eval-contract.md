@@ -11,7 +11,7 @@ This is separate from:
 - `audit`, which scores harness structure.
 - `inspect --readiness`, which reports static repo signals.
 - `sync --check`, which turns readiness into CI-oriented exit codes.
-- `verify --json`, which is a planned project-check report contract.
+- `verify --json`, which is a plan-mode project-check report contract.
 
 Structural audit and project verification can show that a repo is coherent and
 checkable. They do not prove that a generated or modified harness makes agents

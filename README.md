@@ -168,6 +168,13 @@ harnessforge sync --check --target /path/to/repo
 harnessforge sync --check --target /path/to/repo --json
 ```
 
+Report planned project verification checks without running them:
+
+```bash
+harnessforge verify --target /path/to/repo --json
+harnessforge verify --target /path/to/repo --json --command "python -m pytest"
+```
+
 Preview generated files:
 
 ```bash
@@ -201,6 +208,7 @@ Readiness reports:
 - `runnableChecks`
 - `generatedDrift`
 - `reviewRequired`
+- `configPrecedence`
 - `workflowInventory`
 - `workItemInventory`
 - `contextBudget`
@@ -252,18 +260,17 @@ evolved, synthesized, or benchmark-winning harness change.
 
 See [docs/harness/effectiveness-eval-contract.md](docs/harness/effectiveness-eval-contract.md).
 
-## Planned Verify JSON Contract
+## Verify JSON
 
-HarnessForge has a proposed `verify --json` report contract for project check
-results. The contract is documented before command execution is implemented so
-the schema, safety boundary, and CI semantics can be reviewed independently.
+HarnessForge has a plan-mode `verify --json` report for project checks. It
+maps detected or explicitly provided verification commands into a stable JSON
+shape without running target repository commands.
 
 See [docs/harness/verify-json-contract.md](docs/harness/verify-json-contract.md),
 [docs/harness/verify-json.schema.json](docs/harness/verify-json.schema.json),
 and [docs/harness/verify-json-example.json](docs/harness/verify-json-example.json).
 
-The intended default mode is plan-only: report detected checks and their
-sources without running target repository commands. Future execution must be
+Command execution remains intentionally unavailable. Future execution must be
 explicit opt-in.
 
 ## Generation Boundary
@@ -412,6 +419,7 @@ input, output, and command mode.
 | `harnessforge quickstart` | Guide the first safe run without writing files |
 | `harnessforge inspect` | Show detected project profile or readiness without writing files |
 | `harnessforge sync --check` | Run a read-only CI preflight with readiness exit codes |
+| `harnessforge verify` | Report planned project checks without executing target commands |
 | `harnessforge init` | Create missing harness artifacts |
 | `harnessforge audit` | Score an existing repo harness |
 | `harnessforge update` | Plan or apply safe missing-file corrections, or report generated drift |

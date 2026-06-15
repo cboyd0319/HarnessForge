@@ -158,6 +158,139 @@ class PinCheckTests(unittest.TestCase):
         self.assertIn("package-lock integrity", joined)
         self.assertIn("profile image", joined)
 
+    def test_checks_maven_and_gradle_dependency_pins(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "pins.toml").write_text(
+                "[python]\n"
+                'setuptools = "82.0.1"\n'
+                "\n[maven_dependencies]\n"
+                '"org.junit.jupiter:junit-jupiter" = "5.10.2"\n'
+                '"org.slf4j:slf4j-api" = "2.0.13"\n'
+                "\n[gradle_plugins]\n"
+                '"com.diffplug.spotless" = "6.25.0"\n',
+                encoding="utf-8",
+            )
+            (root / "pyproject.toml").write_text(
+                "[build-system]\n"
+                'requires = ["setuptools==82.0.1"]\n'
+                'build-backend = "setuptools.build_meta"\n',
+                encoding="utf-8",
+            )
+            (root / "pom.xml").write_text(
+                """
+                <project>
+                  <dependencies>
+                    <dependency>
+                      <groupId>org.junit.jupiter</groupId>
+                      <artifactId>junit-jupiter</artifactId>
+                      <version>5.10.2</version>
+                    </dependency>
+                  </dependencies>
+                </project>
+                """,
+                encoding="utf-8",
+            )
+            (root / "build.gradle").write_text(
+                """
+                plugins {
+                    id 'com.diffplug.spotless' version '6.25.0'
+                }
+                dependencies {
+                    implementation 'org.slf4j:slf4j-api:2.0.13'
+                }
+                """,
+                encoding="utf-8",
+            )
+
+            failures = check_root(root)
+
+        self.assertEqual(failures, [])
+
+    def test_rejects_mutable_maven_and_gradle_dependency_pins(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "pyproject.toml").write_text(
+                "[build-system]\n"
+                'requires = ["setuptools==82.0.1"]\n'
+                'build-backend = "setuptools.build_meta"\n',
+                encoding="utf-8",
+            )
+            (root / "pom.xml").write_text(
+                """
+                <project>
+                  <dependencies>
+                    <dependency>
+                      <groupId>org.junit.jupiter</groupId>
+                      <artifactId>junit-jupiter</artifactId>
+                      <version>5.10.2-SNAPSHOT</version>
+                    </dependency>
+                  </dependencies>
+                </project>
+                """,
+                encoding="utf-8",
+            )
+            (root / "build.gradle.kts").write_text(
+                """
+                plugins {
+                    id("com.diffplug.spotless") version "latest.release"
+                }
+                dependencies {
+                    implementation("org.slf4j:slf4j-api:+")
+                }
+                """,
+                encoding="utf-8",
+            )
+
+            failures = check_root(root)
+
+        joined = "\n".join(failures)
+        self.assertIn("Maven dependency", joined)
+        self.assertIn("Gradle plugin", joined)
+        self.assertIn("Gradle dependency", joined)
+
+    def test_skips_intentionally_vulnerable_training_paths(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            vulnerable = root / "intentionally-vulnerable"
+            vulnerable.mkdir()
+            (root / "pyproject.toml").write_text(
+                "[build-system]\n"
+                'requires = ["setuptools==82.0.1"]\n'
+                'build-backend = "setuptools.build_meta"\n',
+                encoding="utf-8",
+            )
+            (vulnerable / "requirements.txt").write_text(
+                "flask>=2\n",
+                encoding="utf-8",
+            )
+            (vulnerable / "package.json").write_text(
+                json.dumps({"dependencies": {"express": "^4.18.0"}}),
+                encoding="utf-8",
+            )
+            (vulnerable / "pom.xml").write_text(
+                """
+                <project>
+                  <dependencies>
+                    <dependency>
+                      <groupId>org.demo</groupId>
+                      <artifactId>vulnerable-demo</artifactId>
+                      <version>1.0.0-SNAPSHOT</version>
+                    </dependency>
+                  </dependencies>
+                </project>
+                """,
+                encoding="utf-8",
+            )
+            (vulnerable / "Dockerfile").write_text(
+                "FROM python:latest\n",
+                encoding="utf-8",
+            )
+
+            failures = check_root(root)
+
+        self.assertEqual(failures, [])
+
     def test_rejects_non_version_python_requirement_without_ledger(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

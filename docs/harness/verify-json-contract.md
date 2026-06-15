@@ -1,21 +1,21 @@
 # Verify JSON Contract
 
-Status: proposed
+Status: implemented plan mode
 
-This document defines the planned `harnessforge verify --json` report contract.
-It is a design contract, not a promise that command execution exists today.
+This document defines the `harnessforge verify --json` report contract.
+Plan mode is implemented. Command execution is intentionally not implemented.
 
 ## Purpose
 
-`verify --json` will report project verification checks in a stable
+`verify --json` reports project verification checks in a stable
 machine-readable shape. It is separate from:
 
 - `audit --json`, which scores harness structure.
 - `inspect --readiness --json`, which reports static readiness.
 - `sync --check --json`, which wraps readiness with CI-oriented exit codes.
 
-The first implementation should make project checks inspectable before it makes
-them executable.
+The current implementation makes project checks inspectable before making them
+executable.
 
 ## Execution Boundary
 
@@ -64,20 +64,20 @@ cost or context-budget claim.
 
 ## Planned Commands
 
-Initial plan-only shape:
+Plan-only shape:
 
 ```bash
 harnessforge verify --target <repo> --json
 harnessforge verify --target <repo> --json --command "<repo-owned check>"
 ```
 
-Future explicit execution shape:
+Reserved future explicit execution shape:
 
 ```bash
 harnessforge verify --target <repo> --json --run
 ```
 
-The future `--run` flag is intentionally not part of this implementation slice.
+The `--run` flag is intentionally not implemented.
 
 ## Exit Codes
 

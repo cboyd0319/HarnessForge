@@ -190,6 +190,12 @@ def detect_project(
         root, file_set, package_json, pyproject, cargo_toml, composer_json
     )
     routing_markers = _detect_routing_markers(root, file_set)
+    config_precedence = _config_precedence(
+        file_set,
+        package_json,
+        explicit_package_manager=explicit_package_manager,
+        explicit_commands=explicit_commands,
+    )
     return ProjectProfile(
         root=root,
         name=root.name,
@@ -202,6 +208,7 @@ def detect_project(
         files=files,
         workspace_markers=workspace_markers,
         routing_markers=routing_markers,
+        config_precedence=config_precedence,
     )
 
 
@@ -345,6 +352,65 @@ def _detect_package_managers(
     if {"build.gradle", "build.gradle.kts", "gradlew"} & filenames:
         managers.append("gradle")
     return tuple(_dedupe(managers))
+
+
+def _config_precedence(
+    file_set: set[str],
+    package_json: dict[str, Any] | None,
+    *,
+    explicit_package_manager: str | None,
+    explicit_commands: tuple[str, ...],
+) -> tuple[str, ...]:
+    sources: list[str] = []
+    sources.extend(f"CLI --command: {command}" for command in explicit_commands)
+    if explicit_package_manager:
+        sources.append(f"CLI --package-manager: {explicit_package_manager}")
+    if "docs/harness/manifest.json" in file_set:
+        sources.append("docs/harness/manifest.json generated harness manifest")
+    if package_json:
+        package_manager = package_json.get("packageManager")
+        if isinstance(package_manager, str):
+            sources.append(f"package.json packageManager: {package_manager}")
+        scripts = package_json.get("scripts")
+        if isinstance(scripts, dict) and scripts:
+            sources.append("package.json scripts")
+    for marker in (
+        "Justfile",
+        "justfile",
+        "Makefile",
+        "makefile",
+        "pyproject.toml",
+        "uv.lock",
+        "poetry.lock",
+        "Pipfile",
+        "Cargo.toml",
+        "go.mod",
+        "pom.xml",
+        "settings.gradle",
+        "settings.gradle.kts",
+        "build.gradle",
+        "build.gradle.kts",
+        "Package.swift",
+        "composer.json",
+        "Gemfile",
+    ):
+        if marker in file_set:
+            sources.append(f"repo file: {marker}")
+    for marker in (
+        "package-lock.json",
+        "pnpm-lock.yaml",
+        "yarn.lock",
+        "bun.lock",
+        "bun.lockb",
+        "Cargo.lock",
+        "Package.resolved",
+        "go.sum",
+        "poetry.lock",
+        "Pipfile.lock",
+    ):
+        if marker in file_set:
+            sources.append(f"lockfile: {marker}")
+    return tuple(_dedupe(sources))
 
 
 def _detect_components(file_set: set[str]) -> tuple[str, ...]:
@@ -973,9 +1039,11 @@ def _nested_component_commands(root: Path, file_set: set[str]) -> list[str]:
         elif path.name == "go.mod":
             commands.append(f"go test ./{directory}/...")
         elif path.name == "pom.xml":
-            commands.append(f"mvn -f {quoted_directory}/pom.xml test")
+            maven = "./mvnw" if "mvnw" in file_set else "mvn"
+            commands.append(f"{maven} -f {quoted_directory}/pom.xml test")
         elif path.name in {"build.gradle", "build.gradle.kts"}:
-            commands.append(f"gradle -p {quoted_directory} test")
+            gradle = "./gradlew" if "gradlew" in file_set else "gradle"
+            commands.append(f"{gradle} -p {quoted_directory} test")
         elif path.name == "Gemfile":
             commands.append(f"bundle exec --gemfile {quoted_directory}/Gemfile rake test")
         elif path.name == "composer.json":
