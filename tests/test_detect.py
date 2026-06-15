@@ -187,9 +187,11 @@ class DetectProjectTests(unittest.TestCase):
         self.assertIn("apps/web (package.json)", profile.components)
         self.assertIn("services/api (pyproject.toml)", profile.components)
         self.assertEqual(profile.stack, "monorepo")
-        self.assertIn(
+        self.assertIn("npm --prefix apps/web test", profile.verification_commands)
+        self.assertIn("python -m compileall services/api", profile.verification_commands)
+        self.assertNotIn(
             "No project verification check detected",
-            profile.verification_commands[0],
+            "\n".join(profile.verification_commands),
         )
 
     def test_detects_javascript_workspace_and_orchestrator_markers(self) -> None:
@@ -325,6 +327,108 @@ class DetectProjectTests(unittest.TestCase):
                 self.assertEqual(profile.stack, stack)
                 self.assertIn(command, profile.verification_commands)
                 self.assertIn(component, profile.workspace_markers)
+
+    def test_root_cargo_workspace_takes_priority_over_bazel_marker(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "Cargo.toml").write_text(
+                "[workspace]\nmembers = ['crates/app']\n",
+                encoding="utf-8",
+            )
+            (root / "rust-toolchain.toml").write_text(
+                "[toolchain]\ncomponents = ['rustfmt', 'clippy']\n",
+                encoding="utf-8",
+            )
+            (root / "MODULE.bazel").write_text("", encoding="utf-8")
+            (root / "BUILD.bazel").write_text("", encoding="utf-8")
+            (root / ".claude").mkdir()
+            (root / ".claude" / "AGENTS.md").write_text(
+                "# Claude agent notes\n",
+                encoding="utf-8",
+            )
+            (root / ".claude" / "CLAUDE.md").write_text(
+                "# Claude notes\n",
+                encoding="utf-8",
+            )
+            (root / "crates" / "app" / "tests" / "fixtures" / "python").mkdir(
+                parents=True
+            )
+            (
+                root
+                / "crates"
+                / "app"
+                / "tests"
+                / "fixtures"
+                / "python"
+                / "pyproject.toml"
+            ).write_text("[project]\nname='fixture'\n", encoding="utf-8")
+
+            profile = detect_project(root)
+
+        self.assertEqual(profile.stack, "rust")
+        self.assertIn("MODULE.bazel", profile.workspace_markers)
+        self.assertIn(".claude/AGENTS.md", profile.routing_markers)
+        self.assertIn(".claude/CLAUDE.md", profile.routing_markers)
+        self.assertIn("cargo fmt --all -- --check", profile.verification_commands)
+        self.assertIn(
+            "cargo clippy --workspace --all-targets --all-features -- -D warnings",
+            profile.verification_commands,
+        )
+        self.assertIn("cargo test --workspace", profile.verification_commands)
+        self.assertIn("bazel test //...", profile.verification_commands)
+        self.assertNotIn(
+            "python -m compileall crates/app/tests/fixtures/python",
+            profile.verification_commands,
+        )
+
+    def test_large_repo_keeps_root_markers_before_file_cap(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            for index in range(4500):
+                path = root / "docs" / "versions" / str(index) / "page.md"
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text("# Docs\n", encoding="utf-8")
+            (root / "MODULE.bazel").write_text("module(name='demo')\n", encoding="utf-8")
+            (root / "BUILD").write_text("", encoding="utf-8")
+            (root / ".bazelrc").write_text("common --check_direct_dependencies=error\n", encoding="utf-8")
+            (root / ".bazelversion").write_text("9.1.1\n", encoding="utf-8")
+            (root / "pyproject.toml").write_text("[tool.pyink]\n", encoding="utf-8")
+            (root / "requirements.txt").write_text("pyink==1.0.0\n", encoding="utf-8")
+            (root / "src" / "main" / "java").mkdir(parents=True)
+            (root / "src" / "main" / "java" / "Main.java").write_text(
+                "class Main {}\n",
+                encoding="utf-8",
+            )
+            (root / "src" / "main" / "cpp").mkdir(parents=True)
+            (root / "src" / "main" / "cpp" / "main.cc").write_text(
+                "int main() { return 0; }\n",
+                encoding="utf-8",
+            )
+            (root / "tools" / "release").mkdir(parents=True)
+            (root / "tools" / "release" / "BUILD").write_text("", encoding="utf-8")
+            (root / "scripts").mkdir()
+            (root / "scripts" / "release.sh").write_text("#!/usr/bin/env bash\n", encoding="utf-8")
+            (root / "third_party" / "vendor" / "buildscripts").mkdir(parents=True)
+            (root / "third_party" / "vendor" / "buildscripts" / "pom.xml").write_text(
+                "<project />\n",
+                encoding="utf-8",
+            )
+
+            profile = detect_project(root)
+
+        self.assertEqual(profile.stack, "bazel")
+        self.assertIn("java", profile.languages)
+        self.assertIn("cpp", profile.languages)
+        self.assertIn("MODULE.bazel", profile.runtime_files)
+        self.assertIn(".bazelrc", profile.routing_markers)
+        self.assertIn(".bazelversion", profile.routing_markers)
+        self.assertIn("tools/release (BUILD)", profile.components)
+        self.assertIn("bazel test //...", profile.verification_commands)
+        self.assertNotIn("python -m compileall .", profile.verification_commands)
+        self.assertNotIn(
+            "mvn -f third_party/vendor/buildscripts/pom.xml test",
+            profile.verification_commands,
+        )
 
     def test_detects_dotnet_solution_and_project_shapes(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

@@ -154,6 +154,34 @@ class CliTests(unittest.TestCase):
         self.assertEqual(drift["AGENTS.md"]["ownership"], "project")
         self.assertEqual(drift["AGENTS.md"]["fileStatus"], "unchanged")
 
+    def test_init_can_enhance_existing_instruction_files(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "pyproject.toml").write_text(
+                "[project]\nname='demo'\n",
+                encoding="utf-8",
+            )
+            (root / "AGENTS.md").write_text(
+                "# Existing\n\nKeep local instructions.\n",
+                encoding="utf-8",
+            )
+            stdout = io.StringIO()
+            with contextlib.redirect_stdout(stdout):
+                init_code = main(
+                    ["init", "--target", str(root), "--enhance-existing"]
+                )
+            with contextlib.redirect_stdout(io.StringIO()):
+                audit_code = main(
+                    ["audit", "--target", str(root), "--min-score", "100"]
+                )
+            agents = (root / "AGENTS.md").read_text(encoding="utf-8")
+
+        self.assertEqual(init_code, 0)
+        self.assertEqual(audit_code, 0)
+        self.assertIn("ENHANCED AGENTS.md", stdout.getvalue())
+        self.assertIn("Keep local instructions.", agents)
+        self.assertIn("HarnessForge Quality Addendum", agents)
+
     def test_audit_requires_explicit_override_for_local_absolute_paths(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

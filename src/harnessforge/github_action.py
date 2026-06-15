@@ -58,13 +58,16 @@ def run_from_env(env: Mapping[str, str]) -> int:
             target,
             agent_file=env.get("INPUT_AGENT_FILE", "AGENTS.md"),
             force=_bool_input(env.get("INPUT_FORCE", "false")),
+            enhance_existing=_bool_input(env.get("INPUT_ENHANCE_EXISTING", "false")),
             with_ci_workflow=_bool_input(env.get("INPUT_WITH_CI_WORKFLOW", "false")),
             with_self_heal_workflow=_bool_input(
                 env.get("INPUT_WITH_SELF_HEAL_WORKFLOW", "false")
             ),
             platform_contract=env.get("INPUT_PLATFORM_CONTRACT", "cross-platform"),
         )
-        changed_files = sum(1 for write in writes if write.status == "written")
+        changed_files = sum(
+            1 for write in writes if write.status in {"written", "enhanced"}
+        )
         result = audit_target(target)
         _print_writes(target, writes)
     elif command == "update":
@@ -72,6 +75,7 @@ def run_from_env(env: Mapping[str, str]) -> int:
             target,
             apply=_bool_input(env.get("INPUT_APPLY", "false")),
             force=_bool_input(env.get("INPUT_FORCE", "false")),
+            enhance_existing=_bool_input(env.get("INPUT_ENHANCE_EXISTING", "false")),
             agent_file=env.get("INPUT_AGENT_FILE", "AGENTS.md"),
             with_ci_workflow=_bool_input(env.get("INPUT_WITH_CI_WORKFLOW", "false")),
             with_self_heal_workflow=_bool_input(
@@ -79,7 +83,9 @@ def run_from_env(env: Mapping[str, str]) -> int:
             ),
             platform_contract=env.get("INPUT_PLATFORM_CONTRACT", "cross-platform"),
         )
-        changed_files = sum(1 for write in writes if write.status == "written")
+        changed_files = sum(
+            1 for write in writes if write.status in {"written", "enhanced"}
+        )
         result = audit_target(target)
         if writes:
             _print_writes(target, writes)

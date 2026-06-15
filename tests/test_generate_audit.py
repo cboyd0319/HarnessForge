@@ -156,6 +156,10 @@ class GenerateAuditTests(unittest.TestCase):
     def test_platform_routers_follow_custom_agent_file(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
+            (root / "pyproject.toml").write_text(
+                "[project]\nname='demo'\n",
+                encoding="utf-8",
+            )
             create_harness(root, agent_file="PROJECT_AGENTS.md")
             claude = (root / "CLAUDE.md").read_text(encoding="utf-8")
             gemini = (root / "GEMINI.md").read_text(encoding="utf-8")
@@ -565,6 +569,35 @@ class GenerateAuditTests(unittest.TestCase):
                     content = (root / relative_path).read_text(encoding="utf-8")
                     self.assertIn("REVIEW REQUIRED", content)
 
+    def test_missing_verification_placeholder_blocks_generated_init(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            create_harness(root)
+            result = audit_target(root)
+            init_sh = (root / "init.sh").read_text(encoding="utf-8")
+            init_ps1 = (root / "init.ps1").read_text(encoding="utf-8")
+            feedback = next(
+                domain for domain in result.domains if domain.name == "feedback"
+            )
+
+        self.assertIn(
+            "REVIEW REQUIRED: No project verification check detected", init_sh
+        )
+        self.assertIn("exit 1", init_sh)
+        self.assertIn(
+            "Write-Error 'REVIEW REQUIRED: No project verification check detected",
+            init_ps1,
+        )
+        self.assertIn("exit 1", init_ps1)
+        self.assertLess(result.overall, 100)
+        self.assertFalse(
+            next(
+                check
+                for check in feedback.checks
+                if check.message == "Project verification command is configured"
+            ).passed
+        )
+
     def test_generated_docs_only_repo_audits_cross_platform(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -575,8 +608,11 @@ class GenerateAuditTests(unittest.TestCase):
             environment = next(
                 domain for domain in result.domains if domain.name == "environment"
             )
+            feedback = next(
+                domain for domain in result.domains if domain.name == "feedback"
+            )
 
-        self.assertEqual(result.overall, 100)
+        self.assertLess(result.overall, 100)
         self.assertTrue(
             next(
                 check
@@ -589,6 +625,13 @@ class GenerateAuditTests(unittest.TestCase):
                 check
                 for check in environment.checks
                 if check.message == "Runner and path handling is called out"
+            ).passed
+        )
+        self.assertFalse(
+            next(
+                check
+                for check in feedback.checks
+                if check.message == "Project verification command is configured"
             ).passed
         )
 
@@ -614,6 +657,14 @@ class GenerateAuditTests(unittest.TestCase):
 
         self.assertEqual(manifest["detectedStack"], "monorepo")
         self.assertEqual(result.overall, 100)
+        self.assertIn(
+            "npm --prefix component-a test",
+            manifest["verificationCommands"],
+        )
+        self.assertIn(
+            "python -m compileall component-b",
+            manifest["verificationCommands"],
+        )
 
     def test_custom_agent_file_supplies_environment_evidence(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -622,14 +673,23 @@ class GenerateAuditTests(unittest.TestCase):
                 "# Existing agent notes\n\nKeep this file untouched.\n",
                 encoding="utf-8",
             )
+            (root / "pyproject.toml").write_text(
+                "[project]\nname='demo'\n",
+                encoding="utf-8",
+            )
             create_harness(root, agent_file="HARNESSFORGE_AGENTS.md")
 
             result = audit_target(root)
+            generated_agent = (root / "HARNESSFORGE_AGENTS.md").read_text(
+                encoding="utf-8"
+            )
             environment = next(
                 domain for domain in result.domains if domain.name == "environment"
             )
 
         self.assertEqual(result.overall, 100)
+        self.assertIn("side-by-side HarnessForge entrypoint", generated_agent)
+        self.assertIn("not the default `AGENTS.md`", generated_agent)
         self.assertTrue(
             next(
                 check
@@ -637,6 +697,117 @@ class GenerateAuditTests(unittest.TestCase):
                 if check.message == "Runner and path handling is called out"
             ).passed
         )
+
+    def test_enhance_existing_instruction_files_preserves_project_text(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "pyproject.toml").write_text(
+                "[project]\nname='demo'\n",
+                encoding="utf-8",
+            )
+            (root / "MODULE.bazel").write_text("", encoding="utf-8")
+            (root / "AGENTS.md").write_text(
+                "# Existing agent notes\n\nKeep local operating rules.\n",
+                encoding="utf-8",
+            )
+            (root / "CLAUDE.md").write_text(
+                "# Existing Claude notes\n\nKeep Claude-specific reminders.\n",
+                encoding="utf-8",
+            )
+            (root / ".claude").mkdir()
+            (root / ".claude" / "AGENTS.md").write_text(
+                "# Existing hidden agent notes\n\nKeep hidden agent reminders.\n",
+                encoding="utf-8",
+            )
+            (root / ".claude" / "CLAUDE.md").write_text(
+                "# Existing hidden Claude notes\n\nKeep hidden Claude reminders.\n",
+                encoding="utf-8",
+            )
+
+            _, writes = create_harness(root, enhance_existing=True)
+            result = audit_target(root)
+            agents = (root / "AGENTS.md").read_text(encoding="utf-8")
+            claude = (root / "CLAUDE.md").read_text(encoding="utf-8")
+            hidden_agents = (root / ".claude" / "AGENTS.md").read_text(
+                encoding="utf-8"
+            )
+            hidden_claude = (root / ".claude" / "CLAUDE.md").read_text(
+                encoding="utf-8"
+            )
+            manifest = json.loads(
+                (root / "docs/harness/manifest.json").read_text(encoding="utf-8")
+            )
+
+        statuses = {
+            write.path.resolve().relative_to(root.resolve()).as_posix(): write.status
+            for write in writes
+        }
+        self.assertEqual(statuses["AGENTS.md"], "enhanced")
+        self.assertEqual(statuses["CLAUDE.md"], "enhanced")
+        self.assertEqual(statuses[".claude/AGENTS.md"], "enhanced")
+        self.assertEqual(statuses[".claude/CLAUDE.md"], "enhanced")
+        self.assertIn("Keep local operating rules.", agents)
+        self.assertIn("HarnessForge Quality Addendum", agents)
+        self.assertIn("Definition Of Done", agents)
+        self.assertIn("feature_list.json", agents)
+        self.assertIn("remote CI", agents)
+        self.assertIn("stubbed", agents)
+        self.assertIn("Detected project context", agents)
+        self.assertIn("Bazel markers detected", agents)
+        self.assertIn("Keep Claude-specific reminders.", claude)
+        self.assertIn("@AGENTS.md", claude)
+        self.assertIn("Shared repo guidance", claude)
+        self.assertIn("Keep hidden agent reminders.", hidden_agents)
+        self.assertIn("HarnessForge Quality Addendum", hidden_agents)
+        self.assertIn("../AGENTS.md", hidden_agents)
+        self.assertIn("Keep hidden Claude reminders.", hidden_claude)
+        self.assertIn("@../AGENTS.md", hidden_claude)
+        self.assertEqual(result.overall, 100)
+        self.assertEqual(
+            manifest["generatedFiles"]["AGENTS.md"]["ownership"],
+            "project-enhanced",
+        )
+
+    def test_agents_file_includes_detected_project_context(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "Cargo.toml").write_text(
+                "[workspace]\nmembers = ['crates/app']\n",
+                encoding="utf-8",
+            )
+            (root / "rust-toolchain.toml").write_text(
+                "[toolchain]\ncomponents = ['rustfmt', 'clippy']\n",
+                encoding="utf-8",
+            )
+            (root / "MODULE.bazel").write_text("", encoding="utf-8")
+            (root / ".bazelrc").write_text("common --announce_rc\n", encoding="utf-8")
+            (root / ".bazelversion").write_text("9.1.1\n", encoding="utf-8")
+            (root / "action.yml").write_text("runs:\n  using: composite\n", encoding="utf-8")
+            (root / ".claude").mkdir()
+            (root / ".claude" / "CLAUDE.md").write_text("# Claude\n", encoding="utf-8")
+            (root / "crates" / "web").mkdir(parents=True)
+            (root / "crates" / "web" / "package.json").write_text(
+                json.dumps({"scripts": {"build": "vite build"}}),
+                encoding="utf-8",
+            )
+            (root / "scripts" / "release").mkdir(parents=True)
+            (root / "scripts" / "release" / "BUILD").write_text("", encoding="utf-8")
+            (root / "third_party" / "vendor").mkdir(parents=True)
+            (root / "third_party" / "vendor" / "BUILD").write_text("", encoding="utf-8")
+            (root / "scripts" / "docs").mkdir(parents=True)
+            (root / "scripts" / "docs" / "BUILD").write_text("", encoding="utf-8")
+            create_harness(root)
+            agents = (root / "AGENTS.md").read_text(encoding="utf-8")
+
+        self.assertIn("Rust workspace", agents)
+        self.assertIn("Bazel markers", agents)
+        self.assertIn("Bazel runtime routing files", agents)
+        self.assertIn("vendored components", agents)
+        self.assertIn("Release or package scripts", agents)
+        self.assertIn("Documentation or site-generation", agents)
+        self.assertIn("JavaScript or TypeScript subprojects", agents)
+        self.assertIn("GitHub Action surface", agents)
+        self.assertIn("Existing hidden agent instruction files", agents)
 
     def test_live_manifest_matches_generated_shared_snippets(self) -> None:
         repo_root = Path(__file__).resolve().parents[1]

@@ -115,6 +115,35 @@ class GitHubActionTests(unittest.TestCase):
         self.assertTrue(ci_exists)
         self.assertTrue(self_heal_exists)
 
+    def test_action_init_can_enhance_existing_instruction_files(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "pyproject.toml").write_text(
+                "[project]\nname='demo'\n",
+                encoding="utf-8",
+            )
+            (root / "AGENTS.md").write_text(
+                "# Existing\n\nKeep local instructions.\n",
+                encoding="utf-8",
+            )
+            output = root / "github-output.txt"
+            env = {
+                "INPUT_COMMAND": "init",
+                "INPUT_TARGET": str(root),
+                "INPUT_ENHANCE_EXISTING": "true",
+                "GITHUB_OUTPUT": str(output),
+            }
+
+            with contextlib.redirect_stdout(io.StringIO()):
+                code = run_from_env(env)
+            agents = (root / "AGENTS.md").read_text(encoding="utf-8")
+            outputs = _parse_github_output(output.read_text(encoding="utf-8"))
+
+        self.assertEqual(code, 0)
+        self.assertIn("Keep local instructions.", agents)
+        self.assertIn("HarnessForge Quality Addendum", agents)
+        self.assertGreaterEqual(int(outputs["changed-files"]), 1)
+
     def test_action_init_writes_only_inside_declared_target(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             workspace = Path(tmp)

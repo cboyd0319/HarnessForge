@@ -218,6 +218,19 @@ maintenance loop.
   AGY/Antigravity research-tool mandates. Live and generated boundary maps state
   that generated harnesses must not inherit HarnessForge's local agent/tooling
   mandates.
+- Completed a deep generated-content quality exercise against VexShield and
+  Bazel reference repositories using read-only inspection, manual ideal harness
+  sketches, and temporary shadow generation. Detection now keeps root markers
+  before large docs trees, recognizes C/C++ and Starlark, treats root Cargo as
+  Rust-first even with Bazel markers, adds Cargo fmt/clippy/workspace checks,
+  adds nested component verification commands, skips fixture/vendor/docs
+  command inference, detects hidden Claude/Gemini instruction surfaces, and
+  avoids treating tool-only root Python config as a project verification
+  command. Generated and enhanced instruction files now include detected
+  project context and concrete Bazel boundary signals. Existing instruction
+  files are preserved by default; `--enhance-existing` appends reviewed
+  addenda without replacing project text. Missing verification now produces a
+  failing review-required placeholder instead of a successful echo.
 - Completed a deeper generated-surface review across every template, a rendered
   default harness, a rendered custom-agent harness, optional workflow scaffolds,
   and the published Action docs. Live HarnessForge self-heal/research workflow

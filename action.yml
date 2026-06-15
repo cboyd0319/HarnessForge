@@ -35,6 +35,10 @@ inputs:
     description: Allow overwriting generated files during init or update.
     required: false
     default: "false"
+  enhance-existing:
+    description: Append reviewed HarnessForge guidance to existing instruction files during init or update.
+    required: false
+    default: "false"
   agent-file:
     description: Root agent instruction file name to generate.
     required: false
@@ -97,6 +101,7 @@ runs:
         INPUT_FAIL_ON_SCORE: ${{ inputs.fail-on-score }}
         INPUT_APPLY: ${{ inputs.apply }}
         INPUT_FORCE: ${{ inputs.force }}
+        INPUT_ENHANCE_EXISTING: ${{ inputs.enhance-existing }}
         INPUT_AGENT_FILE: ${{ inputs.agent-file }}
         INPUT_PLATFORM_CONTRACT: ${{ inputs.platform-contract }}
         INPUT_WITH_CI_WORKFLOW: ${{ inputs.with-ci-workflow }}

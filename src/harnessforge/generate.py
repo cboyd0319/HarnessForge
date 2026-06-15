@@ -10,7 +10,7 @@ from importlib.resources import files
 from pathlib import Path
 
 from . import __version__
-from .detect import detect_project
+from .detect import MISSING_VERIFICATION_COMMAND, detect_project
 from .models import ProjectProfile, WriteResult
 from .paths import is_inside_root
 from .redact import redact_local_paths
@@ -31,6 +31,7 @@ def create_harness(
     *,
     agent_file: str = "AGENTS.md",
     force: bool = False,
+    enhance_existing: bool = False,
     dry_run: bool = False,
     package_manager: str | None = None,
     commands: tuple[str, ...] = (),
@@ -65,6 +66,9 @@ def create_harness(
         specs,
         rendered,
         force=force,
+        enhance_existing=enhance_existing,
+        agent_file=agent_file,
+        project_context_markdown=context["project_context_markdown"],
     )
     results: list[WriteResult] = []
     for template_name, relative_path, executable in specs:
@@ -86,8 +90,23 @@ def create_harness(
                 profile.root,
                 destination,
                 content,
+                relative_path=relative_path,
+                agent_file=agent_file,
+                project_context_markdown=context["project_context_markdown"],
                 executable=executable,
                 force=force,
+                enhance_existing=enhance_existing,
+                dry_run=dry_run,
+            )
+        )
+    if enhance_existing:
+        spec_paths = {relative_path for _, relative_path, _ in specs}
+        results.extend(
+            _enhance_existing_instruction_files(
+                profile.root,
+                agent_file=agent_file,
+                skip_paths=spec_paths,
+                project_context_markdown=context["project_context_markdown"],
                 dry_run=dry_run,
             )
         )
@@ -315,6 +334,7 @@ def _template_context(
     platform = _platform_contract_data(platform_contract)
     return {
         "agent_file": agent_file,
+        "agent_file_usage_note": _agent_file_usage_note(agent_file),
         "agent_file_yaml": json.dumps(agent_file),
         "platform_contract": platform_contract,
         "platform_contract_summary": str(platform["summary"]),
@@ -323,6 +343,7 @@ def _template_context(
         "languages": ", ".join(profile.languages),
         "package_managers": ", ".join(profile.package_managers) or "none detected",
         "runtime_files": ", ".join(profile.runtime_files) or "none detected",
+        "project_context_markdown": _project_context_markdown(profile),
         "self_heal_git_add_paths": _self_heal_git_add_paths(
             agent_file, platform_contract
         ),
@@ -373,6 +394,116 @@ def _self_heal_verify_command(platform_contract: str) -> str:
     return "pwsh -NoProfile -File ./init.ps1"
 
 
+def _agent_file_usage_note(agent_file: str) -> str:
+    if agent_file == "AGENTS.md":
+        return ""
+    return (
+        "\nThis file is a side-by-side HarnessForge entrypoint, not the default "
+        "`AGENTS.md`. Configure your coding agent to load this file directly, or "
+        "add a reviewed router from the existing canonical instruction file "
+        "before relying on it.\n"
+    )
+
+
+def _project_context_markdown(profile: ProjectProfile) -> str:
+    signals: list[str] = []
+    component_paths = {
+        component.split(" (", 1)[0]
+        for component in profile.components
+        if " (" in component
+    }
+    if profile.stack == "rust" or "rust" in profile.languages:
+        signals.append(
+            "- Rust workspace or crate detected. Treat `Cargo.toml`, "
+            "`Cargo.lock`, and `rust-toolchain.toml` as primary build and\n"
+            "  reproducibility inputs when present."
+        )
+    if profile.stack == "bazel" or "bazel" in profile.languages:
+        signals.append(
+            "- Bazel markers detected. Inspect `MODULE.bazel`, `WORKSPACE`, "
+            "`BUILD.bazel`, and related `tools/` rules before changing Bazel\n"
+            "  routing or build-system behavior."
+        )
+    if profile.stack == "bazel" and {"java", "cpp", "starlark"} & set(
+        profile.languages
+    ):
+        signals.append(
+            "- Mixed Bazel implementation surfaces detected. Identify whether "
+            "the change is Java, C/C++, Starlark, tests, tooling, or docs\n"
+            "  before choosing verification."
+        )
+    if {".bazelrc", ".bazelversion"} & set(profile.routing_markers):
+        signals.append(
+            "- Bazel runtime routing files detected. Treat `.bazelrc` and "
+            "`.bazelversion` changes as shared build-contract changes."
+        )
+    if any(path.startswith("third_party") for path in component_paths):
+        signals.append(
+            "- `third_party/` or vendored components detected. Treat them as "
+            "dependency, fixture, or external-input boundaries unless the\n"
+            "  task explicitly targets them."
+        )
+    if any(path.startswith("scripts/release") for path in component_paths) or any(
+        path.startswith("scripts/packages") for path in component_paths
+    ):
+        signals.append(
+            "- Release or package scripts detected. Treat release automation, "
+            "publishing, signing, and packaging behavior as review-sensitive."
+        )
+    if any(path.startswith(("docs", "site", "scripts/docs")) for path in component_paths):
+        signals.append(
+            "- Documentation or site-generation surfaces detected. Inspect the "
+            "nearest docs build targets before changing generated docs or\n"
+            "  published site content."
+        )
+    if "Cargo.toml [workspace]" in profile.workspace_markers:
+        signals.append(
+            "- Cargo workspace members are component boundaries. Prefer scoped "
+            "crate checks first,\n"
+            "  then workspace checks for shared behavior."
+        )
+    if {"npm", "pnpm", "yarn", "bun"} & set(profile.package_managers):
+        signals.append(
+            "- JavaScript or TypeScript subprojects are present. Inspect the "
+            "nearest `package.json`\n"
+            "  scripts before choosing Node-based checks."
+        )
+    if {"maven", "gradle"} & set(profile.package_managers):
+        signals.append(
+            "- JVM build surfaces are present. Inspect the nearest `pom.xml`, "
+            "`build.gradle`, or\n"
+            "  `build.gradle.kts` before changing Java or plugin behavior."
+        )
+    if "go" in profile.package_managers:
+        signals.append(
+            "- Go module surfaces are present. Treat nested `go.mod` files as "
+            "separate module\n"
+            "  boundaries."
+        )
+    if "action.yml" in profile.routing_markers or "action.yaml" in profile.routing_markers:
+        signals.append(
+            "- GitHub Action surface detected. Changes to `action.yml` or "
+            "workflow behavior are\n"
+            "  release and security-sensitive."
+        )
+    hidden_agent_markers = tuple(
+        marker
+        for marker in profile.routing_markers
+        if marker.startswith((".claude/", ".gemini/"))
+    )
+    if hidden_agent_markers:
+        signals.append(
+            "- Existing hidden agent instruction files detected: "
+            f"{', '.join(f'`{marker}`' for marker in hidden_agent_markers)}. "
+            "Keep them as\n"
+            "  short routers or project overlays after reviewing "
+            "the canonical root instructions."
+        )
+    if not signals:
+        return "- No stack-specific context beyond the detected files."
+    return "\n".join(signals)
+
+
 def _render_harness_files(
     specs: tuple[tuple[str, str, bool], ...], context: dict[str, str]
 ) -> dict[str, str]:
@@ -394,20 +525,47 @@ def _generated_file_metadata(
     rendered: dict[str, str],
     *,
     force: bool,
+    enhance_existing: bool,
+    agent_file: str,
+    project_context_markdown: str,
 ) -> dict[str, dict[str, object]]:
     metadata: dict[str, dict[str, object]] = {}
     for template_name, relative_path, executable in specs:
         destination = root / relative_path
         existing_project_file = destination.exists() and not force
+        enhanced_content = None
+        if existing_project_file and enhance_existing:
+            enhanced_content = _enhanced_instruction_content(
+                root,
+                destination,
+                relative_path=relative_path,
+                agent_file=agent_file,
+                project_context_markdown=project_context_markdown,
+            )
+        enhanced = enhanced_content is not None
         entry: dict[str, object] = {
-            "ownership": "project" if existing_project_file else "generated",
+            "ownership": (
+                "project-enhanced"
+                if enhanced
+                else "project"
+                if existing_project_file
+                else "generated"
+            ),
             "template": template_name,
             "templateSha256": _template_sha256(template_name),
             "executable": executable,
             "reviewRequired": relative_path in REVIEW_REQUIRED_FILES,
-            "writeStatus": "skipped-existing" if existing_project_file else "generated",
+            "writeStatus": (
+                "enhanced"
+                if enhanced
+                else "skipped-existing"
+                if existing_project_file
+                else "generated"
+            ),
         }
-        if existing_project_file:
+        if enhanced_content is not None:
+            entry["contentSha256"] = _sha256_text(enhanced_content)
+        elif existing_project_file:
             entry["contentSha256"] = sha256(destination.read_bytes()).hexdigest()
         elif relative_path in rendered:
             entry["contentSha256"] = _sha256_text(rendered[relative_path])
@@ -442,13 +600,30 @@ def _write_file(
     path: Path,
     content: str,
     *,
+    relative_path: str,
+    agent_file: str,
+    project_context_markdown: str,
     executable: bool,
     force: bool,
+    enhance_existing: bool,
     dry_run: bool,
 ) -> WriteResult:
     if not is_inside_root(path, root):
         raise ValueError(f"refusing to write outside target repository: {path}")
     if path.exists() and not force:
+        if enhance_existing:
+            enhanced = _enhanced_instruction_content(
+                root,
+                path,
+                relative_path=relative_path,
+                agent_file=agent_file,
+                project_context_markdown=project_context_markdown,
+            )
+            if enhanced is not None:
+                if dry_run:
+                    return WriteResult(path=path, status="would_enhance")
+                path.write_text(enhanced, encoding="utf-8", newline="\n")
+                return WriteResult(path=path, status="enhanced")
         return WriteResult(path=path, status="skipped", reason="exists")
     if dry_run:
         return WriteResult(path=path, status="would_write")
@@ -458,6 +633,171 @@ def _write_file(
         current = path.stat().st_mode
         path.chmod(current | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
     return WriteResult(path=path, status="written")
+
+
+def _enhanced_instruction_content(
+    root: Path,
+    path: Path,
+    *,
+    relative_path: str,
+    agent_file: str,
+    project_context_markdown: str,
+) -> str | None:
+    if relative_path not in _enhanceable_instruction_paths(agent_file):
+        return None
+    if not is_inside_root(path, root):
+        return None
+    try:
+        original = path.read_text(encoding="utf-8")
+    except (OSError, UnicodeDecodeError):
+        return None
+    addendum = _instruction_addendum(
+        relative_path,
+        agent_file,
+        project_context_markdown=project_context_markdown,
+    )
+    if not addendum or "HarnessForge Quality Addendum" in original:
+        return None
+    stripped = original.rstrip()
+    return f"{stripped}\n\n{addendum}\n"
+
+
+def _enhanceable_instruction_paths(agent_file: str) -> set[str]:
+    return {
+        agent_file,
+        "AGENTS.md",
+        "CLAUDE.md",
+        "GEMINI.md",
+        ".claude/AGENTS.md",
+        ".claude/CLAUDE.md",
+        ".gemini/GEMINI.md",
+        ".github/copilot-instructions.md",
+    }
+
+
+def _instruction_addendum(
+    relative_path: str,
+    agent_file: str,
+    *,
+    project_context_markdown: str,
+) -> str:
+    if relative_path == ".claude/AGENTS.md":
+        canonical = f"../{agent_file}"
+        return f"""<!-- HarnessForge Quality Addendum: start -->
+## HarnessForge Quality Addendum
+
+Use `{canonical}` as the canonical repo instruction file after review. Keep this
+hidden Claude-specific file as a short router or local overlay.
+<!-- HarnessForge Quality Addendum: end -->"""
+    if relative_path == ".claude/CLAUDE.md":
+        canonical = f"../{agent_file}"
+        return f"""<!-- HarnessForge Quality Addendum: start -->
+@{canonical}
+
+## HarnessForge Quality Addendum
+
+Claude Code should use `{canonical}` for Shared repo guidance. Keep this hidden
+file short and route durable policy to the canonical instruction file.
+<!-- HarnessForge Quality Addendum: end -->"""
+    if relative_path == ".gemini/GEMINI.md":
+        canonical = f"../{agent_file}"
+        return f"""<!-- HarnessForge Quality Addendum: start -->
+@{canonical}
+
+## HarnessForge Quality Addendum
+
+Gemini should use `{canonical}` for Shared repo guidance. Keep this hidden file
+short and route durable policy to the canonical instruction file.
+<!-- HarnessForge Quality Addendum: end -->"""
+    if relative_path in {agent_file, "AGENTS.md"}:
+        return f"""<!-- HarnessForge Quality Addendum: start -->
+## HarnessForge Quality Addendum
+
+Startup path:
+
+1. Confirm the working directory.
+2. Read `{agent_file}` and `docs/harness/README.md`.
+3. Read `feature_list.json`, `progress.md`, and `session-handoff.md`.
+4. Check `docs/harness/component-inventory.md` before changing component
+   boundaries or verification routing.
+
+Build and test commands:
+
+- Use the smallest reliable command listed in this file,
+  `docs/harness/verification-matrix.md`, or the generated init entrypoint.
+- Prefer local checks before remote CI. Push or open remote CI only at an
+  explicit checkpoint, release point, or user request.
+
+Definition Of Done: behavior is implemented, relevant checks ran, skipped checks
+have a reason and risk, and durable state is updated.
+
+Testing instructions: reject stubbed, assertion-free, or shortcut tests that do
+not prove the changed behavior.
+
+Detected project context:
+
+{project_context_markdown}
+
+End of Session: update `progress.md` and `session-handoff.md` with current
+state, verification evidence, blockers, and the recommended next step.
+<!-- HarnessForge Quality Addendum: end -->"""
+    if relative_path == "CLAUDE.md":
+        return f"""<!-- HarnessForge Quality Addendum: start -->
+@{agent_file}
+
+## HarnessForge Quality Addendum
+
+Claude Code should use `{agent_file}` for Shared repo guidance. Keep this file
+short and route durable policy to the canonical instruction file.
+<!-- HarnessForge Quality Addendum: end -->"""
+    if relative_path == "GEMINI.md":
+        return f"""<!-- HarnessForge Quality Addendum: start -->
+@{agent_file}
+
+## HarnessForge Quality Addendum
+
+Gemini should use `{agent_file}` for Shared repo guidance. Keep this file short
+and route durable policy to the canonical instruction file.
+<!-- HarnessForge Quality Addendum: end -->"""
+    if relative_path == ".github/copilot-instructions.md":
+        return f"""<!-- HarnessForge Quality Addendum: start -->
+## HarnessForge Quality Addendum
+
+Use `{agent_file}` as the source of truth for repo guidance. Read the Security
+boundary map at `docs/harness/security-boundary-map.md` before
+security-sensitive work.
+<!-- HarnessForge Quality Addendum: end -->"""
+    return ""
+
+
+def _enhance_existing_instruction_files(
+    root: Path,
+    *,
+    agent_file: str,
+    skip_paths: set[str],
+    project_context_markdown: str,
+    dry_run: bool,
+) -> list[WriteResult]:
+    results: list[WriteResult] = []
+    for relative_path in sorted(_enhanceable_instruction_paths(agent_file) - skip_paths):
+        path = root / relative_path
+        if not path.exists():
+            continue
+        enhanced = _enhanced_instruction_content(
+            root,
+            path,
+            relative_path=relative_path,
+            agent_file=agent_file,
+            project_context_markdown=project_context_markdown,
+        )
+        if enhanced is None:
+            continue
+        if dry_run:
+            results.append(WriteResult(path=path, status="would_enhance"))
+            continue
+        path.write_text(enhanced, encoding="utf-8", newline="\n")
+        results.append(WriteResult(path=path, status="enhanced"))
+    return results
 
 
 def _validate_destinations(root: Path, relative_paths: tuple[str, ...]) -> None:
@@ -480,6 +820,12 @@ def _powershell_command_block(command: str) -> str:
 
 
 def _portable_shell_command(command: str) -> str:
+    if _is_missing_verification_command(command):
+        return (
+            "echo \"REVIEW REQUIRED: No project verification check detected. "
+            "Replace this placeholder with the smallest reliable project check.\" >&2\n"
+            "exit 1"
+        )
     python_args = _python_command_args(command)
     if python_args is not None:
         return f'"${{PYTHON_BIN}}" {python_args}'.rstrip()
@@ -487,6 +833,12 @@ def _portable_shell_command(command: str) -> str:
 
 
 def _portable_powershell_command(command: str) -> str:
+    if _is_missing_verification_command(command):
+        return (
+            "Write-Error 'REVIEW REQUIRED: No project verification check detected. "
+            "Replace this placeholder with the smallest reliable project check.'\n"
+            "exit 1"
+        )
     python_args = _python_command_args(command)
     if python_args is not None:
         return f"Invoke-Native $PythonBin {python_args}".rstrip()
@@ -504,6 +856,10 @@ def _portable_powershell_command(command: str) -> str:
     if simple is not None:
         return simple
     return command
+
+
+def _is_missing_verification_command(command: str) -> bool:
+    return command == MISSING_VERIFICATION_COMMAND
 
 
 def _python_command_args(command: str) -> str | None:

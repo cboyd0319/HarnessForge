@@ -65,6 +65,11 @@ def build_parser() -> argparse.ArgumentParser:
         help="also scaffold a manual self-heal pull-request workflow",
     )
     init.add_argument("--force", action="store_true")
+    init.add_argument(
+        "--enhance-existing",
+        action="store_true",
+        help="append reviewed HarnessForge guidance to existing instruction files",
+    )
     init.add_argument("--dry-run", action="store_true")
     init.set_defaults(func=_init)
 
@@ -100,6 +105,11 @@ def build_parser() -> argparse.ArgumentParser:
     )
     update.add_argument("--apply", action="store_true")
     update.add_argument("--force", action="store_true")
+    update.add_argument(
+        "--enhance-existing",
+        action="store_true",
+        help="append reviewed HarnessForge guidance to existing instruction files",
+    )
     update.add_argument("--drift-report", action="store_true")
     update.add_argument("--json", action="store_true")
     update.set_defaults(func=_update)
@@ -117,6 +127,7 @@ def _init(args: argparse.Namespace) -> int:
         args.target,
         agent_file=args.agent_file,
         force=args.force,
+        enhance_existing=args.enhance_existing,
         dry_run=args.dry_run,
         package_manager=args.package_manager,
         commands=tuple(args.commands),
@@ -180,6 +191,7 @@ def _update(args: argparse.Namespace) -> int:
         args.target,
         apply=args.apply,
         force=args.force,
+        enhance_existing=args.enhance_existing,
         agent_file=args.agent_file,
         with_ci_workflow=args.with_ci_workflow,
         with_self_heal_workflow=args.with_self_heal_workflow,

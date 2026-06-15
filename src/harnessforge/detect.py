@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import re
+import shlex
 import tomllib
 from pathlib import Path
 from typing import Any
@@ -9,6 +10,11 @@ from xml.etree import ElementTree
 
 from .models import ProjectProfile
 from .paths import is_inside_root
+
+MISSING_VERIFICATION_COMMAND = (
+    "REVIEW REQUIRED: No project verification check detected. Replace this "
+    "placeholder with the smallest reliable project check."
+)
 
 IGNORED_DIRS = {
     ".git",
@@ -73,6 +79,22 @@ COMPONENT_MARKERS = {
     "terraform.tf",
     "terragrunt.hcl",
     "versions.tf",
+}
+
+DIRECTORY_PRIORITY = {
+    "src": 0,
+    "scripts": 1,
+    "tools": 2,
+    "crates": 3,
+    "apps": 4,
+    "packages": 5,
+    "services": 6,
+    "examples": 7,
+    "third_party": 8,
+    ".github": 9,
+    ".devcontainer": 10,
+    "docs": 90,
+    "site": 91,
 }
 
 
@@ -142,6 +164,7 @@ def detect_project(
     )
     stack = _primary_stack(file_set, package_json, languages)
     commands = explicit_commands or _verification_commands(
+        root,
         file_set,
         package_json,
         pyproject,
@@ -179,18 +202,25 @@ def list_project_files(root: Path, *, max_files: int = 4000) -> list[str]:
             entries = sorted(current.iterdir(), key=lambda item: item.name.lower())
         except OSError:
             return
-        for entry in entries:
+        files = [entry for entry in entries if entry.is_file() and not entry.is_symlink()]
+        directories = sorted(
+            (entry for entry in entries if entry.is_dir() and not entry.is_symlink()),
+            key=lambda item: (DIRECTORY_PRIORITY.get(item.name, 50), item.name.lower()),
+        )
+        for entry in files:
             if len(results) >= max_files:
                 return
             if entry.name in IGNORED_DIRS:
                 continue
             rel = f"{relative}/{entry.name}" if relative else entry.name
-            if entry.is_symlink():
+            results.append(rel)
+        for entry in directories:
+            if len(results) >= max_files:
+                return
+            if entry.name in IGNORED_DIRS:
                 continue
-            if entry.is_dir():
-                walk(entry, rel)
-            elif entry.is_file():
-                results.append(rel)
+            rel = f"{relative}/{entry.name}" if relative else entry.name
+            walk(entry, rel)
 
     walk(root, "")
     return results
@@ -207,6 +237,13 @@ def _detect_languages(
         languages.add("typescript")
     if {"pyproject.toml", "requirements.txt", "setup.py"} & file_set or ".py" in suffixes:
         languages.add("python")
+    if {".cc", ".cpp", ".cxx", ".c", ".h", ".hpp"} & suffixes:
+        languages.add("cpp")
+    if {".bzl", ".scl"} & suffixes or any(
+        Path(file).name in {"BUILD", "BUILD.bazel", "MODULE.bazel", "WORKSPACE"}
+        for file in file_set
+    ):
+        languages.add("starlark")
     if "go.mod" in file_set or ".go" in suffixes:
         languages.add("go")
     if "go.work" in file_set:
@@ -402,6 +439,9 @@ def _detect_routing_markers(root: Path, file_set: set[str]) -> tuple[str, ...]:
         "AGENTS.md",
         "CLAUDE.md",
         "GEMINI.md",
+        ".claude/AGENTS.md",
+        ".claude/CLAUDE.md",
+        ".gemini/GEMINI.md",
         "action.yml",
         "action.yaml",
         ".github/copilot-instructions.md",
@@ -466,6 +506,8 @@ def _composer_has_path_repositories(composer_json: dict[str, Any] | None) -> boo
 def _primary_stack(
     file_set: set[str], package_json: dict[str, Any] | None, languages: set[str]
 ) -> str:
+    if "Cargo.toml" in file_set:
+        return "rust"
     if {"MODULE.bazel", "REPO.bazel", "WORKSPACE", "WORKSPACE.bazel"} & file_set:
         return "bazel"
     if "pants.toml" in file_set:
@@ -538,6 +580,7 @@ def _nested_component_count(file_set: set[str]) -> int:
 
 
 def _verification_commands(
+    root: Path,
     file_set: set[str],
     package_json: dict[str, Any] | None,
     pyproject: dict[str, Any] | None,
@@ -552,15 +595,12 @@ def _verification_commands(
         commands.extend(_node_commands(package_json, package_managers))
     if stack == "python":
         commands.extend(_python_commands(file_set, pyproject, package_managers))
+    elif pyproject and _root_python_runtime_project(file_set, pyproject):
+        commands.extend(_python_commands(file_set, pyproject, package_managers))
     if stack == "go":
         commands.append("go test ./...")
     if stack == "rust":
-        rust_command = (
-            "cargo test --workspace"
-            if cargo_toml and "workspace" in cargo_toml
-            else "cargo test"
-        )
-        commands.append(rust_command)
+        commands.extend(_rust_commands(root, file_set, cargo_toml))
     if stack == "java":
         if "pom.xml" in file_set:
             commands.append("mvn test")
@@ -576,23 +616,32 @@ def _verification_commands(
         commands.append("bundle exec rake test")
     if stack == "terraform":
         commands.append("terraform fmt -check -recursive")
-    if stack == "bazel":
+    if stack == "bazel" or {
+        "MODULE.bazel",
+        "REPO.bazel",
+        "WORKSPACE",
+        "WORKSPACE.bazel",
+    } & file_set:
         commands.append("bazel test //...")
     if stack == "pants":
         commands.append("pants test ::")
     if stack == "buck":
         commands.append("buck2 test //...")
+    commands.extend(_nested_component_commands(root, file_set))
     commands = _dedupe(commands)
     if not commands:
-        commands = (
-            'echo "No project verification check detected. Replace this line '
-            'with the smallest reliable project check."',
-        )
+        commands = (MISSING_VERIFICATION_COMMAND,)
     return tuple(commands)
 
 
 def _make_commands(file_set: set[str]) -> list[str]:
-    makefile = "Makefile" if "Makefile" in file_set else "makefile" if "makefile" in file_set else ""
+    makefile = (
+        "Makefile"
+        if "Makefile" in file_set
+        else "makefile"
+        if "makefile" in file_set
+        else ""
+    )
     if not makefile:
         return []
     # Keep this intentionally simple and side-effect-light.
@@ -612,7 +661,10 @@ def _node_commands(
     scripts = package_json.get("scripts")
     if not isinstance(scripts, dict):
         return []
-    manager = next((item for item in package_managers if item in {"pnpm", "yarn", "bun", "npm"}), "npm")
+    manager = next(
+        (item for item in package_managers if item in {"pnpm", "yarn", "bun", "npm"}),
+        "npm",
+    )
     commands: list[str] = []
     for script in ("check", "typecheck", "type-check", "lint", "test", "build"):
         if script not in scripts:
@@ -627,6 +679,145 @@ def _node_commands(
             commands.append(f"pnpm run {script}")
         else:
             commands.append(f"npm run {script}")
+    return commands
+
+
+def _rust_commands(
+    root: Path, file_set: set[str], cargo_toml: dict[str, Any] | None
+) -> list[str]:
+    commands: list[str] = []
+    components = _rust_toolchain_components(root, file_set)
+    if (
+        "rustfmt" in components
+        or ".rustfmt.toml" in file_set
+        or "rustfmt.toml" in file_set
+    ):
+        commands.append("cargo fmt --all -- --check")
+    if "clippy" in components:
+        commands.append(
+            "cargo clippy --workspace --all-targets --all-features -- -D warnings"
+        )
+    rust_command = (
+        "cargo test --workspace"
+        if cargo_toml and "workspace" in cargo_toml
+        else "cargo test"
+    )
+    commands.append(rust_command)
+    return commands
+
+
+def _rust_toolchain_components(root: Path, file_set: set[str]) -> set[str]:
+    if "rust-toolchain.toml" not in file_set:
+        return set()
+    toolchain = _read_toml(root / "rust-toolchain.toml", root)
+    if not toolchain:
+        return set()
+    value = toolchain.get("toolchain")
+    if not isinstance(value, dict):
+        return set()
+    components = value.get("components")
+    if not isinstance(components, list):
+        return set()
+    return {component for component in components if isinstance(component, str)}
+
+
+def _nested_component_commands(root: Path, file_set: set[str]) -> list[str]:
+    commands: list[str] = []
+    has_root_cargo = "Cargo.toml" in file_set
+    for file_name in sorted(file_set):
+        path = Path(file_name)
+        if len(path.parts) <= 1:
+            continue
+        if _is_fixture_component(path) or _is_non_project_command_component(path):
+            continue
+        directory = path.parent.as_posix()
+        quoted_directory = shlex.quote(directory)
+        if path.name == "package.json":
+            package_json = _read_json(root / path, root)
+            if package_json:
+                manager = _component_node_manager(directory, file_set)
+                commands.extend(
+                    _component_node_commands(quoted_directory, package_json, manager)
+                )
+        elif path.name == "pyproject.toml":
+            commands.append(f"python -m compileall {quoted_directory}")
+            if f"{directory}/tests" in _top_level_directories(file_set, directory):
+                commands.append(
+                    f"python -m unittest discover -s {quoted_directory}/tests"
+                )
+        elif path.name == "Cargo.toml" and not has_root_cargo:
+            commands.append(f"cargo test --manifest-path {quoted_directory}/Cargo.toml")
+        elif path.name == "go.mod":
+            commands.append(f"go test ./{directory}/...")
+        elif path.name == "pom.xml":
+            commands.append(f"mvn -f {quoted_directory}/pom.xml test")
+        elif path.name in {"build.gradle", "build.gradle.kts"}:
+            commands.append(f"gradle -p {quoted_directory} test")
+        elif path.name == "Gemfile":
+            commands.append(f"bundle exec --gemfile {quoted_directory}/Gemfile rake test")
+        elif path.name == "composer.json":
+            commands.append(f"composer --working-dir {quoted_directory} test")
+    return commands[:20]
+
+
+def _is_fixture_component(path: Path) -> bool:
+    return bool({"fixture", "fixtures", "testdata", "samples"} & set(path.parts))
+
+
+def _is_non_project_command_component(path: Path) -> bool:
+    return bool(
+        {
+            "docs",
+            "examples",
+            "external",
+            "site",
+            "third_party",
+            "vendor",
+            "vendors",
+        }
+        & set(path.parts)
+    )
+
+
+def _top_level_directories(file_set: set[str], directory: str) -> set[str]:
+    prefix = f"{directory}/"
+    return {
+        f"{directory}/{Path(file.removeprefix(prefix)).parts[0]}"
+        for file in file_set
+        if file.startswith(prefix) and Path(file.removeprefix(prefix)).parts
+    }
+
+
+def _component_node_manager(directory: str, file_set: set[str]) -> str:
+    if f"{directory}/pnpm-lock.yaml" in file_set:
+        return "pnpm"
+    if f"{directory}/yarn.lock" in file_set:
+        return "yarn"
+    if f"{directory}/bun.lock" in file_set or f"{directory}/bun.lockb" in file_set:
+        return "bun"
+    return "npm"
+
+
+def _component_node_commands(
+    directory: str, package_json: dict[str, Any], manager: str
+) -> list[str]:
+    scripts = package_json.get("scripts")
+    if not isinstance(scripts, dict):
+        return []
+    commands: list[str] = []
+    for script in ("check", "typecheck", "type-check", "lint", "test", "build"):
+        if script not in scripts:
+            continue
+        if manager == "pnpm":
+            commands.append(f"pnpm --dir {directory} run {script}")
+        elif manager == "yarn":
+            commands.append(f"yarn --cwd {directory} {script}")
+        elif manager == "bun":
+            commands.append(f"bun --cwd {directory} run {script}")
+        elif script == "test":
+            commands.append(f"npm --prefix {directory} test")
+        else:
+            commands.append(f"npm --prefix {directory} run {script}")
     return commands
 
 
@@ -661,6 +852,21 @@ def _python_runner_prefix(package_managers: tuple[str, ...]) -> str:
     if "pipenv" in package_managers:
         return "pipenv run "
     return ""
+
+
+def _root_python_runtime_project(
+    file_set: set[str], pyproject: dict[str, Any] | None
+) -> bool:
+    if not pyproject:
+        return False
+    if "project" in pyproject or "build-system" in pyproject:
+        return True
+    tool = pyproject.get("tool")
+    if not isinstance(tool, dict):
+        return False
+    if "uv" in tool or "pytest" in json.dumps(tool).lower():
+        return True
+    return "setup.py" in file_set
 
 
 def _uses_ruff(file_set: set[str], pyproject: dict[str, Any] | None) -> bool:

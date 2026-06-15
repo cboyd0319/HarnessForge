@@ -69,6 +69,8 @@ jobs:
 
 Existing files are preserved. Set `force: "true"` only when overwriting
 generated harness files is intentional.
+Set `enhance-existing: "true"` when existing instruction files should preserve
+their project text but receive a reviewed HarnessForge quality addendum.
 
 Optional workflow scaffolds are off by default:
 
@@ -96,6 +98,7 @@ and not behavior embedded in the composite Action runtime.
 | `fail-on-score` | `true` | Fail the action when score is below threshold |
 | `apply` | `false` | Apply safe corrections for `update` |
 | `force` | `false` | Allow overwrites for generated files |
+| `enhance-existing` | `false` | Append reviewed guidance to existing instruction files without replacing project text |
 | `agent-file` | `AGENTS.md` | Root instruction file to generate |
 | `platform-contract` | `cross-platform` | Generated harness platform contract: `cross-platform`, `macos-only`, `windows-only`, or `linux-only` |
 | `with-ci-workflow` | `false` | Include optional manual HarnessForge CI workflow scaffolding during `init` or applied `update` |
@@ -114,7 +117,7 @@ traversal outside the target repository are rejected.
 | `bottleneck` | Lowest-scoring harness domain |
 | `report-json` | Target-relative JSON report path when requested |
 | `report-html` | Target-relative HTML report path when requested |
-| `changed-files` | Number of files written by `init` or applied `update` |
+| `changed-files` | Number of files written or enhanced by `init` or applied `update` |
 
 Report path outputs use forward slashes on every runner so workflow consumers
 can handle them consistently across Windows and POSIX jobs.

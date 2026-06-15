@@ -94,6 +94,8 @@ harnessforge init --target /path/to/repo --with-self-heal-workflow
 By default, `init` only writes missing generated files. It does not overwrite
 existing project files. Use `--force` only when replacing generated harness
 surfaces is intentional and reviewed.
+Use `--enhance-existing` when existing instruction files should keep their
+project text but receive a reviewed HarnessForge quality addendum.
 Workflow scaffolds use manual triggers by default and must be reviewed and
 pinned before relying on them.
 
@@ -195,6 +197,8 @@ for vulnerability reporting, scope, and severity guidance.
 - Normal `init`, `audit`, `update`, and `doctor` commands use the Python
   standard library and do not install runtime dependencies.
 - Existing files are preserved unless `--force` is explicitly supplied.
+- `--enhance-existing` appends reviewed instruction addenda without replacing
+  existing project text.
 - Generated destination paths are preflighted before writes.
 - Absolute instruction paths, traversal, and unsafe instruction filenames are
   rejected.

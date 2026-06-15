@@ -876,6 +876,10 @@ def _feedback_checks(files: dict[str, str], link_failures: list[str]) -> list[Ch
     all_text = "\n".join(files.values())
     init_text = files.get("init.sh", "") + files.get("init.ps1", "")
     return [
+        _check(
+            "No project verification check detected" not in init_text,
+            "Project verification command is configured",
+        ),
         _contains(
             init_text,
             (

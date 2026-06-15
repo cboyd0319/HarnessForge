@@ -32,9 +32,12 @@ and the required AGENTS instruction format.
 - `pins.toml`
 - `scripts/refresh_research.py`
 - `src/harnessforge/audit.py`
+- `src/harnessforge/cli.py`
 - `src/harnessforge/detect.py`
 - `src/harnessforge/generate.py`
+- `src/harnessforge/github_action.py`
 - `src/harnessforge/models.py`
+- `src/harnessforge/update.py`
 - `src/harnessforge/templates/claude.md.tmpl`
 - `src/harnessforge/templates/gemini.md.tmpl`
 - `src/harnessforge/templates/copilot-instructions.md.tmpl`
@@ -50,6 +53,24 @@ and the required AGENTS instruction format.
 ## Blockers
 
 - No known blockers.
+- Current reference-repo quality batch completed the VexShield and Bazel
+  generated-content exercises with manual ideal harness sketches and temporary
+  shadow generation. Accepted fixes: stronger root-first and priority-based
+  discovery for huge repos, C/C++ and Starlark detection, Rust-first handling
+  for root Cargo workspaces that also have Bazel markers, Rust fmt/clippy/test
+  command inference, Bazel checks retained as secondary checks, nested
+  component command inference, fixture/vendor/docs command skips, hidden
+  Claude/Gemini instruction detection, tool-only root Python config no longer
+  producing `python -m compileall .`, explicit failing placeholders when no
+  verification command is detected, generated project-context guidance, and
+  `--enhance-existing` support for reviewed addenda that preserve existing
+  instruction text. The Bazel shadow run now detects stack `bazel`, adds
+  Bazel-specific boundary context to enhanced `AGENTS.md`, and audits at
+  `93/100` because existing project-owned instructions still contain hardcoded
+  scratch-path examples; HarnessForge reports that quality issue instead of
+  silently rewriting it. Current verification passes full unit discovery with
+  123 tests, compile, pin check, JSON validation, self-audit `100/100`, and
+  diff hygiene.
 - Current pins-ledger batch added `pins.toml` and ledger-backed checks to the
   live and generated pin checkers. When `pins.toml` exists, checks now tie
   Python pins, `package.json` direct package versions, package-lock integrity,
