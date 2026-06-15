@@ -49,6 +49,7 @@ Use:
 ```bash
 harnessforge quickstart --target .
 harnessforge index --target . --json
+harnessforge index --target . --max-files 20000 --json
 harnessforge effectiveness --target . --json
 harnessforge session --target .
 harnessforge plan --target . --since HEAD
@@ -65,7 +66,10 @@ placeholder reporting, and next commands without writing files.
 `index --json` is a read-only structural repo map. It reports file class,
 language, manifest, component, source-of-truth, entrypoint, generated, vendor,
 workflow, and review-required signals without command execution, writes, local
-absolute paths, code excerpts, embeddings, or network access.
+absolute paths, code excerpts, embeddings, or network access. The default file
+scan limit is 4,000 files; pass `--max-files` for deeper large-repo analysis.
+Component inventories remain bounded and report truncation so omitted
+boundaries can be reviewed and added manually.
 
 `effectiveness --json` is a read-only assessor for stored real-agent or
 benchmark evidence. It scans target-contained

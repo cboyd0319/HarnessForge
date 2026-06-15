@@ -610,11 +610,16 @@ The latest large-codebase analysis and indexing slice is recorded in
 `docs/harness/large-codebase-indexing-research.md` and implemented as read-only
 `harnessforge index --target . --json`. It reports target-relative file
 classes, language breakdown, manifests, components, entrypoints,
-source-of-truth signals, review-required placeholders, and no-command/no-write
-execution metadata. Boundaries: no networked indexing service by default, no
-committed embeddings or private code summaries in generated harnesses, no code
-excerpts, no machine-local paths, and any future optional cache must be
-target-contained, reviewable, and safe to delete.
+source-of-truth signals, review-required placeholders, no-command/no-write
+execution metadata, file-scan limits, and component-inventory truncation.
+Large repos can use `--max-files <N>` for deeper read-only scans while keeping
+generated component inventories bounded. Boundaries: no networked indexing
+service by default, no committed embeddings or private code summaries in
+generated harnesses, no code excerpts, no machine-local paths, and any future
+optional cache must be target-contained, reviewable, and safe to delete.
+The latest local real-repo pass also fixed root Maven and Gradle command
+inference for monorepo-classified repositories and docs/research repository
+classification when non-code assets are present.
 `scripts/refresh_research.py --check` validates duplicate source IDs and URLs,
 required fields, placeholder text, canonical URL shape, arXiv `/abs/` URLs,
 lock-file consistency, and local-path leakage before any metadata fetch. Root
@@ -639,7 +644,7 @@ coverage, focused verify report-persistence tests, focused verify-evidence gate
 tests, focused Action sync tests, focused session tests, focused sensor-registry
 generator test, focused source-record generator test, focused index CLI tests,
 focused effectiveness CLI and contract tests, full unit discovery and
-POSIX/PowerShell entrypoints with 214 tests, compile, JSON/YAML validation, pin
+POSIX/PowerShell entrypoints with 219 tests, compile, JSON/YAML validation, pin
 check, research source check, rendered optional workflow audit and pin smoke,
 session, plan, index, and effectiveness JSON smokes, expected-warning sync JSON
 smoke, self-audit `100/100`, changed-file local-path scan, and diff hygiene.

@@ -18,6 +18,10 @@ class ProjectProfile:
     workspace_markers: tuple[str, ...] = ()
     routing_markers: tuple[str, ...] = ()
     config_precedence: tuple[str, ...] = ()
+    file_scan_limit: int = 4000
+    file_scan_truncated: bool = False
+    component_scan_limit: int = 80
+    component_scan_truncated: bool = False
 
 
 @dataclass(frozen=True)

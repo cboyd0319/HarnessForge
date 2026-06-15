@@ -390,7 +390,7 @@ def _template_context(
             agent_file, platform_contract
         ),
         "self_heal_verify_command": _self_heal_verify_command(platform_contract),
-        "components_markdown": _components_markdown(profile.components),
+        "components_markdown": _components_markdown(profile),
         "workspace_markers_markdown": _workspace_markers_markdown(
             profile.workspace_markers
         ),
@@ -1401,16 +1401,26 @@ def _manifest_content(
         "reviewRequired": list(REVIEW_REQUIRED_FILES),
         "verificationCommands": list(profile.verification_commands),
         "detectedComponents": list(profile.components),
+        "componentInventoryLimit": profile.component_scan_limit,
+        "componentInventoryTruncated": profile.component_scan_truncated,
         "detectedWorkspaceMarkers": list(profile.workspace_markers),
         "detectedRoutingMarkers": list(profile.routing_markers),
     }
     return f"{json.dumps(manifest, indent=2)}\n"
 
 
-def _components_markdown(components: tuple[str, ...]) -> str:
-    if not components:
+def _components_markdown(profile: ProjectProfile) -> str:
+    if not profile.components:
         return "- No package or runtime component manifests detected."
-    return "\n".join(f"- `{component}`" for component in components)
+    lines = [f"- `{component}`" for component in profile.components]
+    if profile.component_scan_truncated:
+        lines.append(
+            "- REVIEW REQUIRED: Component inventory reached the "
+            f"{profile.component_scan_limit}-component detection limit. "
+            "Run `harnessforge index --target . --max-files <N>` for a deeper "
+            "structural map and add important omitted boundaries manually."
+        )
+    return "\n".join(lines)
 
 
 def _workspace_markers_markdown(markers: tuple[str, ...]) -> str:

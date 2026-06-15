@@ -208,8 +208,15 @@ def build_index_report(profile: ProjectProfile) -> dict[str, Any]:
     language_breakdown = _language_breakdown(records)
     entrypoints = _entrypoints(records, profile.verification_commands)
     total_bytes = sum(record["bytes"] for record in records)
-    if len(profile.files) >= 4000:
-        warnings.append("File scan reached the built-in 4000-file detection limit.")
+    if profile.file_scan_truncated:
+        warnings.append(
+            f"File scan reached the {profile.file_scan_limit}-file detection limit."
+        )
+    if profile.component_scan_truncated:
+        warnings.append(
+            "Component inventory reached the "
+            f"{profile.component_scan_limit}-component detection limit."
+        )
     if not source_of_truth:
         warnings.append("No high-signal source-of-truth documents were detected.")
     if _verification_missing(profile.verification_commands):
@@ -236,7 +243,8 @@ def build_index_report(profile: ProjectProfile) -> dict[str, Any]:
             "manifestCount": len(manifests),
             "sourceOfTruthCount": len(source_of_truth),
             "reviewRequiredCount": len(review_required),
-            "truncated": len(profile.files) >= 4000,
+            "truncated": profile.file_scan_truncated,
+            "componentsTruncated": profile.component_scan_truncated,
         },
         "languageBreakdown": language_breakdown,
         "fileClasses": class_totals,
@@ -246,7 +254,8 @@ def build_index_report(profile: ProjectProfile) -> dict[str, Any]:
         "sourceOfTruth": source_of_truth,
         "reviewRequired": review_required,
         "limits": {
-            "maxFiles": 4000,
+            "maxFiles": profile.file_scan_limit,
+            "maxComponents": profile.component_scan_limit,
             "maxExamplesPerClass": MAX_EXAMPLES,
             "textProbeBytes": TEXT_PROBE_BYTES,
         },

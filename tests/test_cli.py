@@ -224,6 +224,51 @@ class CliTests(unittest.TestCase):
             any(item["language"] == "python" for item in payload["languageBreakdown"])
         )
 
+    def test_index_json_accepts_explicit_file_scan_limit(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            for index in range(5):
+                (root / f"doc-{index}.md").write_text("# Doc\n", encoding="utf-8")
+            stdout = io.StringIO()
+            with contextlib.redirect_stdout(stdout):
+                code = main(
+                    [
+                        "index",
+                        "--target",
+                        str(root),
+                        "--max-files",
+                        "3",
+                        "--json",
+                    ]
+                )
+
+            payload = json.loads(stdout.getvalue())
+
+        self.assertEqual(code, 0)
+        self.assertEqual(payload["summary"]["fileCount"], 3)
+        self.assertTrue(payload["summary"]["truncated"])
+        self.assertEqual(payload["limits"]["maxFiles"], 3)
+        self.assertIn("3-file detection limit", " ".join(payload["warnings"]))
+
+    def test_index_json_reports_component_inventory_limit(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            for index in range(85):
+                component = root / f"pkg-{index:02d}"
+                component.mkdir()
+                (component / "package.json").write_text("{}", encoding="utf-8")
+            stdout = io.StringIO()
+            with contextlib.redirect_stdout(stdout):
+                code = main(["index", "--target", str(root), "--json"])
+
+            payload = json.loads(stdout.getvalue())
+
+        self.assertEqual(code, 0)
+        self.assertEqual(payload["summary"]["componentCount"], 80)
+        self.assertTrue(payload["summary"]["componentsTruncated"])
+        self.assertEqual(payload["limits"]["maxComponents"], 80)
+        self.assertIn("80-component detection limit", " ".join(payload["warnings"]))
+
     def test_effectiveness_json_assesses_reviewable_evidence_without_writing(
         self,
     ) -> None:

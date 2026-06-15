@@ -102,6 +102,7 @@ DIRECTORY_PRIORITY = {
     "docs": 90,
     "site": 91,
 }
+COMPONENT_SCAN_LIMIT = 80
 
 
 def detect_project(
@@ -109,9 +110,12 @@ def detect_project(
     *,
     explicit_package_manager: str | None = None,
     explicit_commands: tuple[str, ...] = (),
+    max_files: int = 4000,
 ) -> ProjectProfile:
+    if max_files <= 0:
+        raise ValueError("--max-files must be greater than 0")
     root = root.resolve()
-    files = tuple(list_project_files(root))
+    files = tuple(list_project_files(root, max_files=max_files))
     file_set = set(files)
     package_json = _read_json(root / "package.json", root)
     pyproject = _read_toml(root / "pyproject.toml", root)
@@ -185,7 +189,7 @@ def detect_project(
         package_managers,
         stack,
     )
-    components = _detect_components(file_set)
+    components, component_scan_truncated = _detect_components(file_set)
     workspace_markers = _detect_workspace_markers(
         root, file_set, package_json, pyproject, cargo_toml, composer_json
     )
@@ -209,6 +213,10 @@ def detect_project(
         workspace_markers=workspace_markers,
         routing_markers=routing_markers,
         config_precedence=config_precedence,
+        file_scan_limit=max_files,
+        file_scan_truncated=len(files) >= max_files,
+        component_scan_limit=COMPONENT_SCAN_LIMIT,
+        component_scan_truncated=component_scan_truncated,
     )
 
 
@@ -306,6 +314,29 @@ def _detect_languages(
     if suffixes and suffixes <= {".md", ".txt", ".rst"}:
         languages.add("docs")
     if _has_structured_spec_surface(file_set) or has_spec_system(file_set):
+        languages.add("docs")
+    if _has_documentation_files(file_set) and not (
+        languages
+        & {
+            "bazel",
+            "buck",
+            "cpp",
+            "dotnet",
+            "go",
+            "java",
+            "javascript",
+            "pants",
+            "php",
+            "python",
+            "ruby",
+            "rust",
+            "shell",
+            "starlark",
+            "swift",
+            "terraform",
+            "typescript",
+        }
+    ):
         languages.add("docs")
     return languages or {"generic"}
 
@@ -413,7 +444,7 @@ def _config_precedence(
     return tuple(_dedupe(sources))
 
 
-def _detect_components(file_set: set[str]) -> tuple[str, ...]:
+def _detect_components(file_set: set[str]) -> tuple[tuple[str, ...], bool]:
     directories: dict[str, list[str]] = {}
     for file_name in sorted(file_set):
         path = Path(file_name)
@@ -429,7 +460,10 @@ def _detect_components(file_set: set[str]) -> tuple[str, ...]:
     for directory in sorted(directories, key=lambda item: (item.count("/"), item)):
         markers = ", ".join(_dedupe(sorted(directories[directory])))
         components.append(f"{directory} ({markers})")
-    return tuple(components[:80])
+    return (
+        tuple(components[:COMPONENT_SCAN_LIMIT]),
+        len(components) > COMPONENT_SCAN_LIMIT,
+    )
 
 
 def _detect_workspace_markers(
@@ -731,6 +765,13 @@ def _has_structured_spec_surface(file_set: set[str]) -> bool:
     )
 
 
+def _has_documentation_files(file_set: set[str]) -> bool:
+    return any(
+        Path(file).suffix.lower() in {".adoc", ".md", ".rst", ".txt"}
+        for file in file_set
+    )
+
+
 def _nested_component_count(file_set: set[str]) -> int:
     component_dirs = {
         str(Path(file).parent)
@@ -763,6 +804,8 @@ def _verification_commands(
     commands.extend(validation_commands)
     if package_json:
         commands.extend(_node_commands(package_json, package_managers))
+    if stack not in {"bazel", "buck", "pants"}:
+        commands.extend(_root_jvm_commands(file_set))
     if stack == "python":
         commands.extend(_python_commands(file_set, pyproject, package_managers))
     elif pyproject and _root_python_runtime_project(file_set, pyproject):
@@ -774,13 +817,6 @@ def _verification_commands(
             commands.extend(_rust_commands(root, file_set, cargo_toml))
     if stack == "swift":
         commands.extend(_swift_commands(file_set, has_make_command=bool(commands)))
-    if stack == "java":
-        if "pom.xml" in file_set:
-            commands.append("mvn test")
-        if "gradlew" in file_set:
-            commands.append("./gradlew test")
-        elif "build.gradle" in file_set or "build.gradle.kts" in file_set:
-            commands.append("gradle test")
     if stack == "dotnet":
         commands.append("dotnet test")
     if stack == "php" and "composer.json" in file_set:
@@ -805,6 +841,18 @@ def _verification_commands(
     if not commands:
         commands = (MISSING_VERIFICATION_COMMAND,)
     return tuple(commands)
+
+
+def _root_jvm_commands(file_set: set[str]) -> list[str]:
+    commands: list[str] = []
+    if "pom.xml" in file_set:
+        maven = "./mvnw" if "mvnw" in file_set else "mvn"
+        commands.append(f"{maven} test")
+    if "gradlew" in file_set:
+        commands.append("./gradlew test")
+    elif "build.gradle" in file_set or "build.gradle.kts" in file_set:
+        commands.append("gradle test")
+    return commands
 
 
 def _make_commands(root: Path, file_set: set[str]) -> list[str]:

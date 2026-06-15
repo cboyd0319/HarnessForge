@@ -101,6 +101,52 @@ class DetectProjectTests(unittest.TestCase):
         self.assertIn("npm", profile.package_managers)
         self.assertIn("maven", profile.package_managers)
 
+    def test_root_maven_command_survives_monorepo_classification(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "pom.xml").write_text("<project />\n", encoding="utf-8")
+            (root / "docker" / "mariadb").mkdir(parents=True)
+            (root / "docker" / "mariadb" / "Dockerfile").write_text(
+                "FROM mariadb:latest\n",
+                encoding="utf-8",
+            )
+            (root / "docker" / "mongo").mkdir(parents=True)
+            (root / "docker" / "mongo" / "Dockerfile").write_text(
+                "FROM mongo:latest\n",
+                encoding="utf-8",
+            )
+
+            profile = detect_project(root)
+
+        self.assertEqual(profile.stack, "monorepo")
+        self.assertIn("mvn test", profile.verification_commands)
+
+    def test_docs_research_repo_with_non_code_assets_detects_as_docs(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "README.md").write_text("# Papers\n", encoding="utf-8")
+            (root / "TODO.md").write_text("# TODO\n", encoding="utf-8")
+            (root / "paper.pdf").write_bytes(b"%PDF-1.7\n")
+
+            profile = detect_project(root)
+
+        self.assertEqual(profile.stack, "docs")
+        self.assertIn("docs", profile.languages)
+
+    def test_component_scan_truncation_is_reported(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            for index in range(85):
+                component = root / f"pkg-{index:02d}"
+                component.mkdir()
+                (component / "package.json").write_text("{}", encoding="utf-8")
+
+            profile = detect_project(root)
+
+        self.assertEqual(len(profile.components), 80)
+        self.assertTrue(profile.component_scan_truncated)
+        self.assertEqual(profile.component_scan_limit, 80)
+
     def test_docs_site_uses_local_validation_script(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

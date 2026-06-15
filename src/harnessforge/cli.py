@@ -95,6 +95,12 @@ def build_parser() -> argparse.ArgumentParser:
     index.add_argument("--target", type=Path, default=Path.cwd())
     index.add_argument("--package-manager")
     index.add_argument("--command", dest="commands", action="append", default=[])
+    index.add_argument(
+        "--max-files",
+        type=int,
+        default=4000,
+        help="maximum number of repository files to include in the structural index",
+    )
     index.add_argument("--json", action="store_true")
     index.set_defaults(func=_index)
 
@@ -348,6 +354,11 @@ def _inspect(args: argparse.Namespace) -> int:
     if profile.components:
         for component in profile.components:
             print(f"  - {component}")
+        if profile.component_scan_truncated:
+            print(
+                "  - REVIEW REQUIRED: component inventory reached the "
+                f"{profile.component_scan_limit}-component detection limit"
+            )
     else:
         print("  - none detected")
     return 0
@@ -358,6 +369,7 @@ def _index(args: argparse.Namespace) -> int:
         args.target,
         explicit_package_manager=args.package_manager,
         explicit_commands=tuple(args.commands),
+        max_files=args.max_files,
     )
     report = build_index_report(profile)
     if args.json:
@@ -770,6 +782,10 @@ def _profile_to_dict(profile: ProjectProfile) -> dict[str, object]:
         "runtimeFiles": list(profile.runtime_files),
         "verificationCommands": list(profile.verification_commands),
         "components": list(profile.components),
+        "componentScan": {
+            "limit": profile.component_scan_limit,
+            "truncated": profile.component_scan_truncated,
+        },
         "workspaceMarkers": list(profile.workspace_markers),
         "routingMarkers": list(profile.routing_markers),
         "configPrecedence": list(profile.config_precedence),

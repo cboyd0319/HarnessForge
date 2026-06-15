@@ -165,7 +165,13 @@ Build a read-only structural index for a large existing repo:
 
 ```bash
 harnessforge index --target /path/to/repo --json
+harnessforge index --target /path/to/repo --max-files 20000 --json
 ```
+
+The default index scans up to 4,000 files for fast first-pass analysis. Use
+`--max-files` for larger repositories. The JSON report also states when the
+bounded component inventory was truncated, so humans can add important omitted
+boundaries to `docs/harness/component-inventory.md`.
 
 Assess stored effectiveness evidence before making benchmark claims:
 

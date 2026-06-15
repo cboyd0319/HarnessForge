@@ -5,7 +5,9 @@ Reviewed: 2026-06-15 UTC.
 Status: repo-local research.
 
 Implementation note: the first standard-library structural index slice is
-implemented as `harnessforge index --target . --json`.
+implemented as `harnessforge index --target . --json`. Large repos can raise
+the file scan limit with `--max-files`; bounded component inventories now
+report truncation instead of silently hiding omitted boundaries.
 
 This note responds to the current product risk: HarnessForge must understand
 large existing repositories much better before it can generate or improve a
@@ -77,7 +79,8 @@ Primary source links:
 ### Phase 1: Built-In Structural Index
 
 Implemented a read-only `harnessforge index --target . --json` command with no
-new runtime dependencies. It reports:
+new runtime dependencies. Use `--max-files <N>` for deeper scans of large
+repositories. It reports:
 
 - repo size, file count, ignored/generated/vendor/test/doc/source splits;
 - detected components and confidence;
@@ -87,6 +90,7 @@ new runtime dependencies. It reports:
 - language distribution by file count and byte size;
 - high-signal entrypoints, scripts, local actions, and CI path filters;
 - missing or ambiguous boundaries that require project review.
+- file-scan and component-inventory truncation limits.
 
 The output should be a portable JSON report. It must not include local absolute
 paths, secrets, private code excerpts, embeddings, or large raw file lists by

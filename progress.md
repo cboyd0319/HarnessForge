@@ -443,6 +443,13 @@ maintenance loop.
   breakdown, manifests, components, entrypoints, source-of-truth signals,
   review-required placeholders, and no-command/no-write execution metadata
   without network access, embeddings, code excerpts, or local absolute paths.
+- Completed another read-only real-repo scan across the local reference set.
+  Accepted three product-quality fixes: root Maven and Gradle checks are now
+  inferred even when root Docker or other component markers classify a repo as
+  a monorepo, docs and research repositories with non-code assets now classify
+  as `docs` instead of `generic`, and `harnessforge index` now supports
+  `--max-files` plus explicit component-inventory truncation signals for large
+  repositories.
 - Added read-only `harnessforge effectiveness --target . --json` evidence
   assessment. The command scans target-contained
   `docs/harness/evidence/effectiveness*.json` reports or explicit
@@ -451,7 +458,7 @@ maintenance loop.
   running benchmarks, installing dependencies, calling models, writing files,
   or turning structural audit score into a performance claim.
 - Current verification passes full unit discovery and POSIX/PowerShell
-  entrypoints with 214 tests, focused CLI, generator, and contract tests,
+  entrypoints with 219 tests, focused CLI, generator, and contract tests,
   index/effectiveness JSON and text smokes, compile, pin check, research source
   check, JSON validation, session/plan/index/effectiveness JSON smokes,
   self-audit `100/100`, changed-file local-path scan, and diff hygiene.
@@ -484,10 +491,26 @@ Push local commits only at an explicit batch/release boundary or user request.
 - `PYTHONPATH=src:. python3 -m harnessforge index --target . --json` returned
   schema `harnessforge.index.v1`, `target.root` as `null`, no command
   execution, no writes, and target-relative structural signals.
+- A read-only real-repo scan across the local reference set completed with no
+  HarnessForge command failures after using a supported Python 3.13 runtime.
+  It found and fixed root JVM command inference for monorepo-classified
+  repositories, docs/research classification for non-code asset repositories,
+  and large-repo index limit visibility.
+- `PYTHONPATH=src python -m unittest tests.test_detect tests.test_cli` passed
+  with 104 focused tests after the real-repo detection and index-limit fixes.
+- `harnessforge index --target <large-repo> --max-files 20000 --json` cleared
+  file truncation on the large reference repos while reporting the bounded
+  component inventory limit.
 - `./init.sh` passed with doctor, compile, 211 tests, pin check, research
   source check, and self-audit `100/100`.
 - `pwsh -NoProfile -File ./init.ps1` passed with doctor, compile, 211 tests,
   pin check, research source check, and self-audit `100/100`.
+- `PYTHON=<python3.13> ./init.sh` passed with doctor, compile, 219
+  tests, pin check, research source check, and self-audit `100/100` after the
+  real-repo scan fixes.
+- `PYTHON=<python3.13> pwsh -NoProfile -File ./init.ps1` passed with
+  doctor, compile, 219 tests, pin check, research source check, and self-audit
+  `100/100` after the real-repo scan fixes.
 - `PYTHONPATH=src:. python3 -m unittest
   tests.test_cli.CliTests.test_effectiveness_json_assesses_reviewable_evidence_without_writing`
   first failed because `effectiveness` was not a recognized subcommand, then
