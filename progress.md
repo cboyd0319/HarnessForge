@@ -437,11 +437,11 @@ maintenance loop.
   include `docs/harness/source-record.schema.json` and review-required
   `docs/harness/source-record-example.json`, keeping project-curated
   provenance records separate from the fixed HarnessForge research allowlist.
-- Added a new high-priority backlog item for large-codebase analysis and
-  indexing research. The work should review open source code indexing,
-  repo-map, semantic search, static-analysis, language-server, dependency-graph,
-  and monorepo navigation systems before HarnessForge adds heavier indexing
-  behavior for existing repos.
+- Completed the first large-codebase analysis and indexing research pass
+  against open source code search, semantic indexing, repo-map, static-analysis,
+  language-server, code-intelligence, and dependency-graph systems. The next
+  implementation slice is read-only `harnessforge index --target . --json`
+  using standard-library structural facts first.
 - Current verification passes full unit discovery and POSIX/PowerShell
   entrypoints with 210 tests, compile, pin check, research source check, JSON
   validation, session and plan JSON smokes, self-audit `100/100`, changed-file
@@ -450,15 +450,22 @@ maintenance loop.
 ## Recommended Next Step
 
 If continuing product build-out before release prep, the next best slice is a
-large-codebase analysis and indexing research. After that, the remaining
-product slice is a score or benchmark command only if backed by representative
-effectiveness evidence. If release prep resumes instead, review the current
-diff, run the release checklist, rebuild the isolated package smoke, and decide
-whether to trigger manual macOS and Windows platform CI.
+read-only `harnessforge index --target . --json` structural indexing. After
+that, the remaining product slice is a score or benchmark command only if
+backed by representative effectiveness evidence. If release prep resumes
+instead, review the current diff, run the release checklist, rebuild the
+isolated package smoke, and decide whether to trigger manual macOS and Windows
+platform CI.
 Push local commits only at an explicit batch/release boundary or user request.
 
 ## Verification Evidence
 
+- Large-codebase analysis and indexing research reviewed primary project
+  sources for Zoekt, Sourcebot, Livegrep, Hound, OpenGrok, Universal Ctags,
+  Tree-sitter, ast-grep, Aider repo maps, SCIP, LSIF, Kythe, Glean, Stack
+  Graphs, CodeQL, and Semgrep. Findings are recorded in
+  `docs/harness/large-codebase-indexing-research.md`; product direction is a
+  no-dependency structural index command before any optional external adapter.
 - `PYTHONPATH=src:. python3 -m unittest
   tests.test_generate_audit.GenerateAuditTests.test_generated_source_record_schema_guides_project_sources`
   first failed because generated harnesses did not include a source-record

@@ -63,5 +63,7 @@ inventory, not permission to mutate nested projects.
   source provenance records, separate from the fixed research allowlist.
 - `docs/harness/source-record-example.json`: review-required starter record for
   project-owned source provenance.
+- `docs/harness/large-codebase-indexing-research.md`: repo-local research note
+  for large existing repo analysis and future `harnessforge index` design.
 - `src/harnessforge/sync.py`: shared read-only sync preflight payload and exit
   code helpers used by both the CLI and composite Action.

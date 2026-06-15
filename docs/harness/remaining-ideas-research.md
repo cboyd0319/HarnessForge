@@ -31,15 +31,18 @@ The dedicated harness-docs and AGENTS supplement added two read-only UX slices:
 implemented as a review-required generated artifact. Structured project-source
 records are now implemented as a generated schema and review-required example.
 The highest-value remaining product risk is accurate analysis and indexing of
-large existing codebases before HarnessForge designs or improves a harness. Any
-score or benchmark command remains a later candidate, and only when backed by
-representative effectiveness evidence.
+large existing codebases before HarnessForge designs or improves a harness. The
+initial research pass is now recorded in
+`large-codebase-indexing-research.md`; the next product slice is a read-only
+`harnessforge index --target . --json` structural index. Any score or benchmark
+command remains a later candidate, and only when backed by representative
+effectiveness evidence.
 
 ## Highest-Value Next Ideas
 
 | Idea | Source signal | HarnessForge fit | Boundary |
 | --- | --- | --- | --- |
-| Large-codebase analysis and indexing research | Reference-repo quality exercises exposed weak existing-repo understanding as a major risk | Research open source code indexing, repo-map, semantic search, static-analysis, language-server, and dependency-graph systems, then design a portable indexing strategy for HarnessForge | Research first; do not add networked indexers, heavyweight services, or generated repo metadata until privacy, scale, freshness, and platform costs are reviewed |
+| Large-codebase structural index | Indexing research and reference-repo quality exercises | Add read-only `harnessforge index --target . --json` using standard-library structural facts first | No networked indexer, embeddings, language-server startup, or persistent cache by default |
 | Readiness report mode | AWMAN `ready`, OpenHarness `--dry-run` readiness verdicts | Add a read-only `ready` or `inspect --readiness` path that reports `ready`, `warning`, or `blocked` with next actions | Must not execute project commands by default |
 | Project verification contract | Public HarnessForge verify protocol, OpenAI feedback loops, Fowler sensors | Add a stable project-check JSON contract separate from harness `audit` | Running target repo commands must be explicit because commands are executable code |
 | Existing-spec sync checks | ASPEC source-of-truth model, AWMAN's `aspec/` usage | Detect structured specs and report whether generated/enhanced instructions route agents to them | Do not impose ASPEC folder names or rewrite spec systems |
@@ -57,6 +60,8 @@ representative effectiveness evidence.
 
 ## New Backlog: Large-Codebase Analysis And Indexing
 
+Research status: completed in `large-codebase-indexing-research.md`.
+
 Problem:
 
 - HarnessForge can generate and audit structure, but existing large repos need
@@ -68,15 +73,13 @@ Problem:
 
 Research task:
 
-- Review current open source solutions for code search, semantic indexing,
-  repo maps, call/dependency graphs, language-server indexes, static analysis,
-  and monorepo navigation.
-- Compare how they handle scale, offline operation, privacy, incremental
-  updates, language coverage, generated files, vendored code, and cross-platform
-  setup.
-- Mine ideas that can improve HarnessForge detection, generated context,
-  preserved-file enhancement, and review-required summaries without forcing a
-  heavyweight service into target repos.
+- Completed: reviewed current open source solutions for code search, semantic
+  indexing, repo maps, call/dependency graphs, language-server indexes, static
+  analysis, and monorepo navigation.
+- Completed: compared scale, offline operation, privacy, incremental updates,
+  language coverage, generated files, vendored code, and cross-platform setup
+  at the product-design level.
+- Next: implement the first no-dependency structural index command.
 
 Boundary:
 
@@ -850,9 +853,9 @@ HarnessForge generator behavior:
 
 ## Suggested Next Step
 
-If continuing product build-out before release prep, the next best slice is a
-large-codebase analysis and indexing research. After that, the remaining
-product slice is a score or benchmark command only if backed by representative
-effectiveness evidence. If release prep resumes instead, the remaining release
-work is manual macOS/Windows platform CI, the `v1` Action tag decision, and
-release-time SBOM/provenance gates.
+If continuing product build-out before release prep, the next best slice is
+read-only `harnessforge index --target . --json` structural indexing. After
+that, the remaining product slice is a score or benchmark command only if
+backed by representative effectiveness evidence. If release prep resumes
+instead, the remaining release work is manual macOS/Windows platform CI, the
+`v1` Action tag decision, and release-time SBOM/provenance gates.

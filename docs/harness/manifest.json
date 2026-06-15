@@ -57,6 +57,7 @@
     "docs/harness/quality-document.md",
     "docs/harness/release-controls.md",
     "docs/harness/self-healing.md",
+    "docs/harness/large-codebase-indexing-research.md",
     "docs/harness/manifest.json",
     "docs/harness/sources.md",
     "docs/harness/source-record.schema.json",
@@ -261,6 +262,13 @@
       "HarnessForge Action",
       "Safe Loop",
       "Promotion Rule"
+    ],
+    "docs/harness/large-codebase-indexing-research.md": [
+      "Large Codebase Analysis And Indexing Research",
+      "harnessforge index --target . --json",
+      "No single open source indexer",
+      "No networked indexing service by default",
+      "target-contained"
     ],
     "docs/harness/source-record.schema.json": [
       "HarnessForge Project Source Record",
