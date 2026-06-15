@@ -45,7 +45,7 @@ with scope, verification, and rollback.
 | Instructions | `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, `.github/copilot-instructions.md` | Startup path, hard requirements, smallest-correct-change discipline, verification, and platform routing |
 | Tools | `harnessforge`, `action.yml`, `init.sh`, `init.ps1`, `scripts/check_pins.py` | Creation, audit, update, CI action, local checks, and pin enforcement |
 | Environment | `pyproject.toml`, CI matrix, `component-inventory.md`, `dependency-change-policy.md` | Python, OS, package, component, and Action support contract |
-| State | `feature_list.json`, `progress.md`, `evidence-log.md`, `docs/roadmap.md` | Current objective, accepted roadmap, evidence, and restart state |
+| State | `feature_list.json`, `progress.md`, `evidence-log.md`, `docs/roadmap.md`, `authoritative-facts.md` | Current objective, accepted roadmap, evidence, docs routing, and restart state |
 | Feedback | tests, self-audit, CI, `first-agent-task.md`, `verification-matrix.md`, `sensor-registry.md`, `evaluator-rubric.md`, `verify-json-contract.md`, `effectiveness-eval-contract.md`, research refresh | First-agent harness improvement, deterministic quality checks, sensor ownership, machine-readable verification output, benchmark-claim boundaries, and source drift signal |
 | Research | `sources.md`, `research-sources.json`, `source-record.schema.json`, `source-record-example.json` | Fixed research allowlist, source provenance, and project-owned source records |
 | Scope | `docs/harness/change-contract.md`, `security-boundary-map.md`, `feature-privacy-labels.json` | Acceptance, rollback, security, and data-flow discipline |
@@ -59,17 +59,19 @@ with scope, verification, and rollback.
 3. Check `feature_list.json`, `progress.md`, and `session-handoff.md`.
 4. Check `docs/roadmap.md` when selecting, deferring, or reshaping backlog,
    release-prep, or product-scope work.
-5. Check `component-inventory.md` when a task touches nested project boundaries.
-6. Use `change-contract.md` for non-trivial behavior or template changes.
-7. Implement the smallest coherent slice.
-8. Review `sensor-registry.md` when adding, deleting, or promoting checks.
-9. Run `./init.sh` or the narrowest relevant subset.
-10. Run `python scripts/check_pins.py --root .` for dependency, Action, or
+5. Check `authoritative-facts.md` before updating more than one durable doc or
+   state file for a routine change.
+6. Check `component-inventory.md` when a task touches nested project boundaries.
+7. Use `change-contract.md` for non-trivial behavior or template changes.
+8. Implement the smallest coherent slice.
+9. Review `sensor-registry.md` when adding, deleting, or promoting checks.
+10. Run `./init.sh` or the narrowest relevant subset.
+11. Run `python scripts/check_pins.py --root .` for dependency, Action, or
    workflow changes.
-11. Run `python scripts/refresh_research.py --root . --check` for research
+12. Run `python scripts/refresh_research.py --root . --check` for research
    source ledger or source-doc changes.
-12. Use `clean-state-checklist.md` before ending non-trivial sessions.
-13. Update state and handoff files when durable facts change.
+13. Use `clean-state-checklist.md` before ending non-trivial sessions.
+14. Update state and handoff files when durable facts change.
 
 ## Assessment And Updates
 

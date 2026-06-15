@@ -835,6 +835,53 @@ class GenerateAuditTests(unittest.TestCase):
         self.assertFalse(boundary.passed)
         self.assertIn("docs/harness/self-healing.md", boundary.detail)
 
+    def test_audit_requires_harnessforge_product_fact_map(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            create_harness(root, commands=("python -m compileall .",))
+            for relative_path in (
+                "action.yml",
+                "docs/action.md",
+                "src/harnessforge/cli.py",
+            ):
+                path = root / relative_path
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text("placeholder\n", encoding="utf-8")
+            manifest_path = root / "docs/harness/manifest.json"
+            manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+            manifest["requiredFiles"].extend(
+                ["action.yml", "docs/action.md", "src/harnessforge/cli.py"]
+            )
+            manifest_path.write_text(json.dumps(manifest, indent=2), encoding="utf-8")
+
+            missing = audit_target(root)
+            facts_path = root / "docs/harness/authoritative-facts.md"
+            facts_path.write_text(
+                "# Authoritative Facts And Docs Routing\n\n"
+                "## Fact Owners\n\n"
+                "## Change-To-Docs Routing\n\n"
+                "## Fan-Out Budgets\n",
+                encoding="utf-8",
+            )
+            present = audit_target(root)
+
+        missing_scope = next(domain for domain in missing.domains if domain.name == "scope")
+        present_scope = next(domain for domain in present.domains if domain.name == "scope")
+        self.assertFalse(
+            next(
+                check
+                for check in missing_scope.checks
+                if check.message == "HarnessForge docs routing map exists"
+            ).passed
+        )
+        self.assertTrue(
+            next(
+                check
+                for check in present_scope.checks
+                if check.message == "HarnessForge docs routing map exists"
+            ).passed
+        )
+
     def test_missing_verification_placeholder_blocks_generated_init(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

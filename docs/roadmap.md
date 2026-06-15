@@ -312,7 +312,8 @@ roadmap/first-agent guidance.
 
 Reduce the doc and harness-update fan-out for small HarnessForge changes.
 
-Status: accepted backlog item.
+Status: initial local slice implemented. Remaining work is report/audit
+automation for duplicate fact detection and diff-based docs fan-out summaries.
 
 Problem:
 

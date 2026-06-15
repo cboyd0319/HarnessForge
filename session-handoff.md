@@ -835,6 +835,12 @@ Harness Maintenance Optimization is accepted in `docs/roadmap.md`: reduce
 routine harness-doc fan-out by defining authoritative fact owners, change-to-doc
 routing, generated summaries, and audit/report drift checks for stale duplicated
 facts.
+The first local optimization slice is now implemented:
+`docs/harness/authoritative-facts.md` owns fact-owner routing, change-to-doc
+routing, fan-out budgets, exceptions, and future audit/report expectations.
+Harness operations and the sensor registry route to it. Self-audit requires the
+map only for the HarnessForge product repo, not generated target repos. Focused
+generator/audit tests passed with 53 tests and self-audit stayed `100/100`.
 Latest verification passed full unit discovery with 242 tests, compile, pin
 check, research source check, manifest and feature JSON validation, self-audit
 `100/100`, public corpus JSON gate, generated-target boundary smoke, RunHaven

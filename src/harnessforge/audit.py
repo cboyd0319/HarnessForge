@@ -252,6 +252,7 @@ def _load_known_files(root: Path, manifest: dict[str, Any]) -> dict[str, str]:
         ".github/workflows/ci.yml",
         ".github/workflows/harness-self-heal.yml",
         "docs/harness/README.md",
+        "docs/harness/authoritative-facts.md",
         "docs/harness/first-agent-task.md",
         "docs/harness/roadmap.md",
         "docs/harness/change-contract.md",
@@ -625,6 +626,40 @@ def _manifest_path_set(manifest: dict[str, Any]) -> set[str]:
     if isinstance(generated_files, dict):
         paths.update(key for key in generated_files if isinstance(key, str))
     return paths
+
+
+def _harnessforge_fact_map_check(
+    files: dict[str, str], manifest: dict[str, Any]
+) -> CheckResult:
+    if not _is_harnessforge_product_repo(files, manifest):
+        return _check(
+            True,
+            "HarnessForge docs routing map exists",
+            "not the HarnessForge product repo",
+        )
+    text = files.get("docs/harness/authoritative-facts.md", "")
+    return _contains_all(
+        text,
+        (
+            "Authoritative Facts",
+            "Fact Owners",
+            "Change-To-Docs Routing",
+            "Fan-Out Budgets",
+        ),
+        "HarnessForge docs routing map exists",
+    )
+
+
+def _is_harnessforge_product_repo(
+    files: dict[str, str], manifest: dict[str, Any]
+) -> bool:
+    paths = _manifest_path_set(manifest)
+    product_paths = {
+        "action.yml",
+        "docs/action.md",
+        "src/harnessforge/cli.py",
+    }
+    return product_paths <= (set(files) | paths)
 
 
 def _local_markdown_link_failures(root: Path, files: dict[str, str]) -> list[str]:
@@ -1143,6 +1178,7 @@ def _scope_checks(
             "Harness commands do not depend on a sibling HarnessForge checkout",
         ),
         _generated_target_boundary_check(files, manifest),
+        _harnessforge_fact_map_check(files, manifest),
         _contains(contract, ("Problem", "Scope", "Non-goals"), "Change contract captures scope"),
         _contains(contract, ("Acceptance Criteria", "Acceptance criteria"), "Acceptance criteria are explicit"),
         _contains_all(contract, ("Verification", "Rollback"), "Verification and rollback are captured"),

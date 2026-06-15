@@ -55,6 +55,7 @@
     "scripts/check_pins.py",
     "scripts/refresh_research.py",
     "docs/harness/README.md",
+    "docs/harness/authoritative-facts.md",
     "docs/harness/first-agent-task.md",
     "docs/harness/change-contract.md",
     "docs/harness/verification-matrix.md",
@@ -217,6 +218,7 @@
       "instructions + tools + environment + state + feedback",
       "Operating Loop",
       "Assessment And Updates",
+      "authoritative-facts.md",
       "Bottleneck And Harness Debt",
       "controlled-variable exclusion tests",
       "roadmap",
@@ -227,6 +229,13 @@
       "harnessforge enhance",
       "harnessforge corpus",
       "self-healing workflow"
+    ],
+    "docs/harness/authoritative-facts.md": [
+      "Authoritative Facts And Docs Routing",
+      "Fact Owners",
+      "Change-To-Docs Routing",
+      "Fan-Out Budgets",
+      "Audit And Report Expectations"
     ],
     "docs/harness/change-contract.md": [
       "Build Necessity Gate",

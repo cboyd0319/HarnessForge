@@ -1565,3 +1565,18 @@ Push local commits only at an explicit batch/release boundary or user request.
   with self-audit `100/100`; `PYTHONPATH=src:. python3 -m harnessforge corpus
   --min-score 90 --json`; generated-target boundary smoke with no self-heal,
   local path, sibling-checkout, or AGY mandate matches; and `git diff --check`.
+
+## Latest Pass: Harness Maintenance Optimization
+
+- Added `docs/harness/authoritative-facts.md` as the local source-of-truth map
+  for fact ownership, change-to-doc routing, fan-out budgets, exceptions, and
+  future audit/report expectations.
+- Routed local harness operations and the sensor registry to the new map so
+  routine changes check one canonical source before updating multiple docs.
+- Added a local-product-aware self-audit check. It requires the map only when
+  the target is the HarnessForge product repo and skips arbitrary generated
+  target repos.
+- Verification passed: `PYTHONPATH=src:. python3 -m unittest
+  tests.test_generate_audit` with 53 tests; `python3 -m json.tool
+  docs/harness/manifest.json`; and `PYTHONPATH=src:. python3 -m harnessforge
+  audit --target . --min-score 85` with self-audit `100/100`.
