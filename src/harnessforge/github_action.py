@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import json
 import os
 import sys
 import uuid
@@ -12,8 +11,8 @@ from .audit import audit_target, audit_to_dict, format_audit, render_html_report
 from .detect import detect_project
 from .doctor import doctor_report, format_doctor
 from .generate import create_harness
-from .paths import is_absolute_path_text, is_inside_root, path_from_relative_text
 from .redact import redact_local_paths
+from .reports import relative_to_target, report_path, write_json_payload
 from .update import plan_or_apply_update
 from .verify import (
     DEFAULT_TIMEOUT_SECONDS,
@@ -154,7 +153,7 @@ def _run_verify_command(
         report = build_verify_plan(profile, explicit_commands=commands)
 
     payload = verify_report_to_dict(report)
-    json_path = _write_json_payload(json_report, target, payload)
+    json_path = write_json_payload(json_report, target, payload)
     text_report = format_verify_plan(report)
     print(text_report)
     _summary(env, "HarnessForge Verify", _verify_summary_markdown(report))
@@ -179,44 +178,16 @@ def _run_verify_command(
 
 
 def _write_json_report(path_text: str, target: Path, result: Any) -> str:
-    return _write_json_payload(path_text, target, audit_to_dict(result))
-
-
-def _write_json_payload(path_text: str, target: Path, payload: Any) -> str:
-    path = _report_path(path_text, target)
-    if path is None:
-        return ""
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(f"{json.dumps(payload, indent=2)}\n", encoding="utf-8")
-    return _relative_to_target(path, target)
+    return write_json_payload(path_text, target, audit_to_dict(result))
 
 
 def _write_html_report(path_text: str, target: Path, result: Any) -> str:
-    path = _report_path(path_text, target)
+    path = report_path(path_text, target)
     if path is None:
         return ""
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(render_html_report(result), encoding="utf-8")
-    return _relative_to_target(path, target)
-
-
-def _report_path(path_text: str, target: Path) -> Path | None:
-    if not path_text:
-        return None
-    if is_absolute_path_text(path_text):
-        raise ValueError("report paths must be relative to the target repository")
-    requested = path_from_relative_text(path_text)
-    path = target / requested
-    if not is_inside_root(path, target):
-        raise ValueError("report paths must stay inside the target repository")
-    return path
-
-
-def _relative_to_target(path: Path, target: Path) -> str:
-    try:
-        return path.resolve().relative_to(target.resolve()).as_posix()
-    except ValueError:
-        return redact_local_paths(str(path))
+    return relative_to_target(path, target)
 
 
 def _print_writes(root: Path, writes: tuple[Any, ...]) -> None:

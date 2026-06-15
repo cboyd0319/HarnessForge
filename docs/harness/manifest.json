@@ -67,6 +67,7 @@
     "docs/harness/feature-list.schema.json",
     "src/harnessforge/cli.py",
     "src/harnessforge/github_action.py",
+    "src/harnessforge/reports.py",
     "tests/test_cli.py",
     "tests/test_pins.py"
   ],
@@ -155,6 +156,7 @@
       "When Checks Cannot Run",
       "Verification Evidence Reports",
       "harnessforge verify --target . --json --run",
+      "--json-report docs/harness/evidence/verify-<date>.json",
       "Remote CI",
       "AI/RAG/agent",
       "Agent-generated tests",
@@ -204,7 +206,7 @@
       "Scope",
       "Command Or Review",
       "target-relative report path",
-      "harnessforge verify --target . --json --run",
+      "harnessforge verify --target . --run --json-report",
       "failed, timed_out, or blocked"
     ],
     "docs/harness/clean-state-checklist.md": [
@@ -226,7 +228,7 @@
     ],
     "docs/harness/release-controls.md": [
       "Release Controls",
-      "verify --run",
+      "--run --json-report",
       "owner, risk, and next action",
       "Manual platform",
       "SBOM",

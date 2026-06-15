@@ -187,6 +187,7 @@ Run project verification checks explicitly:
 ```bash
 harnessforge verify --target /path/to/repo --json --run
 harnessforge verify --target /path/to/repo --json --run --timeout-seconds 120
+harnessforge verify --target /path/to/repo --run --json-report docs/harness/evidence/verify-YYYY-MM-DD.json
 ```
 
 Review optional blueprint packs:
@@ -301,7 +302,9 @@ and [docs/harness/verify-json-example.json](docs/harness/verify-json-example.jso
 
 Command execution is explicit opt-in through `--run`. Run mode uses argument
 lists rather than a shell, rejects shell control syntax, runs from the target
-repository root, and applies a per-command timeout.
+repository root, and applies a per-command timeout. Use `--json-report` with a
+target-relative path to write the same verify payload to a file without shell
+redirection.
 
 Generated harnesses now route verify-run reports into
 `docs/harness/verification-matrix.md`, `docs/harness/evidence-log.md`, and

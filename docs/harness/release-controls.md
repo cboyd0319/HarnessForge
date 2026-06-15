@@ -8,9 +8,8 @@ or other externally visible release steps.
 ## Release Gate
 
 - Run `./init.sh` and `pwsh -NoProfile -File ./init.ps1`.
-- Run `harnessforge verify --target . --json --run` and store the verify --run
-  report under a target-relative path such as
-  `docs/harness/evidence/verify-<date>.json`, or record why runnable project
+- Run `harnessforge verify --target . --run --json-report
+  docs/harness/evidence/verify-<date>.json`, or record why runnable project
   verification could not run.
 - Review any failed, timed_out, or blocked check with owner, risk, and next
   action before promotion.

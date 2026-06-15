@@ -76,11 +76,17 @@ Explicit execution shape:
 ```bash
 harnessforge verify --target <repo> --json --run
 harnessforge verify --target <repo> --json --run --timeout-seconds 120
+harnessforge verify --target <repo> --run --json-report docs/harness/evidence/verify-<date>.json
 ```
 
 Run mode executes each check from the target repository root using an argument
 list, not a shell. Shell control syntax such as `&&`, `||`, pipes, and
 redirection is rejected; pass each check with a separate `--command`.
+
+Use `--json-report <target-relative-path>` to persist the verify payload inside
+the target repository. POSIX and Windows absolute or rooted paths are rejected,
+Windows-style relative separators are normalized, and traversal outside the
+target repository is rejected.
 
 ## Exit Codes
 

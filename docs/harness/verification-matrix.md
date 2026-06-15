@@ -44,6 +44,12 @@ Use `harnessforge verify --target . --json` for a read-only plan. Use
 `harnessforge verify --target . --json --run` only when project checks should
 execute.
 
+To store runnable evidence without shell redirection:
+
+```bash
+harnessforge verify --target . --run --json-report docs/harness/evidence/verify-<date>.json
+```
+
 When recording runnable evidence:
 
 - Store the JSON report under a target-relative report path such as

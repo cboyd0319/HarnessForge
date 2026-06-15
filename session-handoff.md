@@ -37,6 +37,7 @@ and advanced product modes.
 - `src/harnessforge/github_action.py`
 - `src/harnessforge/models.py`
 - `src/harnessforge/readiness.py`
+- `src/harnessforge/reports.py`
 - `src/harnessforge/spec_system.py`
 - `src/harnessforge/update.py`
 - `src/harnessforge/templates/claude.md.tmpl`
@@ -525,7 +526,10 @@ boundary with `command: verify`, `verify-run`, `verify-command`,
 harness docs now explain how to capture, store, and review explicit verify-run
 evidence in `verification-matrix.md`, `evidence-log.md`, and
 `release-controls.md`, while keeping runnable check evidence separate from
-structural audit score and real-agent effectiveness.
+structural audit score and real-agent effectiveness. Local CLI verify now also
+supports `--json-report <target-relative-path>` so users can persist verify
+JSON without shell redirection. CLI and Action report writers share
+target-contained path validation in `src/harnessforge/reports.py`.
 `scripts/refresh_research.py --check` validates duplicate source IDs and URLs,
 required fields, placeholder text, canonical URL shape, arXiv `/abs/` URLs,
 lock-file consistency, and local-path leakage before any metadata fetch. Root
@@ -546,17 +550,18 @@ review checked Python version status, GitHub hosted runner labels, and the
 GitHub runner-images Windows VS2026 migration notice.
 Current robust-mode verification passes: 6 focused blueprint tests, 6 focused
 verify run-mode tests, 15 focused GitHub Action tests, focused generated
-verify-evidence coverage, full unit discovery with 190 tests, compile, JSON
-parse, pin check, research source check, `verify --json` plan/run smokes,
-Action verify report smokes, blueprint JSON/apply smokes, self-audit
-`100/100`, local-path scan, and diff hygiene. `./init.sh` and
-`pwsh -NoProfile -File ./init.ps1` both pass with 190 tests. `sync --check`
-returns the expected warning for local workflow and instruction review surfaces
-without blockers or generated drift.
-The next highest-value product slice is local verify report persistence: add a
-CLI option such as `harnessforge verify --json-report <target-relative-path>`
-so users do not need shell redirection to create durable verify evidence, with
-the same target-contained path rules already used by the Action.
+verify-evidence coverage, focused verify report-persistence tests, full unit
+discovery with 193 tests, compile, JSON parse, pin check, research source
+check, `verify --json` plan/run/report smokes, Action verify report smokes,
+blueprint JSON/apply smokes, self-audit `100/100`, local-path scan, and diff
+hygiene. `./init.sh` and `pwsh -NoProfile -File ./init.ps1` both pass with 193
+tests, pin check, research source check, and self-audit `100/100`. `sync
+--check` returns the expected warning for local workflow and instruction review
+surfaces without blockers or generated drift.
+The next highest-value product slice is read-only stored-evidence inventory:
+detect target-contained `docs/harness/evidence/verify*.json` reports, surface
+latest verdicts and stale/failed evidence in readiness or sync output, and keep
+this advisory unless the target opts into release gates.
 Existing eval guidance comes from the Harness Forge, Meta-Harness, Code as
 Agent Harness catalog, and arXiv harness-eval reviews; those sources are mined
 only for product ideas and are not copied into generated target-repo defaults.

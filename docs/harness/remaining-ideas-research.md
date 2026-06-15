@@ -83,6 +83,7 @@ Current command shape:
 - `harnessforge verify --target <repo> --json --run`
 - `harnessforge verify --target <repo> --json --run --timeout-seconds 120`
 - `harnessforge verify --target <repo> --json --run --command "<repo-owned check>"`
+- `harnessforge verify --target <repo> --run --json-report docs/harness/evidence/verify-<date>.json`
 
 Boundary:
 
@@ -92,6 +93,9 @@ Boundary:
 - Failed or timed-out checks exit `1`.
 - Passing required checks exit `0`.
 - The JSON target root remains `null` for portable artifacts.
+- `--json-report` writes the same verify payload to a target-relative path,
+  normalizes Windows-style relative separators, and rejects absolute, rooted,
+  or escaping paths.
 
 ## Implemented Action Verification Bridge
 
@@ -118,11 +122,10 @@ Boundary:
 ## Implemented Generated Verification Evidence Guidance
 
 Generated harnesses now explain how to turn explicit verify runs into durable
-project evidence. `verification-matrix.md` tells maintainers to store
-`harnessforge verify --target . --json --run` output under a target-relative
-report path such as `docs/harness/evidence/verify-<date>.json`, review failed,
-timed-out, or blocked checks, and keep long logs and secrets out of durable
-docs.
+project evidence. `verification-matrix.md` tells maintainers to use
+`harnessforge verify --target . --run --json-report
+docs/harness/evidence/verify-<date>.json`, review failed, timed-out, or
+blocked checks, and keep long logs and secrets out of durable docs.
 
 `evidence-log.md` and `release-controls.md` now carry the same boundary:
 runnable check evidence is useful release evidence, but it does not replace

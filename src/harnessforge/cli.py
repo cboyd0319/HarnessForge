@@ -25,6 +25,7 @@ from .readiness import (
     readiness_to_dict,
 )
 from .redact import redact_local_paths
+from .reports import write_json_payload
 from .update import build_drift_report, plan_or_apply_update
 from .verify import (
     DEFAULT_TIMEOUT_SECONDS,
@@ -196,6 +197,10 @@ def build_parser() -> argparse.ArgumentParser:
     verify.add_argument("--package-manager")
     verify.add_argument("--command", dest="commands", action="append", default=[])
     verify.add_argument("--json", action="store_true")
+    verify.add_argument(
+        "--json-report",
+        help="write verify JSON to a target-relative report path",
+    )
     verify.add_argument(
         "--run",
         action="store_true",
@@ -443,9 +448,13 @@ def _verify(args: argparse.Namespace) -> int:
         )
     else:
         report = build_verify_plan(profile, explicit_commands=tuple(args.commands))
+    payload = verify_report_to_dict(report)
+    json_report = write_json_payload(args.json_report or "", profile.root, payload)
     if args.json:
-        print(json.dumps(verify_report_to_dict(report), indent=2))
+        print(json.dumps(payload, indent=2))
     else:
+        if json_report:
+            print(f"Verify JSON report written to {json_report}")
         print(format_verify_plan(report))
     if not args.run:
         return 0

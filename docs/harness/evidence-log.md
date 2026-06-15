@@ -4,6 +4,7 @@ Use this for compact current evidence. Keep raw logs out of this file.
 
 | Date | Scope | Command Or Review | Result | Notes |
 | --- | --- | --- | --- | --- |
+| 2026-06-15 | Verify JSON report persistence | Focused CLI, generated-content, Action report-path, verify-contract tests; full unit suite; compile; JSON parse; pin check; research source check; self-audit; POSIX and PowerShell entrypoints; local-path scan; diff hygiene | pass | Added `harnessforge verify --json-report <target-relative-path>` for local verify report persistence. CLI and Action now share target-contained report path validation through `src/harnessforge/reports.py`; Windows-style relative separators normalize, and absolute/rooted/escaping paths are rejected. Focused report tests passed; full unit discovery and both entrypoints passed with 193 tests; self-audit stayed `100/100`. |
 | 2026-06-15 | Generated verify evidence guidance | Focused generated-content test, full unit suite, verify run smoke, compile, JSON parse, pin check, research source check, self-audit, POSIX and PowerShell entrypoints, local-path scan, diff hygiene | pass | Generated verification matrix, evidence log, and release controls now route verify-run JSON evidence with audit/effectiveness boundaries. Focused generator module passed with 43 tests; full unit discovery and both entrypoints passed with 190 tests; self-audit stayed `100/100`. Initial smoke with `python` failed because no `python` binary was on PATH; rerun with `python3` passed. |
 | 2026-06-15 | Action verify bridge | Focused GitHub Action tests, full unit suite, POSIX and PowerShell entrypoints, compile, JSON parse, pin check, research source check, self-audit, local-path scan, diff hygiene | pass | Added `command: verify` to the composite Action with read-only plan mode by default, explicit `verify-run`, newline-separated `verify-command`, `verify-timeout-seconds`, target-contained verify JSON reports, and `verify-verdict` output. Focused Action tests passed with 15 tests; full unit discovery and both entrypoints passed with 189 tests; self-audit stayed `100/100`. |
 | 2026-06-15 | Explicit verify run mode | Focused verify CLI tests, verify contract tests, full unit suite, POSIX and PowerShell entrypoints, compile, JSON parse, pin check, research source check, verify run smokes, self-audit, local-path scan, diff hygiene | pass | Added `harnessforge verify --run` with no-shell argument-list execution, per-command timeout, run-mode JSON timing metadata, exit-code mapping, capped stdout/stderr previews, missing-verification blocking, and timeout reporting. Default verify remains plan-only and read-only. Focused verify tests passed with 6 tests; full unit discovery and both entrypoints passed with 185 tests; self-audit stayed `100/100`. |
@@ -123,9 +124,7 @@ Use this for compact current evidence. Keep raw logs out of this file.
 Rules:
 
 - Record command name, scope, result, and risk.
-- For verify reports, use `harnessforge verify --target . --json --run`, record
-  the target-relative report path, verdict, failed, timed_out, or blocked
-  checks, and skipped manual or platform checks.
+- For verify reports, use `harnessforge verify --target . --run --json-report docs/harness/evidence/verify-<date>.json`, record the target-relative report path, verdict, failed, timed_out, or blocked checks, and skipped manual or platform checks.
 - Do not paste secrets, local absolute paths, or long command output.
 - Do not paste full stdout or stderr. Link the JSON report and summarize the
   risk.

@@ -1112,6 +1112,7 @@ def _manifest_content(
             "When Checks Cannot Run",
             "Verification Evidence Reports",
             "harnessforge verify --target . --json --run",
+            "--json-report docs/harness/evidence/verify-<date>.json",
             "Remote CI",
             "AI/RAG/agent",
             "Agent-generated tests",
@@ -1161,7 +1162,7 @@ def _manifest_content(
             "Scope",
             "Command Or Review",
             "target-relative report path",
-            "harnessforge verify --target . --json --run",
+            "harnessforge verify --target . --run --json-report",
             "failed, timed_out, or blocked",
         ],
         "docs/harness/clean-state-checklist.md": [
@@ -1183,7 +1184,7 @@ def _manifest_content(
         ],
         "docs/harness/release-controls.md": [
             "Release Controls",
-            "verify --run",
+            "--run --json-report",
             "owner, risk, and next action",
             "Manual platform",
             "SBOM",

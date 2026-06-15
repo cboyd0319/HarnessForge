@@ -586,19 +586,24 @@ class GenerateAuditTests(unittest.TestCase):
             release = (root / "docs/harness/release-controls.md").read_text(
                 encoding="utf-8"
             )
+            normalized_matrix = " ".join(matrix.split())
 
         self.assertIn("harnessforge verify --target . --json --run", matrix)
+        self.assertIn(
+            "--json-report docs/harness/evidence/verify-<date>.json",
+            normalized_matrix,
+        )
         self.assertIn("docs/harness/evidence/verify-<date>.json", matrix)
         self.assertIn("`failed`, `timed_out`, or `blocked`", matrix)
         self.assertIn("does not replace `harnessforge audit", matrix)
         self.assertIn("does not prove real-agent effectiveness", matrix)
 
         self.assertIn("target-relative report path", evidence)
-        self.assertIn("harnessforge verify --target . --json --run", evidence)
+        self.assertIn("harnessforge verify --target . --run --json-report", evidence)
         self.assertIn("Do not paste full stdout", evidence)
         self.assertIn("failed, timed_out, or blocked", evidence)
 
-        self.assertIn("verify --run", release)
+        self.assertIn("--run --json-report", release)
         self.assertIn("failed, timed_out, or blocked", release)
         self.assertIn("owner, risk, and next action", release)
         self.assertIn("audit score", release)

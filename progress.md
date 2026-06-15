@@ -387,18 +387,37 @@ maintenance loop.
   store it under target-relative paths, handle failed, timed-out, or blocked
   checks before promotion, and keep runnable check evidence separate from
   structural audit score and real-agent effectiveness.
+- Added local verify report persistence. `harnessforge verify --json-report
+  <target-relative-path>` writes the same verify payload that `--json` prints,
+  keeps stdout parseable when both are used, normalizes Windows-style relative
+  separators, and rejects absolute, rooted, or target-escaping report paths.
+  The CLI and composite Action now share the same report path helper.
 
 ## Recommended Next Step
 
 Continue the robust-mode buildout before returning to release prep. The next
-highest-value slice is local verify report persistence: add a CLI option such
-as `harnessforge verify --json-report <target-relative-path>` so users do not
-need shell redirection to create durable verify evidence, with the same
-target-contained path rules already used by the Action.
+highest-value slice is read-only stored-evidence inventory: detect
+target-contained `docs/harness/evidence/verify*.json` reports, surface latest
+verdicts and stale/failed evidence in readiness or sync output, and keep this
+advisory unless the target opts into release gates.
 Push local commits only at an explicit batch/release boundary or user request.
 
 ## Verification Evidence
 
+- `PYTHONPATH=src:. python3 -m unittest
+  tests.test_cli.CliTests.test_verify_json_report_writes_target_relative_file
+  tests.test_cli.CliTests.test_verify_json_report_keeps_json_stdout_parseable
+  tests.test_cli.CliTests.test_verify_json_report_rejects_paths_outside_target`
+  passed after adding `--json-report`. Focused Action report-path tests,
+  generated evidence guidance tests, and verify contract tests passed after
+  sharing report-path validation through `src/harnessforge/reports.py`.
+  `PYTHONPATH=src:. python3 -m unittest discover -s tests` passed with 193
+  tests. `python3 -m compileall src tests scripts`, JSON parsing for
+  `feature_list.json` and `docs/harness/manifest.json`, pin check, research
+  source check, self-audit `100/100`, `git diff --check`, and the exact
+  local-path scan passed. `./init.sh` and `pwsh -NoProfile -File ./init.ps1`
+  both passed with 193 tests, pin check, research source check, and self-audit
+  `100/100`.
 - `PYTHONPATH=src:. python3 -m unittest
   tests.test_generate_audit.GenerateAuditTests.test_generated_evidence_docs_route_verify_run_reports`
   failed before the template changes and passed after them. `PYTHONPATH=src:.

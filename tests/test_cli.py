@@ -971,6 +971,98 @@ class CliTests(unittest.TestCase):
         self.assertEqual(payload["checks"][0]["status"], "timed_out")
         self.assertIsNone(payload["checks"][0]["exitCode"])
 
+    def test_verify_json_report_writes_target_relative_file(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            command = _python_command("print('report ok')")
+            stdout = io.StringIO()
+            with contextlib.redirect_stdout(stdout):
+                code = main(
+                    [
+                        "verify",
+                        "--target",
+                        str(root),
+                        "--run",
+                        "--command",
+                        command,
+                        "--json-report",
+                        "docs\\harness\\evidence\\verify.json",
+                    ]
+                )
+
+            report_path = root / "docs" / "harness" / "evidence" / "verify.json"
+            payload = json.loads(report_path.read_text(encoding="utf-8"))
+
+        self.assertEqual(code, 0)
+        self.assertEqual(payload["mode"], "run")
+        self.assertEqual(payload["verdict"], "passed")
+        self.assertIn(
+            "Verify JSON report written to docs/harness/evidence/verify.json",
+            stdout.getvalue(),
+        )
+        self.assertIn("Verify run: passed", stdout.getvalue())
+
+    def test_verify_json_report_keeps_json_stdout_parseable(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            command = _python_command("print('report ok')")
+            stdout = io.StringIO()
+            with contextlib.redirect_stdout(stdout):
+                code = main(
+                    [
+                        "verify",
+                        "--target",
+                        str(root),
+                        "--json",
+                        "--run",
+                        "--command",
+                        command,
+                        "--json-report",
+                        "reports/verify.json",
+                    ]
+                )
+
+            stdout_payload = json.loads(stdout.getvalue())
+            file_payload = json.loads(
+                (root / "reports" / "verify.json").read_text(encoding="utf-8")
+            )
+
+        self.assertEqual(code, 0)
+        self.assertEqual(stdout_payload["verdict"], "passed")
+        self.assertEqual(file_payload, stdout_payload)
+
+    def test_verify_json_report_rejects_paths_outside_target(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp) / "repo"
+            root.mkdir()
+            outside = Path(tmp) / "verify.json"
+            for report_path in (
+                "../verify.json",
+                "..\\verify.json",
+                str(outside),
+                "C:\\temp\\verify.json",
+                "C:verify.json",
+                "\\verify.json",
+                "\\\\server\\share\\verify.json",
+            ):
+                with self.subTest(report_path=report_path):
+                    stderr = io.StringIO()
+                    with contextlib.redirect_stderr(stderr):
+                        code = main(
+                            [
+                                "verify",
+                                "--target",
+                                str(root),
+                                "--json-report",
+                                report_path,
+                            ]
+                        )
+
+                    self.assertEqual(code, 2)
+                    self.assertIn("report paths", stderr.getvalue())
+
+            self.assertFalse(outside.exists())
+
     def test_blueprint_list_and_show_json(self) -> None:
         list_stdout = io.StringIO()
         with contextlib.redirect_stdout(list_stdout):
