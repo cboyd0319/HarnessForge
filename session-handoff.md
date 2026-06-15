@@ -492,6 +492,12 @@ Current verification passes: focused readiness and contract tests, full unit
 discovery with 162 tests, compile, pin check, JSON validation, local-path scan,
 diff hygiene, self-audit `100/100`, quickstart smoke, and `sync --check` with
 expected warning exit code `1`.
+The deeper Code as Agent Harness catalog pass added more eval-contract detail:
+surface-layer naming, feedback-channel separation, multi-agent role/topology
+and convergence requirements, adaptive promotion loops, domain-harness
+ownership boundaries, and source-ledger hygiene. Keep these as local eval
+guidance unless a later release decision turns a narrow piece into generated
+starter guidance.
 Push local commits only at an explicit batch/release boundary or user request.
 Remaining product decisions before public release: component-directed monorepo
 verification commands, path/package exclusions for intentionally vulnerable

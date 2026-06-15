@@ -443,6 +443,12 @@ blocking.
   full unit discovery with 162 tests, compile, pin check, JSON validation,
   local-path scan, diff hygiene, self-audit `100/100`, quickstart smoke, and
   `sync --check` with expected warning exit code `1`.
+- Deeper Code as Agent Harness catalog review mined the full taxonomy README,
+  contribution rules, TODO/release checklist, missing-citation policy, and
+  diagrams. Accepted ideas are surface-layer naming, feedback-channel
+  separation, multi-agent role/topology/shared-state/convergence requirements,
+  adaptive harness promotion loops, domain-harness ownership boundaries, and
+  source-ledger hygiene.
 - The user-supplied Meta-Harness PDF was unavailable to local text extractors,
   so the same paper was reviewed via arXiv HTML. `docs/harness/verify-json-contract.md`
   now records that benchmark/eval claims need candidate-sensitive metrics,

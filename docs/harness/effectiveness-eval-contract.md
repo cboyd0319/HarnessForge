@@ -21,6 +21,9 @@ better at real tasks.
 
 An effectiveness claim needs:
 
+- Harness layer: whether the change affects reasoning, action, environment
+  modeling, planning, memory/context, tool use, feedback handling,
+  multi-agent coordination, or promotion controls.
 - Candidate harness surface: the instruction, retrieval, memory, context,
   tool-routing, workflow, or verification surface being compared.
 - Baseline and control arm: what the candidate is being compared against.
@@ -45,6 +48,43 @@ An effectiveness claim needs:
 - Reproduction command: the command or procedure that produced the result.
 - Human review: confirmation that the result is not a reward bug, leakage, or
   fixture-specific shortcut.
+
+## Harness Surface Taxonomy
+
+Before comparing candidates, name the surface being changed:
+
+- Reasoning surface: code or structured artifacts used to externalize
+  inference, intermediate reasoning, solver calls, or execution-guided
+  refinement.
+- Action surface: tool calls, APIs, shell commands, GUI/OS operations,
+  workflow actions, generated policies, or skill selection.
+- Environment surface: repository state, logs, traces, tests, fixtures,
+  simulators, sandbox state, and history exposed to the agent.
+- Mechanism surface: planning, memory/context, tool selection, execution
+  feedback, deterministic verification, or permissioned state transitions.
+- Scaling surface: role specialization, interaction mode, workflow topology,
+  shared representation, synchronization, or convergence rule.
+
+Broad claims such as "better harness" are not enough. The claim should say
+which surface changed and which measured feedback channel could show an
+improvement.
+
+## Feedback Channels
+
+An eval should identify the feedback channel it relies on:
+
+- compile or syntax feedback;
+- test pass/fail feedback;
+- runtime error or stack-trace feedback;
+- static-analysis or security feedback;
+- fuzzing or simulation feedback;
+- profiling, latency, token, cost, or tool-call feedback;
+- human critique or review feedback;
+- trajectory, permission, and state-transition feedback.
+
+Final output quality is only one channel. When a harness coordinates tools,
+agents, sandboxes, or stateful workflows, the eval must also account for
+mid-run failures and invalid actions.
 
 ## Frozen Replay Boundary
 
@@ -85,6 +125,9 @@ generation.
 - Code as Agent Harness and the companion paper catalog separate harness work
   into interface, mechanism, scaling, and application layers. An eval claim
   should name which layer changed.
+- The catalog duplicates important papers across roles, feedback channels, and
+  convergence types. That duplication is a useful signal: strong harnesses are
+  usually multi-role systems, not single-purpose prompts.
 - AutoHarness shows that harness code can prevent invalid actions. HarnessForge
   should ask for invalid-action and boundary tests when present, not synthesize
   runtime policy code by default.
@@ -103,6 +146,41 @@ generation.
   tools and benchmarks can matter. HarnessForge should detect and route to
   repo-owned domain checks instead of generating domain harnesses itself.
 
+## Multi-Agent And Adaptive Harness Addendum
+
+If a candidate uses multiple agents or adaptive harness evolution, the eval
+record must also name:
+
+- role ownership: planner, coder, reviewer, tester, verifier, executor,
+  red-team, or another repo-owned role;
+- interaction mode: collaboration, critique, debate, adversarial validation, or
+  another explicit mode;
+- topology: chain, cyclic, hierarchical, star, blackboard, parallel branches,
+  adaptive DAG, or another explicit topology;
+- shared representation: files only, repository state, execution traces,
+  database, blackboard, or another explicit shared substrate;
+- synchronization rule: how conflicting observations, branches, memories, or
+  proposed patches are merged or rejected;
+- convergence rule: correctness, security, performance, score threshold,
+  consensus, human approval, or another explicit stop condition.
+
+Adaptive harness changes must follow a governed loop: collect observations,
+diagnose failure or waste, propose a versioned candidate, replay or evaluate on
+held-out tasks, then promote only after review.
+
+## Source Catalog Hygiene
+
+Benchmark and research source ledgers are product surfaces. They should keep:
+
+- canonical URLs, preferably arXiv abstract pages, official venue pages, DOI
+  links, project pages, or official docs;
+- explicit missing-citation records instead of invented or uncited entries;
+- recurring review of stale venue tags, paper IDs, and duplicated entries;
+- a clear deduplication policy when one source belongs to multiple harness
+  roles;
+- link checks in CI only when the project owner accepts the network and
+  maintenance cost.
+
 ## Readiness Signals
 
 `inspect --readiness` may report obvious eval assets such as `evals/`,
@@ -117,6 +195,8 @@ When eval assets are detected, review:
 - whether result logs are queryable and tied to candidate identifiers;
 - whether runtime budgets, workspace contracts, and adapter behavior are
   explicit;
+- whether the harness layer, feedback channel, role ownership, topology, and
+  convergence rule are named when relevant;
 - whether trajectory safety and permission-boundary failures are captured;
 - whether the benchmark claim is separate from structural audit scores.
 

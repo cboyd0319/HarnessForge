@@ -49,6 +49,10 @@ class VerifyContractTests(unittest.TestCase):
         self.assertIn("frozen replay", contract)
         self.assertIn("worst-case quality", contract)
         self.assertIn("structural audit", contract)
+        self.assertIn("permissioned state transitions", contract)
+        self.assertIn("Feedback Channels", contract)
+        self.assertIn("convergence rule", contract)
+        self.assertIn("canonical URLs", contract)
 
 
 if __name__ == "__main__":

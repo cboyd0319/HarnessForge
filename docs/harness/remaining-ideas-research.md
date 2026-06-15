@@ -285,6 +285,49 @@ Sources:
 - https://arxiv.org/html/2605.18747v1
 - https://github.com/YennNing/Awesome-Code-as-Agent-Harness-Papers
 
+### Deeper Code-As-Harness Catalog Mining
+
+The full paper catalog is a useful product map, not just a reading list. The
+README organizes 458 paper rows across interface, mechanism, scaling, and
+application axes. Several papers intentionally appear in multiple sections,
+which is a useful signal for HarnessForge: mature harnesses combine role
+ownership, feedback channels, shared state, and convergence criteria.
+
+Transferable ideas:
+
+- Use a three-part interface model for effectiveness claims: reasoning surface,
+  action surface, and environment surface. A claim should say which one
+  changed.
+- Treat harness mechanisms as review surfaces: planning, memory/context, tool
+  use, feedback handling, deterministic verification, and permissioned state
+  transitions.
+- For multi-agent harnesses, require explicit role ownership, interaction mode,
+  topology, shared representation, synchronization rule, and convergence rule
+  before treating results as comparable.
+- Separate feedback channels. Compile errors, tests, runtime exceptions, static
+  analysis, fuzzing, simulation, profiling, human critique, and trajectory
+  safety measure different things.
+- Treat adaptive harness evolution as a governed promotion loop: collect
+  observations, diagnose failure or waste, propose a candidate, replay/evaluate,
+  and promote only after review.
+- Keep domain harnesses project-owned. GUI/OS agents, scientific-discovery
+  agents, embodied agents, recommender agents, compilers, and cloud operations
+  need their own tools, simulators, safety rules, and benchmarks.
+- Treat source ledgers as product quality surfaces. Canonical URLs, missing
+  citation records, stale venue checks, dedup policy, and broken-link checks
+  matter when research claims drive product behavior.
+
+HarnessForge actions from this pass:
+
+- Strengthen `effectiveness-eval-contract.md` with surface taxonomy, feedback
+  channels, multi-agent/adaptive addendum, and source-catalog hygiene.
+- Keep `effectivenessInventory` advisory and path-based. It should identify
+  eval review surfaces without running target benchmarks or reading private
+  result contents.
+- Keep generated target repos lightweight. Do not generate multi-agent
+  topologies, domain simulators, learned governance, dynamic memory systems, or
+  research bibliographies by default.
+
 ### Additional Harness-Eval Papers
 
 The arXiv/paper-catalog pass surfaced several reusable ideas:

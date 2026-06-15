@@ -253,3 +253,10 @@ project-owned docs instead of machine-specific absolute paths.
   candidate snapshots versioned, require adapter/workspace/runtime contracts,
   separate success from safety and trajectory quality, and treat synthesized or
   evolved harnesses as proposals until reviewed.
+- A deeper pass over the Code as Agent Harness catalog reinforced surface-level
+  eval classification: reasoning, action, environment, mechanism, and scaling
+  changes need different feedback channels. Multi-agent or adaptive harnesses
+  also need explicit roles, interaction mode, topology, shared representation,
+  synchronization rule, and convergence rule before results are comparable.
+  Source catalogs should keep canonical URLs, missing-citation records, stale
+  venue checks, dedup policy, and optional broken-link checks.
