@@ -10,6 +10,7 @@ from xml.etree import ElementTree
 
 from .models import ProjectProfile
 from .paths import is_inside_root
+from .spec_system import analyze_spec_system, has_spec_system
 
 MISSING_VERIFICATION_COMMAND = (
     "REVIEW REQUIRED: No project verification check detected. Replace this "
@@ -297,7 +298,7 @@ def _detect_languages(
         languages.add("buck")
     if suffixes and suffixes <= {".md", ".txt", ".rst"}:
         languages.add("docs")
-    if _has_structured_spec_surface(file_set):
+    if _has_structured_spec_surface(file_set) or has_spec_system(file_set):
         languages.add("docs")
     return languages or {"generic"}
 
@@ -397,6 +398,7 @@ def _detect_workspace_markers(
             markers.append(marker)
     if _has_structured_spec_surface(file_set):
         markers.append("structured project specs")
+    markers.extend(analyze_spec_system(root, tuple(file_set)).workspace_markers)
     if _has_multiple_nested_components(file_set):
         markers.append("multiple nested component manifests")
     if _has_uv_workspace(pyproject):
@@ -463,6 +465,7 @@ def _detect_routing_markers(root: Path, file_set: set[str]) -> tuple[str, ...]:
         markers.append("justfile")
     if _has_structured_spec_surface(file_set):
         markers.append("structured project specs")
+    markers.extend(analyze_spec_system(root, tuple(file_set)).routing_markers)
     for marker in (
         "AGENTS.md",
         "CLAUDE.md",
@@ -615,6 +618,8 @@ def _looks_like_structured_docs_repo(file_set: set[str], languages: set[str]) ->
 
 
 def _has_structured_spec_surface(file_set: set[str]) -> bool:
+    if has_spec_system(file_set):
+        return True
     markdown_paths = [
         Path(file)
         for file in file_set

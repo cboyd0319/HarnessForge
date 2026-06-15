@@ -8,6 +8,11 @@ from typing import Any
 from .detect import MISSING_VERIFICATION_COMMAND
 from .models import DriftResult, ProjectProfile
 from .paths import path_from_relative_text
+from .spec_system import (
+    SpecSystemReport,
+    analyze_spec_system,
+    instruction_routes_to_specs,
+)
 from .update import build_drift_report
 
 
@@ -55,6 +60,7 @@ def inspect_readiness(profile: ProjectProfile) -> ReadinessReport:
     file_set = set(profile.files)
     drift = build_drift_report(profile.root)
     ownership = _generated_ownership(profile.root)
+    spec_report = analyze_spec_system(profile.root, profile.files)
     runnable_checks = tuple(
         command
         for command in profile.verification_commands
@@ -65,7 +71,7 @@ def inspect_readiness(profile: ProjectProfile) -> ReadinessReport:
     blocked: list[str] = []
     next_actions: list[str] = []
     review_required: list[str] = []
-    source_of_truth = _source_of_truth(profile, file_set)
+    source_of_truth = _source_of_truth(profile, file_set, spec_report)
 
     if not runnable_checks:
         blocked.append("No project verification check detected.")
@@ -96,10 +102,16 @@ def inspect_readiness(profile: ProjectProfile) -> ReadinessReport:
             f"{marker} detected; confirm instruction files route agents to that "
             "source of truth."
         )
+    warnings.extend(spec_report.quality_warnings)
     if source_of_truth:
         next_actions.append(
             "Review detected source-of-truth docs before enhancing or generating "
             "instruction files."
+        )
+    instruction_text = _instruction_text(profile.root, file_set)
+    if instruction_text and not instruction_routes_to_specs(instruction_text, spec_report):
+        review_required.append(
+            "Instruction files do not route agents to detected source-of-truth specs."
         )
 
     review_required.extend(_governance_review_items(file_set))
@@ -169,9 +181,9 @@ def format_readiness(report: ReadinessReport) -> str:
 
 
 def _source_of_truth(
-    profile: ProjectProfile, file_set: set[str]
+    profile: ProjectProfile, file_set: set[str], spec_report: SpecSystemReport
 ) -> tuple[str, ...]:
-    sources: list[str] = []
+    sources: list[str] = list(spec_report.source_labels)
     if "structured project specs" in set(profile.workspace_markers) | set(
         profile.routing_markers
     ):
@@ -185,6 +197,18 @@ def _source_of_truth(
         ):
             sources.append(f"work-item template: {file}")
     return tuple(_dedupe(sources))
+
+
+def _instruction_text(root: Path, file_set: set[str]) -> str:
+    for file_name in INSTRUCTION_FILES:
+        if file_name not in file_set:
+            continue
+        path = root / path_from_relative_text(file_name)
+        try:
+            return path.read_text(encoding="utf-8")
+        except (OSError, UnicodeDecodeError):
+            continue
+    return ""
 
 
 def _governance_review_items(file_set: set[str]) -> list[str]:

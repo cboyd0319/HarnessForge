@@ -11,6 +11,7 @@ from urllib.parse import unquote
 from .models import AuditResult, CheckResult, DomainScore
 from .paths import is_absolute_path_text, is_inside_root, path_from_relative_text
 from .redact import redact_local_paths
+from .spec_system import SpecSystemReport, analyze_spec_system, instruction_routes_to_specs
 
 DOMAIN_ORDER = (
     "instructions",
@@ -46,6 +47,7 @@ def audit_target(
     root = target.resolve()
     manifest = _load_manifest(root)
     files = _load_known_files(root, manifest)
+    spec_report = analyze_spec_system(root)
     platform_contract = _platform_contract(files, manifest)
     manifest_failures = _manifest_failures(root, manifest)
     link_failures = _local_markdown_link_failures(root, files)
@@ -55,7 +57,7 @@ def audit_target(
         else _local_absolute_path_failures(files)
     )
     domains = (
-        _score("instructions", _instruction_checks(files, manifest)),
+        _score("instructions", _instruction_checks(files, manifest, spec_report)),
         _score("tools", _tool_checks(files, platform_contract)),
         _score("environment", _environment_checks(files, manifest, platform_contract)),
         _score("state", _state_checks(files)),
@@ -691,7 +693,7 @@ def _instruction_text(files: dict[str, str], manifest: dict[str, Any]) -> str:
 
 
 def _instruction_checks(
-    files: dict[str, str], manifest: dict[str, Any]
+    files: dict[str, str], manifest: dict[str, Any], spec_report: SpecSystemReport
 ) -> list[CheckResult]:
     instruction = _instruction_text(files, manifest)
     return [
@@ -700,8 +702,25 @@ def _instruction_checks(
         _contains(instruction, ("Definition Of Done", "Definition of Done", "done only when"), "Definition of done is explicit"),
         _contains(instruction, ("init.sh", "init.ps1", "Verification"), "Verification route is discoverable"),
         _contains(instruction, ("feature_list.json", "progress.md"), "State files are routed from instructions"),
+        _spec_routing_check(instruction, spec_report),
         _check(_line_count(instruction) <= 300 if instruction else False, "Instruction file is short enough to act as a map", f"{_line_count(instruction)} lines"),
     ]
+
+
+def _spec_routing_check(
+    instruction: str, spec_report: SpecSystemReport
+) -> CheckResult:
+    if not spec_report.source_labels:
+        return _check(
+            True,
+            "Instruction files route to detected source-of-truth specs",
+            "no source-of-truth specs detected",
+        )
+    return _check(
+        instruction_routes_to_specs(instruction, spec_report),
+        "Instruction files route to detected source-of-truth specs",
+        ", ".join(spec_report.routing_targets[:5]),
+    )
 
 
 def _tool_checks(

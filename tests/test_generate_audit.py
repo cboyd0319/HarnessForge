@@ -922,6 +922,41 @@ class GenerateAuditTests(unittest.TestCase):
         self.assertIn("justfile", manifest["detectedRoutingMarkers"])
         self.assertIn("just gen-docs-check", manifest["verificationCommands"])
 
+    def test_audit_requires_instructions_to_route_to_detected_spec_sources(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "pyproject.toml").write_text(
+                "[project]\nname='demo'\n",
+                encoding="utf-8",
+            )
+            create_harness(root)
+            (root / ".specify").mkdir()
+            (root / ".specify" / "feature.json").write_text(
+                json.dumps({"feature_directory": "specs/001-login"}),
+                encoding="utf-8",
+            )
+            feature = root / "specs" / "001-login"
+            feature.mkdir(parents=True)
+            (feature / "spec.md").write_text(
+                "# Feature Specification\n\n- **FR-001**: Login\n",
+                encoding="utf-8",
+            )
+
+            result = audit_target(root)
+
+        instructions = next(
+            domain for domain in result.domains if domain.name == "instructions"
+        )
+        sync_check = next(
+            check
+            for check in instructions.checks
+            if check.message
+            == "Instruction files route to detected source-of-truth specs"
+        )
+        self.assertFalse(sync_check.passed)
+        self.assertIn("specs/001-login", sync_check.detail)
+        self.assertLess(result.overall, 100)
+
     def test_live_manifest_matches_generated_shared_snippets(self) -> None:
         repo_root = Path(__file__).resolve().parents[1]
         live = json.loads(

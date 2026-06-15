@@ -348,7 +348,7 @@ Sources:
      `reviewRequired`.
    - Must stay read-only and avoid running target repo commands.
 
-2. Add source-of-truth spec sync detection.
+2. Implemented: add source-of-truth spec sync detection.
    - Detect likely spec roots, `.specify` systems, active feature metadata,
      and work-item templates.
    - Identify global context versus feature-scoped spec artifacts.
@@ -377,6 +377,8 @@ Sources:
      and templates.
    - Report setup, teardown, remediation, push, PR, CI-polling, and credential
      surfaces when parseable.
+   - Initial static detection and readiness warnings exist; deeper parsing and
+     inventory output remain future work.
 
 6. Add context-budget and duplication audit.
    - Report large instruction files, duplicated router content, and generated
@@ -440,9 +442,8 @@ HarnessForge generator behavior:
 
 Implement P0 in this order:
 
-1. source-of-truth spec sync audit
-2. `sync --check` alias
-3. design-only issue/doc for `verify --json`
+1. `sync --check` alias
+2. design-only issue/doc for `verify --json`
 
 This sequence improves user experience immediately without expanding the
 generator's default write surface.

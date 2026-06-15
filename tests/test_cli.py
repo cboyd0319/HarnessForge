@@ -175,6 +175,100 @@ class CliTests(unittest.TestCase):
         self.assertTrue(any("MCP" in item for item in payload["reviewRequired"]))
         self.assertTrue(any("agent setup workflow" in item for item in payload["warnings"]))
 
+    def test_inspect_readiness_reports_spec_kit_quality_gaps(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "pyproject.toml").write_text(
+                "[project]\nname='demo'\n",
+                encoding="utf-8",
+            )
+            (root / "tests").mkdir()
+            (root / "tests" / "test_demo.py").write_text("", encoding="utf-8")
+            (root / "AGENTS.md").write_text(
+                "# Existing\n\nProject-owned instructions.\n",
+                encoding="utf-8",
+            )
+            (root / ".specify" / "memory").mkdir(parents=True)
+            (root / ".specify" / "memory" / "constitution.md").write_text(
+                "# Constitution\n",
+                encoding="utf-8",
+            )
+            (root / ".specify" / "feature.json").write_text(
+                json.dumps({"feature_directory": "specs/001-login"}),
+                encoding="utf-8",
+            )
+            feature = root / "specs" / "001-login"
+            (feature / "checklists").mkdir(parents=True)
+            (feature / "spec.md").write_text(
+                "# Feature Specification\n\n"
+                "- **FR-001**: System MUST support login via "
+                "[NEEDS CLARIFICATION: auth method].\n",
+                encoding="utf-8",
+            )
+            (feature / "checklists" / "requirements.md").write_text(
+                "# Checklist\n\n- [ ] CHK001 Are auth requirements clear?\n",
+                encoding="utf-8",
+            )
+            stdout = io.StringIO()
+            with contextlib.redirect_stdout(stdout):
+                code = main(["inspect", "--target", str(root), "--readiness", "--json"])
+
+            payload = json.loads(stdout.getvalue())
+
+        self.assertEqual(code, 0)
+        self.assertEqual(payload["verdict"], "warning")
+        self.assertIn("Spec Kit project (.specify)", payload["sourceOfTruth"])
+        self.assertIn("active feature specs: specs/001-login", payload["sourceOfTruth"])
+        self.assertTrue(any("NEEDS CLARIFICATION" in item for item in payload["warnings"]))
+        self.assertTrue(any("incomplete requirement checklist" in item for item in payload["warnings"]))
+        self.assertTrue(any("missing plan.md" in item for item in payload["warnings"]))
+        self.assertTrue(any("missing tasks.md" in item for item in payload["warnings"]))
+        self.assertTrue(any("source-of-truth specs" in item for item in payload["reviewRequired"]))
+
+    def test_inspect_readiness_reports_aspec_and_workflow_surfaces(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "pyproject.toml").write_text(
+                "[project]\nname='demo'\n",
+                encoding="utf-8",
+            )
+            (root / "tests").mkdir()
+            (root / "tests" / "test_demo.py").write_text("", encoding="utf-8")
+            (root / "AGENTS.md").write_text(
+                "# Existing\n\nFollow AGENTS only.\n",
+                encoding="utf-8",
+            )
+            (root / "aspec" / "architecture").mkdir(parents=True)
+            (root / "aspec" / "work-items").mkdir(parents=True)
+            (root / "aspec" / "workflows").mkdir()
+            (root / "aspec" / "architecture" / "system.md").write_text(
+                "# Architecture\n",
+                encoding="utf-8",
+            )
+            (root / "aspec" / "work-items" / "0000-template.md").write_text(
+                "# Work Item Template\n",
+                encoding="utf-8",
+            )
+            (root / "aspec" / "workflows" / "repair.yml").write_text(
+                "steps: []\n",
+                encoding="utf-8",
+            )
+            stdout = io.StringIO()
+            with contextlib.redirect_stdout(stdout):
+                code = main(["inspect", "--target", str(root), "--readiness", "--json"])
+
+            payload = json.loads(stdout.getvalue())
+
+        self.assertEqual(code, 0)
+        self.assertEqual(payload["verdict"], "warning")
+        self.assertIn("aspec", payload["sourceOfTruth"])
+        self.assertIn(
+            "work-item template: aspec/work-items/0000-template.md",
+            payload["sourceOfTruth"],
+        )
+        self.assertTrue(any("workflow definitions" in item for item in payload["warnings"]))
+        self.assertTrue(any("source-of-truth specs" in item for item in payload["reviewRequired"]))
+
     def test_inspect_readiness_reports_generated_drift(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

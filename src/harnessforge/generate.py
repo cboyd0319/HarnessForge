@@ -462,6 +462,13 @@ def _project_context_markdown(profile: ProjectProfile) -> str:
             "operations, UX, and work-item docs as planning or source-of-truth\n"
             "  surfaces when the target repo already uses them."
         )
+    if "Spec Kit SDD" in workspace_markers | routing_markers:
+        signals.append(
+            "- Spec Kit-style SDD surfaces detected. Treat `.specify/`, "
+            "`.specify/memory/constitution.md`, `.specify/feature.json`, and\n"
+            "  `specs/` feature artifacts as existing repo-owned source-of-truth "
+            "systems."
+        )
     if any(path.startswith("third_party") for path in component_paths):
         signals.append(
             "- `third_party/` or vendored components detected. Treat them as "

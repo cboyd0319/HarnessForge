@@ -310,11 +310,17 @@ maintenance loop.
   artifacts, and weak spec-to-task traceability. Rejected default installation
   of Spec Kit, `.specify`, agent slash commands, presets, extensions,
   catalogs, or workflow engines into arbitrary target repos.
+- Implemented source-of-truth spec sync detection across `.specify`, active
+  Spec Kit-style feature metadata, `specs/` feature artifacts, `aspec/`,
+  work-item templates, and repo workflow definition surfaces. Readiness now
+  reports unresolved clarification markers, incomplete requirement checklists,
+  missing plan/task artifacts, weak FR/SC traceability, tasks without file
+  paths, and workflow surfaces requiring review. Audit now fails instruction
+  files that do not route agents to detected source-of-truth specs.
 
 ## Recommended Next Step
 
-Continue the P0 remaining-ideas backlog in this order: source-of-truth spec
-sync audit with Spec Kit-style SDD coverage, `sync --check`, then a
+Continue the P0 remaining-ideas backlog in this order: `sync --check`, then a
 design-only issue or doc for `verify --json`. Push local commits only at an explicit
 batch/release boundary or user request. Remaining product decisions before a
 first public Action release: whether to add component-directed monorepo
@@ -326,6 +332,15 @@ SBOM/provenance controls should become blocking.
 
 ## Verification Evidence
 
+- `PYTHONPATH=src:. python3 -m unittest discover -s tests` passed with
+  148 tests, and `PYTHONPATH=src:. python3 -m compileall src tests scripts`
+  passed after adding source-of-truth spec sync detection.
+- `PYTHONPATH=src:. python3 scripts/check_pins.py --root .`,
+  `PYTHONPATH=src:. python3 -m harnessforge audit --target . --min-score 85`,
+  `PYTHONPATH=src:. python3 -m harnessforge inspect --target . --readiness
+  --json`, and `git diff --check` passed after source-of-truth spec sync
+  detection. Self-audit stayed `100/100`; readiness reported warning-only
+  existing local instruction-file review items and no blockers.
 - `PYTHONPATH=src:. python3 -m unittest discover -s tests` passed with
   143 tests, and `PYTHONPATH=src:. python3 -m compileall src tests scripts`
   passed after adding read-only inspect readiness reporting.

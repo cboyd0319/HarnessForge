@@ -84,7 +84,10 @@ harnessforge inspect --target /path/to/repo --readiness --json
 Readiness mode is static and read-only. It reports whether the target appears
 ready, warning-only, or blocked based on detected verification commands,
 generated-file drift, existing instruction files, source-of-truth docs, and
-agent governance surfaces. It does not run target repository commands.
+agent governance surfaces. For spec-driven repos, it also reports static
+quality gaps such as unresolved clarifications, incomplete checklists, missing
+plan/task artifacts, and workflow surfaces that need review. It does not run
+target repository commands.
 
 Preview the files first:
 

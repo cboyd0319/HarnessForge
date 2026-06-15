@@ -583,6 +583,84 @@ class DetectProjectTests(unittest.TestCase):
         self.assertIn("structured project specs", profile.workspace_markers)
         self.assertIn("structured project specs", profile.routing_markers)
 
+    def test_detects_spec_kit_sdd_surface(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "pyproject.toml").write_text(
+                "[project]\nname='demo'\n",
+                encoding="utf-8",
+            )
+            (root / "tests").mkdir()
+            (root / "tests" / "test_demo.py").write_text(
+                "import unittest\n",
+                encoding="utf-8",
+            )
+            (root / ".specify" / "memory").mkdir(parents=True)
+            (root / ".specify" / "memory" / "constitution.md").write_text(
+                "# Constitution\n",
+                encoding="utf-8",
+            )
+            (root / ".specify" / "feature.json").write_text(
+                json.dumps({"feature_directory": "specs/001-login"}),
+                encoding="utf-8",
+            )
+            (root / "specs" / "001-login").mkdir(parents=True)
+            (root / "specs" / "001-login" / "spec.md").write_text(
+                "# Feature Specification\n\n- **FR-001**: Login\n",
+                encoding="utf-8",
+            )
+            (root / "specs" / "001-login" / "plan.md").write_text(
+                "# Implementation Plan\n",
+                encoding="utf-8",
+            )
+            (root / "specs" / "001-login" / "tasks.md").write_text(
+                "# Tasks\n\n- [ ] T001 Implement login in src/auth.py\n",
+                encoding="utf-8",
+            )
+
+            profile = detect_project(root)
+
+        self.assertEqual(profile.stack, "python")
+        self.assertIn("Spec Kit SDD", profile.workspace_markers)
+        self.assertIn("Spec Kit active feature", profile.workspace_markers)
+        self.assertIn("Spec Kit constitution", profile.routing_markers)
+        self.assertIn("feature specs", profile.routing_markers)
+
+    def test_detects_aspec_and_repo_workflow_surfaces(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "pyproject.toml").write_text(
+                "[project]\nname='demo'\n",
+                encoding="utf-8",
+            )
+            (root / "tests").mkdir()
+            (root / "tests" / "test_demo.py").write_text(
+                "import unittest\n",
+                encoding="utf-8",
+            )
+            (root / "aspec" / "architecture").mkdir(parents=True)
+            (root / "aspec" / "work-items").mkdir(parents=True)
+            (root / "aspec" / "architecture" / "system.md").write_text(
+                "# Architecture\n",
+                encoding="utf-8",
+            )
+            (root / "aspec" / "work-items" / "0000-template.md").write_text(
+                "# Work Item Template\n",
+                encoding="utf-8",
+            )
+            (root / "aspec" / "workflows").mkdir()
+            (root / "aspec" / "workflows" / "self-heal.toml").write_text(
+                "setup = []\n",
+                encoding="utf-8",
+            )
+
+            profile = detect_project(root)
+
+        self.assertIn("aspec", profile.workspace_markers)
+        self.assertIn("aspec", profile.routing_markers)
+        self.assertIn("work-item templates", profile.routing_markers)
+        self.assertIn("repo workflow definitions", profile.routing_markers)
+
     def test_detects_polyglot_build_orchestrators(self) -> None:
         cases = (
             ("MODULE.bazel", "bazel", "bazel test //...", "MODULE.bazel"),
