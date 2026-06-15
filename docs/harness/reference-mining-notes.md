@@ -159,13 +159,13 @@ Accepted in this pass:
   summarizing git state, active state, harness score, and next work without
   making users read every plan file. HarnessForge now exposes the generic
   version as a CLI report instead of generating a repo-specific script.
+- Add a read-only `harnessforge plan --since <ref>` command. JobSentinel's
+  `harness:plan -- --since` showed that changed-file planning can reduce
+  over-broad verification. HarnessForge exposes the generic version as a static
+  planner over detected or explicit checks instead of executing workflows.
 
 High-value ideas to consider next:
 
-- Diff-aware verification planning. JobSentinel's `harness:plan -- --since`
-  maps changed files to focused checks. HarnessForge can provide a generic
-  read-only planner later, but it should use target-owned verification matrix
-  data and avoid executing commands by default.
 - Sensor registry. JobSentinel's audit calls out the need for sensor ownership,
   source, reason, and retire conditions. HarnessForge could generate a
   review-required `docs/harness/sensor-registry.md` or add it as a blueprint

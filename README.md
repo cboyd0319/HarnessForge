@@ -175,6 +175,13 @@ harnessforge inspect --target /path/to/repo --readiness
 harnessforge inspect --target /path/to/repo --readiness --json
 ```
 
+Map changed files to a read-only verification plan:
+
+```bash
+harnessforge plan --target /path/to/repo --since HEAD
+harnessforge plan --target /path/to/repo --since HEAD --json
+```
+
 Run the CI-oriented sync preflight:
 
 ```bash
@@ -514,6 +521,7 @@ and explicit `verify-run: "true"` execution.
 | `harnessforge quickstart` | Guide the first safe run without writing files |
 | `harnessforge inspect` | Show detected project profile or readiness without writing files |
 | `harnessforge session` | Show a read-only restart snapshot with git, readiness, audit, and state-file status |
+| `harnessforge plan` | Map changed files to a read-only verification plan |
 | `harnessforge sync --check` | Run a read-only CI preflight with readiness exit codes |
 | `harnessforge verify` | Report planned project checks, or run them explicitly with `--run` |
 | `harnessforge blueprint` | List, inspect, or apply optional review-required operating-model overlays |

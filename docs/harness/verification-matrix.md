@@ -44,6 +44,10 @@ Use `harnessforge verify --target . --json` for a read-only plan. Use
 `harnessforge verify --target . --json --run` only when project checks should
 execute.
 
+Use `harnessforge plan --target . --since HEAD` to map changed files to a
+read-only verification plan before choosing which project checks to run. It
+uses `git diff` and does not execute target commands.
+
 To store runnable evidence without shell redirection:
 
 ```bash

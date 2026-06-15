@@ -5,6 +5,7 @@ import hashlib
 import io
 import json
 import os
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -58,6 +59,16 @@ def _write_verify_report(
     }
     path.write_text(f"{json.dumps(payload, indent=2)}\n", encoding="utf-8")
     return path
+
+
+def _git(root: Path, *args: str) -> None:
+    subprocess.run(
+        ["git", "-C", str(root), *args],
+        check=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+    )
 
 
 class CliTests(unittest.TestCase):
@@ -230,6 +241,162 @@ class CliTests(unittest.TestCase):
         self.assertIn("Harness audit: 100/100", text)
         self.assertIn("State files:", text)
         self.assertIn("Next actions:", text)
+
+    def test_plan_json_maps_changed_files_without_running_checks(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "pyproject.toml").write_text(
+                "[project]\nname='demo'\n",
+                encoding="utf-8",
+            )
+            (root / "src").mkdir()
+            (root / "src" / "demo.py").write_text("VALUE = 1\n", encoding="utf-8")
+            _git(root, "init")
+            _git(root, "config", "user.email", "test@example.invalid")
+            _git(root, "config", "user.name", "HarnessForge Test")
+            _git(root, "add", ".")
+            _git(root, "commit", "-m", "initial")
+            (root / "src" / "demo.py").write_text("VALUE = 2\n", encoding="utf-8")
+            marker = root / "ran.txt"
+            python_command = _python_command(
+                "from pathlib import Path; Path('ran.txt').write_text('ran')"
+            )
+            stdout = io.StringIO()
+            with contextlib.redirect_stdout(stdout):
+                code = main(
+                    [
+                        "plan",
+                        "--target",
+                        str(root),
+                        "--since",
+                        "HEAD",
+                        "--json",
+                        "--command",
+                        python_command,
+                        "--command",
+                        "npm test",
+                    ]
+                )
+
+            payload = json.loads(stdout.getvalue())
+
+        self.assertEqual(code, 0)
+        self.assertFalse(marker.exists())
+        self.assertEqual(payload["schemaVersion"], "harnessforge.plan.v1")
+        self.assertEqual(payload["target"]["root"], None)
+        self.assertEqual(payload["mode"], "diff")
+        self.assertFalse(payload["execution"]["commandsExecuted"])
+        self.assertEqual(payload["base"], "HEAD")
+        self.assertEqual(payload["changedFiles"], ["src/demo.py"])
+        self.assertEqual(payload["verdict"], "planned")
+        self.assertEqual(payload["summary"]["planned"], 1)
+        self.assertEqual(len(payload["checks"]), 1)
+        self.assertEqual(payload["checks"][0]["command"], python_command)
+        self.assertEqual(payload["checks"][0]["matchedFiles"], ["src/demo.py"])
+        self.assertIn("python", payload["checks"][0]["reason"])
+
+    def test_plan_text_blocks_when_git_diff_is_unavailable(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "pyproject.toml").write_text(
+                "[project]\nname='demo'\n",
+                encoding="utf-8",
+            )
+            before = sorted(path.relative_to(root).as_posix() for path in root.rglob("*"))
+            stdout = io.StringIO()
+            with contextlib.redirect_stdout(stdout):
+                code = main(["plan", "--target", str(root), "--since", "HEAD"])
+            after = sorted(path.relative_to(root).as_posix() for path in root.rglob("*"))
+
+            text = stdout.getvalue()
+
+        self.assertEqual(code, 0)
+        self.assertEqual(before, after)
+        self.assertIn("Verification plan: blocked", text)
+        self.assertIn("Unable to inspect changed files with git diff", text)
+
+    def test_plan_json_includes_untracked_changed_files(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "pyproject.toml").write_text(
+                "[project]\nname='demo'\n",
+                encoding="utf-8",
+            )
+            _git(root, "init")
+            _git(root, "config", "user.email", "test@example.invalid")
+            _git(root, "config", "user.name", "HarnessForge Test")
+            _git(root, "add", ".")
+            _git(root, "commit", "-m", "initial")
+            (root / "src").mkdir()
+            (root / "src" / "new_module.py").write_text(
+                "VALUE = 1\n",
+                encoding="utf-8",
+            )
+            stdout = io.StringIO()
+            with contextlib.redirect_stdout(stdout):
+                code = main(
+                    [
+                        "plan",
+                        "--target",
+                        str(root),
+                        "--since",
+                        "HEAD",
+                        "--json",
+                        "--command",
+                        "python -m unittest discover",
+                    ]
+                )
+
+            payload = json.loads(stdout.getvalue())
+
+        self.assertEqual(code, 0)
+        self.assertEqual(payload["changedFiles"], ["src/new_module.py"])
+        self.assertEqual(payload["checks"][0]["matchedFiles"], ["src/new_module.py"])
+
+    def test_plan_json_warns_about_unmatched_changed_files(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "pyproject.toml").write_text(
+                "[project]\nname='demo'\n",
+                encoding="utf-8",
+            )
+            (root / "README.md").write_text("# Demo\n", encoding="utf-8")
+            (root / "src").mkdir()
+            (root / "src" / "demo.py").write_text("VALUE = 1\n", encoding="utf-8")
+            _git(root, "init")
+            _git(root, "config", "user.email", "test@example.invalid")
+            _git(root, "config", "user.name", "HarnessForge Test")
+            _git(root, "add", ".")
+            _git(root, "commit", "-m", "initial")
+            (root / "README.md").write_text("# Demo\n\nUpdate.\n", encoding="utf-8")
+            (root / "src" / "demo.py").write_text("VALUE = 2\n", encoding="utf-8")
+            stdout = io.StringIO()
+            with contextlib.redirect_stdout(stdout):
+                code = main(
+                    [
+                        "plan",
+                        "--target",
+                        str(root),
+                        "--since",
+                        "HEAD",
+                        "--json",
+                        "--command",
+                        "python -m unittest discover",
+                    ]
+                )
+
+            payload = json.loads(stdout.getvalue())
+
+        self.assertEqual(code, 0)
+        self.assertEqual(payload["changedFiles"], ["README.md", "src/demo.py"])
+        self.assertEqual(payload["unmatchedFiles"], ["README.md"])
+        self.assertTrue(
+            any(
+                "No matching checks for changed files" in item
+                for item in payload["warnings"]
+            )
+        )
+        self.assertEqual(payload["checks"][0]["matchedFiles"], ["src/demo.py"])
 
     def test_inspect_readiness_reports_stored_verify_evidence(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

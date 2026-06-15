@@ -424,19 +424,22 @@ maintenance loop.
   read-only `harnessforge session`, which reports git state, readiness, harness
   audit summary, state-file presence, and next actions without writing files or
   running target checks.
+- Added a read-only diff-aware verification planner. `harnessforge plan
+  --since <ref>` inspects tracked and untracked changed files with git, maps
+  them to detected or explicit project verification checks, and reports
+  matched files, unmatched files, and reasons without running target commands.
 - Current verification passes full unit discovery and POSIX/PowerShell
-  entrypoints with 204 tests, compile, pin check, research source check, JSON
-  validation, session JSON smoke, self-audit `100/100`, changed-file local-path
-  scan, and diff hygiene.
+  entrypoints with 208 tests, compile, pin check, research source check, JSON
+  validation, session and plan JSON smokes, self-audit `100/100`, changed-file
+  local-path scan, and diff hygiene.
 
 ## Recommended Next Step
 
 If continuing product build-out before release prep, the next best slice is a
-read-only diff-aware verification planner that maps changed files to
-target-owned checks without executing them. If release prep resumes instead,
-review the current diff, run the release checklist, rebuild the isolated
-package smoke, and decide whether to trigger manual macOS and Windows platform
-CI.
+review-required sensor registry for check ownership, source, purpose, and
+retirement conditions. If release prep resumes instead, review the current
+diff, run the release checklist, rebuild the isolated package smoke, and decide
+whether to trigger manual macOS and Windows platform CI.
 Push local commits only at an explicit batch/release boundary or user request.
 
 ## Verification Evidence

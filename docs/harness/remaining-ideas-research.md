@@ -26,11 +26,11 @@ review. The first explicit product-mode implementation is `harnessforge
 blueprint`, which keeps richer operating-model guidance separate from normal
 `init` output.
 
-The dedicated harness-docs and AGENTS supplement added one more implemented
-read-only UX slice: `harnessforge session`. The best remaining candidates are
-diff-aware verification planning, sensor registry support, structured
-project-source records, and any score or benchmark commands only when backed by
-representative effectiveness evidence.
+The dedicated harness-docs and AGENTS supplement added two read-only UX slices:
+`harnessforge session` and `harnessforge plan`. The best remaining candidates
+are sensor registry support, structured project-source records, and any score
+or benchmark commands only when backed by representative effectiveness
+evidence.
 
 ## Highest-Value Next Ideas
 
@@ -48,7 +48,7 @@ representative effectiveness evidence.
 | Config precedence report | AWMAN layered config model | Show which overrides shaped detection: CLI flags, detected files, generated manifest, existing project ownership | Keep deterministic; no LLM refinement needed |
 | Short `sync --check` alias | Public HarnessForge quickstart, current drift-report UX | Add a discoverable CI-oriented alias for `update --drift-report --json` | Alias only; no new mutation semantics |
 | Session snapshot | JobSentinel `harness:session`, Bluepeak-AI and JobSentinel state docs | Implemented as read-only `harnessforge session` | Must not write files or run target checks |
-| Diff-aware verification planner | JobSentinel `harness:plan -- --since` | Add a read-only planner that maps changed files to focused checks | Use target-owned verification matrix data; command execution remains explicit |
+| Diff-aware verification planner | JobSentinel `harness:plan -- --since` | Implemented as read-only `harnessforge plan --since` | Uses detected or explicit project checks; command execution remains explicit through `verify --run` |
 | Sensor registry | JobSentinel sensor ownership audit | Add review-required sensor ownership, source, purpose, and retirement metadata | Blueprint or review-required artifact before default generation |
 | Source-record schema | Bluepeak-AI structured provenance records | Add optional project-source record schema for curated source ledgers | Keep separate from HarnessForge's own fixed research allowlist |
 
@@ -72,6 +72,28 @@ Boundary:
 - Reports git status, latest commit, detected stack, readiness verdict,
   harness audit summary when a harness exists, selected state-file presence,
   and next actions.
+
+## Implemented Diff-Aware Verification Planner
+
+`harnessforge plan` adopts the useful changed-file planning pattern without
+turning HarnessForge into a workflow runtime or executing target commands.
+
+Current command shape:
+
+- `harnessforge plan --target <repo> --since HEAD`
+- `harnessforge plan --target <repo> --since HEAD --json`
+- `harnessforge plan --target <repo> --since <ref> --command "<check>"`
+
+Boundary:
+
+- Read-only.
+- Uses `git diff --name-only` for changed-file discovery.
+- Does not run target verification commands.
+- Redacts target roots from portable JSON output.
+- Maps changed files to detected or explicit project checks with a fallback to
+  baseline checks when no file-specific match is available.
+- Reports unmatched changed files when some files match focused checks and
+  others do not.
 
 ## Implemented Explicit Blueprint Mode
 
@@ -729,6 +751,14 @@ Sources:
       harness audit summary, state-file presence, and next actions.
     - It stays read-only, writes nothing, and does not execute target checks.
 
+14. Implemented: diff-aware verification planner.
+    - `harnessforge plan --since <ref>` inspects changed files with `git diff`
+      and maps them to detected or explicit project verification checks.
+    - JSON output uses schema `harnessforge.plan.v1`, redacts target roots, and
+      reports changed files, planned checks, matched files, unmatched files,
+      reasons, warnings, and blockers.
+    - It stays read-only, writes nothing, and does not execute target checks.
+
 ## Rejected Defaults
 
 These ideas can be useful in specific products, but should not be default
@@ -751,7 +781,7 @@ HarnessForge generator behavior:
 ## Suggested Next Step
 
 If continuing product build-out before release prep, the next best slice is a
-read-only diff-aware verification planner that maps changed files to
-target-owned checks. If release prep resumes instead, the remaining release
+review-required sensor registry for check ownership, source, purpose, and
+retirement conditions. If release prep resumes instead, the remaining release
 work is manual macOS/Windows platform CI, the `v1` Action tag decision, and
 release-time SBOM/provenance gates.

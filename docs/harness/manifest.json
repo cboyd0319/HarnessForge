@@ -157,6 +157,7 @@
       "Required Checks",
       "When Checks Cannot Run",
       "Verification Evidence Reports",
+      "harnessforge plan --target . --since HEAD",
       "harnessforge verify --target . --json --run",
       "--json-report docs/harness/evidence/verify-<date>.json",
       "Remote CI",

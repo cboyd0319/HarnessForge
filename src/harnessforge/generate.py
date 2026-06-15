@@ -1099,6 +1099,7 @@ def _manifest_content(
             "project-owned generated files",
             "command: sync",
             "harnessforge session",
+            "harnessforge plan",
         ],
         "docs/harness/change-contract.md": [
             "Problem",
@@ -1113,6 +1114,7 @@ def _manifest_content(
             "Required Checks",
             "When Checks Cannot Run",
             "Verification Evidence Reports",
+            "harnessforge plan --target . --since HEAD",
             "harnessforge verify --target . --json --run",
             "--json-report docs/harness/evidence/verify-<date>.json",
             "Remote CI",

@@ -43,6 +43,7 @@ Use HarnessForge for regular structural checks:
 
 ```bash
 harnessforge session --target .
+harnessforge plan --target . --since HEAD
 harnessforge audit --target .
 harnessforge update --target .
 ```
@@ -50,6 +51,10 @@ harnessforge update --target .
 `harnessforge session --target .` is a read-only restart snapshot with git
 state when available, detected stack, readiness verdict, harness audit score
 when a harness surface is present, state-file presence, and next actions.
+
+`harnessforge plan --target . --since HEAD` is a read-only diff-aware
+verification planner. It maps changed files to detected or explicit project
+checks and does not execute them.
 
 Run `harnessforge update --target . --apply` only when you want safe missing-file
 corrections. Existing files are preserved unless `--force` is passed.

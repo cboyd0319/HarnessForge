@@ -18,6 +18,7 @@ from .detect import detect_project
 from .doctor import doctor_json, doctor_report, format_doctor
 from .generate import PLATFORM_CONTRACTS, REVIEW_REQUIRED_FILES, create_harness
 from .models import DriftResult, ProjectProfile, WriteResult
+from .planner import build_diff_plan, diff_plan_to_dict, format_diff_plan
 from .readiness import (
     ReadinessReport,
     format_readiness,
@@ -201,6 +202,21 @@ def build_parser() -> argparse.ArgumentParser:
     session.add_argument("--target", type=Path, default=Path.cwd())
     session.add_argument("--json", action="store_true")
     session.set_defaults(func=_session)
+
+    plan = subparsers.add_parser(
+        "plan",
+        help="map changed files to a read-only verification plan",
+    )
+    plan.add_argument("--target", type=Path, default=Path.cwd())
+    plan.add_argument(
+        "--since",
+        default="HEAD",
+        help="git revision or ref to diff against",
+    )
+    plan.add_argument("--package-manager")
+    plan.add_argument("--command", dest="commands", action="append", default=[])
+    plan.add_argument("--json", action="store_true")
+    plan.set_defaults(func=_plan)
 
     verify = subparsers.add_parser(
         "verify",
@@ -459,6 +475,24 @@ def _session(args: argparse.Namespace) -> int:
         print(json.dumps(session_report_to_dict(report), indent=2))
     else:
         print(format_session_report(report))
+    return 0
+
+
+def _plan(args: argparse.Namespace) -> int:
+    profile = detect_project(
+        args.target,
+        explicit_package_manager=args.package_manager,
+        explicit_commands=tuple(args.commands),
+    )
+    report = build_diff_plan(
+        profile,
+        since=args.since,
+        explicit_commands=tuple(args.commands),
+    )
+    if args.json:
+        print(json.dumps(diff_plan_to_dict(report), indent=2))
+    else:
+        print(format_diff_plan(report))
     return 0
 
 

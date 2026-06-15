@@ -47,6 +47,7 @@ Use:
 ```bash
 harnessforge quickstart --target .
 harnessforge session --target .
+harnessforge plan --target . --since HEAD
 harnessforge audit --target .
 harnessforge update --target .
 harnessforge sync --check --target . --json
@@ -60,6 +61,10 @@ placeholder reporting, and next commands without writing files.
 `session` is a read-only restart snapshot. It reports git state when available,
 detected stack, readiness verdict, harness audit score when a harness surface is
 present, state-file presence, and next actions without running target commands.
+
+`plan` is a read-only diff-aware verification planner. It uses `git diff` to
+map changed files to detected or explicit project verification checks, but it
+does not run those checks.
 
 `update` reports recommended safe corrections unless `--apply` is passed.
 Existing files are skipped unless `--force` is passed.
