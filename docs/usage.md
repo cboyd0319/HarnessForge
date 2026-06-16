@@ -104,9 +104,10 @@ signals for startup instruction files, the compact repo-map summary from
 `index`, policy preset recommendations, feature-state scope, runtime/process
 observability, optional index-adapter status, repo-local harness skill wiring,
 and SBOM adapter status. It also reports accepted high-risk surface review
-evidence plus an
-evidence-gated maturity level from `generated` to `measured` without treating
-structural audit score as proof of real-agent effectiveness.
+evidence, separates unresolved actionable review work from accepted advisory
+inventory in `reviewWork`, and includes an evidence-gated maturity level from
+`generated` to `measured` without treating structural audit score as proof of
+real-agent effectiveness.
 It is read-only by default, does not run target repository commands, and writes
 files only when a target-relative `--json-report` or `--markdown-report` path
 is supplied.
@@ -178,6 +179,7 @@ Readiness reports:
 - `governanceInventory`
 - `effectivenessInventory`
 - `verifyEvidence`
+- `skillWiring`
 - `highRiskAcceptance`
 - `reviewSurfaces`
 - `reviewStatusSummary`
@@ -220,9 +222,10 @@ or local env files as review surfaces without reading or exposing secret
 values.
 
 Verify evidence inventory is advisory. It detects target-contained
-`docs/harness/evidence/verify*.json` reports, identifies the latest report,
-flags invalid, failed, blocked, timed-out, or stale evidence, and keeps that
-separate from structural `audit` scoring and real-agent effectiveness claims.
+`docs/harness/evidence/verify*.json` reports, including compact
+`harnessforge.verifySummary.v1` summaries, identifies the latest report, flags
+invalid, failed, blocked, timed-out, or stale evidence, and keeps that separate
+from structural `audit` scoring and real-agent effectiveness claims.
 Use `--require-verify-evidence` with `inspect --readiness` or `sync --check`
 to turn this into an explicit release gate. Gate mode requires at least one
 valid stored run-mode report, blocks on any invalid verify report, and requires
@@ -297,13 +300,19 @@ Run project verification checks explicitly:
 harnessforge verify --target /path/to/repo --json --run --yes
 harnessforge verify --target /path/to/repo --json --run --yes --timeout-seconds 120
 harnessforge verify --target /path/to/repo --run --yes --json-report docs/harness/evidence/verify-YYYY-MM-DD.json
+harnessforge verify --target /path/to/repo --run --yes --evidence-summary docs/harness/evidence/verify-summary-YYYY-MM-DD.json
 ```
 
 Command execution is explicit opt-in through `--run`. Run mode uses argument
 lists rather than a shell, rejects shell control syntax, runs from the target
 repository root, and applies a per-command timeout. Use `--json-report` with a
 target-relative path to write the same verify payload to a file without shell
-redirection.
+redirection. Use `--evidence-summary` to write compact
+`harnessforge.verifySummary.v1` evidence that omits stdout and stderr previews
+but still records mode, verdict, timing, command status, exit codes, and
+summary counts. Release gates accept either the full verify report or the
+compact summary when the latest valid report is fresh, run-mode, passed, and
+clean.
 
 See [harness/feedback/verify-json-contract.md](harness/feedback/verify-json-contract.md),
 [harness/feedback/verify-json.schema.json](harness/feedback/verify-json.schema.json),
@@ -469,9 +478,10 @@ harnessforge corpus --min-score 90
 
 `corpus` uses temporary fixtures modeled on pinned popular public repositories
 to test detection, stack-specific context, generated content hygiene, audit
-quality, and local-path/template-token safeguards. It does not clone
-repositories, use network access, run target commands, or write outside the
-temporary fixture root.
+quality, RunHaven-shaped reviewed-harness behavior, and
+local-path/template-token safeguards. It does not clone repositories, use
+network access, run target commands, or write outside the temporary fixture
+root.
 
 ## Update And Drift
 

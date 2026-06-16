@@ -11,6 +11,9 @@ or other externally visible release steps.
 - Run `harnessforge verify --target . --run --json-report
   docs/harness/evidence/verify-<date>.json`, or record why runnable project
   verification could not run.
+- Use `harnessforge verify --target . --run --evidence-summary
+  docs/harness/evidence/verify-summary-<date>.json` when release evidence
+  should record command status without stdout or stderr previews.
 - Run `harnessforge release-check --target . --markdown-report
   docs/harness/evidence/release-check-<date>.md` to assemble the current
   read-only release evidence gates and maturity level.

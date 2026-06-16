@@ -74,12 +74,15 @@ To store runnable evidence without shell redirection:
 
 ```bash
 harnessforge verify --target . --run --json-report docs/harness/evidence/verify-<date>.json
+harnessforge verify --target . --run --evidence-summary docs/harness/evidence/verify-summary-<date>.json
 ```
 
 When recording runnable evidence:
 
 - Store the JSON report under a target-relative report path such as
-  `docs/harness/evidence/verify-<date>.json`.
+  `docs/harness/evidence/verify-<date>.json`, or store compact evidence under
+  `docs/harness/evidence/verify-summary-<date>.json` when durable release
+  evidence should omit stdout and stderr previews.
 - Review every check with `failed`, `timed_out`, or `blocked` status before
   claiming success.
 - Treat stdout and stderr previews as diagnostics. Redact secrets and keep long

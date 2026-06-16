@@ -142,10 +142,12 @@ present, state-file presence, and next actions without running target commands.
 audit, generated drift, structural index summary, verify evidence,
 effectiveness evidence, first-agent task status, platform contract,
 instruction quality, skill wiring, feature state, observability, index-adapter
-status, and docs fan-out without running target commands. It also reports
-policy preset recommendations and SBOM adapter status while keeping preset
-application and SBOM generation explicit opt-ins. Use `--json-report` or
-`--markdown-report` with a target-relative path to persist review evidence.
+status, review-work classification, and docs fan-out without running target
+commands. It also reports policy preset recommendations and SBOM adapter status
+while keeping preset application and SBOM generation explicit opt-ins. Use
+`--json-report` or `--markdown-report` with a target-relative path to persist
+review evidence. Stable report fields are documented in
+`feedback/report-json-contract.md`.
 
 `corpus` is an offline generated-content quality gate. It creates temporary
 fixtures modeled on pinned popular public repositories, runs detection,
@@ -176,8 +178,11 @@ you are ready to append the reviewed HarnessForge quality addendum.
 reports detected or explicit checks without running target repository commands.
 Use `verify --json --run` only when project checks should execute; run mode
 records exit codes, durations, capped stdout and stderr previews, and timing
-metadata. Use `--json-report <target-relative-path>` to persist the payload
-without shell redirection.
+metadata. Use `--json-report <target-relative-path>` to persist the full
+payload without shell redirection. Use
+`--evidence-summary <target-relative-path>` for compact stored evidence that
+omits stdout and stderr previews while keeping command status, exit code,
+duration, verdict, and summary counts.
 
 Project-owned source records use `source-record.schema.json` and
 `source-record-example.json`. Keep them separate from the fixed

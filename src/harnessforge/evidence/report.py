@@ -108,6 +108,7 @@ def build_report(
         },
         "detectedStack": profile.stack,
         "readiness": _readiness_summary(readiness_payload),
+        "reviewWork": _review_work_summary(readiness_payload),
         "audit": _audit_summary(audit_payload),
         "drift": _drift_summary(drift),
         "index": _index_summary(index),
@@ -163,6 +164,10 @@ def format_report(payload: dict[str, Any]) -> str:
         "- Review surface statuses: "
         f"{payload['readiness']['reviewStatusSummary']['pendingReview']} pending, "
         f"{payload['readiness']['reviewStatusSummary']['acceptedAdvisory']} accepted",
+        "- Unresolved actionable review work: "
+        f"{payload['reviewWork']['unresolvedActionable']['count']}",
+        "- Accepted advisory review inventory: "
+        f"{payload['reviewWork']['acceptedAdvisory']['count']}",
         "- Accepted high-risk surfaces: "
         f"{payload['readiness']['highRiskAcceptance']['summary']['acceptedCount']}",
         "",
@@ -318,6 +323,39 @@ def _readiness_summary(readiness: dict[str, Any]) -> dict[str, Any]:
         "reviewStatusSummary": readiness["reviewStatusSummary"],
         "highRiskAcceptance": readiness["highRiskAcceptance"],
         "nextActions": readiness["nextActions"],
+    }
+
+
+def _review_work_summary(readiness: dict[str, Any]) -> dict[str, Any]:
+    pending_surfaces = [
+        item
+        for item in readiness["reviewSurfaces"]
+        if item.get("status") == "pending_review"
+    ]
+    accepted_surfaces = [
+        item
+        for item in readiness["reviewSurfaces"]
+        if item.get("status") == "accepted_advisory"
+    ]
+    blockers = list(readiness["blockedReasons"])
+    warnings = list(readiness["warnings"])
+    return {
+        "schemaVersion": "harnessforge.reviewWork.v1",
+        "unresolvedActionable": {
+            "count": len(pending_surfaces) + len(blockers),
+            "pendingSurfaceCount": len(pending_surfaces),
+            "blockerCount": len(blockers),
+            "surfaces": pending_surfaces,
+            "blockedReasons": blockers,
+        },
+        "acceptedAdvisory": {
+            "count": len(accepted_surfaces),
+            "surfaces": accepted_surfaces,
+        },
+        "advisoryInventory": {
+            "warningCount": len(warnings),
+            "warnings": warnings,
+        },
     }
 
 

@@ -134,7 +134,8 @@ The step summary includes readiness, accepted high-risk surface count, audit
 score, generated drift, docs fan-out, verify/effectiveness evidence,
 instruction quality, first-agent lifecycle, maturity, policy preset status,
 SBOM adapter status, feature-state status, observability status,
-index-adapter status, repo-map counts, and SBOM file count.
+index-adapter status, unresolved review-work count, accepted advisory
+inventory count, repo-map counts, and SBOM file count.
 
 Upload report artifacts in the caller workflow when that is useful. The
 HarnessForge Action does not upload artifacts by default:
@@ -263,12 +264,16 @@ Run verification checks explicitly:
       python -m unittest discover
       python scripts/check_pins.py --root .
     json-report: harness-verify.json
+    verify-summary: docs/harness/evidence/verify-summary.json
 ```
 
 `verify-command` is newline-separated. Each line is one repo-owned command.
 Run mode uses argument lists rather than a shell, so shell control syntax such
 as `&&`, `||`, pipes, and redirection is rejected. If `verify-command` is
-empty, HarnessForge uses detected project verification commands.
+empty, HarnessForge uses detected project verification commands. Use
+`verify-summary` when the workflow should persist compact run evidence without
+stdout or stderr previews; use `json-report` when diagnostic previews are
+needed.
 
 ## Plan Safe Corrections
 
@@ -332,6 +337,7 @@ and not behavior embedded in the composite Action runtime.
 | `verify-run` | `false` | Execute checks when `command` is `verify`; default verify mode is read-only plan mode |
 | `verify-command` | empty | Optional newline-separated repo-owned verification commands for `command: verify` |
 | `verify-timeout-seconds` | `300` | Per-command timeout when `command` is `verify` and `verify-run` is `true` |
+| `verify-summary` | empty | Optional target-relative compact verify evidence JSON path for `command: verify`; omits stdout and stderr previews |
 | `require-verify-evidence` | `false` | Require current passed stored verify evidence when `command` is `sync` or `report`; release-check always requires it |
 | `sync-command` | empty | Optional newline-separated repo-owned readiness commands for `command: sync`; commands are not executed |
 | `report-command` | empty | Optional newline-separated repo-owned readiness commands for `command: report`, `command: release-check`, or `command: finalize-review`; commands are not executed |
@@ -360,6 +366,7 @@ traversal outside the target repository are rejected.
 | `report-markdown` | Target-relative Markdown report path when requested |
 | `changed-files` | Number of files written by `init`, applied `update`, applied `finalize-review`, or applied `migrate-state` |
 | `verify-verdict` | Verify verdict when `command` is `verify` |
+| `verify-summary` | Target-relative compact verify evidence JSON path when requested |
 | `readiness-verdict` | Readiness verdict when `command` is `sync`, `report`, or `release-check` |
 | `sync-exit-code` | Sync readiness exit code when `command` is `sync` |
 | `docs-fanout-verdict` | Docs fan-out verdict when `command` is `report` or `release-check` |
@@ -372,9 +379,9 @@ When `GITHUB_STEP_SUMMARY` is available, the Action writes a concise Markdown
 summary. `command: report` summarizes readiness, accepted high-risk surface
 count, structured review-surface status counts, audit score, drift, docs
 fan-out, verify evidence, effectiveness evidence, instruction quality,
-skill wiring, first-agent lifecycle, maturity level, feature state,
-observability, index adapters, repo-map component/source counts, and SBOM file
-count.
+skill wiring, unresolved actionable review work, accepted advisory inventory,
+first-agent lifecycle, maturity level, feature state, observability, index
+adapters, repo-map component/source counts, and SBOM file count.
 `command: release-check` summarizes the release verdict, audit score,
 readiness, accepted high-risk surface count, verify evidence, maturity level,
 skill wiring, feature state, observability, and individual release gates.

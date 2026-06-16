@@ -61,6 +61,65 @@ def _write_verify_report(
     return path
 
 
+def _write_verify_summary(
+    root: Path,
+    relative_path: str,
+    *,
+    verdict: str = "passed",
+    mode: str = "run",
+    recorded_at: str = "2026-06-15T05:00:00Z",
+) -> Path:
+    path = root / relative_path
+    path.parent.mkdir(parents=True, exist_ok=True)
+    payload = {
+        "schemaVersion": "harnessforge.verifySummary.v1",
+        "target": {"name": "demo", "root": None},
+        "mode": mode,
+        "verdict": verdict,
+        "recordedAt": recorded_at,
+        "platform": {"os": "darwin", "python": "3.14.6", "runner": "local"},
+        "execution": {
+            "commandsExecuted": mode == "run",
+            "startedAt": recorded_at,
+            "endedAt": recorded_at,
+            "durationMs": 1.0,
+        },
+        "summary": {
+            "total": 1,
+            "planned": 0,
+            "skipped": 0,
+            "blocked": 0,
+            "passed": 1 if verdict == "passed" else 0,
+            "failed": 1 if verdict == "failed" else 0,
+            "timedOut": 0,
+            "errors": 0,
+        },
+        "checks": [
+            {
+                "id": "project.explicit.0",
+                "label": "Project verification",
+                "command": "python -m unittest",
+                "source": "explicit",
+                "workingDirectory": ".",
+                "required": True,
+                "status": "passed" if verdict == "passed" else "failed",
+                "exitCode": 0 if verdict == "passed" else 1,
+                "durationMs": 1.0,
+                "message": "Command passed." if verdict == "passed" else "Command failed.",
+            }
+        ],
+        "blockedReasons": [],
+        "warnings": [],
+        "artifacts": [],
+        "privacy": {
+            "stdoutStderrCaptured": False,
+            "outputPreviewPolicy": "omitted",
+        },
+    }
+    path.write_text(f"{json.dumps(payload, indent=2)}\n", encoding="utf-8")
+    return path
+
+
 def _write_first_agent_review(
     root: Path,
     *,
@@ -848,6 +907,15 @@ class CliTests(unittest.TestCase):
         self.assertEqual(payload["target"]["root"], None)
         self.assertEqual(payload["execution"]["commandsExecuted"], False)
         self.assertEqual(payload["readiness"]["verdict"], "ready")
+        self.assertEqual(
+            payload["reviewWork"]["schemaVersion"],
+            "harnessforge.reviewWork.v1",
+        )
+        self.assertEqual(
+            payload["reviewWork"]["unresolvedActionable"]["count"],
+            0,
+        )
+        self.assertEqual(payload["reviewWork"]["acceptedAdvisory"]["count"], 0)
         self.assertEqual(payload["audit"]["overall"], 100)
         self.assertEqual(payload["drift"]["summary"]["actionable"], 0)
         self.assertIn("fileCount", payload["index"]["summary"])
@@ -1721,12 +1789,47 @@ class CliTests(unittest.TestCase):
         self.assertIn("maturityLevel", payload["summary"])
         self.assertEqual(payload["summary"]["featureStateStatus"], "aligned")
         self.assertEqual(payload["summary"]["observabilityStatus"], "strong")
+        self.assertIn("reviewWork", payload["sourceReport"])
         self.assertIn("currentLevel", payload["sourceReport"]["maturity"])
         self.assertIn("# HarnessForge Release Check", markdown)
-        self.assertIn("Maturity level:", markdown)
-        self.assertIn("Feature state:", markdown)
-        self.assertIn("Observability:", markdown)
-        self.assertIn("Publishes performed: `false`", markdown)
+
+    def test_release_check_accepts_compact_verify_summary(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            with contextlib.redirect_stdout(io.StringIO()):
+                main(
+                    [
+                        "init",
+                        "--target",
+                        str(root),
+                        "--command",
+                        "python -m compileall .",
+                    ]
+                )
+            _write_verify_summary(
+                root,
+                "docs/harness/evidence/verify-summary.json",
+            )
+            _write_first_agent_review(root)
+            task = root / "docs/harness/state/first-agent-task.md"
+            task.write_text(
+                task.read_text(encoding="utf-8").replace("REVIEW REQUIRED: ", ""),
+                encoding="utf-8",
+            )
+            stdout = io.StringIO()
+            with contextlib.redirect_stdout(stdout):
+                code = main(["release-check", "--target", str(root), "--json"])
+
+            payload = json.loads(stdout.getvalue())
+
+        self.assertEqual(code, 1)
+        gates = {item["id"]: item for item in payload["gates"]}
+        self.assertEqual(gates["verify-evidence"]["status"], "passed")
+        self.assertEqual(
+            payload["sourceReport"]["verifyEvidence"]["latest"]["schemaVersion"],
+            "harnessforge.verifySummary.v1",
+        )
+        self.assertTrue(payload["sourceReport"]["verifyEvidence"]["latest"]["compact"])
 
     def test_plan_json_maps_changed_files_without_running_checks(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -3179,6 +3282,47 @@ class CliTests(unittest.TestCase):
             stdout.getvalue(),
         )
         self.assertIn("Verify run: passed", stdout.getvalue())
+
+    def test_verify_evidence_summary_omits_command_output(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            command = _python_command(
+                "import sys; print('sensitive ' + 'stdout'); "
+                "sys.stderr.write('sensitive ' + 'stderr\\n')"
+            )
+            stdout = io.StringIO()
+            with contextlib.redirect_stdout(stdout):
+                code = main(
+                    [
+                        "verify",
+                        "--target",
+                        str(root),
+                        "--run",
+                        "--yes",
+                        "--command",
+                        command,
+                        "--evidence-summary",
+                        "docs/harness/evidence/verify-summary.json",
+                    ]
+                )
+
+            summary_path = root / "docs/harness/evidence/verify-summary.json"
+            payload = json.loads(summary_path.read_text(encoding="utf-8"))
+            raw_payload = summary_path.read_text(encoding="utf-8")
+
+        self.assertEqual(code, 0)
+        self.assertEqual(payload["schemaVersion"], "harnessforge.verifySummary.v1")
+        self.assertEqual(payload["mode"], "run")
+        self.assertEqual(payload["verdict"], "passed")
+        self.assertFalse(payload["privacy"]["stdoutStderrCaptured"])
+        self.assertNotIn("stdoutPreview", raw_payload)
+        self.assertNotIn("stderrPreview", raw_payload)
+        self.assertNotIn("sensitive stdout", raw_payload)
+        self.assertNotIn("sensitive stderr", raw_payload)
+        self.assertIn(
+            "Verify evidence summary written to docs/harness/evidence/verify-summary.json",
+            stdout.getvalue(),
+        )
 
     def test_verify_json_report_keeps_json_stdout_parseable(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

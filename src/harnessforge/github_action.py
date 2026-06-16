@@ -34,6 +34,7 @@ from .project.sync import format_sync_check, sync_check_to_dict, sync_exit_code
 from .project.verify import (
     DEFAULT_TIMEOUT_SECONDS,
     build_verify_plan,
+    compact_verify_report_to_dict,
     format_verify_plan,
     run_verify_checks,
     verify_report_to_dict,
@@ -254,6 +255,11 @@ def _run_verify_command(
 
     payload = verify_report_to_dict(report)
     json_path = write_json_payload(json_report, target, payload)
+    verify_summary_path = write_json_payload(
+        env.get("INPUT_VERIFY_SUMMARY", "").strip(),
+        target,
+        compact_verify_report_to_dict(report),
+    )
     text_report = format_verify_plan(report)
     print(text_report)
     _summary(env, "HarnessForge Verify", _verify_summary_markdown(report))
@@ -265,6 +271,7 @@ def _run_verify_command(
             "report-json": json_path,
             "report-html": "",
             "report-markdown": "",
+            "verify-summary": verify_summary_path,
             "changed-files": "0",
             "verify-verdict": report.verdict,
             "readiness-verdict": "",
@@ -579,6 +586,10 @@ def _report_summary_markdown(payload: dict[str, Any]) -> str:
         "| Review surfaces | "
         f"`{payload['readiness']['reviewStatusSummary']['pendingReview']}` pending, "
         f"`{payload['readiness']['reviewStatusSummary']['acceptedAdvisory']}` accepted |",
+        "| Actionable review work | "
+        f"`{payload['reviewWork']['unresolvedActionable']['count']}` unresolved |",
+        "| Advisory review inventory | "
+        f"`{payload['reviewWork']['acceptedAdvisory']['count']}` accepted |",
         "| Docs fan-out verdict | "
         f"`{payload['docsFanout']['contract']['verdict']}` "
         f"({payload['docsFanout']['diff']['classification']}) |",

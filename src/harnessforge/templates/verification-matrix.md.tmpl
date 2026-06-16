@@ -37,8 +37,7 @@ risk, and next best evidence when a layer cannot run.
 
 ## Verification Evidence Reports
 
-Use repo-owned commands as the default verification path. If HarnessForge is
-available, optional helper commands are:
+Use repo-owned commands first. Optional HarnessForge helpers:
 
 | Need | Command |
 | --- | --- |
@@ -47,18 +46,19 @@ available, optional helper commands are:
 | Diff-aware check selection | `harnessforge plan --target . --since HEAD` |
 | Unified review snapshot | `harnessforge report --target .` |
 
-To store runnable HarnessForge evidence without shell redirection when
-HarnessForge is available:
+Store runnable evidence:
 
 ```bash
 harnessforge verify --target . --run --json-report docs/harness/evidence/verify-<date>.json
+harnessforge verify --target . --run --evidence-summary docs/harness/evidence/verify-summary-<date>.json
 ```
 
-When recording runnable evidence, store JSON under a target-relative report
-path such as `docs/harness/evidence/verify-<date>.json`; review every check
-with `failed`, `timed_out`, or `blocked` status before claiming success; redact
-secrets and keep long raw logs out of durable docs; prefer agent-oriented failure messages: what failed, why the boundary matters, and where to repair.
-Verify report output proves configured checks were planned or run; it does not prove real-agent effectiveness. It is optional unless the repo owner adopts HarnessForge or its Action as a gate.
+Use full JSON when diagnostics matter, or compact summary to omit stdout/stderr
+previews. Review every `failed`, `timed_out`, or `blocked` check before claiming
+success. Keep raw logs out of durable docs. Use agent-oriented failure messages:
+what failed, why it matters, and where to repair. Verify output proves checks
+were planned or run; it does not prove real-agent effectiveness and is optional
+unless the repo owner adopts HarnessForge or its Action as a gate.
 
 ## When Checks Cannot Run
 

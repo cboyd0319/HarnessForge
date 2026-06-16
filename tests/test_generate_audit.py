@@ -632,6 +632,10 @@ class GenerateAuditTests(unittest.TestCase):
             "--json-report docs/harness/evidence/verify-<date>.json",
             normalized_matrix,
         )
+        self.assertIn(
+            "--evidence-summary docs/harness/evidence/verify-summary-<date>.json",
+            normalized_matrix,
+        )
         self.assertIn("docs/harness/evidence/verify-<date>.json", matrix)
         self.assertIn("`failed`, `timed_out`, or `blocked`", matrix)
         self.assertIn("evidence ladder", matrix)
@@ -649,6 +653,7 @@ class GenerateAuditTests(unittest.TestCase):
         self.assertIn("failed, timed_out, or blocked", evidence)
 
         self.assertIn("--run --json-report", release)
+        self.assertIn("--run --evidence-summary", release)
         self.assertIn("failed, timed_out, or blocked", release)
         self.assertIn("owner, risk, and next action", release)
         self.assertIn("audit score", release)

@@ -17,6 +17,7 @@ from ..core.redact import redact_local_paths
 
 
 SCHEMA_VERSION = "harnessforge.verify.v1"
+SUMMARY_SCHEMA_VERSION = "harnessforge.verifySummary.v1"
 PLAN_MESSAGE = "Plan mode only. Command execution requires explicit run mode."
 DEFAULT_TIMEOUT_SECONDS = 300.0
 PREVIEW_LIMIT = 4000
@@ -169,6 +170,39 @@ def verify_report_to_dict(report: VerifyReport) -> dict[str, Any]:
         "blockedReasons": list(report.blocked_reasons),
         "warnings": list(report.warnings),
         "artifacts": [],
+    }
+
+
+def compact_verify_report_to_dict(report: VerifyReport) -> dict[str, Any]:
+    return {
+        "schemaVersion": SUMMARY_SCHEMA_VERSION,
+        "target": {
+            "name": report.target,
+            "root": None,
+        },
+        "mode": report.mode,
+        "verdict": report.verdict,
+        "recordedAt": report.ended_at or report.started_at,
+        "platform": {
+            "os": sys.platform,
+            "python": platform.python_version(),
+            "runner": "local",
+        },
+        "execution": {
+            "commandsExecuted": report.commands_executed,
+            "startedAt": report.started_at,
+            "endedAt": report.ended_at,
+            "durationMs": report.duration_ms,
+        },
+        "summary": _summary(report.checks),
+        "checks": [_compact_check_to_dict(check) for check in report.checks],
+        "blockedReasons": list(report.blocked_reasons),
+        "warnings": list(report.warnings),
+        "artifacts": [],
+        "privacy": {
+            "stdoutStderrCaptured": False,
+            "outputPreviewPolicy": "omitted",
+        },
     }
 
 
@@ -350,6 +384,21 @@ def _check_to_dict(check: VerifyCheck) -> dict[str, Any]:
         "message": check.message,
         "stdoutPreview": check.stdout_preview,
         "stderrPreview": check.stderr_preview,
+    }
+
+
+def _compact_check_to_dict(check: VerifyCheck) -> dict[str, Any]:
+    return {
+        "id": check.id,
+        "label": check.label,
+        "command": check.command,
+        "source": check.source,
+        "workingDirectory": check.working_directory,
+        "required": check.required,
+        "status": check.status,
+        "exitCode": check.exit_code,
+        "durationMs": check.duration_ms,
+        "message": check.message,
     }
 
 

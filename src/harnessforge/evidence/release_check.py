@@ -468,6 +468,7 @@ def _source_report_summary(report: dict[str, Any]) -> dict[str, Any]:
         "generatedAt": report["generatedAt"],
         "detectedStack": report["detectedStack"],
         "readiness": report["readiness"],
+        "reviewWork": report["reviewWork"],
         "audit": report["audit"],
         "skillWiring": report["skillWiring"],
         "verifyEvidence": report["verifyEvidence"],

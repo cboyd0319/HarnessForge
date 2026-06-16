@@ -47,6 +47,22 @@ class VerifyContractTests(unittest.TestCase):
         self.assertIn("planned", schema["$defs"]["checkStatus"]["enum"])
         self.assertIn("timed_out", schema["$defs"]["checkStatus"]["enum"])
 
+    def test_report_contract_documents_downstream_fields(self) -> None:
+        contract = (
+            REPO_ROOT
+            / "docs"
+            / "harness"
+            / "feedback"
+            / "report-json-contract.md"
+        ).read_text(encoding="utf-8")
+
+        self.assertIn("harnessforge.report.v1", contract)
+        self.assertIn("reviewWork", contract)
+        self.assertIn("unresolvedActionable", contract)
+        self.assertIn("acceptedAdvisory", contract)
+        self.assertIn("harnessforge.verifySummary.v1", contract)
+        self.assertIn("commandsExecuted", contract)
+
     def test_effectiveness_eval_contract_records_evidence_boundaries(self) -> None:
         contract = (
             REPO_ROOT

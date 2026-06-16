@@ -56,8 +56,8 @@ This repository ships two related surfaces:
 | Help agents orient in a repo | Generate compact instruction routers and durable project state |
 | Avoid overwriting local work | Preserve existing files by default and track generated ownership |
 | Know whether a repo is ready | Run read-only readiness and sync preflight checks |
-| Review harness health in one place | Compose readiness, audit, drift, index, and evidence into one report |
-| Prepare release evidence | Run a read-only release check over audit, verify evidence, drift, docs fan-out, and lifecycle gates |
+| Review harness health in one place | Compose readiness, audit, drift, index, review work, and evidence into one report |
+| Prepare release evidence | Run a read-only release check over audit, compact verify evidence, drift, docs fan-out, and lifecycle gates |
 | Keep generated harnesses honest | Audit structure, drift, security boundaries, and lifecycle controls |
 | Respect existing spec systems | Detect `.specify`, `specs/`, `aspec/`, work-item templates, and workflow surfaces |
 | Build deeper project operating models | Apply optional blueprints for agentic apps, SDD, web services, data/ML, security, and automation |

@@ -8,6 +8,7 @@ from typing import Any
 
 from ..assessment.audit import audit_target
 from ..core.harness_paths import HARNESS_SKILL_PATH, harness_path
+from ..evidence.report import build_report
 from ..project.detect import MISSING_VERIFICATION_COMMAND, detect_project
 from ..project.indexer import build_index_report
 from .generate import create_harness
@@ -71,6 +72,9 @@ class PublicRepoFixture:
     expected_verification_fragments: tuple[str, ...]
     files: tuple[FixtureFile, ...]
     rationale: str
+    expected_report_maturity: str | None = None
+    expected_report_unresolved_review: int | None = None
+    expected_report_min_accepted_advisory: int | None = None
 
 
 PUBLIC_REPO_CORPUS: tuple[PublicRepoFixture, ...] = (
@@ -458,6 +462,111 @@ PUBLIC_REPO_CORPUS: tuple[PublicRepoFixture, ...] = (
         ),
         rationale="Security-sensitive docs repo with explicit validation target.",
     ),
+    PublicRepoFixture(
+        id="runhaven-shaped",
+        repository="field-fixture/runhaven-shaped",
+        url="https://example.com/fixtures/runhaven-shaped",
+        pinned_ref="6ec375e1f7c948d50acbdb32b4c4190ab3d8f2a1",
+        categories=("typescript-app", "container-heavy", "security-sensitive", "monorepo"),
+        expected_stack="typescript-react",
+        expected_languages=("javascript", "typescript"),
+        expected_package_managers=("npm",),
+        expected_runtime_files=("package.json", "tsconfig.json", "Dockerfile"),
+        expected_workspace_markers=("package.json workspaces",),
+        expected_routing_markers=(".github/workflows",),
+        expected_component_paths=(".", "apps/web", "packages/ui"),
+        expected_source_of_truth=("README.md",),
+        expected_verification_fragments=("npm run lint", "npm test"),
+        files=(
+            FixtureFile(
+                "package.json",
+                "{\n"
+                '  "name": "runhaven-shaped",\n'
+                '  "workspaces": ["apps/*", "packages/*"],\n'
+                '  "scripts": {"lint": "eslint .", "test": "vitest run"},\n'
+                '  "dependencies": {"@vitejs/plugin-react": "latest", "react": "latest"},\n'
+                '  "devDependencies": {"typescript": "latest", "vitest": "latest"}\n'
+                "}\n",
+            ),
+            FixtureFile("tsconfig.json", '{"compilerOptions": {"strict": true}}\n'),
+            FixtureFile("apps/web/package.json", '{"name": "web", "scripts": {"test": "vitest run"}}\n'),
+            FixtureFile("apps/web/src/App.tsx", "export function App() { return null }\n"),
+            FixtureFile("packages/ui/package.json", '{"name": "ui"}\n'),
+            FixtureFile("packages/ui/src/Button.tsx", "export const Button = () => null\n"),
+            FixtureFile("Dockerfile", "FROM node:22-alpine\n"),
+            FixtureFile("docker/api/Dockerfile", "FROM node:22-alpine\n"),
+            FixtureFile("docker/worker/Containerfile", "FROM node:22-alpine\n"),
+            FixtureFile(
+                ".github/workflows/ci.yml",
+                "name: ci\n"
+                "on:\n"
+                "  push:\n"
+                "jobs:\n"
+                "  test:\n"
+                "    permissions:\n"
+                "      contents: read\n"
+                "    steps:\n"
+                "      - run: npm test\n",
+            ),
+            FixtureFile("README.md", "# RunHaven Shaped\n\nOperational app fixture.\n"),
+            FixtureFile("docs/architecture.md", "# Architecture\n\nWeb, API, worker.\n"),
+            FixtureFile(
+                "AGENTS.md",
+                "# AGENTS.md\n\n"
+                "## Project overview\n"
+                "RunHaven Shaped is a TypeScript app workspace with web, API, and worker surfaces.\n\n"
+                "## Startup\n"
+                "Read `README.md`, `docs/architecture.md`, `current-state.md`, and `.agents/skills/harness/SKILL.md`.\n\n"
+                "## Verification\n"
+                "Run `npm run lint` and `npm run test` before completion.\n\n"
+                "## Constraints\n"
+                "Review workflows and container files before changing runner, image, network, or credential behavior.\n\n"
+                "## Definition Of Done\n"
+                "Work is done only when behavior, verification, status, and evidence agree.\n\n"
+                "## State\n"
+                "Use `current-state.md` for current objective and blockers.\n\n"
+                "## End of Session\n"
+                "Update current state before ending non-trivial work.\n",
+            ),
+            FixtureFile("CLAUDE.md", "@AGENTS.md\n\nShared instructions.\n"),
+            FixtureFile("GEMINI.md", "@AGENTS.md\n\nShared instructions.\n"),
+            FixtureFile(".github/copilot-instructions.md", "Use AGENTS.md as the source of truth.\n"),
+            FixtureFile(
+                "current-state.md",
+                "# Current State\n\n"
+                "Last Updated: 2026-06-16 UTC\n\n"
+                "## Current Objective\n"
+                "Maintain the repo harness.\n\n"
+                "## Trusted Verification\n"
+                "- Pending next local run.\n\n"
+                "## Touched Surfaces\n"
+                "- AGENTS.md\n"
+                "- docs/harness/\n\n"
+                "## Blockers\n"
+                "- None.\n\n"
+                "## Next Step\n"
+                "Run repo-owned checks before shipping.\n",
+            ),
+            FixtureFile(
+                harness_path("first_agent_task"),
+                "# First-Agent Harness Improvement Task\n\n"
+                "Status: retired after maintainer review.\n\n"
+                "The first-agent review confirmed component inventory, verification matrix, "
+                "sensor registry, evidence routing, and security boundaries.\n",
+            ),
+            FixtureFile(
+                harness_path("first_agent_review"),
+                '{"schemaVersion":"harnessforge.firstAgentReview.v1","status":"retired","reviewedAt":"2026-06-16T00:00:00Z","reviewedBy":["maintainer"],"taskPath":"docs/harness/state/first-agent-task.md","freshSession":{"purpose":"verified","organization":"verified","startup":"verified","verification":"verified","currentWork":"verified","sourceOfTruth":"verified"},"updatedSurfaces":["AGENTS.md","docs/harness/state/first-agent-task.md","docs/harness/evidence/first-agent-review.json"],"verification":{"commands":["npm run lint","npm test"],"evidenceRefs":["current-state.md"]},"highRiskSurfaceReview":{"status":"accepted_advisory","reviewedAt":"2026-06-16T00:00:00Z","surfaces":[{"path":"AGENTS.md","category":"instruction","decision":"accepted_advisory"},{"path":"CLAUDE.md","category":"instruction","decision":"accepted_advisory"},{"path":"GEMINI.md","category":"instruction","decision":"accepted_advisory"},{"path":".github/copilot-instructions.md","category":"instruction","decision":"accepted_advisory"},{"path":".github/workflows/ci.yml","category":"workflow","decision":"accepted_advisory"},{"path":"Dockerfile","category":"container-runtime","decision":"accepted_advisory"},{"path":"docker/api/Dockerfile","category":"container-runtime","decision":"accepted_advisory"},{"path":"docker/worker/Containerfile","category":"container-runtime","decision":"accepted_advisory"}],"evidenceRefs":["docs/architecture.md","current-state.md"]},"remainingReview":[],"retirement":{"taskRetired":true,"reason":"Fixture models reviewed target harness state."}}\n',
+            ),
+        ),
+        rationale=(
+            "Field-shaped target with existing routers, CI, multiple container "
+            "runtime files, current state, and accepted first-agent evidence."
+        ),
+        expected_report_maturity="reviewed",
+        expected_report_unresolved_review=0,
+        expected_report_min_accepted_advisory=8,
+    ),
 )
 
 
@@ -546,6 +655,11 @@ def _assess_fixture(fixture: PublicRepoFixture) -> dict[str, Any]:
         index = build_index_report(profile)
         _, writes = create_harness(root)
         audit = audit_target(root)
+        report = (
+            build_report(root)
+            if fixture.expected_report_maturity is not None
+            else None
+        )
         generated_text = _read_generated_text(root)
         root_instruction_lines = _line_count(root / "AGENTS.md")
 
@@ -616,7 +730,7 @@ def _assess_fixture(fixture: PublicRepoFixture) -> dict[str, Any]:
         ),
         _check(
             "specific_project_context",
-            f"Detected stack: {fixture.expected_stack}" in generated_text
+            _has_project_context(generated_text, fixture.expected_stack)
             and "Detected stack: generic" not in generated_text,
             "generated instructions do not carry the expected detected stack",
         ),
@@ -636,6 +750,41 @@ def _assess_fixture(fixture: PublicRepoFixture) -> dict[str, Any]:
             "harness generation did not write generated files",
         ),
     ]
+    if report is not None:
+        checks.extend(
+            [
+                _check(
+                    "expected_report_maturity",
+                    report["maturity"]["currentLevel"]
+                    == fixture.expected_report_maturity,
+                    (
+                        "expected "
+                        f"{fixture.expected_report_maturity}, "
+                        f"got {report['maturity']['currentLevel']}"
+                    ),
+                ),
+                _check(
+                    "expected_unresolved_review_work",
+                    report["reviewWork"]["unresolvedActionable"]["count"]
+                    == fixture.expected_report_unresolved_review,
+                    (
+                        "expected "
+                        f"{fixture.expected_report_unresolved_review}, got "
+                        f"{report['reviewWork']['unresolvedActionable']['count']}"
+                    ),
+                ),
+                _check(
+                    "expected_accepted_advisory_review",
+                    report["reviewWork"]["acceptedAdvisory"]["count"]
+                    >= (fixture.expected_report_min_accepted_advisory or 0),
+                    (
+                        "expected at least "
+                        f"{fixture.expected_report_min_accepted_advisory}, got "
+                        f"{report['reviewWork']['acceptedAdvisory']['count']}"
+                    ),
+                ),
+            ]
+        )
     passed = sum(1 for check in checks if check["passed"])
     score = round((passed / len(checks)) * 100) if checks else 0
     failed_checks = [check["name"] for check in checks if not check["passed"]]
@@ -686,6 +835,14 @@ def _line_count(path: Path) -> int:
 
 def _check(name: str, passed: bool, detail: str = "") -> dict[str, Any]:
     return {"name": name, "passed": passed, "detail": "" if passed else detail}
+
+
+def _has_project_context(text: str, expected_stack: str) -> bool:
+    lowered = text.lower()
+    if f"detected stack: {expected_stack}".lower() in lowered:
+        return True
+    stack_terms = [term for term in re.split(r"[^a-z0-9]+", expected_stack.lower()) if term]
+    return bool(stack_terms) and any(term in lowered for term in stack_terms)
 
 
 def _check_subset(

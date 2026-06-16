@@ -77,6 +77,7 @@ Explicit execution shape:
 harnessforge verify --target <repo> --json --run
 harnessforge verify --target <repo> --json --run --timeout-seconds 120
 harnessforge verify --target <repo> --run --json-report docs/harness/evidence/verify-<date>.json
+harnessforge verify --target <repo> --run --evidence-summary docs/harness/evidence/verify-summary-<date>.json
 ```
 
 Run mode executes each check from the target repository root using an argument
@@ -88,17 +89,49 @@ the target repository. POSIX and Windows absolute or rooted paths are rejected,
 Windows-style relative separators are normalized, and traversal outside the
 target repository is rejected.
 
+Use `--evidence-summary <target-relative-path>` to persist compact
+`harnessforge.verifySummary.v1` evidence without stdout or stderr previews.
+The summary records mode, verdict, timing, commands, status counts, exit
+codes, durations, messages, blockers, and warnings. It omits `stdoutPreview`
+and `stderrPreview` entirely so release evidence can stay durable without
+carrying raw command output.
+
 Readiness and sync preflight can inventory stored reports under
-`docs/harness/evidence/verify*.json`. This inventory is advisory: it surfaces
-latest verdict, schema validity, stale reports, failed or blocked outcomes, and
-timed-out checks without turning stored evidence into a hard release gate by
-default.
+`docs/harness/evidence/verify*.json`. They accept both full
+`harnessforge.verify.v1` reports and compact `harnessforge.verifySummary.v1`
+summaries. This inventory is advisory: it surfaces latest verdict, schema
+validity, compact/full schema type, stale reports, failed or blocked outcomes,
+and timed-out checks without turning stored evidence into a hard release gate
+by default.
 
 Call `inspect --readiness --require-verify-evidence` or
 `sync --check --require-verify-evidence` when stored verify evidence should be
 a hard gate. Gate mode requires at least one valid stored report, blocks on any
 invalid verify report, and requires the latest valid report to be run-mode,
 fresh, passed, and free of failed, blocked, timed-out, or error summary counts.
+
+## Compact Summary Shape
+
+Compact summary top-level fields:
+
+| Field | Required | Meaning |
+| --- | --- | --- |
+| `schemaVersion` | yes | Current value: `harnessforge.verifySummary.v1` |
+| `target` | yes | Target metadata without unredacted local absolute paths |
+| `mode` | yes | `plan` or `run` |
+| `verdict` | yes | Overall report status |
+| `recordedAt` | yes | End time, start time, or `null` when no command ran |
+| `platform` | yes | Host and runner metadata |
+| `execution` | yes | Whether commands ran and timing metadata |
+| `summary` | yes | Count of checks by final status |
+| `checks` | yes | Ordered check records without command output previews |
+| `blockedReasons` | yes | Conditions preventing useful verification |
+| `warnings` | yes | Non-blocking review items |
+| `artifacts` | yes | Future report artifacts, if any |
+| `privacy` | yes | States that stdout/stderr previews are omitted |
+
+Compact check records use the same fields as full check records except
+`stdoutPreview` and `stderrPreview`.
 
 ## Exit Codes
 

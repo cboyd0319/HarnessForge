@@ -4,15 +4,10 @@ Last Updated: 2026-06-16 UTC
 
 ## Current Objective
 
-RunHaven field testing exposed review-finalization gaps that are now accepted
-as the next product buildout. Release prep stays paused until structured
-high-risk surface acceptance, review finalization, state migration, manifest
-refresh, skill-wiring validation, and related report/maturity fixes are
-implemented or explicitly deferred by maintainers. Structured high-risk surface
-acceptance, review-finalization automation, structured review status fields,
-split-state migration, and generated/enhanced harness skill-wiring validation
-are implemented. The next slice is compact verification evidence capture,
-followed by report polish and a RunHaven-shaped fixture.
+All accepted pre-release backlog and RunHaven-derived product buildout items
+are implemented. Release prep can resume next. Any additional RunHaven or
+sibling-repo quality passes are release-prep field evidence, not open backlog
+blockers.
 
 ## Product State
 
@@ -111,6 +106,22 @@ followed by report polish and a RunHaven-shaped fixture.
   The validator checks skill frontmatter, reference file presence, reference
   paths, zero-install guidance, and whether root instructions route
   harness-maintenance work to `.agents/skills/harness/SKILL.md`.
+- `harnessforge verify --evidence-summary` and Action `verify-summary` now
+  write compact `harnessforge.verifySummary.v1` evidence without stdout or
+  stderr previews. Readiness and release gates consume both full verify reports
+  and compact verify summaries.
+- `harnessforge report` now includes `harnessforge.reviewWork.v1`, separating
+  unresolved actionable review work from accepted advisory inventory.
+  `docs/harness/feedback/report-json-contract.md` documents stable downstream
+  report fields.
+- The offline public-repo corpus now includes a RunHaven-shaped reviewed-harness
+  fixture with existing instruction routers, CI workflow, multiple container
+  runtime files, `current-state.md`, retired first-agent lifecycle evidence,
+  accepted high-risk surface review, and reviewed maturity/report expectations.
+- Public docs, generated templates, the composite Action docs, release controls,
+  verification guidance, and the live manifest are updated for compact verify
+  evidence, review-work reporting, the report JSON contract, and the
+  RunHaven-shaped fixture.
 
 ## Trusted Verification
 
@@ -179,6 +190,20 @@ followed by report polish and a RunHaven-shaped fixture.
   `100/100`.
 - `git diff --check`, compileall, JSON validation, durable-doc local-path
   scan, and stale artifact cleanup passed.
+- Final backlog completion verification passed: affected CLI/Action/generator/
+  corpus/report/maturity suite passed with 198 tests; full unit discovery
+  passed with 285 tests; `./init.sh` passed with 285 tests and self-audit
+  `100/100`; compileall, pin check, research source check, public corpus
+  metadata check, JSON validation, `git diff --check`, durable-doc local-path
+  scan, self-audit `100/100`, report JSON smoke, expected-block release-check
+  JSON smoke, and offline corpus quality gate with 14 fixtures at minimum score
+  `100` passed.
+- `pwsh -NoProfile -File ./init.ps1` could not run in the local shell because
+  PowerShell command execution fails before repo code loads with a .NET
+  `System.IO.FileLoadException`. `pwsh -v` reports PowerShell 7.6.2, but even
+  `pwsh -NoProfile -NonInteractive -Command 'Write-Output ok'` fails the same
+  way. Record this as a local PowerShell runtime verification gap, not a
+  HarnessForge script failure.
 
 ## Touched Surfaces
 
@@ -191,6 +216,9 @@ followed by report polish and a RunHaven-shaped fixture.
 - `docs/usage.md`
 - `docs/harness/boundaries/component-inventory.md`
 - `docs/harness/evidence/first-agent-review.json`
+- `docs/harness/feedback/report-json-contract.md`
+- `docs/harness/feedback/verification-matrix.md`
+- `docs/harness/feedback/verify-json-contract.md`
 - `docs/harness/manifest.json`
 - `docs/harness/research/source-record.schema.json`
 - `docs/harness/research/source-record-example.json`
@@ -208,8 +236,10 @@ followed by report polish and a RunHaven-shaped fixture.
 - `src/harnessforge/evidence/skill_wiring.py`
 - `src/harnessforge/evidence/release_check.py`
 - `src/harnessforge/evidence/report.py`
+- `src/harnessforge/evidence/verify_evidence.py`
 - `src/harnessforge/generation/`
 - `src/harnessforge/project/`
+- `src/harnessforge/project/verify.py`
 - `src/harnessforge/`
 - `tests/`
 
@@ -219,5 +249,5 @@ followed by report polish and a RunHaven-shaped fixture.
 
 ## Next Step
 
-Implement compact verification evidence capture, then continue the remaining
-RunHaven-derived backlog in `docs/roadmap.md` before release prep resumes.
+Resume release prep. Start with release evidence, packaging/publish checks, and
+real-repo field quality passes as release-prep evidence.

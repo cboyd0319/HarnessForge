@@ -649,6 +649,7 @@ class GitHubActionTests(unittest.TestCase):
                 "INPUT_VERIFY_RUN": "true",
                 "INPUT_VERIFY_COMMAND": command,
                 "INPUT_JSON_REPORT": "verify.json",
+                "INPUT_VERIFY_SUMMARY": "docs/harness/evidence/verify-summary.json",
                 "GITHUB_OUTPUT": str(output),
             }
 
@@ -656,6 +657,11 @@ class GitHubActionTests(unittest.TestCase):
                 code = run_from_env(env)
 
             payload = json.loads((root / "verify.json").read_text(encoding="utf-8"))
+            summary_payload = json.loads(
+                (
+                    root / "docs/harness/evidence/verify-summary.json"
+                ).read_text(encoding="utf-8")
+            )
             outputs = _parse_github_output(output.read_text(encoding="utf-8"))
             marker_exists = marker.exists()
 
@@ -664,7 +670,16 @@ class GitHubActionTests(unittest.TestCase):
         self.assertEqual(payload["mode"], "run")
         self.assertEqual(payload["verdict"], "passed")
         self.assertEqual(payload["checks"][0]["status"], "passed")
+        self.assertEqual(
+            summary_payload["schemaVersion"],
+            "harnessforge.verifySummary.v1",
+        )
+        self.assertNotIn("stdoutPreview", json.dumps(summary_payload))
         self.assertEqual(outputs["verify-verdict"], "passed")
+        self.assertEqual(
+            outputs["verify-summary"],
+            "docs/harness/evidence/verify-summary.json",
+        )
 
     def test_action_verify_run_failure_returns_one_and_writes_report(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

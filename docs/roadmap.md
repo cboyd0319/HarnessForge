@@ -291,10 +291,10 @@ project-specific source-of-truth routing before unrelated feature work.
 
 ### RunHaven-Derived Review Finalization Flow
 
-Status: active before release prep. Structured high-risk acceptance and the
-explicit review-finalization command are implemented; state migration,
-skill-wiring validation, compact verification evidence capture, report polish,
-and the RunHaven-shaped fixture remain.
+Status: implemented before release prep. Structured high-risk acceptance,
+explicit review finalization, state migration, skill-wiring validation,
+compact verification evidence capture, report review-work polish, stable report
+field docs, and the RunHaven-shaped fixture are implemented.
 
 The RunHaven harness overhaul showed that several correct target-repo actions
 were still manual even though HarnessForge had enough structure to guide or
@@ -322,8 +322,7 @@ Accepted behavior:
   files without rewriting project-owned prose.
 - Validate repo-local harness skill wiring, reference paths, trigger text, and
   first-agent status in generated and enhanced repositories.
-- Capture compact verification evidence from known command results into
-  `current-state.md`, `docs/harness/evidence/evidence-log.md`, or target
+- Capture compact verification evidence from known command results into target
   evidence JSON without pasting raw logs.
 - Separate advisory detected high-risk inventory from unresolved actionable
   review work in human and JSON report output.
@@ -926,25 +925,34 @@ Implemented shape:
 2. Implemented: readiness and report JSON now expose structured
    `reviewSurfaces` plus `reviewStatusSummary`, and review finalization uses
    those machine status values instead of parsing human-readable messages.
-3. Implemented in part: `finalize-review` can retire the first-agent task,
-   record high-risk acceptance evidence, and refresh manifest metadata. Compact
-   verification evidence capture remains.
+3. Implemented: `finalize-review` can retire the first-agent task, record
+   high-risk acceptance evidence, and refresh manifest metadata.
 4. Implemented: `migrate-state` plans and explicitly applies bounded,
    idempotent migration from `progress.md` and `session-handoff.md` to
    `current-state.md` while preserving legacy files.
 5. Implemented: readiness, report, release-check, and Action summaries validate
    generated and enhanced repo-local harness skill wiring, reference paths,
    trigger frontmatter, and instruction routing.
-6. Add the RunHaven-shaped fixture to the public-repo quality corpus and assert
-   the reviewed maturity/report behavior.
-7. Re-run real-repo quality passes against RunHaven and selected sibling repos.
-8. Resume release prep only after the above is complete or explicitly deferred
-   by maintainers.
-9. Keep the generated target wording advisory unless the repo owner opts into
+6. Implemented: `verify --evidence-summary` writes compact
+   `harnessforge.verifySummary.v1` evidence without stdout or stderr previews,
+   and readiness/release gates consume it.
+7. Implemented: report JSON includes `reviewWork`, separating unresolved
+   actionable review work from accepted advisory inventory, and
+   `docs/harness/feedback/report-json-contract.md` documents stable fields.
+8. Implemented: the public-repo quality corpus includes a RunHaven-shaped
+   fixture with existing routers, CI workflow, multiple container runtime
+   files, `current-state.md`, first-agent evidence, high-risk acceptance, and
+   reviewed maturity/report expectations.
+9. Release-prep field evidence: re-run real-repo quality passes against
+   RunHaven and selected sibling repos during release prep or the next
+   field-testing batch.
+10. Current accepted backlog is complete. Resume release prep and keep new
+   findings in the roadmap only after maintainers accept them as product work.
+11. Keep the generated target wording advisory unless the repo owner opts into
    the Action, and continue quality passes against real repositories.
-10. Keep the pinned public-repo quality corpus and generated-artifact scorer
+12. Keep the pinned public-repo quality corpus and generated-artifact scorer
    green as quality and detection gates evolve.
-11. Previously completed: policy preset report status, evidence-gated
+13. Previously completed: policy preset report status, evidence-gated
    feature-state and instruction-quality reporting, read-only SBOM adapter
    status, expanded policy presets, interactive quickstart decision plan, and
    source package reorganization.

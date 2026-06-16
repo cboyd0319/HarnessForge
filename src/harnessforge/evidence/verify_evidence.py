@@ -10,12 +10,15 @@ from ..core.paths import path_from_relative_text
 
 VERIFY_EVIDENCE_PREFIX = "docs/harness/evidence/"
 VERIFY_SCHEMA_VERSION = "harnessforge.verify.v1"
+VERIFY_SUMMARY_SCHEMA_VERSION = "harnessforge.verifySummary.v1"
+VERIFY_SCHEMA_VERSIONS = {VERIFY_SCHEMA_VERSION, VERIFY_SUMMARY_SCHEMA_VERSION}
 STALE_AFTER_DAYS = 14
 
 
 @dataclass(frozen=True)
 class VerifyEvidenceItem:
     path: str
+    schema_version: str | None
     schema_valid: bool
     mode: str | None
     verdict: str | None
@@ -137,6 +140,8 @@ def verify_evidence_gate_blockers(report: VerifyEvidenceReport) -> tuple[str, ..
 def verify_evidence_item_to_dict(item: VerifyEvidenceItem) -> dict[str, Any]:
     return {
         "path": item.path,
+        "schemaVersion": item.schema_version,
+        "compact": item.schema_version == VERIFY_SUMMARY_SCHEMA_VERSION,
         "schemaValid": item.schema_valid,
         "mode": item.mode,
         "verdict": item.verdict,
@@ -162,6 +167,7 @@ def _read_verify_report(root: Path, file: str) -> VerifyEvidenceItem | None:
         issues.append("invalid-json")
         return VerifyEvidenceItem(
             path=file,
+            schema_version=None,
             schema_valid=False,
             mode=None,
             verdict=None,
@@ -175,6 +181,7 @@ def _read_verify_report(root: Path, file: str) -> VerifyEvidenceItem | None:
         issues.append("invalid-payload")
         return VerifyEvidenceItem(
             path=file,
+            schema_version=None,
             schema_valid=False,
             mode=None,
             verdict=None,
@@ -188,7 +195,8 @@ def _read_verify_report(root: Path, file: str) -> VerifyEvidenceItem | None:
     verdict = payload.get("verdict")
     execution = payload.get("execution")
     checks = payload.get("checks")
-    schema_valid = payload.get("schemaVersion") == VERIFY_SCHEMA_VERSION
+    schema_version = payload.get("schemaVersion")
+    schema_valid = schema_version in VERIFY_SCHEMA_VERSIONS
     if not schema_valid:
         issues.append("invalid-schema")
     summary = payload.get("summary")
@@ -210,15 +218,19 @@ def _read_verify_report(root: Path, file: str) -> VerifyEvidenceItem | None:
         issues.append("invalid-checks")
     recorded_at = None
     if isinstance(execution, dict):
+        top_recorded_at = payload.get("recordedAt")
         ended_at = execution.get("endedAt")
         started_at = execution.get("startedAt")
-        recorded_at = ended_at if isinstance(ended_at, str) else None
+        recorded_at = top_recorded_at if isinstance(top_recorded_at, str) else None
+        if recorded_at is None and isinstance(ended_at, str):
+            recorded_at = ended_at
         if recorded_at is None and isinstance(started_at, str):
             recorded_at = started_at
     if recorded_at is None:
         recorded_at = updated_at
     return VerifyEvidenceItem(
         path=file,
+        schema_version=schema_version if isinstance(schema_version, str) else None,
         schema_valid=schema_valid,
         mode=mode if isinstance(mode, str) else None,
         verdict=verdict if isinstance(verdict, str) else None,

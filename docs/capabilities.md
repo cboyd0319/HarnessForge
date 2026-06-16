@@ -60,12 +60,15 @@ boundaries it preserves. See [Usage](usage.md) for commands and
   docs/research repos, legacy migrations, education/training repos, and
   workflow automation.
 - Provides an offline public-repo fixture corpus for generated-content quality
-  and detection regression checks without cloning public repositories.
+  and detection regression checks without cloning public repositories,
+  including a RunHaven-shaped reviewed-harness fixture.
 - Provides an explicit public-corpus refresh script that validates fixture
   metadata offline by default and checks remote heads only with
   `--verify-remote`.
 - Provides a composite GitHub Action for audit, init, update, sync, verify,
   report, release-check, finalize-review, migrate-state, and doctor workflows.
+- Provides compact verify evidence summaries for release gates when durable
+  evidence should omit stdout and stderr previews.
 - Provides explicit legacy state migration from root `progress.md` and
   `session-handoff.md` into `current-state.md`; apply mode preserves the
   legacy files and requires confirmation in the CLI.

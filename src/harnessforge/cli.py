@@ -67,6 +67,7 @@ from .project.sync import format_sync_check, sync_check_to_dict, sync_exit_code
 from .project.verify import (
     DEFAULT_TIMEOUT_SECONDS,
     build_verify_plan,
+    compact_verify_report_to_dict,
     format_verify_plan,
     run_verify_checks,
     verify_report_to_dict,
@@ -476,6 +477,13 @@ def build_parser() -> argparse.ArgumentParser:
     verify.add_argument(
         "--json-report",
         help="write verify JSON to a target-relative report path",
+    )
+    verify.add_argument(
+        "--evidence-summary",
+        help=(
+            "write compact verify evidence JSON without stdout/stderr previews "
+            "to a target-relative path"
+        ),
     )
     verify.add_argument(
         "--run",
@@ -1311,11 +1319,19 @@ def _verify(args: argparse.Namespace) -> int:
         report = build_verify_plan(profile, explicit_commands=tuple(args.commands))
     payload = verify_report_to_dict(report)
     json_report = write_json_payload(args.json_report or "", profile.root, payload)
+    summary_payload = compact_verify_report_to_dict(report)
+    evidence_summary = write_json_payload(
+        args.evidence_summary or "",
+        profile.root,
+        summary_payload,
+    )
     if args.json:
         print(json.dumps(payload, indent=2))
     else:
         if json_report:
             print(f"Verify JSON report written to {json_report}")
+        if evidence_summary:
+            print(f"Verify evidence summary written to {evidence_summary}")
         print(format_verify_plan(report))
     if not args.run:
         return 0

@@ -2183,6 +2183,7 @@ def _manifest_content(
             "harnessforge report --target .",
             "harnessforge verify --target . --json --run",
             "--json-report docs/harness/evidence/verify-<date>.json",
+            "--evidence-summary docs/harness/evidence/verify-summary-<date>.json",
             "evidence ladder",
             "agent-oriented failure messages",
             "Remote CI",
@@ -2277,6 +2278,7 @@ def _manifest_content(
         "docs/harness/release/release-controls.md": [
             "Release Controls",
             "--run --json-report",
+            "--run --evidence-summary",
             "owner, risk, and next action",
             "harnessforge release-check",
             "release evidence gates",
