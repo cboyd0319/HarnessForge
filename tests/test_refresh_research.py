@@ -210,6 +210,81 @@ class RefreshResearchTests(unittest.TestCase):
         self.assertIn("Main Finding", inbox)
         self.assertIn("| Source | Status | Signals | Title | Headings |", inbox)
 
+    def test_refresh_regenerates_stale_lock_after_source_list_change(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "docs/harness/research").mkdir(parents=True)
+            (root / "docs/harness/research/research-sources.json").write_text(
+                json.dumps(
+                    {
+                        "version": 1,
+                        "sources": [
+                            {
+                                "id": "demo-one",
+                                "url": "https://research.invalid/one",
+                                "category": "test",
+                            },
+                            {
+                                "id": "demo-two",
+                                "url": "https://research.invalid/two",
+                                "category": "test",
+                            },
+                        ],
+                    }
+                ),
+                encoding="utf-8",
+            )
+            (root / "docs/harness/research/research-sources.lock.json").write_text(
+                json.dumps(
+                    {
+                        "version": 1,
+                        "sourceCount": 1,
+                        "failureCount": 0,
+                        "sources": [
+                            {
+                                "id": "demo-one",
+                                "url": "https://research.invalid/one",
+                                "category": "test",
+                                "status": "ok",
+                            }
+                        ],
+                    }
+                ),
+                encoding="utf-8",
+            )
+            (root / "docs/harness/research/research-inbox.md").write_text(
+                "# Stale Inbox\n",
+                encoding="utf-8",
+            )
+
+            with (
+                mock.patch.object(
+                    refresh_research,
+                    "_resolve_host_addresses",
+                    return_value=[
+                        refresh_research.ipaddress.ip_address("93.184.216.34")
+                    ],
+                ),
+                mock.patch.object(
+                    refresh_research, "_open_url", return_value=_FakeResponse()
+                ),
+                contextlib.redirect_stdout(io.StringIO()),
+            ):
+                code = refresh_research.main(["--root", str(root)])
+
+            lock = json.loads(
+                (root / "docs/harness/research/research-sources.lock.json").read_text(
+                    encoding="utf-8"
+                )
+            )
+
+        self.assertEqual(code, 0)
+        self.assertEqual(lock["sourceCount"], 2)
+        self.assertEqual(
+            [record["id"] for record in lock["sources"]],
+            ["demo-one", "demo-two"],
+        )
+
     def test_refresh_withholds_adversarial_source_metadata(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

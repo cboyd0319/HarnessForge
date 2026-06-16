@@ -1,7 +1,7 @@
 {
-  "checkedAt": "2026-06-16T15:57:59+00:00",
+  "checkedAt": "2026-06-16T20:15:38+00:00",
   "failureCount": 1,
-  "sourceCount": 107,
+  "sourceCount": 125,
   "sources": [
     {
       "category": "field-report",
@@ -18,7 +18,7 @@
       ],
       "httpStatus": 200,
       "id": "openai-harness-engineering",
-      "sha256": "3557b8b7ef4f51e1e274beb837c45e3d64c564bc16e5cde240c76d44542d27d7",
+      "sha256": "53fcdc695f7aea4aed9fac6b6df1a46287b57802694511ff9aa7467386d49e8a",
       "status": "ok",
       "title": "Harness engineering: leveraging Codex in an agent-first world | OpenAI",
       "url": "https://openai.com/index/harness-engineering/"
@@ -38,10 +38,30 @@
       ],
       "httpStatus": 200,
       "id": "openai-ai-native-engineering",
-      "sha256": "0db63d042d6a7585c95d5327e3d1c6f692880ce9525ff4732ddb0fbb7d660f67",
+      "sha256": "3d317e232e61642df9738ae277bddab418890fc8e8a5e8c2bf6f4336eb6042a8",
       "status": "ok",
       "title": "Building an AI-Native Engineering Team \u2013 Codex | OpenAI Developers",
       "url": "https://developers.openai.com/codex/guides/build-ai-native-engineering-team"
+    },
+    {
+      "category": "token-economics",
+      "contentType": "text/html",
+      "headings": [
+        "Search the API docs",
+        "Prompt caching",
+        "Structuring prompts",
+        "How it works",
+        "Prompt cache retention",
+        "Requirements",
+        "Best practices",
+        "Frequently asked questions"
+      ],
+      "httpStatus": 200,
+      "id": "openai-prompt-caching",
+      "sha256": "4a20cde5c58a527cf4008bf801ba27a1d624fcbbce934c8d88f344507223f49a",
+      "status": "ok",
+      "title": "Prompt caching | OpenAI API",
+      "url": "https://developers.openai.com/api/docs/guides/prompt-caching"
     },
     {
       "category": "field-report",
@@ -56,7 +76,7 @@
       ],
       "httpStatus": 200,
       "id": "anthropic-effective-harnesses",
-      "sha256": "77e92158030972cb113092e96324505b7f764b3b34d57c2999f39fc80e5d3c90",
+      "sha256": "aa8f7451a774eb410c541f1ffd23c1a802a8607bf2e13ebe6ad1058367fd9279",
       "status": "ok",
       "title": "Effective harnesses for long-running agents \\ Anthropic",
       "url": "https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents"
@@ -76,10 +96,78 @@
       ],
       "httpStatus": 200,
       "id": "anthropic-long-running-apps",
-      "sha256": "d8fbe265774ad444f45702ce7cb65db29a19be4ce39cf442f704a3dc153a6fbd",
+      "sha256": "6202ee0ed1c0cbd3e15854639fd632b565b9eab68b1704995a956b6cefcb3b3d",
       "status": "ok",
       "title": "Harness design for long-running application development \\ Anthropic",
       "url": "https://www.anthropic.com/engineering/harness-design-long-running-apps"
+    },
+    {
+      "category": "token-economics",
+      "contentType": "text/html",
+      "headings": [
+        "Prompt caching",
+        "\ue09a How prompt caching works",
+        "\ue09a Pricing",
+        "\ue09a Supported models",
+        "\ue09a Automatic caching",
+        "\ue09a Explicit cache breakpoints",
+        "\ue09a Caching strategies and considerations",
+        "\ue09a 1-hour cache duration"
+      ],
+      "httpStatus": 200,
+      "id": "anthropic-prompt-caching",
+      "sha256": "07dc30d24243f068fc2c21c46f55ab5dd48f56491a4cf264121ef8953b13a9b6",
+      "status": "ok",
+      "title": "Prompt caching - Claude API Docs",
+      "url": "https://platform.claude.com/docs/en/build-with-claude/prompt-caching"
+    },
+    {
+      "category": "context-management",
+      "contentType": "text/html",
+      "headings": [
+        "Context windows",
+        "\ue09a Understanding the context window",
+        "\ue09a The context window with extended thinking",
+        "\ue09a The context window with extended thinking and tool use",
+        "\ue09a Context awareness in Claude Sonnet 4.6, Sonnet 4.5, and Haiku 4.5",
+        "\ue09a Managing context with compaction",
+        "\ue09a Context window overflow behavior",
+        "\ue09a Next steps"
+      ],
+      "httpStatus": 200,
+      "id": "anthropic-context-windows",
+      "sha256": "0f12b2d9a2edb5619fca99ce7adb497cbf1dcd71bbf3155422b60bb00c89845d",
+      "status": "ok",
+      "title": "Context windows - Claude API Docs",
+      "url": "https://platform.claude.com/docs/en/build-with-claude/context-windows"
+    },
+    {
+      "adversarialSignals": [
+        "unicode-injection"
+      ],
+      "category": "token-economics",
+      "contentType": "text/html",
+      "headings": [],
+      "httpStatus": 200,
+      "id": "anthropic-claude-code-costs",
+      "sha256": "d4a818cd18bb80912dcfb8f2dec7202a95adb661516e78e17b2513c70bec4e0d",
+      "status": "ok",
+      "title": "[withheld: adversarial instruction pattern]",
+      "url": "https://code.claude.com/docs/en/costs"
+    },
+    {
+      "adversarialSignals": [
+        "unicode-injection"
+      ],
+      "category": "token-economics",
+      "contentType": "text/html",
+      "headings": [],
+      "httpStatus": 200,
+      "id": "anthropic-claude-code-system-prompts",
+      "sha256": "5ceba79c1669ebe0a4f3daf8a49c2fbca3be93805305b34c01ab21c59b99e042",
+      "status": "ok",
+      "title": "[withheld: adversarial instruction pattern]",
+      "url": "https://code.claude.com/docs/en/agent-sdk/modifying-system-prompts"
     },
     {
       "category": "analysis",
@@ -163,7 +251,7 @@
       ],
       "httpStatus": 200,
       "id": "langchain-agent-harness",
-      "sha256": "dcf7bc0d06834aa210148a956ef4cbf2732e67b68443e3a1d3cf772ae1201f3c",
+      "sha256": "05521010d5f0475d7cb9b4c98e0c0d4570c3292829150c1877191c8c55cd9e8d",
       "status": "ok",
       "title": "The Anatomy of an Agent Harness",
       "url": "https://www.langchain.com/blog/the-anatomy-of-an-agent-harness"
@@ -183,7 +271,7 @@
       ],
       "httpStatus": 200,
       "id": "langchain-deepagents-harness",
-      "sha256": "ddfd1eb6d861b25bdd772292b5f6e07cd02b263b7b3d8ef28dda13c7cd106fc7",
+      "sha256": "19151b7e3c18b3c824ec35ece1e4f9f0e01058849aa3dc1bb98f0e96d41e0702",
       "status": "ok",
       "title": "Harness capabilities - Docs by LangChain",
       "url": "https://docs.langchain.com/oss/python/deepagents/harness"
@@ -222,7 +310,7 @@
       ],
       "httpStatus": 200,
       "id": "claude-code-memory",
-      "sha256": "3da7235da18c7227ab25541d06f6d0ff2902760e2b7f882a42e3fbac5cc15fa9",
+      "sha256": "8568000319161cfd1598f687f25d6fe2b2087a756c80ea46f812d617fdf17ed5",
       "status": "ok",
       "title": "How Claude remembers your project - Claude Code Docs",
       "url": "https://code.claude.com/docs/en/memory"
@@ -261,7 +349,7 @@
       ],
       "httpStatus": 200,
       "id": "google-antigravity-agent",
-      "sha256": "b7f759b23fd19f1b87b59440b06ef53e9bfa92fc3c0c90bff212b7771e9ce2da",
+      "sha256": "4aeb769263e8e0c431ad3d9e305a0b40f924199af3447692255a982b42425d3d",
       "status": "ok",
       "title": "Antigravity Agent | Gemini API | Google AI for Developers",
       "url": "https://ai.google.dev/gemini-api/docs/antigravity-agent"
@@ -339,7 +427,7 @@
       ],
       "httpStatus": 200,
       "id": "walkinglabs-github",
-      "sha256": "2dbc90eb180c9e9809d59ef91f80931bea241938f4a38e5db7e8d63331ea6a56",
+      "sha256": "018894ecbcc6e35ac60811abcce502871e78998797024744ae53786121ba224a",
       "status": "ok",
       "title": "GitHub - walkinglabs/learn-harness-engineering: Harness engineering beginner tutorial, from 0 to 1 \u00b7 GitHub",
       "url": "https://github.com/walkinglabs/learn-harness-engineering"
@@ -368,6 +456,160 @@
       "category": "course",
       "contentType": "text/html",
       "headings": [
+        "Lectures",
+        "Lecture 01. Strong Models Don't Mean Reliable Execution \u200b",
+        "Same Horse, Different Fates \u200b",
+        "Where Agents Actually Get Stuck \u200b",
+        "Key Terminology \u200b",
+        "When Things Fail, Fix the Harness First \u200b",
+        "The Million-Line Experiment \u200b",
+        "A More Down-to-Earth Example \u200b"
+      ],
+      "httpStatus": 200,
+      "id": "walkinglabs-lecture-01",
+      "sha256": "e034b60f5eb1daa845ede155dca817ea1db5e5b56845b053a28f02af868a005d",
+      "status": "ok",
+      "title": "Lecture 01. Strong Models Don't Mean Reliable Execution | Learn Harness Engineering",
+      "url": "https://walkinglabs.github.io/learn-harness-engineering/en/lectures/lecture-01-why-capable-agents-still-fail/"
+    },
+    {
+      "adversarialSignals": [
+        "unicode-injection"
+      ],
+      "category": "course",
+      "contentType": "text/html",
+      "headings": [],
+      "httpStatus": 200,
+      "id": "walkinglabs-lecture-04",
+      "sha256": "2ae5fc1b38e6b2dd28c24b71efae39e15c192d38d3f675cb66478f0e095079c9",
+      "status": "ok",
+      "title": "[withheld: adversarial instruction pattern]",
+      "url": "https://walkinglabs.github.io/learn-harness-engineering/en/lectures/lecture-04-why-one-giant-instruction-file-fails/"
+    },
+    {
+      "category": "course",
+      "contentType": "text/html",
+      "headings": [
+        "Lectures",
+        "Lecture 05. Keeping Context Alive Across Sessions \u200b",
+        "Context Windows: Not Infinite \u200b",
+        "Session Continuity Flow \u200b",
+        "Core Concepts \u200b",
+        "What Happens When Continuity Breaks \u200b",
+        "Practical Approaches to State Persistence \u200b",
+        "Real-World Example \u200b"
+      ],
+      "httpStatus": 200,
+      "id": "walkinglabs-lecture-05",
+      "sha256": "8f2f953b22d035e36afa475d13b688a3da1442798a03452054b880853c2092ef",
+      "status": "ok",
+      "title": "Lecture 05. Keeping Context Alive Across Sessions | Learn Harness Engineering",
+      "url": "https://walkinglabs.github.io/learn-harness-engineering/en/lectures/lecture-05-why-long-running-tasks-lose-continuity/"
+    },
+    {
+      "category": "course",
+      "contentType": "text/html",
+      "headings": [
+        "Lectures",
+        "Lecture 06. Make the Agent Initialize Before Every Work Session \u200b",
+        "Two Fundamentally Different Kinds of Work \u200b",
+        "Initialization Lifecycle \u200b",
+        "What Happens When You Mix Them \u200b",
+        "Core Concepts \u200b",
+        "How to Do Initialization Right \u200b",
+        "Real-World Example \u200b"
+      ],
+      "httpStatus": 200,
+      "id": "walkinglabs-lecture-06",
+      "sha256": "b4cb66ecc7c3a3cfc74cdc1cfbafb5626d04a0293b32fba8a2b8d1bc657fd202",
+      "status": "ok",
+      "title": "Lecture 06. Make the Agent Initialize Before Every Work Session | Learn Harness Engineering",
+      "url": "https://walkinglabs.github.io/learn-harness-engineering/en/lectures/lecture-06-why-initialization-needs-its-own-phase/"
+    },
+    {
+      "category": "course",
+      "contentType": "text/html",
+      "headings": [
+        "Lectures",
+        "Lecture 07. Draw Clear Task Boundaries for Agents \u200b",
+        "Attention Is a Finite Resource \u200b",
+        "WIP=1 Workflow \u200b",
+        "Core Concepts \u200b",
+        "Overreach and Under-finish Are Two Sides of the Same Coin \u200b",
+        "How to Do It Right \u200b",
+        "Real-World Case \u200b"
+      ],
+      "httpStatus": 200,
+      "id": "walkinglabs-lecture-07",
+      "sha256": "d06bfb70c2b9e7f7fef819d1b22fb8be3da45554ee3ad82f8210ae35c11b75e7",
+      "status": "ok",
+      "title": "Lecture 07. Draw Clear Task Boundaries for Agents | Learn Harness Engineering",
+      "url": "https://walkinglabs.github.io/learn-harness-engineering/en/lectures/lecture-07-why-agents-overreach-and-under-finish/"
+    },
+    {
+      "category": "course",
+      "contentType": "text/html",
+      "headings": [
+        "Lectures",
+        "Lecture 9. Preventing Agents from Declaring Victory Too Early \u200b",
+        "The Slippery Slope \u200b",
+        "Three-Layer Termination Check \u200b",
+        "Core Concepts \u200b",
+        "Passing Unit Tests \u2260 Task Complete \u200b",
+        "How to Prevent Premature Completion Declarations \u200b",
+        "Real-World Case \u200b"
+      ],
+      "httpStatus": 200,
+      "id": "walkinglabs-lecture-09",
+      "sha256": "640cdb6346e6deda4db1f8fe17242c18cfb905ab0d12bb190169e3acba27d229",
+      "status": "ok",
+      "title": "Lecture 9. Preventing Agents from Declaring Victory Too Early | Learn Harness Engineering",
+      "url": "https://walkinglabs.github.io/learn-harness-engineering/en/lectures/lecture-09-why-agents-declare-victory-too-early/"
+    },
+    {
+      "category": "course",
+      "contentType": "text/html",
+      "headings": [
+        "Lectures",
+        "Lecture 11. Making the Agent's Runtime Observable \u200b",
+        "The Real Cost of Missing Observability \u200b",
+        "A Real Claude Code Scenario \u200b",
+        "Layered Observability \u200b",
+        "Core Concepts \u200b",
+        "Why Agents Can't Solve This Themselves \u200b",
+        "How to Build Observability \u200b"
+      ],
+      "httpStatus": 200,
+      "id": "walkinglabs-lecture-11",
+      "sha256": "b4646a4c3329b2d9bdf30d43995528707efe75dab45db81298f635c5a394336c",
+      "status": "ok",
+      "title": "Lecture 11. Making the Agent's Runtime Observable | Learn Harness Engineering",
+      "url": "https://walkinglabs.github.io/learn-harness-engineering/en/lectures/lecture-11-why-observability-belongs-inside-the-harness/"
+    },
+    {
+      "category": "course",
+      "contentType": "text/html",
+      "headings": [
+        "Lectures",
+        "Lecture 12. Leave a Clean Handoff at the End of Every Session \u200b",
+        "Entropy Growth Is the Default State \u200b",
+        "Clean State: More Than \"The Code Compiles\" \u200b",
+        "Core Concepts \u200b",
+        "\"Clean Up Later\" Means Never Clean Up \u200b",
+        "How to Do It \u200b",
+        "Real-World Case \u200b"
+      ],
+      "httpStatus": 200,
+      "id": "walkinglabs-lecture-12",
+      "sha256": "fb9eae2bdcc9e43288aa6a4054a030abc1f242842f76a5e3954f0370a5151c4c",
+      "status": "ok",
+      "title": "Lecture 12. Leave a Clean Handoff at the End of Every Session | Learn Harness Engineering",
+      "url": "https://walkinglabs.github.io/learn-harness-engineering/en/lectures/lecture-12-why-every-session-must-leave-a-clean-state/"
+    },
+    {
+      "category": "course",
+      "contentType": "text/html",
+      "headings": [
         "Navigation Menu",
         "Search code, repositories, users, issues, pull requests...",
         "Provide feedback",
@@ -379,7 +621,7 @@
       ],
       "httpStatus": 200,
       "id": "walkinglabs-harness-creator-skill",
-      "sha256": "884c9d933effbf371150b9c165a9ffcbfd6a9a4966c62b9e20d8df1086cc656d",
+      "sha256": "204dfe9398e2792bbf4eae55d1b18a33977e54aff3f09447c48c3e80d3a12314",
       "status": "ok",
       "title": "learn-harness-engineering/skills/harness-creator at main \u00b7 walkinglabs/learn-harness-engineering \u00b7 GitHub",
       "url": "https://github.com/walkinglabs/learn-harness-engineering/tree/main/skills/harness-creator"
@@ -399,7 +641,7 @@
       ],
       "httpStatus": 200,
       "id": "agentpatterns-copilot-harness",
-      "sha256": "73f22c5aba2285c8c06aa60146a26e568ab250715e1763ed29eb0d6ae8c1df55",
+      "sha256": "e391c2e2603fff06be414734a587a23e455228104cbeae947d6d33a8b0a90cd7",
       "status": "ok",
       "title": "GitHub Copilot: Harness Engineering for Agent-Ready Code - AgentPatterns.ai",
       "url": "https://agentpatterns.ai/training/copilot/harness-engineering/"
@@ -447,7 +689,7 @@
       ],
       "httpStatus": 200,
       "id": "charlesanim-harness-engineering",
-      "sha256": "1f645dca2d154e0443b46f3641e6da520ced55a68893de2ec7037d95e06b5a51",
+      "sha256": "af4fabfeae08b17e9a5a95f8e0fe1f8d6e202b3f1ed8b6398603d7ba6af3e7ba",
       "status": "ok",
       "title": "GitHub - charlesanim/harness-engineering: Agent skill: set up OpenAI's harness engineering methodology in any repo. Works with Copilot, Codex, Claude, Cursor. \u00b7 GitHub",
       "url": "https://github.com/charlesanim/harness-engineering"
@@ -511,6 +753,106 @@
       "status": "ok",
       "title": "[2605.18747] Code as Agent Harness",
       "url": "https://arxiv.org/abs/2605.18747"
+    },
+    {
+      "category": "context-management",
+      "contentType": "text/html",
+      "headings": [
+        "quick links",
+        "Computer Science > Computation and Language",
+        "Title: Lost in the Middle: How Language Models Use Long Contexts",
+        "Submission history",
+        "Access Paper:",
+        "BibTeX formatted citation",
+        "Bibliographic and Citation Tools",
+        "Code, Data and Media Associated with this Article"
+      ],
+      "httpStatus": 200,
+      "id": "arxiv-lost-in-the-middle",
+      "sha256": "c7248ce666cafa97d001d3ac00c24e82951bbe44a217adf7aedcf4852ca30c2a",
+      "status": "ok",
+      "title": "[2307.03172] Lost in the Middle: How Language Models Use Long Contexts",
+      "url": "https://arxiv.org/abs/2307.03172"
+    },
+    {
+      "category": "harness-eval",
+      "contentType": "text/html",
+      "headings": [
+        "quick links",
+        "Computer Science > Artificial Intelligence",
+        "Title: Meta-Harness: End-to-End Optimization of Model Harnesses",
+        "Submission history",
+        "Access Paper:",
+        "BibTeX formatted citation",
+        "Bibliographic and Citation Tools",
+        "Code, Data and Media Associated with this Article"
+      ],
+      "httpStatus": 200,
+      "id": "arxiv-meta-harness",
+      "sha256": "f4899660790e51152016224d355fa6aadfe88ebafcc1146ed453fe9d08bb47f2",
+      "status": "ok",
+      "title": "[2603.28052] Meta-Harness: End-to-End Optimization of Model Harnesses",
+      "url": "https://arxiv.org/abs/2603.28052"
+    },
+    {
+      "category": "agent-eval",
+      "contentType": "text/html",
+      "headings": [
+        "quick links",
+        "Computer Science > Software Engineering",
+        "Title: SWE Context Bench: A Benchmark for Context Learning in Coding",
+        "Submission history",
+        "Access Paper:",
+        "BibTeX formatted citation",
+        "Bibliographic and Citation Tools",
+        "Code, Data and Media Associated with this Article"
+      ],
+      "httpStatus": 200,
+      "id": "arxiv-swe-context-bench",
+      "sha256": "dcf620ee4b949a16bbda8bb30995f66b66096b126087ca43921984ce8b98266b",
+      "status": "ok",
+      "title": "[2602.08316] SWE Context Bench: A Benchmark for Context Learning in Coding",
+      "url": "https://arxiv.org/abs/2602.08316"
+    },
+    {
+      "category": "agent-eval",
+      "contentType": "text/html",
+      "headings": [
+        "quick links",
+        "Computer Science > Machine Learning",
+        "Title: ContextBench: A Benchmark for Context Retrieval in Coding Agents",
+        "Submission history",
+        "Access Paper:",
+        "BibTeX formatted citation",
+        "Bibliographic and Citation Tools",
+        "Code, Data and Media Associated with this Article"
+      ],
+      "httpStatus": 200,
+      "id": "arxiv-contextbench",
+      "sha256": "0b1fddcdda172afffb965dd93e2a39d8e00b2e699a54a8297adeb7cafd2ad949",
+      "status": "ok",
+      "title": "[2602.05892] ContextBench: A Benchmark for Context Retrieval in Coding Agents",
+      "url": "https://arxiv.org/abs/2602.05892"
+    },
+    {
+      "category": "agent-eval",
+      "contentType": "text/html",
+      "headings": [
+        "quick links",
+        "Computer Science > Software Engineering",
+        "Title: SWE-Effi: Re-Evaluating Software AI Agent System Effectiveness Under Resource Constraints",
+        "Submission history",
+        "Access Paper:",
+        "BibTeX formatted citation",
+        "Bibliographic and Citation Tools",
+        "Code, Data and Media Associated with this Article"
+      ],
+      "httpStatus": 200,
+      "id": "arxiv-swe-effi",
+      "sha256": "d4a6fc36b3e297d4daefbd559a6acda5db12beffb4884ede6db3aebd3ae2ee1a",
+      "status": "ok",
+      "title": "[2509.09853] SWE-Effi: Re-Evaluating Software AI Agent System Effectiveness Under Resource Constraints",
+      "url": "https://arxiv.org/abs/2509.09853"
     },
     {
       "category": "editor-harness",
@@ -803,7 +1145,7 @@
       ],
       "httpStatus": 200,
       "id": "python-cmdline-env",
-      "sha256": "c04494b0baea98ad7ad6ca11a771f0bef5b7ce8ca51f9dc26faf911f9724baf7",
+      "sha256": "0d63401d0420173633ca11549455f5c602cf5cf36e5c80a7ece5115aa6b3a4b3",
       "status": "ok",
       "title": "1. Command line and environment \u2014 Python 3.14.6 documentation",
       "url": "https://docs.python.org/3/using/cmdline.html"
@@ -823,7 +1165,7 @@
       ],
       "httpStatus": 200,
       "id": "python-urllib-request",
-      "sha256": "04ebbaa4d569f722d437f16dbc4623e4a1670650d8f0647f9210545431f6da84",
+      "sha256": "7b5b230670a805d7b011b9260a8f3295b4e40ac8889070328cd9282c13b8fe6e",
       "status": "ok",
       "title": "urllib.request \u2014 Extensible library for opening URLs \u2014 Python 3.14.6 documentation",
       "url": "https://docs.python.org/3/library/urllib.request.html"
@@ -863,7 +1205,7 @@
       ],
       "httpStatus": 200,
       "id": "github-actions-checkout",
-      "sha256": "1021aef044be9fc4da835ca6ab54c945b51a65833f6c923caae0a8d30cc2dbca",
+      "sha256": "1f4c110441293f25794931bc7eecd5dfee00a121cea63c0dd3690b4dafd1dbb6",
       "status": "ok",
       "title": "GitHub - actions/checkout: Action for checking out a repo \u00b7 GitHub",
       "url": "https://github.com/actions/checkout"
@@ -937,7 +1279,7 @@
       ],
       "httpStatus": 200,
       "id": "owasp-security-shepherd",
-      "sha256": "441ec37799f1edd1c5c56f50724213b0428c615845a239e9e9c6ab6a327483f5",
+      "sha256": "0d09c7b3ac5f3901c7b3e00ee1f4f5a3911c239e8a8ae315f768416a985104a7",
       "status": "ok",
       "title": "GitHub - OWASP/SecurityShepherd: Web and mobile application security training platform \u00b7 GitHub",
       "url": "https://github.com/OWASP/SecurityShepherd"
@@ -957,7 +1299,7 @@
       ],
       "httpStatus": 200,
       "id": "owasp-pytm",
-      "sha256": "cd08f0fd342c1b06f6999ea1183225ffef83bbec684385a7c3102ad943c8f03e",
+      "sha256": "4785505964e260d20c7aa66a9d0984f1b95b05f6aeb3716bad8bda90ddaec488",
       "status": "ok",
       "title": "GitHub - OWASP/pytm: A Pythonic framework for threat modeling \u00b7 GitHub",
       "url": "https://github.com/OWASP/pytm"
@@ -1262,7 +1604,7 @@
       ],
       "httpStatus": 200,
       "id": "owasp-llm-top-10",
-      "sha256": "37a07bf4b05c0dbb8542dcd2a2759b709095aca388c16e0c29d76e86a613506a",
+      "sha256": "0d60fc2c6feb81bfa17f1bc2894ca86a2b52ef4a0d7f4cf268cb385d8e85cb3e",
       "status": "ok",
       "title": "OWASP Top 10 for Large Language Model Applications | OWASP Foundation",
       "url": "https://owasp.org/www-project-top-10-for-large-language-model-applications/"
@@ -1282,7 +1624,7 @@
       ],
       "httpStatus": 200,
       "id": "owasp-agentic-applications-top-10",
-      "sha256": "bfd9b34c91d9afcc2e83cd43ffdce80f039209f7564b8f446ea843da833aa4e4",
+      "sha256": "47bda1db9ce2db2e1cc85cbbd27c80d79d6917017616146e3a91621d389a6356",
       "status": "ok",
       "title": "OWASP Top 10 for Agentic Applications for 2026 - OWASP Gen AI Security Project",
       "url": "https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/"
@@ -1313,7 +1655,7 @@
       ],
       "httpStatus": 200,
       "id": "owasp-agentic-applications-crosswalk",
-      "sha256": "85914c4857733e4f21f88764c5dc2ba5f032589457c70e5be779337d1c6b136c",
+      "sha256": "072c7d603e82b72d906ba30ee45804cc8503c4a9361d6c8c145040f222c5dc42",
       "status": "ok",
       "title": "AIUC-1: Crosswalks OWASP Top 10 For Agentic Applications - OWASP Gen AI Security Project",
       "url": "https://genai.owasp.org/resource/aiuc-1-crosswalks-owasp-top-10-for-agentic-applications/"
@@ -1333,7 +1675,7 @@
       ],
       "httpStatus": 200,
       "id": "owasp-agentic-red-teaming-landscape",
-      "sha256": "deb9772f88c714c05410db5efe66467a03a6a625e11a9d87a53690464a83460b",
+      "sha256": "f77af53976afb32fab1c1a70a81c81cd2470c2339a82e5373ef6e16c6a8533ba",
       "status": "ok",
       "title": "AI Security Solutions Landscape For AI and Agentic Red Teaming Q2 2026 - OWASP Gen AI Security Project",
       "url": "https://genai.owasp.org/resource/ai-security-solutions-landscape-for-ai-and-agentic-red-teaming-q2-2026/"
@@ -1353,7 +1695,7 @@
       ],
       "httpStatus": 200,
       "id": "owasp-agentic-skills-top-10",
-      "sha256": "13d8590080355e7c0e5f998fc3b5fbfbe710ad2b284b85f75796f377153cb427",
+      "sha256": "68335a689ac57e9e7e0c0ce6096308a7bad23167b4931192b5bca9893e5412ac",
       "status": "ok",
       "title": "OWASP Agentic Skills Top 10 | OWASP Foundation",
       "url": "https://owasp.org/www-project-agentic-skills-top-10/"
@@ -1373,7 +1715,7 @@
       ],
       "httpStatus": 200,
       "id": "owasp-agentic-skills-github",
-      "sha256": "5170d8a34c79382023a715a7ff9bcf47695c7d3edd5914433f8c4401a1c6f9c7",
+      "sha256": "cf34d913a9f71b37b4c65df4af14b04e5d192da2d57caf593c6cd2b0e683f499",
       "status": "ok",
       "title": "GitHub - OWASP/www-project-agentic-skills-top-10: OWASP Foundation web repository \u00b7 GitHub",
       "url": "https://github.com/OWASP/www-project-agentic-skills-top-10"
@@ -1393,7 +1735,7 @@
       ],
       "httpStatus": 200,
       "id": "microsoft-agt-prompt-injection-benchmark",
-      "sha256": "5ae78b2e1673b5865e9c9d16bbbc6aa9a809fbb6a634a7d093c79dc911592018",
+      "sha256": "9c9e14a551d032ce407cf3d7c2d2c62893056d9c6511bbcb1026c95d44307f20",
       "status": "ok",
       "title": "agent-governance-toolkit/benchmarks/prompt-injection at main \u00b7 microsoft/agent-governance-toolkit \u00b7 GitHub",
       "url": "https://github.com/microsoft/agent-governance-toolkit/tree/main/benchmarks/prompt-injection"
@@ -1413,7 +1755,7 @@
       ],
       "httpStatus": 200,
       "id": "practical-devsecops-agentic-top-10",
-      "sha256": "424b8da09f95a9be023ebf533740215377257fd748109c36f40188a8cf12f2c4",
+      "sha256": "9527cc325330214155d79347cf4e2f048f139852b4b06dccc97c22cd6ea032cb",
       "status": "ok",
       "title": "OWASP Top 10 for Agentic Applications for 2026",
       "url": "https://www.practical-devsecops.com/owasp-top-10-agentic-applications/"
@@ -1450,7 +1792,7 @@
       ],
       "httpStatus": 200,
       "id": "endor-ai-code-security-benchmark",
-      "sha256": "78d33a338ffc22e8e651b1a42d9eef4db82e57f92029e4bed7ff50844d0e4da2",
+      "sha256": "aaaa2eeabc37ad0d02efcafc290485d91f8f9ac67ec777bb07ec64a4aa93f5b0",
       "status": "ok",
       "title": "AI Coding Agent Security Benchmark | Endor Labs",
       "url": "https://www.endorlabs.com/research/ai-code-security-benchmark"
@@ -1554,7 +1896,7 @@
       ],
       "httpStatus": 200,
       "id": "bun-workspaces",
-      "sha256": "fcacb049999d4e84d9100ccdd7bd65d36f0c157af4f506f74ac3916a1c5c8135",
+      "sha256": "0e495a510c57dc22d553d78d24c831677633f7e5f1ad2318c5a063f0649fca89",
       "status": "ok",
       "title": "Workspaces - Bun",
       "url": "https://bun.sh/docs/pm/workspaces"
@@ -1729,7 +2071,7 @@
       ],
       "httpStatus": 200,
       "id": "bazel-modules",
-      "sha256": "fd2dba4cba3ac812ae1a8276b424a5371499a3d987d6d908be093ef270a0b53e",
+      "sha256": "20352e1af5652f6f0c5b993c62885a49ce8763e989707fbeffc271953da475bf",
       "status": "ok",
       "title": "Bazel modules",
       "url": "https://bazel.build/external/module"
@@ -1768,7 +2110,7 @@
       ],
       "httpStatus": 200,
       "id": "buck2-buckconfig",
-      "sha256": "8363b4ef5a51cb09c4a72b0119b5716d17093b031822df41275288837e133d7b",
+      "sha256": "d0e0f42993fee274b737787c13ee3511fd2713d1197141877de941b5d27fe6b3",
       "status": "ok",
       "title": ".buckconfig | Buck2",
       "url": "https://buck2.build/docs/concepts/buckconfig/"
@@ -1802,7 +2144,7 @@
       ],
       "httpStatus": 200,
       "id": "terraform-standard-module-structure",
-      "sha256": "76efd4b2dda075b4209e51f52f7d4a1f4e3f1a5cb7731fc547d9145f0dedcee6",
+      "sha256": "1f1279acbe3189226b5dbeb77d973fce71dc69737690e12149eeaa4b298db393",
       "status": "ok",
       "title": "Standard Module Structure | Terraform | HashiCorp Developer",
       "url": "https://developer.hashicorp.com/terraform/language/modules/develop/structure"
@@ -1833,7 +2175,7 @@
       ],
       "httpStatus": 200,
       "id": "medium-monorepos-guide",
-      "sha256": "0b19a3adf3f3c5deeb934541ba4d8a601bd67858873327fde308a93111d4a25c",
+      "sha256": "673634d5fe8300f0d7d4cbd60e361f8d237212288d9ef1eb9ea54d5df110fe99",
       "status": "ok",
       "title": "Monorepos: A Comprehensive Guide with Examples | by Md Julakadar | Medium",
       "url": "https://medium.com/@julakadaredrishi/monorepos-a-comprehensive-guide-with-examples-63202cfab711"
@@ -1873,7 +2215,7 @@
       ],
       "httpStatus": 200,
       "id": "github-actions-vanilla-monorepo-example",
-      "sha256": "6188025b9fcfd7047a5d1515faa7aaa081f9e98e21e0c0007dc8cf033e2538bb",
+      "sha256": "663c7947f7cfba0499cec1907724f446b96816a7e5fe4ce3ef0ce5b4985a8178",
       "status": "ok",
       "title": "GitHub - gamgi/github-actions-vanilla-monorepo-example: An example on how to use GitHub actions in a monorepo. \u00b7 GitHub",
       "url": "https://github.com/gamgi/github-actions-vanilla-monorepo-example"
@@ -1890,7 +2232,7 @@
       ],
       "httpStatus": 200,
       "id": "repo-local-harnesses-linkedin",
-      "sha256": "5b5c5d431829a024e76c348c4cac6defc76ad6faaa80b3caadc00887adc254e6",
+      "sha256": "e5d0644c98b3d3bcd6867ecc3aea322cc7191369a2c916f3ae5599c13debfa20",
       "status": "ok",
       "title": "Repo-Local Harnesses for Coding Agents, Part 1: Why the Harness Belongs in the Repo",
       "url": "https://www.linkedin.com/pulse/repo-local-harnesses-coding-agents-part-1-why-harness-chris-mamon-c71nf/"
@@ -1930,7 +2272,7 @@
       ],
       "httpStatus": 200,
       "id": "harness-idp-sandbox-monorepo",
-      "sha256": "6e6159e77b0b868f7fe55259dc043f037ecc3212e0b22958da0126d3a59f8a4c",
+      "sha256": "1ca8defc3ec24acceebdba6891019e9f85aefb19f68f75eef487af227d2fe647",
       "status": "ok",
       "title": "GitHub - harness-idp-sandbox/harness-monorepo \u00b7 GitHub",
       "url": "https://github.com/harness-idp-sandbox/harness-monorepo"
@@ -1950,7 +2292,7 @@
       ],
       "httpStatus": 200,
       "id": "awesome-monorepo",
-      "sha256": "88775bdd16385f2535d4760aa958981089726543d7a90a32e8b377be28cff1d8",
+      "sha256": "b52240f97fc26148df618915f4e09cd7dfe97b21e29307c705395485db7eba7e",
       "status": "ok",
       "title": "GitHub - korfuri/awesome-monorepo: A curated list of awesome Monorepo tools, software and architectures. \u00b7 GitHub",
       "url": "https://github.com/korfuri/awesome-monorepo"
@@ -1970,7 +2312,7 @@
       ],
       "httpStatus": 200,
       "id": "tomsoir-bazel-monorepo",
-      "sha256": "30283261059768b215e7fa7b2e4ad74c4fdcd38a0138ecd3f8b79afa60ef023b",
+      "sha256": "09f9b9222a49a5727a8644f5ce5e5e6649c42630fb64671b895c33382d290068",
       "status": "ok",
       "title": "GitHub - tomsoir/bazel-monorepo: Bazel monorepo example \u00b7 GitHub",
       "url": "https://github.com/tomsoir/bazel-monorepo"

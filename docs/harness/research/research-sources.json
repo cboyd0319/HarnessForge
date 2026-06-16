@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "lastUpdated": "2026-06-14",
+  "lastUpdated": "2026-06-16",
   "sources": [
     {
       "id": "openai-harness-engineering",
@@ -13,6 +13,11 @@
       "category": "codex-sdlc"
     },
     {
+      "id": "openai-prompt-caching",
+      "url": "https://developers.openai.com/api/docs/guides/prompt-caching",
+      "category": "token-economics"
+    },
+    {
       "id": "anthropic-effective-harnesses",
       "url": "https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents",
       "category": "field-report"
@@ -21,6 +26,26 @@
       "id": "anthropic-long-running-apps",
       "url": "https://www.anthropic.com/engineering/harness-design-long-running-apps",
       "category": "field-report"
+    },
+    {
+      "id": "anthropic-prompt-caching",
+      "url": "https://platform.claude.com/docs/en/build-with-claude/prompt-caching",
+      "category": "token-economics"
+    },
+    {
+      "id": "anthropic-context-windows",
+      "url": "https://platform.claude.com/docs/en/build-with-claude/context-windows",
+      "category": "context-management"
+    },
+    {
+      "id": "anthropic-claude-code-costs",
+      "url": "https://code.claude.com/docs/en/costs",
+      "category": "token-economics"
+    },
+    {
+      "id": "anthropic-claude-code-system-prompts",
+      "url": "https://code.claude.com/docs/en/agent-sdk/modifying-system-prompts",
+      "category": "token-economics"
     },
     {
       "id": "martin-fowler-harness-engineering",
@@ -98,6 +123,46 @@
       "category": "course"
     },
     {
+      "id": "walkinglabs-lecture-01",
+      "url": "https://walkinglabs.github.io/learn-harness-engineering/en/lectures/lecture-01-why-capable-agents-still-fail/",
+      "category": "course"
+    },
+    {
+      "id": "walkinglabs-lecture-04",
+      "url": "https://walkinglabs.github.io/learn-harness-engineering/en/lectures/lecture-04-why-one-giant-instruction-file-fails/",
+      "category": "course"
+    },
+    {
+      "id": "walkinglabs-lecture-05",
+      "url": "https://walkinglabs.github.io/learn-harness-engineering/en/lectures/lecture-05-why-long-running-tasks-lose-continuity/",
+      "category": "course"
+    },
+    {
+      "id": "walkinglabs-lecture-06",
+      "url": "https://walkinglabs.github.io/learn-harness-engineering/en/lectures/lecture-06-why-initialization-needs-its-own-phase/",
+      "category": "course"
+    },
+    {
+      "id": "walkinglabs-lecture-07",
+      "url": "https://walkinglabs.github.io/learn-harness-engineering/en/lectures/lecture-07-why-agents-overreach-and-under-finish/",
+      "category": "course"
+    },
+    {
+      "id": "walkinglabs-lecture-09",
+      "url": "https://walkinglabs.github.io/learn-harness-engineering/en/lectures/lecture-09-why-agents-declare-victory-too-early/",
+      "category": "course"
+    },
+    {
+      "id": "walkinglabs-lecture-11",
+      "url": "https://walkinglabs.github.io/learn-harness-engineering/en/lectures/lecture-11-why-observability-belongs-inside-the-harness/",
+      "category": "course"
+    },
+    {
+      "id": "walkinglabs-lecture-12",
+      "url": "https://walkinglabs.github.io/learn-harness-engineering/en/lectures/lecture-12-why-every-session-must-leave-a-clean-state/",
+      "category": "course"
+    },
+    {
       "id": "walkinglabs-harness-creator-skill",
       "url": "https://github.com/walkinglabs/learn-harness-engineering/tree/main/skills/harness-creator",
       "category": "course"
@@ -136,6 +201,31 @@
       "id": "arxiv-code-as-agent-harness",
       "url": "https://arxiv.org/abs/2605.18747",
       "category": "research"
+    },
+    {
+      "id": "arxiv-lost-in-the-middle",
+      "url": "https://arxiv.org/abs/2307.03172",
+      "category": "context-management"
+    },
+    {
+      "id": "arxiv-meta-harness",
+      "url": "https://arxiv.org/abs/2603.28052",
+      "category": "harness-eval"
+    },
+    {
+      "id": "arxiv-swe-context-bench",
+      "url": "https://arxiv.org/abs/2602.08316",
+      "category": "agent-eval"
+    },
+    {
+      "id": "arxiv-contextbench",
+      "url": "https://arxiv.org/abs/2602.05892",
+      "category": "agent-eval"
+    },
+    {
+      "id": "arxiv-swe-effi",
+      "url": "https://arxiv.org/abs/2509.09853",
+      "category": "agent-eval"
     },
     {
       "id": "vscode-copilot-harness",

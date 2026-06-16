@@ -230,6 +230,16 @@ by the maintainer.
   agent/tool overrides, Python caches and environments, temporary
   package-manager artifacts, build and coverage outputs, HarnessForge scratch
   space, transient reports, and root AI-generated scratch reports.
+- Token economics now has an initial source-backed research note and metric
+  schema. The note directly maps repository-harness mechanisms to possible
+  context/token and execution effects, treats the Walking Labs lectures as
+  mechanism rationale rather than quantitative proof, and records static
+  HarnessForge fixture sizing as proxy evidence only. Controlled provider or
+  agent task traces are still required before changing generated sizing,
+  routing, summarization, or lazy-loading behavior.
+- Research refresh now allows normal fetch mode to regenerate stale generated
+  lock and inbox files after source allowlist changes while keeping
+  `--check` strict about generated-output consistency.
 - Large-repo file coverage reporting now uses `harnessforge.fileCoverage.v1`.
   `index`, `report`, `quickstart`, `init --dry-run`, Action report summaries,
   and large-public-repo field evidence expose scanned count, total tracked
@@ -398,6 +408,15 @@ by the maintainer.
   generated script/template files; `git diff --check` passed; `./init.sh`
   passed with 306 tests, pin check, research source check, and self-audit
   `100/100`.
+- Current token-economics research verification: AGY-assisted discovery,
+  direct source review, Walking Labs lecture review, and a 14-fixture static
+  HarnessForge sizing proxy informed the research note; focused
+  `tests.test_refresh_research` passed with 21 tests; generated-content tests
+  passed with 60 tests; research refresh checked 125 sources with one known
+  Red Hat 403 and `--check` passed; JSON validation, representative
+  `.gitignore` checks, durable-doc local-path scan, diff hygiene, and
+  self-audit `100/100` passed. Controlled provider or agent task traces remain
+  the unclosed evidence gap.
 - Current known local verification gap: `pwsh -NoProfile -File ./init.ps1`
   cannot run in this shell because PowerShell command execution fails before
   repo code loads with a .NET `System.IO.FileLoadException`. `pwsh -v` reports
@@ -411,7 +430,16 @@ by the maintainer.
 - `feature_list.json`
 - `docs/roadmap.md`
 - `docs/harness/evidence/evidence-log.md`
-- `docs/harness/research/remaining-ideas-research.md`
+- `docs/harness/research/README.md`
+- `docs/harness/research/harness-token-economics-research.md`
+- `docs/harness/research/research-inbox.md`
+- `docs/harness/research/research-sources.json`
+- `docs/harness/research/research-sources.lock.json`
+- `docs/harness/research/sources.md`
+- `docs/harness/research/token-economics-metric.schema.json`
+- `scripts/refresh_research.py`
+- `src/harnessforge/templates/research-sources.json.tmpl`
+- `tests/test_refresh_research.py`
 
 ## Blockers
 
@@ -423,6 +451,8 @@ by the maintainer.
 
 ## Next Step
 
-Start the expanded accepted non-release backlog with Harness Token Economics
-Research. Release prep should remain last and should start only after accepted
-non-release work is closed or explicitly deferred by the maintainer.
+Continue the Harness Token Economics Research item by running controlled
+minimal, moderate, and comprehensive harness task traces using
+`harnessforge.tokenEconomicsMetric.v1`. Release prep should remain last and
+should start only after accepted non-release work is closed or explicitly
+deferred by the maintainer.

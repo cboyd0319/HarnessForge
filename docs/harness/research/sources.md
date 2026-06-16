@@ -14,8 +14,10 @@ and update rules.
 | --- | --- |
 | OpenAI, "Harness engineering: leveraging Codex in an agent-first world" | Repo-as-spec framing, environment design, intent, feedback loops |
 | OpenAI Codex guide, "Building an AI-Native Engineering Team" | Delegate/Review/Own boundaries across planning, design, build, test, review, documentation, and operations |
+| OpenAI prompt caching docs | Stable repeated prompt prefixes can reduce latency and cached input-token cost |
 | Anthropic, "Effective harnesses for long-running agents" | Long-running work needs more than compaction and a high-level prompt |
 | Anthropic, "Harness design for long-running application development" | One-feature-at-a-time execution and handoff artifacts |
+| Anthropic prompt caching, context-window, Claude Code cost, and system-prompt docs | Separate cache writes, cache reads, uncached input, dynamic context, and context-window pressure when evaluating harness cost |
 | Martin Fowler, "Harness engineering for coding agent users" | Guides and sensors model, feedback loops, reducing review toil |
 | Martin Fowler, "Maintainability sensors for coding agents" | Local and CI sensors, slower drift checks, maintainability feedback |
 | Red Hat, "Harness Engineering: Structured Workflows for AI-Assisted Development" | Structured context before free-form prompts, repository impact maps |
@@ -46,12 +48,16 @@ and update rules.
 | "AI Harness Engineering: A Runtime Substrate for Foundation-Model Software Agents" | Task state, observability, verification, permissions, entropy auditing, and episode evidence |
 | "Observability-Driven Automatic Evolution of Coding-Agent Harnesses" | Observability and feedback-driven harness correction loop |
 | "Code as Agent Harness" | Executable, verifiable, stateful agent harness direction |
+| "Lost in the Middle" | Long context can degrade when relevant information is poorly placed or buried, so context curation matters as much as context size |
 | Awesome Code as Agent Harness Papers | Harness-interface, mechanism, scaling, and application taxonomy plus source-catalog quality controls |
 | "AutoHarness: improving LLM agents by automatically synthesizing a code harness" | Invalid-action prevention, environment feedback, and synthesized harness candidates as proposal-only changes |
 | "Natural-Language Agent Harnesses" | Inspectable modular harness policy documents, explicit runtime contracts, and artifact boundaries |
 | "VeRO: A Harness for Agents to Optimize Agents" | Versioned snapshots, budget-controlled evaluation, rewards, observations, and structured traces |
 | "Claw-SWE-Bench" and "RealClawBench" | Adapter contracts, workspace reconstruction, patch extraction, runtime budgets, deterministic scorers, and cost accounting |
 | "ClawsBench" and "Agent-ValueBench" | Separate success, safety, value, and trajectory-level scoring for agent harnesses |
+| "Meta-Harness" | Harnesses that choose what to store, retrieve, and present can improve quality and reduce context tokens in specific evaluated systems |
+| "SWE Context Bench" and "ContextBench" | Coding-agent context evaluation should measure retrieval accuracy, context efficiency, and token or runtime tradeoffs, not only final task success |
+| "SWE-Effi" | Software-agent effectiveness needs resource metrics such as tokens and time alongside resolve rate |
 | "Building Effective AI Coding Agents for the Terminal" | Terminal-agent safety controls, context management, model routing, memory, and instruction-reminder patterns |
 | "Agentic Harness for Real-World Compilers" | Domain-specific harnesses need project-owned tools, benchmarks, and sparse-bug workflow support |
 | Lee et al., "Meta-Harness: End-to-End Optimization of Model Harnesses" | Candidate-sensitive harness evaluation, full-history traces, queryable run logs, held-out validation, Pareto quality/cost frontiers, and frozen-replay overclaim boundaries |

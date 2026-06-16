@@ -1,0 +1,377 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "harnessforge.tokenEconomicsMetric.v1",
+  "title": "HarnessForge Token Economics Metric",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "recordedAt",
+    "target",
+    "task",
+    "agent",
+    "harnessProfile",
+    "mechanism",
+    "context",
+    "tokens",
+    "trajectory",
+    "outcome",
+    "evidenceRefs",
+    "limitations",
+    "promotionStatus"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "const": "harnessforge.tokenEconomicsMetric.v1"
+    },
+    "recordedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "target": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repoLabel", "commit", "platform"],
+      "properties": {
+        "repoLabel": {
+          "type": "string",
+          "minLength": 1
+        },
+        "commit": {
+          "type": "string",
+          "minLength": 1
+        },
+        "platform": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "task": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "category", "description", "heldOut"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "category": {
+          "type": "string",
+          "minLength": 1
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "heldOut": {
+          "type": "boolean"
+        }
+      }
+    },
+    "agent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "version", "provider", "model"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "provider": {
+          "type": "string",
+          "minLength": 1
+        },
+        "model": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "harnessProfile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "description", "changedSurfaces"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "enum": ["minimal", "moderate", "comprehensive", "custom"]
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "changedSurfaces": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "mechanism": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "expectedTokenEffect",
+        "expectedExecutionEffect",
+        "risk"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "enum": [
+            "instruction_routing",
+            "repository_system_of_record",
+            "initialization_phase",
+            "scope_control",
+            "verification_feedback",
+            "state_persistence",
+            "observability",
+            "cleanup_simplification",
+            "other"
+          ]
+        },
+        "expectedTokenEffect": {
+          "type": "string",
+          "enum": ["increase", "decrease", "mixed", "unknown"]
+        },
+        "expectedExecutionEffect": {
+          "type": "string",
+          "enum": ["improve", "degrade", "mixed", "unknown"]
+        },
+        "risk": {
+          "type": "string",
+          "minLength": 1
+        },
+        "notes": {
+          "type": "string"
+        }
+      }
+    },
+    "context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "startupFiles",
+        "lazyLoadedFiles",
+        "staticPrefixChars",
+        "dynamicContextChars",
+        "loadedHarnessChars",
+        "contextWindowTokens"
+      ],
+      "properties": {
+        "startupFiles": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "lazyLoadedFiles": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "staticPrefixChars": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "dynamicContextChars": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "loadedHarnessChars": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "contextWindowTokens": {
+          "type": ["integer", "null"],
+          "minimum": 0
+        }
+      }
+    },
+    "tokens": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source",
+        "startupInput",
+        "cacheWriteInput",
+        "cacheReadInput",
+        "uncachedRepeatedInput",
+        "output",
+        "total"
+      ],
+      "properties": {
+        "source": {
+          "type": "string",
+          "enum": [
+            "provider_report",
+            "agent_usage_report",
+            "tokenizer_estimate",
+            "char_proxy",
+            "unknown"
+          ]
+        },
+        "charProxyDivisor": {
+          "type": ["number", "null"],
+          "exclusiveMinimum": 0
+        },
+        "startupInput": {
+          "type": ["integer", "null"],
+          "minimum": 0
+        },
+        "cacheWriteInput": {
+          "type": ["integer", "null"],
+          "minimum": 0
+        },
+        "cacheReadInput": {
+          "type": ["integer", "null"],
+          "minimum": 0
+        },
+        "uncachedRepeatedInput": {
+          "type": ["integer", "null"],
+          "minimum": 0
+        },
+        "output": {
+          "type": ["integer", "null"],
+          "minimum": 0
+        },
+        "total": {
+          "type": ["integer", "null"],
+          "minimum": 0
+        }
+      }
+    },
+    "trajectory": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "turns",
+        "toolCalls",
+        "fileReads",
+        "searchCalls",
+        "editCalls",
+        "verificationRuns",
+        "retries",
+        "durationSeconds"
+      ],
+      "properties": {
+        "turns": {
+          "type": ["integer", "null"],
+          "minimum": 0
+        },
+        "toolCalls": {
+          "type": ["integer", "null"],
+          "minimum": 0
+        },
+        "fileReads": {
+          "type": ["integer", "null"],
+          "minimum": 0
+        },
+        "searchCalls": {
+          "type": ["integer", "null"],
+          "minimum": 0
+        },
+        "editCalls": {
+          "type": ["integer", "null"],
+          "minimum": 0
+        },
+        "verificationRuns": {
+          "type": ["integer", "null"],
+          "minimum": 0
+        },
+        "retries": {
+          "type": ["integer", "null"],
+          "minimum": 0
+        },
+        "durationSeconds": {
+          "type": ["number", "null"],
+          "minimum": 0
+        }
+      }
+    },
+    "outcome": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "completed",
+        "verificationVerdict",
+        "qualityScore",
+        "worstCaseQuality",
+        "failureMode"
+      ],
+      "properties": {
+        "completed": {
+          "type": "boolean"
+        },
+        "verificationVerdict": {
+          "type": "string",
+          "enum": ["passed", "failed", "blocked", "not_run", "unknown"]
+        },
+        "qualityScore": {
+          "type": ["number", "null"],
+          "minimum": 0,
+          "maximum": 1
+        },
+        "worstCaseQuality": {
+          "type": ["number", "null"],
+          "minimum": 0,
+          "maximum": 1
+        },
+        "failureMode": {
+          "type": ["string", "null"]
+        }
+      }
+    },
+    "cost": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "required": ["source", "currency", "estimatedTotal"],
+      "properties": {
+        "source": {
+          "type": "string",
+          "enum": ["provider_billing", "pricing_sheet", "estimate", "unknown"]
+        },
+        "currency": {
+          "type": ["string", "null"],
+          "minLength": 3,
+          "maxLength": 3
+        },
+        "estimatedTotal": {
+          "type": ["number", "null"],
+          "minimum": 0
+        }
+      }
+    },
+    "evidenceRefs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "limitations": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "promotionStatus": {
+      "type": "string",
+      "enum": ["promoted", "deferred", "rejected", "inconclusive"]
+    }
+  }
+}

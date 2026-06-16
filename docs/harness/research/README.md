@@ -21,6 +21,8 @@ sibling-repo examples into instructions.
 | `large-public-repo-corpus.json` | Human-maintained | Real large public GitHub repo field corpus for explicit networked analysis |
 | `large-codebase-indexing-research.md` | Human-maintained | Research note for large-repo analysis and indexing strategy |
 | `large-public-repo-gap-analysis.md` | Human-maintained | Gap analysis from real large public repo field evidence |
+| `harness-token-economics-research.md` | Human-maintained | Initial source-backed token-economics note and measurement gap |
+| `token-economics-metric.schema.json` | Human-maintained | Compact record schema for future token, cache, trajectory, and quality measurements |
 | `reference-mining-notes.md` | Human-maintained | Mined ideas from sibling repos and public harness references |
 | `remaining-ideas-research.md` | Human-maintained | Compact outcome of remaining-ideas research and future candidates |
 
@@ -68,6 +70,7 @@ python3 -m json.tool docs/harness/research/research-sources.json >/dev/null
 python3 -m json.tool docs/harness/research/research-sources.lock.json >/dev/null
 python3 -m json.tool docs/harness/research/source-record.schema.json >/dev/null
 python3 -m json.tool docs/harness/research/source-record-example.json >/dev/null
+python3 -m json.tool docs/harness/research/token-economics-metric.schema.json >/dev/null
 PYTHONPATH=src:. python3 scripts/analyze_large_public_repos.py --list --json
 ```
 

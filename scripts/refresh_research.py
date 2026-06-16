@@ -132,7 +132,9 @@ def main(argv: list[str] | None = None) -> int:
     if not isinstance(sources, list) or not sources:
         print("research-sources.json has no sources", file=sys.stderr)
         return 1
-    hygiene_errors = validate_research_ledgers(root, data)
+    hygiene_errors = validate_research_ledgers(
+        root, data, validate_generated_outputs=args.check
+    )
     if hygiene_errors:
         print("Research source check failed:", file=sys.stderr)
         for error in hygiene_errors:
@@ -168,7 +170,12 @@ def main(argv: list[str] | None = None) -> int:
     return 1 if failures == len(records) else 0
 
 
-def validate_research_ledgers(root: Path, data: dict[str, Any]) -> list[str]:
+def validate_research_ledgers(
+    root: Path,
+    data: dict[str, Any],
+    *,
+    validate_generated_outputs: bool = True,
+) -> list[str]:
     failures: list[str] = []
     sources = data.get("sources")
     if not isinstance(sources, list) or not sources:
@@ -212,8 +219,13 @@ def validate_research_ledgers(root: Path, data: dict[str, Any]) -> list[str]:
             if url_error:
                 failures.append(f"{label}.url {url_error}")
 
-    failures.extend(_validate_research_lock(root, source_ids, source_urls))
-    failures.extend(_validate_source_docs(root))
+    if validate_generated_outputs:
+        failures.extend(_validate_research_lock(root, source_ids, source_urls))
+    failures.extend(
+        _validate_source_docs(
+            root, validate_generated_outputs=validate_generated_outputs
+        )
+    )
     return failures
 
 
@@ -314,9 +326,12 @@ def _validate_research_lock(
     return failures
 
 
-def _validate_source_docs(root: Path) -> list[str]:
+def _validate_source_docs(
+    root: Path, *, validate_generated_outputs: bool = True
+) -> list[str]:
     failures: list[str] = []
-    for relative in SOURCE_LEDGER_DOCS:
+    docs = SOURCE_LEDGER_DOCS if validate_generated_outputs else (SOURCE_LEDGER_DOCS[0],)
+    for relative in docs:
         path = root / relative
         if not path.exists():
             continue

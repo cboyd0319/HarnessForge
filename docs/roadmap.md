@@ -632,7 +632,8 @@ routine low-risk change again needs broad manual doc/state edits.
 
 ### Harness Token Economics Research
 
-Status: accepted, not started.
+Status: initial research note and metric schema added; controlled task-trace
+evidence still required before closure.
 
 Research whether comprehensive repository harnesses increase or decrease agent
 token consumption in real work. This must be evidence-backed, not assumed from
@@ -655,6 +656,31 @@ Output should be a research note with citations, a compact metric schema for
 future evaluations, and a recommendation for how HarnessForge should size,
 route, summarize, or lazily load harness content. Do not turn the conclusion
 into generated behavior until the receipts show the tradeoff.
+
+Initial research slice:
+
+- `docs/harness/research/harness-token-economics-research.md` records the
+  mechanism map for why repo harnesses can improve or hurt token/context use
+  and AI agent execution.
+- `docs/harness/research/token-economics-metric.schema.json` records the
+  future metric shape, including the harness mechanism under test, token
+  source, cache buckets, trajectory counts, verification outcome, and quality
+  result.
+- Current conclusion remains insufficient evidence for a universal net-token
+  increase or decrease. Static HarnessForge fixture sizing shows the storage
+  cost of minimal, moderate, and comprehensive harness profiles, but that is
+  not a substitute for provider token traces or controlled task outcomes.
+
+Remaining closure work:
+
+- run controlled minimal, moderate, and comprehensive harness task traces on
+  representative repos;
+- capture provider-reported or agent-reported token buckets, cache reads and
+  writes, tool calls, retries, verification results, elapsed time, and quality
+  review;
+- decide whether the evidence shows net increase, net decrease, mixed results,
+  or still-insufficient evidence before changing generated sizing, routing,
+  summarization, or lazy-loading behavior.
 
 ### Generated Harness Skill Fallback
 
