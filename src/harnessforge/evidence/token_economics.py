@@ -128,7 +128,11 @@ def _codex_token_summary(events: list[dict[str, Any]]) -> dict[str, Any]:
 
 
 def _codex_trajectory_summary(events: list[dict[str, Any]]) -> dict[str, Any]:
-    tool_events = [_tool_text(event) for event in events if _is_tool_event(event)]
+    tool_events = [
+        _tool_text(event)
+        for event in events
+        if _is_completed_event(event) and _is_tool_event(event)
+    ]
     return {
         "turns": sum(1 for event in events if event.get("type") == "turn.completed"),
         "toolCalls": len(tool_events),
@@ -155,7 +159,15 @@ _FILE_READ_TERMS = (
     "nl ",
     "view",
 )
-_SEARCH_TERMS = ("rg ", "grep ", "find ", "search", "ripgrep")
+_SEARCH_TERMS = (
+    "rg ",
+    "grep ",
+    "find ",
+    "ripgrep",
+    "search_query",
+    "web_search",
+    "tool_search",
+)
 _EDIT_TERMS = ("apply_patch", "edit", "write_file", "patch")
 _VERIFICATION_TERMS = (
     "unittest",
@@ -177,13 +189,18 @@ def _is_tool_event(event: Mapping[str, Any]) -> bool:
     item = event.get("item")
     if isinstance(item, Mapping):
         item_type = str(item.get("type", "")).lower()
-        if "tool" in item_type or "function" in item_type:
+        if "tool" in item_type or "function" in item_type or "command" in item_type:
             return True
         for key in ("name", "tool_name"):
             value = str(item.get(key, "")).lower()
             if value in {"shell", "exec", "apply_patch", "read_file", "write_file"}:
                 return True
     return False
+
+
+def _is_completed_event(event: Mapping[str, Any]) -> bool:
+    event_type = str(event.get("type", "")).lower()
+    return event_type.endswith("completed")
 
 
 def _tool_text(event: Mapping[str, Any]) -> str:

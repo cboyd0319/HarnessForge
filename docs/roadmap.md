@@ -670,6 +670,10 @@ Initial research slice:
   increase or decrease. Static HarnessForge fixture sizing shows the storage
   cost of minimal, moderate, and comprehensive harness profiles, but that is
   not a substitute for provider token traces or controlled task outcomes.
+- `scripts/normalize_token_trace.py --source codex-jsonl` now normalizes
+  reviewed Codex JSONL traces into the metric schema. The first smoke record is
+  `docs/harness/evidence/token-economics/codex-jsonl-smoke-2026-06-16.json`,
+  but it is `inconclusive` and only proves capture mechanics.
 
 Remaining closure work:
 

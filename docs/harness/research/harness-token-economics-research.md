@@ -123,6 +123,29 @@ Bazel discovery and nested-scope ranking. It does not include before/after task
 traces, provider-reported token usage, or controlled minimal/moderate/full
 harness comparisons.
 
+## Initial Live Trace Smoke
+
+The first live Codex JSONL smoke record is stored at
+`docs/harness/evidence/token-economics/codex-jsonl-smoke-2026-06-16.json`.
+It used `codex exec --json --ephemeral --sandbox read-only` to read
+`AGENTS.md` and this research note, then normalized the trace with
+`scripts/normalize_token_trace.py --source codex-jsonl`.
+
+Observed smoke metrics:
+
+- token source: `agent_usage_report`;
+- startup input: `40,348`;
+- cached input: `19,200`;
+- output: `1,034`;
+- reasoning output: `815`;
+- total visible tokens: `42,197`;
+- trajectory: one turn, two command tool calls, two file reads, zero searches,
+  zero edits, and zero verification runs.
+
+This smoke record proves the capture and normalization path only. It is
+`inconclusive` and must not be used to decide whether minimal, moderate, or
+comprehensive harness profiles increase or decrease total task cost.
+
 ## Required Trace Evidence Still Missing
 
 The accepted backlog item is not complete until HarnessForge has representative

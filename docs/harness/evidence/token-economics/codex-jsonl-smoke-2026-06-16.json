@@ -1,0 +1,85 @@
+{
+  "agent": {
+    "model": "configured-default-unrecorded",
+    "name": "Codex CLI",
+    "provider": "OpenAI",
+    "version": "0.140.0"
+  },
+  "context": {
+    "contextWindowTokens": null,
+    "dynamicContextChars": 247,
+    "lazyLoadedFiles": [
+      "docs/harness/research/harness-token-economics-research.md"
+    ],
+    "loadedHarnessChars": 26675,
+    "startupFiles": [
+      "AGENTS.md"
+    ],
+    "staticPrefixChars": 6969
+  },
+  "evidenceRefs": [
+    "docs/harness/evidence/token-economics/codex-jsonl-smoke-2026-06-16.json",
+    "docs/harness/evidence/evidence-log.md"
+  ],
+  "harnessProfile": {
+    "changedSurfaces": [
+      "AGENTS.md",
+      "docs/harness/research/harness-token-economics-research.md"
+    ],
+    "description": "Read-only smoke trace over root instructions and the token-economics research note.",
+    "name": "custom"
+  },
+  "limitations": [
+    "Single smoke trace; not a minimal/moderate/comprehensive comparison.",
+    "Codex JSONL did not emit the configured model name in this run.",
+    "Raw JSONL contains command output and remains in ignored local scratch space.",
+    "No project verification command was run because the task was read-only orientation."
+  ],
+  "mechanism": {
+    "expectedExecutionEffect": "improve",
+    "expectedTokenEffect": "unknown",
+    "name": "observability",
+    "risk": "A smoke trace proves capture mechanics only; it does not compare harness profiles."
+  },
+  "outcome": {
+    "completed": true,
+    "failureMode": null,
+    "qualityScore": 1.0,
+    "verificationVerdict": "not_run",
+    "worstCaseQuality": 1.0
+  },
+  "promotionStatus": "inconclusive",
+  "recordedAt": "2026-06-16T20:48:17Z",
+  "schemaVersion": "harnessforge.tokenEconomicsMetric.v1",
+  "target": {
+    "commit": "3108fecf4978ae673bef5cc9e85605d1e962ac88",
+    "platform": "macOS-26.5.1-arm64-arm-64bit-Mach-O",
+    "repoLabel": "harnessforge"
+  },
+  "task": {
+    "category": "harness-research-observability",
+    "description": "Read AGENTS.md and docs/harness/research/harness-token-economics-research.md only. Do not edit files. Do not run project tests. Answer with two concise bullets: what the token-economics next step is, and which evidence source should be used first.",
+    "heldOut": false,
+    "id": "token-economics.codex-jsonl-smoke"
+  },
+  "tokens": {
+    "cacheReadInput": 19200,
+    "cacheWriteInput": null,
+    "output": 1034,
+    "reasoningOutput": 815,
+    "source": "agent_usage_report",
+    "startupInput": 40348,
+    "total": 42197,
+    "uncachedRepeatedInput": null
+  },
+  "trajectory": {
+    "durationSeconds": null,
+    "editCalls": 0,
+    "fileReads": 2,
+    "retries": 0,
+    "searchCalls": 0,
+    "toolCalls": 2,
+    "turns": 1,
+    "verificationRuns": 0
+  }
+}

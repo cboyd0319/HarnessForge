@@ -247,6 +247,13 @@ by the maintainer.
   parses reviewed Codex JSONL events into schema-shaped records, and
   `scripts/normalize_token_trace.py --source codex-jsonl` writes normalized
   records from an input trace plus metadata sidecar without running agents.
+- The first live Codex JSONL smoke trace is normalized at
+  `docs/harness/evidence/token-economics/codex-jsonl-smoke-2026-06-16.json`.
+  It reports one read-only orientation turn over `AGENTS.md` and the
+  token-economics research note: input `40,348`, cached input `19,200`, output
+  `1,034`, reasoning output `815`, two command tool calls, and two file reads.
+  The record is explicitly `inconclusive`; it proves the capture path only and
+  does not compare harness profiles.
 - Research refresh now allows normal fetch mode to regenerate stale generated
   lock and inbox files after source allowlist changes while keeping
   `--check` strict about generated-output consistency.
@@ -434,6 +441,15 @@ by the maintainer.
   research source check, JSON validation, durable local-path scan, diff
   hygiene, and self-audit `100/100` passed. No live agent trace was run in
   this slice.
+- Current Codex JSONL smoke verification: `codex exec --json --ephemeral
+  --sandbox read-only` produced one ignored raw trace under `.harnessforge/`;
+  `scripts/normalize_token_trace.py --source codex-jsonl` emitted
+  `docs/harness/evidence/token-economics/codex-jsonl-smoke-2026-06-16.json`;
+  targeted parser and local-entrypoint tests passed with 9 tests; full unit
+  discovery passed with 310 tests; compileall, research source check, JSON
+  validation, durable local-path scan, diff hygiene, and self-audit `100/100`
+  passed. The trace was read-only and no project tests or edits ran inside the
+  traced Codex session.
 - Current known local verification gap: `pwsh -NoProfile -File ./init.ps1`
   cannot run in this shell because PowerShell command execution fails before
   repo code loads with a .NET `System.IO.FileLoadException`. `pwsh -v` reports
@@ -447,6 +463,7 @@ by the maintainer.
 - `feature_list.json`
 - `docs/roadmap.md`
 - `docs/harness/evidence/evidence-log.md`
+- `docs/harness/evidence/token-economics/codex-jsonl-smoke-2026-06-16.json`
 - `docs/harness/research/README.md`
 - `docs/harness/research/harness-token-economics-research.md`
 - `docs/harness/research/research-inbox.md`
@@ -473,9 +490,10 @@ by the maintainer.
 
 Continue the Harness Token Economics Research item by running controlled
 minimal, moderate, and comprehensive harness task traces using
-`harnessforge.tokenEconomicsMetric.v1`. Start by feeding one reviewed Codex
-JSONL trace and metadata sidecar through
-`scripts/normalize_token_trace.py --source codex-jsonl`, then repeat one
-low-risk task across the three profiles in isolated roots. Release prep should
-remain last and should start only after accepted non-release work is closed or
-explicitly deferred by the maintainer.
+`harnessforge.tokenEconomicsMetric.v1`. Repeat one low-risk task across the
+minimal, moderate, and comprehensive profiles in isolated roots, normalize each
+Codex JSONL trace with `scripts/normalize_token_trace.py --source codex-jsonl`,
+and compare tokens, tool calls, retries, verification result, elapsed time, and
+human quality review. Release prep should remain last and should start only
+after accepted non-release work is closed or explicitly deferred by the
+maintainer.

@@ -92,6 +92,24 @@ class TokenEconomicsTests(unittest.TestCase):
                         ),
                         json.dumps(
                             {
+                                "type": "item.started",
+                                "item": {
+                                    "type": "command_execution",
+                                    "command": "/bin/zsh -lc \"sed -n '1,20p' docs/harness/research/note.md\"",
+                                },
+                            }
+                        ),
+                        json.dumps(
+                            {
+                                "type": "item.completed",
+                                "item": {
+                                    "type": "command_execution",
+                                    "command": "/bin/zsh -lc \"sed -n '1,20p' docs/harness/research/note.md\"",
+                                },
+                            }
+                        ),
+                        json.dumps(
+                            {
                                 "type": "item.completed",
                                 "item": {
                                     "type": "tool_call",
@@ -162,8 +180,8 @@ class TokenEconomicsTests(unittest.TestCase):
             record["trajectory"],
             {
                 "turns": 2,
-                "toolCalls": 3,
-                "fileReads": 1,
+                "toolCalls": 4,
+                "fileReads": 2,
                 "searchCalls": 0,
                 "editCalls": 1,
                 "verificationRuns": 1,
@@ -179,6 +197,43 @@ class TokenEconomicsTests(unittest.TestCase):
 
             with self.assertRaisesRegex(ValueError, "line 2"):
                 normalize_codex_jsonl_trace(trace, _metadata())
+
+    def test_committed_token_economics_records_have_required_shape(self) -> None:
+        schema = json.loads(
+            (
+                REPO_ROOT
+                / "docs"
+                / "harness"
+                / "research"
+                / "token-economics-metric.schema.json"
+            ).read_text(encoding="utf-8")
+        )
+        records = sorted(
+            (
+                REPO_ROOT
+                / "docs"
+                / "harness"
+                / "evidence"
+                / "token-economics"
+            ).glob("*.json")
+        )
+
+        self.assertTrue(records)
+        required = set(schema["required"])
+        token_required = set(schema["properties"]["tokens"]["required"])
+        trajectory_required = set(schema["properties"]["trajectory"]["required"])
+        for path in records:
+            with self.subTest(path=path.name):
+                raw = path.read_text(encoding="utf-8")
+                record = json.loads(raw)
+                self.assertEqual(
+                    record["schemaVersion"], "harnessforge.tokenEconomicsMetric.v1"
+                )
+                self.assertLessEqual(required, set(record))
+                self.assertLessEqual(token_required, set(record["tokens"]))
+                self.assertLessEqual(trajectory_required, set(record["trajectory"]))
+                self.assertNotIn("/Users/", raw)
+                self.assertNotIn("C:\\Users", raw)
 
 
 if __name__ == "__main__":
