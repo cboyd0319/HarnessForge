@@ -272,6 +272,42 @@ clock duration: metadata sidecars may provide
 `trajectory.durationSeconds` and omitted from the public record. Codex JSONL
 did not emit native duration or timestamp fields in these runs.
 
+## Unrevealed Failure Repair Batch
+
+A fourth clean comparison used the same HarnessForge-derived scratch profile
+shape, but seeded source regressions rather than naming the target behavior in
+the prompt. The initial focused test failed twice: `file_change` no longer
+counted as an edit call, and duration override metadata no longer reached the
+normalized trajectory. The prompt only asked the agent to run
+`PYTHONPATH=src:. python3 -m unittest tests.test_token_economics`, inspect the
+failure, make the smallest source-only fix, and rerun the same check.
+
+Summary:
+
+| Profile | Repeats | Loaded harness chars | Total visible tokens | Median total | Cached input range | Median duration seconds | Tool calls | File reads | Verification runs | Outcome |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
+| minimal | 3 | 678 | 147,222-215,544 | 163,183 | 110,208-175,872 | 39.542 | 12-16 | 6-7 | 2-3 | 3/3 passed |
+| moderate | 3 | 100,916 | 191,253-268,619 | 204,213 | 156,800-232,960 | 38.169 | 12-13 | 6-7 | 2 | 3/3 passed |
+| comprehensive | 3 | 100,916 | 227,923-244,078 | 241,409 | 169,984-189,824 | 41.097 | 13-15 | 7 | 2 | 3/3 passed |
+
+Initial interpretation:
+
+- All nine runs changed only
+  `src/harnessforge/evidence/token_economics.py` and passed the focused test
+  module after observing the seeded failure.
+- Minimal had the lowest median visible tokens on this unrevealed-failure
+  batch. It loaded far less harness context and still completed the repair.
+- Moderate and comprehensive loaded the same large state surface and cost more
+  without improving final quality for this focused source repair.
+- The result contrasts with the explicit duration-override batch, where
+  moderate had the lowest median. This supports a mixed conclusion: the token
+  effect depends on task framing, loaded context, and trajectory, not on the
+  stored profile label alone.
+
+This is stronger than the explicit-repair batch because the prompt did not name
+the source defects, but it is still not true external held-out evidence. The
+regression was seeded in ignored scratch copies of this repository.
+
 ## Required Trace Evidence Still Missing
 
 The accepted backlog item is not complete until HarnessForge has representative
@@ -285,10 +321,10 @@ task traces or controlled evaluations that compare:
 - cold-start cost, repeated-session savings, rework savings, and instruction
   bloat failures.
 
-Still missing after the duration-override batch: held-out tasks, external
-real-repo repairs, deliberate failure or retry cases, and a second telemetry
-source such as Claude Code OpenTelemetry for cache-creation and tool-span
-buckets.
+Still missing after the unrevealed-failure batch: true held-out tasks, external
+real-repo repairs, human quality review beyond focused test pass/fail, and a
+second telemetry source such as Claude Code OpenTelemetry for cache-creation
+and tool-span buckets.
 
 ## Evidence Path
 

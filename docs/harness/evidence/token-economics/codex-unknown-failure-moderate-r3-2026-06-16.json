@@ -1,0 +1,92 @@
+{
+  "agent": {
+    "model": "configured-default-unrecorded",
+    "name": "Codex CLI isolated",
+    "provider": "OpenAI",
+    "version": "0.140.0"
+  },
+  "context": {
+    "contextWindowTokens": null,
+    "dynamicContextChars": 513,
+    "lazyLoadedFiles": [
+      "current-state.md",
+      "feature_list.json"
+    ],
+    "loadedHarnessChars": 100916,
+    "startupFiles": [
+      "AGENTS.md"
+    ],
+    "staticPrefixChars": 6969
+  },
+  "evidenceRefs": [
+    "docs/harness/evidence/token-economics/codex-unknown-failure-moderate-r3-2026-06-16.json",
+    "docs/harness/evidence/evidence-log.md"
+  ],
+  "harnessProfile": {
+    "changedSurfaces": [
+      "AGENTS.md",
+      "feature_list.json",
+      "current-state.md",
+      "docs/roadmap.md",
+      "selected docs/harness core files"
+    ],
+    "description": "Root instructions plus current state, feature state, roadmap, core harness docs, and token-economics fixtures.",
+    "name": "moderate"
+  },
+  "limitations": [
+    "Scratch fixture based on committed HarnessForge, not an external real repo.",
+    "Injected defects were not named in the prompt, but this is not a benchmark-held-out issue.",
+    "Profile roots are ignored scratch copies, not long-lived target repositories.",
+    "Codex JSONL did not emit the configured model name in this run.",
+    "Prompt/cache state from nearby runs may affect cached input buckets.",
+    "Raw JSONL contains local working-directory output and remains ignored under .harnessforge/."
+  ],
+  "mechanism": {
+    "expectedExecutionEffect": "improve",
+    "expectedTokenEffect": "mixed",
+    "name": "verification_feedback",
+    "notes": "Prompt did not name the injected defects; target verification first exposed two focused test failures. Runner used per-run scratch HOME and CODEX_HOME, symlinked auth only, ignore-user-config, ignore-rules, disabled hooks/plugins/memories/apps/multi_agent, and workspace-write sandboxing.",
+    "risk": "Moderate startup guidance can add state context before source inspection."
+  },
+  "outcome": {
+    "completed": true,
+    "failureMode": null,
+    "qualityScore": 1.0,
+    "verificationVerdict": "passed",
+    "worstCaseQuality": 1.0
+  },
+  "promotionStatus": "inconclusive",
+  "recordedAt": "2026-06-16T21:58:07Z",
+  "schemaVersion": "harnessforge.tokenEconomicsMetric.v1",
+  "target": {
+    "commit": "scratch-unknown-failure-2026-06-16-moderate-r3",
+    "platform": "macOS-26.5.1-arm64-arm-64bit-Mach-O",
+    "repoLabel": "harnessforge-scratch-unknown-failure"
+  },
+  "task": {
+    "category": "implementation-repair",
+    "description": "Fix the failing token-economics tests in this HarnessForge scratch copy. Follow the repository startup path for the current profile. Start by running PYTHONPATH=src:. python3 -m unittest tests.test_token_economics to observe the failure, then make the smallest source-only Python standard-library change needed. Do not edit tests or docs unless the failure proves they are wrong. Rerun the same focused test command. Do not commit or push. Final answer: one sentence with the changed file and verification result.",
+    "heldOut": false,
+    "id": "token-economics.unknown-failure.moderate.r3"
+  },
+  "tokens": {
+    "cacheReadInput": 156800,
+    "cacheWriteInput": null,
+    "output": 1478,
+    "reasoningOutput": 51,
+    "source": "agent_usage_report",
+    "startupInput": 189724,
+    "total": 191253,
+    "uncachedRepeatedInput": null
+  },
+  "trajectory": {
+    "durationSeconds": 38.169,
+    "editCalls": 2,
+    "fileReads": 6,
+    "retries": 0,
+    "searchCalls": 1,
+    "toolCalls": 12,
+    "turns": 1,
+    "verificationRuns": 2
+  }
+}

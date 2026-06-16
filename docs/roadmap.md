@@ -696,6 +696,13 @@ Initial research slice:
   median visible tokens and duration, minimal loaded far less harness context
   but used more trajectory, and comprehensive had the highest median total for
   this explicit source-level repair.
+- A HarnessForge-derived unrevealed failure repair batch is also committed with
+  three repeats per profile. The prompt did not name the two seeded source
+  defects; all nine runs fixed only
+  `src/harnessforge/evidence/token_economics.py` and passed the focused
+  token-economics unittest module. Minimal had the lowest median visible tokens
+  on this batch, while moderate and comprehensive loaded about `101K` harness
+  chars without improving final quality.
 
 Remaining closure work:
 
@@ -706,8 +713,7 @@ Remaining closure work:
   as API-level cost supplements; the first repo-local normalizer is
   `scripts/normalize_token_trace.py --source codex-jsonl`;
 - run controlled minimal, moderate, and comprehensive harness task traces on
-  held-out or external representative repos and more realistic implementation,
-  repair, failure, or retry tasks;
+  true held-out or external representative repos with human quality review;
 - keep the isolated trace runner so user-level skills, plugins, hooks, memory,
   and other non-target startup context do not enter the trace unless recorded
   as part of the harness under test;

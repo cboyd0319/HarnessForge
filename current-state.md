@@ -295,6 +295,17 @@ by the maintainer.
   `inconclusive`, but it finally shows a larger loaded-context contrast:
   minimal loaded `665` harness chars, while moderate and comprehensive commonly
   loaded about `98K` harness chars.
+- A HarnessForge-derived unrevealed failure repair batch is also recorded.
+  Three repeats each ran under minimal, moderate, and comprehensive profiles
+  with the same isolated runner. The prompt did not name the seeded defects;
+  target verification first exposed two focused source failures. All nine runs
+  changed only `src/harnessforge/evidence/token_economics.py` and passed the
+  focused token-economics unittest module. Median totals were minimal
+  `163,183`, moderate `204,213`, and comprehensive `241,409` visible tokens.
+  Median durations were minimal `39.542`, moderate `38.169`, and comprehensive
+  `41.097` seconds. This result is still `inconclusive`, but it contrasts with
+  the explicit duration-override batch: minimal was cheapest here, while
+  moderate was cheapest when the prompt named the desired behavior.
 - Research refresh now allows normal fetch mode to regenerate stale generated
   lock and inbox files after source allowlist changes while keeping
   `--check` strict about generated-output consistency.
@@ -531,6 +542,19 @@ by the maintainer.
   passed with 10 tests; full unit discovery passed with 311 tests; compileall,
   research source check, JSON validation, diff hygiene, and self-audit
   `100/100` passed.
+- Current unrevealed-failure verification: isolated
+  minimal/moderate/comprehensive `codex exec --json --ephemeral
+  --ignore-user-config --ignore-rules --disable hooks --disable plugins
+  --disable memories --disable apps --disable multi_agent --sandbox
+  workspace-write` runs completed three repeats each. Raw-trace review found no
+  non-target user-level skill/plugin loading or secret-shaped strings. Scratch
+  target verification passed in all nine targets with the focused
+  token-economics unittest command; raw file-change events touched only
+  `src/harnessforge/evidence/token_economics.py`. Nine normalized records parse
+  as JSON and passed local-path scans. Focused parser/local-entrypoint tests
+  passed with 10 tests; full unit discovery passed with 311 tests; compileall,
+  research source check, JSON validation, diff hygiene, and self-audit
+  `100/100` passed.
 - Current known local verification gap: `pwsh -NoProfile -File ./init.ps1`
   cannot run in this shell because PowerShell command execution fails before
   repo code loads with a .NET `System.IO.FileLoadException`. `pwsh -v` reports
@@ -559,6 +583,15 @@ by the maintainer.
 - `docs/harness/evidence/token-economics/codex-representative-duration-moderate-r1-2026-06-16.json`
 - `docs/harness/evidence/token-economics/codex-representative-duration-moderate-r2-2026-06-16.json`
 - `docs/harness/evidence/token-economics/codex-representative-duration-moderate-r3-2026-06-16.json`
+- `docs/harness/evidence/token-economics/codex-unknown-failure-comprehensive-r1-2026-06-16.json`
+- `docs/harness/evidence/token-economics/codex-unknown-failure-comprehensive-r2-2026-06-16.json`
+- `docs/harness/evidence/token-economics/codex-unknown-failure-comprehensive-r3-2026-06-16.json`
+- `docs/harness/evidence/token-economics/codex-unknown-failure-minimal-r1-2026-06-16.json`
+- `docs/harness/evidence/token-economics/codex-unknown-failure-minimal-r2-2026-06-16.json`
+- `docs/harness/evidence/token-economics/codex-unknown-failure-minimal-r3-2026-06-16.json`
+- `docs/harness/evidence/token-economics/codex-unknown-failure-moderate-r1-2026-06-16.json`
+- `docs/harness/evidence/token-economics/codex-unknown-failure-moderate-r2-2026-06-16.json`
+- `docs/harness/evidence/token-economics/codex-unknown-failure-moderate-r3-2026-06-16.json`
 - `docs/harness/evidence/token-economics/codex-isolated-profile-minimal-r1-2026-06-16.json`
 - `docs/harness/evidence/token-economics/codex-isolated-profile-minimal-r2-2026-06-16.json`
 - `docs/harness/evidence/token-economics/codex-isolated-profile-moderate-r1-2026-06-16.json`
@@ -589,11 +622,10 @@ by the maintainer.
 
 Continue the Harness Token Economics Research item by running controlled
 minimal, moderate, and comprehensive harness task traces using
-`harnessforge.tokenEconomicsMetric.v1`. The next useful slice is held-out or
-external-real-repo repair evidence, plus at least one failure or retry case and
-human quality review. Keep the isolated Codex runner so non-target
-skills/plugins/hooks/memory do not enter the traces. Add Claude Code
-OpenTelemetry only when native Codex JSONL is insufficient for cache-creation
-or tool-span buckets. Release prep should remain last and should start only
-after accepted non-release work is closed or explicitly deferred by the
-maintainer.
+`harnessforge.tokenEconomicsMetric.v1`. The next useful slice is true held-out
+or external-real-repo repair evidence with human quality review. Keep the
+isolated Codex runner so non-target skills/plugins/hooks/memory do not enter
+the traces. Add Claude Code OpenTelemetry only when native Codex JSONL is
+insufficient for cache-creation or tool-span buckets. Release prep should
+remain last and should start only after accepted non-release work is closed or
+explicitly deferred by the maintainer.
