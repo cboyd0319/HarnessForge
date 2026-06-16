@@ -254,6 +254,11 @@ by the maintainer.
   `1,034`, reasoning output `815`, two command tool calls, and two file reads.
   The record is explicitly `inconclusive`; it proves the capture path only and
   does not compare harness profiles.
+- A two-repeat minimal/moderate/comprehensive Codex profile comparison was
+  attempted in ignored scratch space and rejected. Even with
+  `codex exec --ignore-user-config`, some raw traces loaded a user-level
+  orientation skill outside the target and raw `pwd` output contained local
+  working-directory paths. No profile-comparison metric records were promoted.
 - Research refresh now allows normal fetch mode to regenerate stale generated
   lock and inbox files after source allowlist changes while keeping
   `--check` strict about generated-output consistency.
@@ -450,6 +455,12 @@ by the maintainer.
   validation, durable local-path scan, diff hygiene, and self-audit `100/100`
   passed. The trace was read-only and no project tests or edits ran inside the
   traced Codex session.
+- Current rejected profile-comparison verification: two-repeat
+  minimal/moderate/comprehensive `codex exec --json --ephemeral
+  --ignore-user-config --sandbox read-only` runs completed in ignored scratch
+  roots, but raw-trace review found non-target user-level skill loading in some
+  runs. The attempted comparison was recorded as rejected evidence and no
+  normalized profile records were committed.
 - Current known local verification gap: `pwsh -NoProfile -File ./init.ps1`
   cannot run in this shell because PowerShell command execution fails before
   repo code loads with a .NET `System.IO.FileLoadException`. `pwsh -v` reports
@@ -481,6 +492,10 @@ by the maintainer.
 ## Blockers
 
 - No product blockers.
+- Controlled token-economics profile comparisons are blocked in this local
+  Codex environment until the runner can disable or isolate user-level skills,
+  plugins, hooks, memory, and other non-target startup context, or until those
+  surfaces are explicitly recorded as part of the harness under test.
 - Local PowerShell command execution is blocked by a host .NET assembly-load
   error before repo code runs; use direct Python/POSIX verification until the
   local `pwsh` runtime is repaired or run `init.ps1` on a healthy Windows or
@@ -490,10 +505,12 @@ by the maintainer.
 
 Continue the Harness Token Economics Research item by running controlled
 minimal, moderate, and comprehensive harness task traces using
-`harnessforge.tokenEconomicsMetric.v1`. Repeat one low-risk task across the
-minimal, moderate, and comprehensive profiles in isolated roots, normalize each
-Codex JSONL trace with `scripts/normalize_token_trace.py --source codex-jsonl`,
-and compare tokens, tool calls, retries, verification result, elapsed time, and
-human quality review. Release prep should remain last and should start only
-after accepted non-release work is closed or explicitly deferred by the
-maintainer.
+`harnessforge.tokenEconomicsMetric.v1`. First establish a clean trace runner
+that prevents non-target user-level skills/plugins/hooks/memory from entering
+the run, or records those surfaces explicitly as the harness under test. Then
+repeat one low-risk task across the three profiles in isolated roots, normalize
+each Codex JSONL trace with `scripts/normalize_token_trace.py --source
+codex-jsonl`, and compare tokens, tool calls, retries, verification result,
+elapsed time, and human quality review. Release prep should remain last and
+should start only after accepted non-release work is closed or explicitly
+deferred by the maintainer.

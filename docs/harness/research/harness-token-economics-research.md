@@ -146,6 +146,21 @@ This smoke record proves the capture and normalization path only. It is
 `inconclusive` and must not be used to decide whether minimal, moderate, or
 comprehensive harness profiles increase or decrease total task cost.
 
+## Rejected Profile Comparison Attempt
+
+An attempted two-repeat minimal/moderate/comprehensive orientation comparison
+was rejected on 2026-06-16. Local `codex exec --ignore-user-config` still
+loaded a user-level orientation skill outside the target in some runs, which
+added non-target context to the trace. The raw JSONL also contains local
+working-directory output from `pwd`, so it remains ignored under
+`.harnessforge/` and is not committed.
+
+No profile comparison records were promoted from that attempt. The next
+controlled comparison needs a clean runner that prevents user-level skills,
+plugins, hooks, memory, or other non-target startup context from entering the
+trace, or it needs to record those surfaces explicitly as the harness under
+test.
+
 ## Required Trace Evidence Still Missing
 
 The accepted backlog item is not complete until HarnessForge has representative

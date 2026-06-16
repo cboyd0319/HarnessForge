@@ -155,6 +155,7 @@ _FILE_READ_TERMS = (
     "read_file",
     "open",
     "cat ",
+    "head ",
     "sed ",
     "nl ",
     "view",

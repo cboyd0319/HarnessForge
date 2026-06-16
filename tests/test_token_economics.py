@@ -112,6 +112,15 @@ class TokenEconomicsTests(unittest.TestCase):
                             {
                                 "type": "item.completed",
                                 "item": {
+                                    "type": "command_execution",
+                                    "command": "/bin/zsh -lc 'head -c 12000 feature_list.json'",
+                                },
+                            }
+                        ),
+                        json.dumps(
+                            {
+                                "type": "item.completed",
+                                "item": {
                                     "type": "tool_call",
                                     "name": "shell",
                                     "command": "python3 -m unittest tests/test_demo.py",
@@ -180,8 +189,8 @@ class TokenEconomicsTests(unittest.TestCase):
             record["trajectory"],
             {
                 "turns": 2,
-                "toolCalls": 4,
-                "fileReads": 2,
+                "toolCalls": 5,
+                "fileReads": 3,
                 "searchCalls": 0,
                 "editCalls": 1,
                 "verificationRuns": 1,

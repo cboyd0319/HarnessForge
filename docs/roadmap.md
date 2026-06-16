@@ -674,6 +674,10 @@ Initial research slice:
   reviewed Codex JSONL traces into the metric schema. The first smoke record is
   `docs/harness/evidence/token-economics/codex-jsonl-smoke-2026-06-16.json`,
   but it is `inconclusive` and only proves capture mechanics.
+- A first local minimal/moderate/comprehensive comparison attempt was rejected
+  because some Codex traces loaded non-target user-level skill context even
+  with user config ignored. Controlled profile evidence now requires a clean
+  trace runner or explicit recording of those non-target surfaces.
 
 Remaining closure work:
 
@@ -685,6 +689,9 @@ Remaining closure work:
   `scripts/normalize_token_trace.py --source codex-jsonl`;
 - run controlled minimal, moderate, and comprehensive harness task traces on
   representative repos;
+- ensure the trace runner disables or isolates user-level skills, plugins,
+  hooks, memory, and other non-target startup context, or records those
+  surfaces as part of the harness under test;
 - capture provider-reported or agent-reported token buckets, cache reads and
   writes, tool calls, retries, verification results, elapsed time, and quality
   review;
