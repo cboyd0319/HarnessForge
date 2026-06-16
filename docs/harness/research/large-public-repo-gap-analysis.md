@@ -80,9 +80,9 @@ Definition of done:
 
 Verification: the 2026-06-16 field refresh across Kubernetes, VS Code, and
 Bazel shows dry-run generation using the requested 20,000-file scan limit for
-all three repositories. Remaining cross-repo findings are nested instruction
-planning and deeper deterministic file-discovery ranking for very large
-eligible file sets.
+all three repositories. Remaining cross-repo findings are deeper deterministic
+file-discovery ranking for very large eligible file sets plus enhance/index
+consumption of nested instruction plans.
 
 ### 2. File Discovery Needs Large-Repo Coverage Signals
 
@@ -172,8 +172,8 @@ Definition of done:
 ### 4. Nested Instruction Planning Is A Product Feature
 
 Severity: high for large monorepo quality; medium for default generation
-safety. Status: initial product implementation for report and dry-run flows;
-index and enhance integration remain follow-up work.
+safety. Status: ranked advisory product implementation for report and dry-run
+flows; index and enhance integration remain follow-up work.
 
 Observed: all three repos produced nested instruction candidates. VS Code also
 has existing nested `AGENTS.md` files.
@@ -184,15 +184,15 @@ Implemented deterministic fix:
 - Feed it from deterministic signals:
   existing nested `AGENTS.md`, component manifests, workspace markers, and
   component inventory truncation.
+- Rank candidates with component-local docs, verification command source
+  attribution, workflow path filters, and workflow working-directory signals.
+- Include compact `rankSignals` and `reviewFocus` fields for scoped review.
 - Surface the plan in `report`, `quickstart --json`, and
   `init --dry-run --json`.
 - Never write nested `AGENTS.md` by default.
 
 Remaining deterministic follow-up:
 
-- Add workflow path filters, workflow working directories, verification command
-  prefixes, top-level package directories, and source-of-truth docs to the
-  signal model.
 - Surface the plan in `index` and `enhance`.
 - When writes are later supported, require explicit path selection and
   confirmation.
@@ -200,7 +200,7 @@ Remaining deterministic follow-up:
 Definition of done:
 
 - Large monorepo dry-runs produce a compact review-required nested instruction
-  plan.
+  plan with ranked component candidates.
 - Existing nested `AGENTS.md` files are treated as project-owned guidance and
   skipped when producing new candidate paths.
 
@@ -250,8 +250,9 @@ Definition of done:
 
 - Initial implementation: `repoMap.sourceOfTruth` stays smaller and
   high-signal, while `repoMap.localDocs` keeps component docs discoverable.
-- Remaining: use `localDocs` and verification-command metadata to improve
-  nested instruction ranking and scoped guidance.
+- Follow-on implemented: `localDocs`, verification-command metadata, and
+  workflow routing signals improve nested instruction ranking and scoped
+  guidance.
 
 ### 7. Existing Instruction Enhancement Needs Large-Repo Awareness
 
@@ -313,7 +314,10 @@ Definition of done:
 7. Done for initial source/local-doc split: separate global `sourceOfTruth`
    from component-local `localDocs` in index, report, repo map, Action summary,
    and large-public-repo field evidence.
-8. Expand the real public corpus run after each deterministic slice.
+8. Done for nested candidate ranking: use local docs, verification attribution,
+   and workflow routing to prioritize review-required nested instruction
+   candidates.
+9. Expand the real public corpus run after each deterministic slice.
 
 ## Optional Adapters
 

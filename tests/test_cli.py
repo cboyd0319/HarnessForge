@@ -1272,9 +1272,46 @@ class CliTests(unittest.TestCase):
                 package_root = root / "packages" / package
                 package_root.mkdir(parents=True)
                 (package_root / "package.json").write_text(
-                    json.dumps({"name": package}),
+                    json.dumps(
+                        (
+                            {
+                                "name": package,
+                                "scripts": {
+                                    "test": "vitest",
+                                    "build": "vite build",
+                                },
+                            }
+                            if package == "web"
+                            else {"name": package}
+                        )
+                    ),
                     encoding="utf-8",
                 )
+            (root / "packages" / "web" / "README.md").write_text(
+                "# Web Package\n",
+                encoding="utf-8",
+            )
+            (root / "test").mkdir()
+            (root / "test" / "package.json").write_text(
+                json.dumps({"name": "test-fixtures"}),
+                encoding="utf-8",
+            )
+            (root / ".github" / "workflows").mkdir(parents=True)
+            (root / ".github" / "workflows" / "ci.yml").write_text(
+                "name: ci\n"
+                "on:\n"
+                "  pull_request:\n"
+                "    paths:\n"
+                "      - packages/web/**\n"
+                "jobs:\n"
+                "  web:\n"
+                "    defaults:\n"
+                "      run:\n"
+                "        working-directory: packages/web\n"
+                "    steps:\n"
+                "      - run: npm test\n",
+                encoding="utf-8",
+            )
             stdout = io.StringIO()
             with contextlib.redirect_stdout(stdout):
                 code = main(["report", "--target", str(root), "--json"])
@@ -1284,11 +1321,38 @@ class CliTests(unittest.TestCase):
         self.assertEqual(code, 0)
         self.assertEqual(plan["status"], "review_required")
         self.assertFalse(plan["writeByDefault"])
-        self.assertEqual(plan["candidateCount"], 2)
+        self.assertEqual(plan["candidateCount"], 3)
         self.assertEqual(
             {item["instructionPath"] for item in plan["candidateComponents"]},
-            {"packages/api/AGENTS.md", "packages/web/AGENTS.md"},
+            {
+                "packages/api/AGENTS.md",
+                "packages/web/AGENTS.md",
+                "test/AGENTS.md",
+            },
         )
+        self.assertEqual(plan["candidateComponents"][0]["path"], "packages/web")
+        self.assertEqual(plan["candidateComponents"][0]["rank"], 1)
+        self.assertIn(
+            "verification source: packages/web/package.json",
+            plan["candidateComponents"][0]["rankSignals"],
+        )
+        self.assertIn(
+            "workflow routing: .github/workflows/ci.yml",
+            plan["candidateComponents"][0]["rankSignals"],
+        )
+        self.assertIn(
+            "local docs: packages/web/README.md",
+            plan["candidateComponents"][0]["rankSignals"],
+        )
+        self.assertIn("verification", plan["candidateComponents"][0]["reviewFocus"])
+        self.assertIn(
+            ".github/workflows path filters",
+            plan["monorepoSignals"],
+        )
+        test_candidate = next(
+            item for item in plan["candidateComponents"] if item["path"] == "test"
+        )
+        self.assertNotIn("verification source: test", test_candidate["rankSignals"])
         self.assertTrue(
             any(
                 "nested AGENTS.md candidates" in action

@@ -17,7 +17,7 @@
   "crossRepoFindings": [
     {
       "code": "nested_agents_plan",
-      "message": "large monorepos produce review-required nested AGENTS.md candidates; keep them advisory and improve ranking before any explicit write mode."
+      "message": "large monorepos produce ranked review-required nested AGENTS.md candidates; keep them advisory and require explicit path selection before any write mode."
     },
     {
       "code": "file_discovery_priority",
@@ -34,7 +34,7 @@
     "normalHarnessGenerationNetworkAccess": false,
     "targetWritesPerformed": false
   },
-  "generatedAt": "2026-06-16T18:45:45+00:00",
+  "generatedAt": "2026-06-16T19:14:20+00:00",
   "mode": "real_public_repo_field_analysis",
   "repositories": [
     {
@@ -331,122 +331,360 @@
           {
             "instructionPath": "hack/tools/AGENTS.md",
             "path": "hack/tools",
-            "reason": "component has boundary markers: go.mod, go.work",
-            "recommendedAction": "review_required"
-          },
-          {
-            "instructionPath": "hack/tools/golangci-lint/AGENTS.md",
-            "path": "hack/tools/golangci-lint",
-            "reason": "component has boundary markers: go.mod, go.work",
-            "recommendedAction": "review_required"
-          },
-          {
-            "instructionPath": "hack/tools/instrumentation/AGENTS.md",
-            "path": "hack/tools/instrumentation",
-            "reason": "component has boundary markers: go.mod, go.work",
-            "recommendedAction": "review_required"
-          },
-          {
-            "instructionPath": "cluster/addons/addon-manager/AGENTS.md",
-            "path": "cluster/addons/addon-manager",
-            "reason": "component has boundary markers: Dockerfile, Makefile",
-            "recommendedAction": "review_required"
-          },
-          {
-            "instructionPath": "cluster/images/etcd-version-monitor/AGENTS.md",
-            "path": "cluster/images/etcd-version-monitor",
-            "reason": "component has boundary markers: Dockerfile, Makefile",
-            "recommendedAction": "review_required"
-          },
-          {
-            "instructionPath": "cluster/images/kubemark/AGENTS.md",
-            "path": "cluster/images/kubemark",
-            "reason": "component has boundary markers: Dockerfile, Makefile",
-            "recommendedAction": "review_required"
-          },
-          {
-            "instructionPath": "cluster/addons/dns/coredns/AGENTS.md",
-            "path": "cluster/addons/dns/coredns",
-            "reason": "component has boundary markers: Makefile",
-            "recommendedAction": "review_required"
-          },
-          {
-            "instructionPath": "cluster/addons/dns/kube-dns/AGENTS.md",
-            "path": "cluster/addons/dns/kube-dns",
-            "reason": "component has boundary markers: Makefile",
-            "recommendedAction": "review_required"
-          },
-          {
-            "instructionPath": "cluster/gce/gci/mounter/AGENTS.md",
-            "path": "cluster/gce/gci/mounter",
-            "reason": "component has boundary markers: Dockerfile, Makefile",
-            "recommendedAction": "review_required"
-          },
-          {
-            "instructionPath": "staging/src/k8s.io/api/AGENTS.md",
-            "path": "staging/src/k8s.io/api",
-            "reason": "component has boundary markers: go.mod",
-            "recommendedAction": "review_required"
+            "rank": 1,
+            "rankSignals": [
+              "verification source: hack/tools/go.mod",
+              "verification source: hack/tools/golangci-lint/go.mod",
+              "verification source: hack/tools/instrumentation/go.mod",
+              "local docs: hack/tools/README.md",
+              "local docs: hack/tools/golangci-lint/sorted/README.md",
+              "local docs: hack/tools/instrumentation/README.md"
+            ],
+            "reason": "component ranked for nested instructions by verification source: hack/tools/go.mod; verification source: hack/tools/golangci-lint/go.mod; verification source: hack/tools/instrumentation/go.mod",
+            "recommendedAction": "review_required",
+            "reviewFocus": [
+              "verification",
+              "local-docs",
+              "boundary-markers"
+            ]
           },
           {
             "instructionPath": "staging/src/k8s.io/apiextensions-apiserver/AGENTS.md",
             "path": "staging/src/k8s.io/apiextensions-apiserver",
-            "reason": "component has boundary markers: go.mod",
-            "recommendedAction": "review_required"
-          },
-          {
-            "instructionPath": "staging/src/k8s.io/apimachinery/AGENTS.md",
-            "path": "staging/src/k8s.io/apimachinery",
-            "reason": "component has boundary markers: go.mod",
-            "recommendedAction": "review_required"
+            "rank": 2,
+            "rankSignals": [
+              "verification source: staging/src/k8s.io/apiextensions-apiserver/go.mod",
+              "local docs: staging/src/k8s.io/apiextensions-apiserver/README.md",
+              "local docs: staging/src/k8s.io/apiextensions-apiserver/examples/client-go/README.md",
+              "local docs: staging/src/k8s.io/apiextensions-apiserver/pkg/apis/testdata/README.md",
+              "boundary markers: go.mod"
+            ],
+            "reason": "component ranked for nested instructions by verification source: staging/src/k8s.io/apiextensions-apiserver/go.mod; local docs: staging/src/k8s.io/apiextensions-apiserver/README.md; local docs: staging/src/k8s.io/apiextensions-apiserver/examples/client-go/README.md",
+            "recommendedAction": "review_required",
+            "reviewFocus": [
+              "verification",
+              "local-docs",
+              "boundary-markers"
+            ]
           },
           {
             "instructionPath": "staging/src/k8s.io/apiserver/AGENTS.md",
             "path": "staging/src/k8s.io/apiserver",
-            "reason": "component has boundary markers: go.mod",
-            "recommendedAction": "review_required"
-          },
-          {
-            "instructionPath": "staging/src/k8s.io/cli-runtime/AGENTS.md",
-            "path": "staging/src/k8s.io/cli-runtime",
-            "reason": "component has boundary markers: go.mod",
-            "recommendedAction": "review_required"
+            "rank": 3,
+            "rankSignals": [
+              "verification source: staging/src/k8s.io/apiserver/go.mod",
+              "local docs: staging/src/k8s.io/apiserver/README.md",
+              "local docs: staging/src/k8s.io/apiserver/pkg/server/options/encryptionconfig/testdata/valid-configs/aes/README.md",
+              "local docs: staging/src/k8s.io/apiserver/pkg/server/options/testdata/README.md",
+              "boundary markers: go.mod"
+            ],
+            "reason": "component ranked for nested instructions by verification source: staging/src/k8s.io/apiserver/go.mod; local docs: staging/src/k8s.io/apiserver/README.md; local docs: staging/src/k8s.io/apiserver/pkg/server/options/encryptionconfig/testdata/valid-configs/aes/README.md",
+            "recommendedAction": "review_required",
+            "reviewFocus": [
+              "verification",
+              "local-docs",
+              "boundary-markers"
+            ]
           },
           {
             "instructionPath": "staging/src/k8s.io/client-go/AGENTS.md",
             "path": "staging/src/k8s.io/client-go",
-            "reason": "component has boundary markers: go.mod",
-            "recommendedAction": "review_required"
-          },
-          {
-            "instructionPath": "staging/src/k8s.io/cloud-provider/AGENTS.md",
-            "path": "staging/src/k8s.io/cloud-provider",
-            "reason": "component has boundary markers: go.mod",
-            "recommendedAction": "review_required"
-          },
-          {
-            "instructionPath": "staging/src/k8s.io/cluster-bootstrap/AGENTS.md",
-            "path": "staging/src/k8s.io/cluster-bootstrap",
-            "reason": "component has boundary markers: go.mod",
-            "recommendedAction": "review_required"
+            "rank": 4,
+            "rankSignals": [
+              "verification source: staging/src/k8s.io/client-go/go.mod",
+              "local docs: staging/src/k8s.io/client-go/README.md",
+              "local docs: staging/src/k8s.io/client-go/examples/README.md",
+              "local docs: staging/src/k8s.io/client-go/examples/create-update-delete-deployment/README.md",
+              "boundary markers: go.mod"
+            ],
+            "reason": "component ranked for nested instructions by verification source: staging/src/k8s.io/client-go/go.mod; local docs: staging/src/k8s.io/client-go/README.md; local docs: staging/src/k8s.io/client-go/examples/README.md",
+            "recommendedAction": "review_required",
+            "reviewFocus": [
+              "verification",
+              "local-docs",
+              "boundary-markers"
+            ]
           },
           {
             "instructionPath": "staging/src/k8s.io/code-generator/AGENTS.md",
             "path": "staging/src/k8s.io/code-generator",
-            "reason": "component has boundary markers: go.mod",
-            "recommendedAction": "review_required"
+            "rank": 5,
+            "rankSignals": [
+              "verification source: staging/src/k8s.io/code-generator/go.mod",
+              "local docs: staging/src/k8s.io/code-generator/README.md",
+              "local docs: staging/src/k8s.io/code-generator/cmd/client-gen/README.md",
+              "local docs: staging/src/k8s.io/code-generator/docs/DEVELOPMENT.md",
+              "boundary markers: go.mod"
+            ],
+            "reason": "component ranked for nested instructions by verification source: staging/src/k8s.io/code-generator/go.mod; local docs: staging/src/k8s.io/code-generator/README.md; local docs: staging/src/k8s.io/code-generator/cmd/client-gen/README.md",
+            "recommendedAction": "review_required",
+            "reviewFocus": [
+              "verification",
+              "local-docs",
+              "boundary-markers"
+            ]
           },
           {
             "instructionPath": "staging/src/k8s.io/component-base/AGENTS.md",
             "path": "staging/src/k8s.io/component-base",
-            "reason": "component has boundary markers: go.mod",
-            "recommendedAction": "review_required"
+            "rank": 6,
+            "rankSignals": [
+              "verification source: staging/src/k8s.io/component-base/go.mod",
+              "local docs: staging/src/k8s.io/component-base/README.md",
+              "local docs: staging/src/k8s.io/component-base/logs/example/README.md",
+              "local docs: staging/src/k8s.io/component-base/zpages/README.md",
+              "boundary markers: go.mod"
+            ],
+            "reason": "component ranked for nested instructions by verification source: staging/src/k8s.io/component-base/go.mod; local docs: staging/src/k8s.io/component-base/README.md; local docs: staging/src/k8s.io/component-base/logs/example/README.md",
+            "recommendedAction": "review_required",
+            "reviewFocus": [
+              "verification",
+              "local-docs",
+              "boundary-markers"
+            ]
+          },
+          {
+            "instructionPath": "hack/tools/instrumentation/AGENTS.md",
+            "path": "hack/tools/instrumentation",
+            "rank": 7,
+            "rankSignals": [
+              "verification source: hack/tools/instrumentation/go.mod",
+              "local docs: hack/tools/instrumentation/README.md",
+              "local docs: hack/tools/instrumentation/documentation/documentation.md",
+              "boundary markers: go.mod, go.work"
+            ],
+            "reason": "component ranked for nested instructions by verification source: hack/tools/instrumentation/go.mod; local docs: hack/tools/instrumentation/README.md; local docs: hack/tools/instrumentation/documentation/documentation.md",
+            "recommendedAction": "review_required",
+            "reviewFocus": [
+              "verification",
+              "local-docs",
+              "boundary-markers"
+            ]
+          },
+          {
+            "instructionPath": "staging/src/k8s.io/api/AGENTS.md",
+            "path": "staging/src/k8s.io/api",
+            "rank": 8,
+            "rankSignals": [
+              "verification source: staging/src/k8s.io/api/go.mod",
+              "local docs: staging/src/k8s.io/api/README.md",
+              "local docs: staging/src/k8s.io/api/testdata/README.md",
+              "boundary markers: go.mod"
+            ],
+            "reason": "component ranked for nested instructions by verification source: staging/src/k8s.io/api/go.mod; local docs: staging/src/k8s.io/api/README.md; local docs: staging/src/k8s.io/api/testdata/README.md",
+            "recommendedAction": "review_required",
+            "reviewFocus": [
+              "verification",
+              "local-docs",
+              "boundary-markers"
+            ]
+          },
+          {
+            "instructionPath": "staging/src/k8s.io/apimachinery/AGENTS.md",
+            "path": "staging/src/k8s.io/apimachinery",
+            "rank": 9,
+            "rankSignals": [
+              "verification source: staging/src/k8s.io/apimachinery/go.mod",
+              "local docs: staging/src/k8s.io/apimachinery/README.md",
+              "local docs: staging/src/k8s.io/apimachinery/pkg/api/validate/README.md",
+              "boundary markers: go.mod"
+            ],
+            "reason": "component ranked for nested instructions by verification source: staging/src/k8s.io/apimachinery/go.mod; local docs: staging/src/k8s.io/apimachinery/README.md; local docs: staging/src/k8s.io/apimachinery/pkg/api/validate/README.md",
+            "recommendedAction": "review_required",
+            "reviewFocus": [
+              "verification",
+              "local-docs",
+              "boundary-markers"
+            ]
+          },
+          {
+            "instructionPath": "staging/src/k8s.io/cloud-provider/AGENTS.md",
+            "path": "staging/src/k8s.io/cloud-provider",
+            "rank": 10,
+            "rankSignals": [
+              "verification source: staging/src/k8s.io/cloud-provider/go.mod",
+              "local docs: staging/src/k8s.io/cloud-provider/README.md",
+              "local docs: staging/src/k8s.io/cloud-provider/sample/README.md",
+              "boundary markers: go.mod"
+            ],
+            "reason": "component ranked for nested instructions by verification source: staging/src/k8s.io/cloud-provider/go.mod; local docs: staging/src/k8s.io/cloud-provider/README.md; local docs: staging/src/k8s.io/cloud-provider/sample/README.md",
+            "recommendedAction": "review_required",
+            "reviewFocus": [
+              "verification",
+              "local-docs",
+              "boundary-markers"
+            ]
+          },
+          {
+            "instructionPath": "staging/src/k8s.io/dynamic-resource-allocation/AGENTS.md",
+            "path": "staging/src/k8s.io/dynamic-resource-allocation",
+            "rank": 11,
+            "rankSignals": [
+              "verification source: staging/src/k8s.io/dynamic-resource-allocation/go.mod",
+              "local docs: staging/src/k8s.io/dynamic-resource-allocation/README.md",
+              "local docs: staging/src/k8s.io/dynamic-resource-allocation/structured/internal/README.md",
+              "boundary markers: go.mod"
+            ],
+            "reason": "component ranked for nested instructions by verification source: staging/src/k8s.io/dynamic-resource-allocation/go.mod; local docs: staging/src/k8s.io/dynamic-resource-allocation/README.md; local docs: staging/src/k8s.io/dynamic-resource-allocation/structured/internal/README.md",
+            "recommendedAction": "review_required",
+            "reviewFocus": [
+              "verification",
+              "local-docs",
+              "boundary-markers"
+            ]
+          },
+          {
+            "instructionPath": "hack/tools/golangci-lint/AGENTS.md",
+            "path": "hack/tools/golangci-lint",
+            "rank": 12,
+            "rankSignals": [
+              "verification source: hack/tools/golangci-lint/go.mod",
+              "local docs: hack/tools/golangci-lint/sorted/README.md",
+              "boundary markers: go.mod, go.work"
+            ],
+            "reason": "component ranked for nested instructions by verification source: hack/tools/golangci-lint/go.mod; local docs: hack/tools/golangci-lint/sorted/README.md; boundary markers: go.mod, go.work",
+            "recommendedAction": "review_required",
+            "reviewFocus": [
+              "verification",
+              "local-docs",
+              "boundary-markers"
+            ]
+          },
+          {
+            "instructionPath": "staging/src/k8s.io/cli-runtime/AGENTS.md",
+            "path": "staging/src/k8s.io/cli-runtime",
+            "rank": 13,
+            "rankSignals": [
+              "verification source: staging/src/k8s.io/cli-runtime/go.mod",
+              "local docs: staging/src/k8s.io/cli-runtime/README.md",
+              "boundary markers: go.mod"
+            ],
+            "reason": "component ranked for nested instructions by verification source: staging/src/k8s.io/cli-runtime/go.mod; local docs: staging/src/k8s.io/cli-runtime/README.md; boundary markers: go.mod",
+            "recommendedAction": "review_required",
+            "reviewFocus": [
+              "verification",
+              "local-docs",
+              "boundary-markers"
+            ]
+          },
+          {
+            "instructionPath": "staging/src/k8s.io/cluster-bootstrap/AGENTS.md",
+            "path": "staging/src/k8s.io/cluster-bootstrap",
+            "rank": 14,
+            "rankSignals": [
+              "verification source: staging/src/k8s.io/cluster-bootstrap/go.mod",
+              "local docs: staging/src/k8s.io/cluster-bootstrap/README.md",
+              "boundary markers: go.mod"
+            ],
+            "reason": "component ranked for nested instructions by verification source: staging/src/k8s.io/cluster-bootstrap/go.mod; local docs: staging/src/k8s.io/cluster-bootstrap/README.md; boundary markers: go.mod",
+            "recommendedAction": "review_required",
+            "reviewFocus": [
+              "verification",
+              "local-docs",
+              "boundary-markers"
+            ]
           },
           {
             "instructionPath": "staging/src/k8s.io/component-helpers/AGENTS.md",
             "path": "staging/src/k8s.io/component-helpers",
-            "reason": "component has boundary markers: go.mod",
-            "recommendedAction": "review_required"
+            "rank": 15,
+            "rankSignals": [
+              "verification source: staging/src/k8s.io/component-helpers/go.mod",
+              "local docs: staging/src/k8s.io/component-helpers/README.md",
+              "boundary markers: go.mod"
+            ],
+            "reason": "component ranked for nested instructions by verification source: staging/src/k8s.io/component-helpers/go.mod; local docs: staging/src/k8s.io/component-helpers/README.md; boundary markers: go.mod",
+            "recommendedAction": "review_required",
+            "reviewFocus": [
+              "verification",
+              "local-docs",
+              "boundary-markers"
+            ]
+          },
+          {
+            "instructionPath": "staging/src/k8s.io/controller-manager/AGENTS.md",
+            "path": "staging/src/k8s.io/controller-manager",
+            "rank": 16,
+            "rankSignals": [
+              "verification source: staging/src/k8s.io/controller-manager/go.mod",
+              "local docs: staging/src/k8s.io/controller-manager/README.md",
+              "boundary markers: go.mod"
+            ],
+            "reason": "component ranked for nested instructions by verification source: staging/src/k8s.io/controller-manager/go.mod; local docs: staging/src/k8s.io/controller-manager/README.md; boundary markers: go.mod",
+            "recommendedAction": "review_required",
+            "reviewFocus": [
+              "verification",
+              "local-docs",
+              "boundary-markers"
+            ]
+          },
+          {
+            "instructionPath": "staging/src/k8s.io/cri-api/AGENTS.md",
+            "path": "staging/src/k8s.io/cri-api",
+            "rank": 17,
+            "rankSignals": [
+              "verification source: staging/src/k8s.io/cri-api/go.mod",
+              "local docs: staging/src/k8s.io/cri-api/README.md",
+              "boundary markers: go.mod"
+            ],
+            "reason": "component ranked for nested instructions by verification source: staging/src/k8s.io/cri-api/go.mod; local docs: staging/src/k8s.io/cri-api/README.md; boundary markers: go.mod",
+            "recommendedAction": "review_required",
+            "reviewFocus": [
+              "verification",
+              "local-docs",
+              "boundary-markers"
+            ]
+          },
+          {
+            "instructionPath": "staging/src/k8s.io/cri-client/AGENTS.md",
+            "path": "staging/src/k8s.io/cri-client",
+            "rank": 18,
+            "rankSignals": [
+              "verification source: staging/src/k8s.io/cri-client/go.mod",
+              "local docs: staging/src/k8s.io/cri-client/README.md",
+              "boundary markers: go.mod"
+            ],
+            "reason": "component ranked for nested instructions by verification source: staging/src/k8s.io/cri-client/go.mod; local docs: staging/src/k8s.io/cri-client/README.md; boundary markers: go.mod",
+            "recommendedAction": "review_required",
+            "reviewFocus": [
+              "verification",
+              "local-docs",
+              "boundary-markers"
+            ]
+          },
+          {
+            "instructionPath": "staging/src/k8s.io/cri-streaming/AGENTS.md",
+            "path": "staging/src/k8s.io/cri-streaming",
+            "rank": 19,
+            "rankSignals": [
+              "verification source: staging/src/k8s.io/cri-streaming/go.mod",
+              "local docs: staging/src/k8s.io/cri-streaming/README.md",
+              "boundary markers: go.mod"
+            ],
+            "reason": "component ranked for nested instructions by verification source: staging/src/k8s.io/cri-streaming/go.mod; local docs: staging/src/k8s.io/cri-streaming/README.md; boundary markers: go.mod",
+            "recommendedAction": "review_required",
+            "reviewFocus": [
+              "verification",
+              "local-docs",
+              "boundary-markers"
+            ]
+          },
+          {
+            "instructionPath": "staging/src/k8s.io/csi-translation-lib/AGENTS.md",
+            "path": "staging/src/k8s.io/csi-translation-lib",
+            "rank": 20,
+            "rankSignals": [
+              "verification source: staging/src/k8s.io/csi-translation-lib/go.mod",
+              "local docs: staging/src/k8s.io/csi-translation-lib/README.md",
+              "boundary markers: go.mod"
+            ],
+            "reason": "component ranked for nested instructions by verification source: staging/src/k8s.io/csi-translation-lib/go.mod; local docs: staging/src/k8s.io/csi-translation-lib/README.md; boundary markers: go.mod",
+            "recommendedAction": "review_required",
+            "reviewFocus": [
+              "verification",
+              "local-docs",
+              "boundary-markers"
+            ]
           }
         ],
         "candidateCount": 43,
@@ -1397,124 +1635,344 @@
       "nestedInstructionPlan": {
         "candidateComponents": [
           {
-            "instructionPath": "src/vs/sessions/test/e2e/AGENTS.md",
-            "path": "src/vs/sessions/test/e2e",
-            "reason": "component has boundary markers: package.json",
-            "recommendedAction": "review_required"
-          },
-          {
-            "instructionPath": "src/vs/sessions/test/e2e/extensions/sessions-e2e-mock/AGENTS.md",
-            "path": "src/vs/sessions/test/e2e/extensions/sessions-e2e-mock",
-            "reason": "component has boundary markers: package.json",
-            "recommendedAction": "review_required"
-          },
-          {
-            "instructionPath": "scripts/AGENTS.md",
-            "path": "scripts",
-            "reason": "component has boundary markers: package.json",
-            "recommendedAction": "review_required"
-          },
-          {
             "instructionPath": "test/AGENTS.md",
             "path": "test",
-            "reason": "component has boundary markers: package.json",
-            "recommendedAction": "review_required"
-          },
-          {
-            "instructionPath": "test/automation/AGENTS.md",
-            "path": "test/automation",
-            "reason": "component has boundary markers: package.json",
-            "recommendedAction": "review_required"
-          },
-          {
-            "instructionPath": "test/mcp/AGENTS.md",
-            "path": "test/mcp",
-            "reason": "component has boundary markers: package.json",
-            "recommendedAction": "review_required"
-          },
-          {
-            "instructionPath": "test/monaco/AGENTS.md",
-            "path": "test/monaco",
-            "reason": "component has boundary markers: package.json",
-            "recommendedAction": "review_required"
-          },
-          {
-            "instructionPath": "test/sanity/AGENTS.md",
-            "path": "test/sanity",
-            "reason": "component has boundary markers: package.json",
-            "recommendedAction": "review_required"
-          },
-          {
-            "instructionPath": "test/smoke/AGENTS.md",
-            "path": "test/smoke",
-            "reason": "component has boundary markers: package.json",
-            "recommendedAction": "review_required"
-          },
-          {
-            "instructionPath": "test/componentFixtures/playwright/AGENTS.md",
-            "path": "test/componentFixtures/playwright",
-            "reason": "component has boundary markers: package.json",
-            "recommendedAction": "review_required"
-          },
-          {
-            "instructionPath": "test/integration/browser/AGENTS.md",
-            "path": "test/integration/browser",
-            "reason": "component has boundary markers: package.json",
-            "recommendedAction": "review_required"
-          },
-          {
-            "instructionPath": "test/unit/node/AGENTS.md",
-            "path": "test/unit/node",
-            "reason": "component has boundary markers: package.json",
-            "recommendedAction": "review_required"
-          },
-          {
-            "instructionPath": "test/smoke/extensions/vscode-smoketest-ext-host/AGENTS.md",
-            "path": "test/smoke/extensions/vscode-smoketest-ext-host",
-            "reason": "component has boundary markers: package.json",
-            "recommendedAction": "review_required"
-          },
-          {
-            "instructionPath": ".devcontainer/AGENTS.md",
-            "path": ".devcontainer",
-            "reason": "component has boundary markers: Dockerfile",
-            "recommendedAction": "review_required"
-          },
-          {
-            "instructionPath": ".eslint-plugin-local/AGENTS.md",
-            "path": ".eslint-plugin-local",
-            "reason": "component has boundary markers: package.json",
-            "recommendedAction": "review_required"
+            "rank": 1,
+            "rankSignals": [
+              "verification source: test/componentFixtures/playwright/package.json",
+              "verification source: test/monaco/package.json",
+              "workflow routing: .github/workflows/chat-lib-package.yml",
+              "workflow routing: .github/workflows/chat-perf.yml",
+              "workflow routing: .github/workflows/component-fixtures.yml",
+              "local docs: test/README.md"
+            ],
+            "reason": "component ranked for nested instructions by verification source: test/componentFixtures/playwright/package.json; verification source: test/monaco/package.json; workflow routing: .github/workflows/chat-lib-package.yml",
+            "recommendedAction": "review_required",
+            "reviewFocus": [
+              "verification",
+              "workflow-routing",
+              "local-docs",
+              "boundary-markers"
+            ]
           },
           {
             "instructionPath": "cli/AGENTS.md",
             "path": "cli",
-            "reason": "component has boundary markers: Cargo.toml",
-            "recommendedAction": "review_required"
+            "rank": 2,
+            "rankSignals": [
+              "verification source: cli/Cargo.toml",
+              "workflow routing: .github/workflows/chat-perf.yml",
+              "workflow routing: .github/workflows/component-fixtures.yml",
+              "workflow routing: .github/workflows/css-order-scan.yml",
+              "boundary markers: Cargo.toml"
+            ],
+            "reason": "component ranked for nested instructions by verification source: cli/Cargo.toml; workflow routing: .github/workflows/chat-perf.yml; workflow routing: .github/workflows/component-fixtures.yml",
+            "recommendedAction": "review_required",
+            "reviewFocus": [
+              "verification",
+              "workflow-routing",
+              "boundary-markers"
+            ]
+          },
+          {
+            "instructionPath": "extensions/css-language-features/AGENTS.md",
+            "path": "extensions/css-language-features",
+            "rank": 3,
+            "rankSignals": [
+              "verification source: extensions/css-language-features/package.json",
+              "verification source: extensions/css-language-features/server/package.json",
+              "local docs: extensions/css-language-features/README.md",
+              "boundary markers: package.json"
+            ],
+            "reason": "component ranked for nested instructions by verification source: extensions/css-language-features/package.json; verification source: extensions/css-language-features/server/package.json; local docs: extensions/css-language-features/README.md",
+            "recommendedAction": "review_required",
+            "reviewFocus": [
+              "verification",
+              "local-docs",
+              "boundary-markers"
+            ]
+          },
+          {
+            "instructionPath": "src/vs/sessions/test/e2e/AGENTS.md",
+            "path": "src/vs/sessions/test/e2e",
+            "rank": 4,
+            "rankSignals": [
+              "verification source: src/vs/sessions/test/e2e/package.json",
+              "workflow routing: .github/workflows/sessions-e2e.yml",
+              "local docs: src/vs/sessions/test/e2e/README.md",
+              "boundary markers: package.json"
+            ],
+            "reason": "component ranked for nested instructions by verification source: src/vs/sessions/test/e2e/package.json; workflow routing: .github/workflows/sessions-e2e.yml; local docs: src/vs/sessions/test/e2e/README.md",
+            "recommendedAction": "review_required",
+            "reviewFocus": [
+              "verification",
+              "workflow-routing",
+              "local-docs",
+              "boundary-markers"
+            ]
+          },
+          {
+            "instructionPath": "test/smoke/AGENTS.md",
+            "path": "test/smoke",
+            "rank": 5,
+            "rankSignals": [
+              "workflow routing: .github/workflows/pr-darwin-test.yml",
+              "workflow routing: .github/workflows/pr-linux-test.yml",
+              "workflow routing: .github/workflows/pr-win32-test.yml",
+              "local docs: test/smoke/README.md",
+              "boundary markers: package.json"
+            ],
+            "reason": "component ranked for nested instructions by workflow routing: .github/workflows/pr-darwin-test.yml; workflow routing: .github/workflows/pr-linux-test.yml; workflow routing: .github/workflows/pr-win32-test.yml",
+            "recommendedAction": "review_required",
+            "reviewFocus": [
+              "workflow-routing",
+              "local-docs",
+              "boundary-markers"
+            ]
+          },
+          {
+            "instructionPath": "scripts/AGENTS.md",
+            "path": "scripts",
+            "rank": 6,
+            "rankSignals": [
+              "workflow routing: .github/workflows/chat-perf.yml",
+              "workflow routing: .github/workflows/component-fixtures.yml",
+              "workflow routing: .github/workflows/css-order-scan.yml",
+              "boundary markers: package.json"
+            ],
+            "reason": "component ranked for nested instructions by workflow routing: .github/workflows/chat-perf.yml; workflow routing: .github/workflows/component-fixtures.yml; workflow routing: .github/workflows/css-order-scan.yml",
+            "recommendedAction": "review_required",
+            "reviewFocus": [
+              "workflow-routing",
+              "boundary-markers"
+            ]
+          },
+          {
+            "instructionPath": "test/monaco/AGENTS.md",
+            "path": "test/monaco",
+            "rank": 7,
+            "rankSignals": [
+              "verification source: test/monaco/package.json",
+              "workflow routing: .github/workflows/monaco-editor.yml",
+              "local docs: test/monaco/README.md",
+              "boundary markers: package.json"
+            ],
+            "reason": "component ranked for nested instructions by verification source: test/monaco/package.json; workflow routing: .github/workflows/monaco-editor.yml; local docs: test/monaco/README.md",
+            "recommendedAction": "review_required",
+            "reviewFocus": [
+              "verification",
+              "workflow-routing",
+              "local-docs",
+              "boundary-markers"
+            ]
           },
           {
             "instructionPath": "remote/AGENTS.md",
             "path": "remote",
-            "reason": "component has boundary markers: package.json",
-            "recommendedAction": "review_required"
+            "rank": 8,
+            "rankSignals": [
+              "workflow routing: .github/workflows/pr-darwin-test.yml",
+              "workflow routing: .github/workflows/pr-linux-test.yml",
+              "workflow routing: .github/workflows/pr-win32-test.yml",
+              "boundary markers: package.json"
+            ],
+            "reason": "component ranked for nested instructions by workflow routing: .github/workflows/pr-darwin-test.yml; workflow routing: .github/workflows/pr-linux-test.yml; workflow routing: .github/workflows/pr-win32-test.yml",
+            "recommendedAction": "review_required",
+            "reviewFocus": [
+              "workflow-routing",
+              "boundary-markers"
+            ]
           },
           {
-            "instructionPath": "extensions/bat/AGENTS.md",
-            "path": "extensions/bat",
-            "reason": "component has boundary markers: package.json",
-            "recommendedAction": "review_required"
+            "instructionPath": "test/componentFixtures/playwright/AGENTS.md",
+            "path": "test/componentFixtures/playwright",
+            "rank": 9,
+            "rankSignals": [
+              "verification source: test/componentFixtures/playwright/package.json",
+              "workflow routing: .github/workflows/component-fixtures.yml",
+              "boundary markers: package.json"
+            ],
+            "reason": "component ranked for nested instructions by verification source: test/componentFixtures/playwright/package.json; workflow routing: .github/workflows/component-fixtures.yml; boundary markers: package.json",
+            "recommendedAction": "review_required",
+            "reviewFocus": [
+              "verification",
+              "workflow-routing",
+              "boundary-markers"
+            ]
           },
           {
-            "instructionPath": "extensions/clojure/AGENTS.md",
-            "path": "extensions/clojure",
-            "reason": "component has boundary markers: package.json",
-            "recommendedAction": "review_required"
+            "instructionPath": ".eslint-plugin-local/AGENTS.md",
+            "path": ".eslint-plugin-local",
+            "rank": 10,
+            "rankSignals": [
+              "verification source: .eslint-plugin-local/package.json",
+              "local docs: .eslint-plugin-local/README.md",
+              "boundary markers: package.json"
+            ],
+            "reason": "component ranked for nested instructions by verification source: .eslint-plugin-local/package.json; local docs: .eslint-plugin-local/README.md; boundary markers: package.json",
+            "recommendedAction": "review_required",
+            "reviewFocus": [
+              "verification",
+              "local-docs",
+              "boundary-markers"
+            ]
           },
           {
-            "instructionPath": "extensions/coffeescript/AGENTS.md",
-            "path": "extensions/coffeescript",
-            "reason": "component has boundary markers: package.json",
-            "recommendedAction": "review_required"
+            "instructionPath": "extensions/git/AGENTS.md",
+            "path": "extensions/git",
+            "rank": 11,
+            "rankSignals": [
+              "verification source: extensions/git/package.json",
+              "local docs: extensions/git/README.md",
+              "boundary markers: package.json"
+            ],
+            "reason": "component ranked for nested instructions by verification source: extensions/git/package.json; local docs: extensions/git/README.md; boundary markers: package.json",
+            "recommendedAction": "review_required",
+            "reviewFocus": [
+              "verification",
+              "local-docs",
+              "boundary-markers"
+            ]
+          },
+          {
+            "instructionPath": "extensions/html-language-features/AGENTS.md",
+            "path": "extensions/html-language-features",
+            "rank": 12,
+            "rankSignals": [
+              "verification source: extensions/html-language-features/server/package.json",
+              "local docs: extensions/html-language-features/README.md",
+              "boundary markers: package.json"
+            ],
+            "reason": "component ranked for nested instructions by verification source: extensions/html-language-features/server/package.json; local docs: extensions/html-language-features/README.md; boundary markers: package.json",
+            "recommendedAction": "review_required",
+            "reviewFocus": [
+              "verification",
+              "local-docs",
+              "boundary-markers"
+            ]
+          },
+          {
+            "instructionPath": "extensions/github/AGENTS.md",
+            "path": "extensions/github",
+            "rank": 13,
+            "rankSignals": [
+              "local docs: extensions/github/README.md",
+              "local docs: extensions/github/testWorkspace/docs/PULL_REQUEST_TEMPLATE.md",
+              "local docs: extensions/github/testWorkspace/docs/PULL_REQUEST_TEMPLATE/a.md",
+              "boundary markers: package.json"
+            ],
+            "reason": "component ranked for nested instructions by local docs: extensions/github/README.md; local docs: extensions/github/testWorkspace/docs/PULL_REQUEST_TEMPLATE.md; local docs: extensions/github/testWorkspace/docs/PULL_REQUEST_TEMPLATE/a.md",
+            "recommendedAction": "review_required",
+            "reviewFocus": [
+              "local-docs",
+              "boundary-markers"
+            ]
+          },
+          {
+            "instructionPath": "extensions/json-language-features/AGENTS.md",
+            "path": "extensions/json-language-features",
+            "rank": 14,
+            "rankSignals": [
+              "local docs: extensions/json-language-features/README.md",
+              "local docs: extensions/json-language-features/server/README.md",
+              "boundary markers: package.json"
+            ],
+            "reason": "component ranked for nested instructions by local docs: extensions/json-language-features/README.md; local docs: extensions/json-language-features/server/README.md; boundary markers: package.json",
+            "recommendedAction": "review_required",
+            "reviewFocus": [
+              "local-docs",
+              "boundary-markers"
+            ]
+          },
+          {
+            "instructionPath": ".devcontainer/AGENTS.md",
+            "path": ".devcontainer",
+            "rank": 15,
+            "rankSignals": [
+              "local docs: .devcontainer/README.md",
+              "boundary markers: Dockerfile"
+            ],
+            "reason": "component ranked for nested instructions by local docs: .devcontainer/README.md; boundary markers: Dockerfile",
+            "recommendedAction": "review_required",
+            "reviewFocus": [
+              "local-docs",
+              "boundary-markers"
+            ]
+          },
+          {
+            "instructionPath": "extensions/emmet/AGENTS.md",
+            "path": "extensions/emmet",
+            "rank": 16,
+            "rankSignals": [
+              "local docs: extensions/emmet/README.md",
+              "boundary markers: package.json"
+            ],
+            "reason": "component ranked for nested instructions by local docs: extensions/emmet/README.md; boundary markers: package.json",
+            "recommendedAction": "review_required",
+            "reviewFocus": [
+              "local-docs",
+              "boundary-markers"
+            ]
+          },
+          {
+            "instructionPath": "extensions/git-base/AGENTS.md",
+            "path": "extensions/git-base",
+            "rank": 17,
+            "rankSignals": [
+              "local docs: extensions/git-base/README.md",
+              "boundary markers: package.json"
+            ],
+            "reason": "component ranked for nested instructions by local docs: extensions/git-base/README.md; boundary markers: package.json",
+            "recommendedAction": "review_required",
+            "reviewFocus": [
+              "local-docs",
+              "boundary-markers"
+            ]
+          },
+          {
+            "instructionPath": "extensions/github-authentication/AGENTS.md",
+            "path": "extensions/github-authentication",
+            "rank": 18,
+            "rankSignals": [
+              "local docs: extensions/github-authentication/README.md",
+              "boundary markers: package.json"
+            ],
+            "reason": "component ranked for nested instructions by local docs: extensions/github-authentication/README.md; boundary markers: package.json",
+            "recommendedAction": "review_required",
+            "reviewFocus": [
+              "local-docs",
+              "boundary-markers"
+            ]
+          },
+          {
+            "instructionPath": "extensions/grunt/AGENTS.md",
+            "path": "extensions/grunt",
+            "rank": 19,
+            "rankSignals": [
+              "local docs: extensions/grunt/README.md",
+              "boundary markers: package.json"
+            ],
+            "reason": "component ranked for nested instructions by local docs: extensions/grunt/README.md; boundary markers: package.json",
+            "recommendedAction": "review_required",
+            "reviewFocus": [
+              "local-docs",
+              "boundary-markers"
+            ]
+          },
+          {
+            "instructionPath": "extensions/gulp/AGENTS.md",
+            "path": "extensions/gulp",
+            "rank": 20,
+            "rankSignals": [
+              "local docs: extensions/gulp/README.md",
+              "boundary markers: package.json"
+            ],
+            "reason": "component ranked for nested instructions by local docs: extensions/gulp/README.md; boundary markers: package.json",
+            "recommendedAction": "review_required",
+            "reviewFocus": [
+              "local-docs",
+              "boundary-markers"
+            ]
           }
         ],
         "candidateCount": 77,
@@ -1533,6 +1991,8 @@
         "guidance": "Use root AGENTS.md as a short repo-wide router. Add nested AGENTS.md only for meaningful components whose stack, commands, ownership, constraints, or verification differ.",
         "monorepoSignals": [
           "multiple nested component manifests",
+          ".github/workflows path filters",
+          ".github/workflows working-directory",
           "4+ detected component boundaries",
           "component inventory truncated",
           "existing nested AGENTS.md"
@@ -2383,124 +2843,299 @@
       "nestedInstructionPlan": {
         "candidateComponents": [
           {
+            "instructionPath": "scripts/AGENTS.md",
+            "path": "scripts",
+            "rank": 1,
+            "rankSignals": [
+              "workflow routing: .github/workflows/community-review-labeler.yml",
+              "workflow routing: .github/workflows/ssl-monitor.yml",
+              "local docs: scripts/docs/README.md",
+              "local docs: scripts/fish/README.md",
+              "local docs: scripts/packages/chocolatey/ReadMe.md",
+              "boundary markers: BUILD"
+            ],
+            "reason": "component ranked for nested instructions by workflow routing: .github/workflows/community-review-labeler.yml; workflow routing: .github/workflows/ssl-monitor.yml; local docs: scripts/docs/README.md",
+            "recommendedAction": "review_required",
+            "reviewFocus": [
+              "workflow-routing",
+              "local-docs",
+              "boundary-markers"
+            ]
+          },
+          {
             "instructionPath": "src/AGENTS.md",
             "path": "src",
-            "reason": "component has boundary markers: BUILD",
-            "recommendedAction": "review_required"
-          },
-          {
-            "instructionPath": "src/conditions/AGENTS.md",
-            "path": "src/conditions",
-            "reason": "component has boundary markers: BUILD",
-            "recommendedAction": "review_required"
-          },
-          {
-            "instructionPath": "src/java_tools/buildjar/AGENTS.md",
-            "path": "src/java_tools/buildjar",
-            "reason": "component has boundary markers: BUILD",
-            "recommendedAction": "review_required"
-          },
-          {
-            "instructionPath": "src/java_tools/import_deps_checker/AGENTS.md",
-            "path": "src/java_tools/import_deps_checker",
-            "reason": "component has boundary markers: BUILD",
-            "recommendedAction": "review_required"
-          },
-          {
-            "instructionPath": "src/java_tools/junitrunner/AGENTS.md",
-            "path": "src/java_tools/junitrunner",
-            "reason": "component has boundary markers: BUILD",
-            "recommendedAction": "review_required"
-          },
-          {
-            "instructionPath": "src/java_tools/singlejar/AGENTS.md",
-            "path": "src/java_tools/singlejar",
-            "reason": "component has boundary markers: BUILD",
-            "recommendedAction": "review_required"
-          },
-          {
-            "instructionPath": "src/main/cpp/AGENTS.md",
-            "path": "src/main/cpp",
-            "reason": "component has boundary markers: BUILD",
-            "recommendedAction": "review_required"
-          },
-          {
-            "instructionPath": "src/main/native/AGENTS.md",
-            "path": "src/main/native",
-            "reason": "component has boundary markers: BUILD",
-            "recommendedAction": "review_required"
-          },
-          {
-            "instructionPath": "src/main/protobuf/AGENTS.md",
-            "path": "src/main/protobuf",
-            "reason": "component has boundary markers: BUILD",
-            "recommendedAction": "review_required"
-          },
-          {
-            "instructionPath": "src/main/res/AGENTS.md",
-            "path": "src/main/res",
-            "reason": "component has boundary markers: BUILD",
-            "recommendedAction": "review_required"
-          },
-          {
-            "instructionPath": "src/main/tools/AGENTS.md",
-            "path": "src/main/tools",
-            "reason": "component has boundary markers: BUILD",
-            "recommendedAction": "review_required"
-          },
-          {
-            "instructionPath": "src/test/cpp/AGENTS.md",
-            "path": "src/test/cpp",
-            "reason": "component has boundary markers: BUILD",
-            "recommendedAction": "review_required"
-          },
-          {
-            "instructionPath": "src/test/gen/AGENTS.md",
-            "path": "src/test/gen",
-            "reason": "component has boundary markers: BUILD",
-            "recommendedAction": "review_required"
+            "rank": 2,
+            "rankSignals": [
+              "workflow routing: .github/workflows/trigger-docs-update.yml",
+              "local docs: src/tools/diskcache/README.md",
+              "local docs: src/tools/execlog/README.md",
+              "local docs: src/tools/remote/README.md",
+              "boundary markers: BUILD"
+            ],
+            "reason": "component ranked for nested instructions by workflow routing: .github/workflows/trigger-docs-update.yml; local docs: src/tools/diskcache/README.md; local docs: src/tools/execlog/README.md",
+            "recommendedAction": "review_required",
+            "reviewFocus": [
+              "workflow-routing",
+              "local-docs",
+              "boundary-markers"
+            ]
           },
           {
             "instructionPath": "src/test/shell/AGENTS.md",
             "path": "src/test/shell",
-            "reason": "component has boundary markers: BUILD",
-            "recommendedAction": "review_required"
-          },
-          {
-            "instructionPath": "src/test/tools/AGENTS.md",
-            "path": "src/test/tools",
-            "reason": "component has boundary markers: BUILD",
-            "recommendedAction": "review_required"
-          },
-          {
-            "instructionPath": "src/tools/bzlmod/AGENTS.md",
-            "path": "src/tools/bzlmod",
-            "reason": "component has boundary markers: BUILD",
-            "recommendedAction": "review_required"
+            "rank": 3,
+            "rankSignals": [
+              "local docs: src/test/shell/bazel/testdata/README.md",
+              "boundary markers: BUILD"
+            ],
+            "reason": "component ranked for nested instructions by local docs: src/test/shell/bazel/testdata/README.md; boundary markers: BUILD",
+            "recommendedAction": "review_required",
+            "reviewFocus": [
+              "local-docs",
+              "boundary-markers"
+            ]
           },
           {
             "instructionPath": "src/tools/diskcache/AGENTS.md",
             "path": "src/tools/diskcache",
-            "reason": "component has boundary markers: BUILD",
-            "recommendedAction": "review_required"
+            "rank": 4,
+            "rankSignals": [
+              "local docs: src/tools/diskcache/README.md",
+              "boundary markers: BUILD"
+            ],
+            "reason": "component ranked for nested instructions by local docs: src/tools/diskcache/README.md; boundary markers: BUILD",
+            "recommendedAction": "review_required",
+            "reviewFocus": [
+              "local-docs",
+              "boundary-markers"
+            ]
           },
           {
             "instructionPath": "src/tools/execlog/AGENTS.md",
             "path": "src/tools/execlog",
-            "reason": "component has boundary markers: BUILD",
-            "recommendedAction": "review_required"
+            "rank": 5,
+            "rankSignals": [
+              "local docs: src/tools/execlog/README.md",
+              "boundary markers: BUILD"
+            ],
+            "reason": "component ranked for nested instructions by local docs: src/tools/execlog/README.md; boundary markers: BUILD",
+            "recommendedAction": "review_required",
+            "reviewFocus": [
+              "local-docs",
+              "boundary-markers"
+            ]
           },
           {
-            "instructionPath": "src/tools/launcher/AGENTS.md",
-            "path": "src/tools/launcher",
-            "reason": "component has boundary markers: BUILD",
-            "recommendedAction": "review_required"
+            "instructionPath": "src/tools/remote/AGENTS.md",
+            "path": "src/tools/remote",
+            "rank": 6,
+            "rankSignals": [
+              "local docs: src/tools/remote/README.md",
+              "boundary markers: BUILD"
+            ],
+            "reason": "component ranked for nested instructions by local docs: src/tools/remote/README.md; boundary markers: BUILD",
+            "recommendedAction": "review_required",
+            "reviewFocus": [
+              "local-docs",
+              "boundary-markers"
+            ]
           },
           {
-            "instructionPath": "src/tools/one_version/AGENTS.md",
-            "path": "src/tools/one_version",
-            "reason": "component has boundary markers: BUILD",
-            "recommendedAction": "review_required"
+            "instructionPath": "src/tools/workspacelog/AGENTS.md",
+            "path": "src/tools/workspacelog",
+            "rank": 7,
+            "rankSignals": [
+              "local docs: src/tools/workspacelog/README.md",
+              "boundary markers: BUILD"
+            ],
+            "reason": "component ranked for nested instructions by local docs: src/tools/workspacelog/README.md; boundary markers: BUILD",
+            "recommendedAction": "review_required",
+            "reviewFocus": [
+              "local-docs",
+              "boundary-markers"
+            ]
+          },
+          {
+            "instructionPath": "src/main/starlark/builtins_bzl/AGENTS.md",
+            "path": "src/main/starlark/builtins_bzl",
+            "rank": 8,
+            "rankSignals": [
+              "local docs: src/main/starlark/builtins_bzl/README.md",
+              "boundary markers: BUILD"
+            ],
+            "reason": "component ranked for nested instructions by local docs: src/main/starlark/builtins_bzl/README.md; boundary markers: BUILD",
+            "recommendedAction": "review_required",
+            "reviewFocus": [
+              "local-docs",
+              "boundary-markers"
+            ]
+          },
+          {
+            "instructionPath": "src/test/py/bazel/AGENTS.md",
+            "path": "src/test/py/bazel",
+            "rank": 9,
+            "rankSignals": [
+              "local docs: src/test/py/bazel/testdata/bazel_external_repository_test/README.md",
+              "boundary markers: BUILD"
+            ],
+            "reason": "component ranked for nested instructions by local docs: src/test/py/bazel/testdata/bazel_external_repository_test/README.md; boundary markers: BUILD",
+            "recommendedAction": "review_required",
+            "reviewFocus": [
+              "local-docs",
+              "boundary-markers"
+            ]
+          },
+          {
+            "instructionPath": "src/test/shell/bazel/AGENTS.md",
+            "path": "src/test/shell/bazel",
+            "rank": 10,
+            "rankSignals": [
+              "local docs: src/test/shell/bazel/testdata/README.md",
+              "boundary markers: BUILD"
+            ],
+            "reason": "component ranked for nested instructions by local docs: src/test/shell/bazel/testdata/README.md; boundary markers: BUILD",
+            "recommendedAction": "review_required",
+            "reviewFocus": [
+              "local-docs",
+              "boundary-markers"
+            ]
+          },
+          {
+            "instructionPath": "src/main/java/net/starlark/java/AGENTS.md",
+            "path": "src/main/java/net/starlark/java",
+            "rank": 11,
+            "rankSignals": [
+              "local docs: src/main/java/net/starlark/java/annot/README.md",
+              "boundary markers: BUILD"
+            ],
+            "reason": "component ranked for nested instructions by local docs: src/main/java/net/starlark/java/annot/README.md; boundary markers: BUILD",
+            "recommendedAction": "review_required",
+            "reviewFocus": [
+              "local-docs",
+              "boundary-markers"
+            ]
+          },
+          {
+            "instructionPath": "src/main/java/net/starlark/java/annot/AGENTS.md",
+            "path": "src/main/java/net/starlark/java/annot",
+            "rank": 12,
+            "rankSignals": [
+              "local docs: src/main/java/net/starlark/java/annot/README.md",
+              "boundary markers: BUILD"
+            ],
+            "reason": "component ranked for nested instructions by local docs: src/main/java/net/starlark/java/annot/README.md; boundary markers: BUILD",
+            "recommendedAction": "review_required",
+            "reviewFocus": [
+              "local-docs",
+              "boundary-markers"
+            ]
+          },
+          {
+            "instructionPath": "tools/AGENTS.md",
+            "path": "tools",
+            "rank": 13,
+            "rankSignals": [
+              "local docs: tools/cpp/modules_tools/README.md",
+              "boundary markers: BUILD"
+            ],
+            "reason": "component ranked for nested instructions by local docs: tools/cpp/modules_tools/README.md; boundary markers: BUILD",
+            "recommendedAction": "review_required",
+            "reviewFocus": [
+              "local-docs",
+              "boundary-markers"
+            ]
+          },
+          {
+            "instructionPath": "src/conditions/AGENTS.md",
+            "path": "src/conditions",
+            "rank": 14,
+            "rankSignals": [
+              "boundary markers: BUILD"
+            ],
+            "reason": "component ranked for nested instructions by boundary markers: BUILD",
+            "recommendedAction": "review_required",
+            "reviewFocus": [
+              "boundary-markers"
+            ]
+          },
+          {
+            "instructionPath": "src/java_tools/buildjar/AGENTS.md",
+            "path": "src/java_tools/buildjar",
+            "rank": 15,
+            "rankSignals": [
+              "boundary markers: BUILD"
+            ],
+            "reason": "component ranked for nested instructions by boundary markers: BUILD",
+            "recommendedAction": "review_required",
+            "reviewFocus": [
+              "boundary-markers"
+            ]
+          },
+          {
+            "instructionPath": "src/java_tools/import_deps_checker/AGENTS.md",
+            "path": "src/java_tools/import_deps_checker",
+            "rank": 16,
+            "rankSignals": [
+              "boundary markers: BUILD"
+            ],
+            "reason": "component ranked for nested instructions by boundary markers: BUILD",
+            "recommendedAction": "review_required",
+            "reviewFocus": [
+              "boundary-markers"
+            ]
+          },
+          {
+            "instructionPath": "src/java_tools/junitrunner/AGENTS.md",
+            "path": "src/java_tools/junitrunner",
+            "rank": 17,
+            "rankSignals": [
+              "boundary markers: BUILD"
+            ],
+            "reason": "component ranked for nested instructions by boundary markers: BUILD",
+            "recommendedAction": "review_required",
+            "reviewFocus": [
+              "boundary-markers"
+            ]
+          },
+          {
+            "instructionPath": "src/java_tools/singlejar/AGENTS.md",
+            "path": "src/java_tools/singlejar",
+            "rank": 18,
+            "rankSignals": [
+              "boundary markers: BUILD"
+            ],
+            "reason": "component ranked for nested instructions by boundary markers: BUILD",
+            "recommendedAction": "review_required",
+            "reviewFocus": [
+              "boundary-markers"
+            ]
+          },
+          {
+            "instructionPath": "src/main/cpp/AGENTS.md",
+            "path": "src/main/cpp",
+            "rank": 19,
+            "rankSignals": [
+              "boundary markers: BUILD"
+            ],
+            "reason": "component ranked for nested instructions by boundary markers: BUILD",
+            "recommendedAction": "review_required",
+            "reviewFocus": [
+              "boundary-markers"
+            ]
+          },
+          {
+            "instructionPath": "src/main/native/AGENTS.md",
+            "path": "src/main/native",
+            "rank": 20,
+            "rankSignals": [
+              "boundary markers: BUILD"
+            ],
+            "reason": "component ranked for nested instructions by boundary markers: BUILD",
+            "recommendedAction": "review_required",
+            "reviewFocus": [
+              "boundary-markers"
+            ]
           }
         ],
         "candidateCount": 79,
@@ -2512,6 +3147,7 @@
         "monorepoSignals": [
           "MODULE.bazel",
           "multiple nested component manifests",
+          ".github/workflows path filters",
           "4+ detected component boundaries",
           "component inventory truncated"
         ],

@@ -79,6 +79,25 @@ Use `sourceOfTruth` for startup routing and repo-wide instruction quality.
 Use `localDocs` for component-specific review, nested instruction candidates,
 and scoped implementation context.
 
+## Nested Instruction Plan
+
+`nestedInstructionPlan` has schema `harnessforge.nestedInstructionPlan.v1`.
+It is advisory and `writeByDefault` is always `false`.
+
+Candidate records include:
+
+- `rank`: review priority within the bounded candidate list.
+- `rankSignals`: compact reasons such as verification source files, workflow
+  routing files, local docs, and boundary markers.
+- `reviewFocus`: machine-readable areas the nested instruction review should
+  cover, such as `verification`, `workflow-routing`, `local-docs`, and
+  `boundary-markers`.
+
+Ranking uses detected component boundaries, existing nested instruction files,
+component-local docs, verification command attribution, and workflow path or
+working-directory signals. It does not parse private source text, execute
+target commands, or write nested `AGENTS.md` files.
+
 ## Verification Commands
 
 `index.verificationCommands` has schema

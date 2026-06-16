@@ -293,11 +293,15 @@ Implemented behavior:
   components instead of only the capped count.
 - Generated manifests retain component inventory total and omitted examples.
 
+Implemented follow-on:
+
+- Workflow path-filter and working-directory evidence now improve nested
+  instruction candidate ranking when workflow files mention component paths.
+
 Remaining:
 
 - Use component overflow to improve nested instruction candidate ranking and
   generated component guidance without increasing default generated size.
-- Improve ranking with CI path-filter evidence.
 
 ### Verification Command Classification
 
@@ -318,12 +322,12 @@ Implemented behavior:
   target commands.
 - Markdown reports summarize the command count and command classes.
 
-Remaining:
+Implemented follow-on:
 
-- Use workflow path filters and working-directory data to improve
-  component-specific verification routing.
-- Feed command metadata into nested instruction candidate ranking without
-  increasing default generated file size.
+- Verification command metadata now feeds nested instruction candidate ranking
+  without increasing default generated file size.
+- Workflow path-filter and working-directory references now improve nested
+  instruction candidate priority when they mention component paths.
 
 ### Source-Of-Truth And Local Docs Split
 
@@ -341,9 +345,9 @@ Implemented behavior:
 - `index --json`, report JSON, compact `repoMap`, Action summaries, and
   large-public-repo field evidence expose source-doc and local-doc counts.
 
-Remaining:
+Implemented follow-on:
 
-- Use `localDocs`, verification-command metadata, and workflow path filters to
+- `localDocs`, verification-command metadata, and workflow path filters now
   improve nested instruction candidate ranking and scoped guidance.
 
 ### SBOM-Aware Indexing

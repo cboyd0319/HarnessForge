@@ -40,8 +40,9 @@ small for a large monorepo. JSON output reports included, total, and omitted
 component counts plus omitted examples.
 For monorepos, quickstart output and `init --dry-run` surface review-required
 nested `AGENTS.md` candidates; JSON modes include the same
-`nestedInstructionPlan`. HarnessForge does not write nested instruction files
-by default.
+`nestedInstructionPlan`. Candidate ranking uses component boundaries,
+component-local docs, verification attribution, and workflow routing signals.
+HarnessForge does not write nested instruction files by default.
 
 After `init`, the generated canonical agent instruction routes the first agent
 session to `docs/harness/state/first-agent-task.md` and the generated

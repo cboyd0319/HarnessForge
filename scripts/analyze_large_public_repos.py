@@ -672,9 +672,9 @@ def cross_repo_findings(results: list[dict[str, Any]]) -> list[dict[str, str]]:
             {
                 "code": "nested_agents_plan",
                 "message": (
-                    "large monorepos produce review-required nested AGENTS.md "
-                    "candidates; keep them advisory and improve ranking before "
-                    "any explicit write mode."
+                    "large monorepos produce ranked review-required nested "
+                    "AGENTS.md candidates; keep them advisory and require "
+                    "explicit path selection before any write mode."
                 ),
             }
         )

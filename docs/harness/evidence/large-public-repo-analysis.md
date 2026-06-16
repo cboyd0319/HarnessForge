@@ -1,6 +1,6 @@
 # Large Public Repo Analysis
 
-Generated: 2026-06-16T18:45:45+00:00
+Generated: 2026-06-16T19:14:20+00:00
 
 ## Boundary
 
@@ -20,7 +20,7 @@ Generated: 2026-06-16T18:45:45+00:00
 
 ## Cross-Repo Findings
 
-- `nested_agents_plan`: large monorepos produce review-required nested AGENTS.md candidates; keep them advisory and improve ranking before any explicit write mode.
+- `nested_agents_plan`: large monorepos produce ranked review-required nested AGENTS.md candidates; keep them advisory and require explicit path selection before any write mode.
 - `file_discovery_priority`: file coverage now distinguishes eligible from intentionally skipped files, and some sampled large repos still show budget-limited eligible categories; improve deeper deterministic ranking for Kubernetes-scale scans.
 
 ## Repository Results
@@ -38,35 +38,35 @@ Generated: 2026-06-16T18:45:45+00:00
 ### `kubernetes-kubernetes`
 
 - `hack/tools`
-- `hack/tools/golangci-lint`
+- `staging/src/k8s.io/apiextensions-apiserver`
+- `staging/src/k8s.io/apiserver`
+- `staging/src/k8s.io/client-go`
+- `staging/src/k8s.io/code-generator`
+- `staging/src/k8s.io/component-base`
 - `hack/tools/instrumentation`
-- `cluster/addons/addon-manager`
-- `cluster/images/etcd-version-monitor`
-- `cluster/images/kubemark`
-- `cluster/addons/dns/coredns`
-- `cluster/addons/dns/kube-dns`
+- `staging/src/k8s.io/api`
 - ... 35 more candidates in JSON report
 
 ### `microsoft-vscode`
 
-- `src/vs/sessions/test/e2e`
-- `src/vs/sessions/test/e2e/extensions/sessions-e2e-mock`
-- `scripts`
 - `test`
-- `test/automation`
-- `test/mcp`
+- `cli`
+- `extensions/css-language-features`
+- `src/vs/sessions/test/e2e`
+- `test/smoke`
+- `scripts`
 - `test/monaco`
-- `test/sanity`
+- `remote`
 - ... 69 more candidates in JSON report
 
 ### `bazelbuild-bazel`
 
+- `scripts`
 - `src`
-- `src/conditions`
-- `src/java_tools/buildjar`
-- `src/java_tools/import_deps_checker`
-- `src/java_tools/junitrunner`
-- `src/java_tools/singlejar`
-- `src/main/cpp`
-- `src/main/native`
+- `src/test/shell`
+- `src/tools/diskcache`
+- `src/tools/execlog`
+- `src/tools/remote`
+- `src/tools/workspacelog`
+- `src/main/starlark/builtins_bzl`
 - ... 71 more candidates in JSON report

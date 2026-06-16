@@ -194,6 +194,10 @@ monorepo scopes.
   `init --dry-run` surface review-required nested `AGENTS.md` candidates for
   monorepos without writing nested instruction files by default. The field
   analyzer consumes the same planner.
+- Nested instruction candidate ranking now uses component-local `localDocs`,
+  verification command attribution, and workflow path/working-directory
+  signals. Candidate JSON includes compact `rankSignals` and `reviewFocus`
+  while keeping nested `AGENTS.md` writes disabled by default.
 - `docs/roadmap.md` now includes an accepted research-backed harness token
   economics task requiring receipts on whether comprehensive repo harnesses
   increase or decrease agent token consumption before generated sizing or
@@ -290,6 +294,13 @@ monorepo scopes.
   Bazel field evidence analyzed 3/3 repos with zero failures and now reports
   global/local doc counts, including Kubernetes `2/103`, VS Code `4/67`, and
   Bazel `3/79`.
+- Current nested-candidate ranking verification: focused CLI and
+  field-analyzer regressions passed; full unit discovery passed with 302 tests;
+  compileall, pin check, research source check, JSON validation, report JSON
+  smoke, expected-block release-check JSON smoke, and self-audit `100/100`
+  passed. Refreshed Kubernetes, VS Code, and Bazel field evidence analyzed 3/3
+  repos with zero failures and ranked candidates using local docs,
+  verification sources, and workflow routing signals.
 - Current README pass verification: required README manifest snippet check
   passed with no missing snippets; duplicate literal prose scan found no
   repeated meaningful lines; `tests.test_generate_audit` passed with 59 tests;
@@ -358,35 +369,17 @@ monorepo scopes.
 
 - `current-state.md`
 - `feature_list.json`
-- `docs/capabilities.md`
-- `docs/harness/research/`
 - `docs/harness/evidence/large-public-repo-analysis.md`
 - `docs/harness/evidence/large-public-repo-analysis.json`
 - `docs/harness/manifest.json`
 - `docs/harness/feedback/report-json-contract.md`
 - `docs/harness/research/large-public-repo-gap-analysis.md`
 - `docs/roadmap.md`
-- `scripts/analyze_large_public_repos.py`
-- `src/harnessforge/project/nested_instructions.py`
-- `tests/test_large_public_repo_analysis.py`
-- `.gitignore`
-- `src/harnessforge/templates/`
-- `src/harnessforge/generation/generate.py`
-- `src/harnessforge/generation/update.py`
-- `src/harnessforge/project/detect.py`
-- `src/harnessforge/project/indexer.py`
-- `src/harnessforge/core/models.py`
-- `src/harnessforge/cli.py`
-- `src/harnessforge/github_action.py`
-- `action.yml`
-- `docs/action.md`
 - `docs/usage.md`
+- `src/harnessforge/project/nested_instructions.py`
+- `scripts/analyze_large_public_repos.py`
 - `docs/harness/evidence/evidence-log.md`
-- `src/harnessforge/core/harness_paths.py`
-- `src/harnessforge/assessment/audit.py`
-- `tests/test_generate_audit.py`
 - `tests/test_cli.py`
-- `tests/test_github_action.py`
 
 ## Blockers
 
@@ -398,6 +391,6 @@ monorepo scopes.
 
 ## Next Step
 
-Use `localDocs`, verification-command metadata, and workflow path filters to
-improve nested instruction candidate ranking and scoped guidance without
-increasing default generated file size.
+Surface the ranked nested instruction plan in `index` and `enhance`, then use
+component overflow data to make omitted candidate review more deterministic
+without increasing default generated harness size.
