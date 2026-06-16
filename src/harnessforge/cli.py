@@ -42,6 +42,10 @@ from .generation.public_repo_corpus import (
 )
 from .generation.update import build_drift_report, plan_or_apply_update
 from .project.detect import detect_project
+from .project.finalize_review import (
+    build_review_finalization_plan,
+    format_review_finalization_plan,
+)
 from .project.indexer import build_index_report, format_index_report
 from .project.planner import build_diff_plan, diff_plan_to_dict, format_diff_plan
 from .project.readiness import (
@@ -193,6 +197,52 @@ def build_parser() -> argparse.ArgumentParser:
     enhance.add_argument("--json", action="store_true")
     enhance.set_defaults(func=_enhance)
 
+    finalize_review = subparsers.add_parser(
+        "finalize-review",
+        help="finalize first-agent review evidence with explicit writes",
+    )
+    finalize_review.add_argument("--target", type=Path, default=Path.cwd())
+    finalize_review.add_argument("--package-manager")
+    finalize_review.add_argument(
+        "--command",
+        dest="commands",
+        action="append",
+        default=[],
+    )
+    finalize_review.add_argument(
+        "--reviewed-by",
+        action="append",
+        default=[],
+        help="reviewer name to record in first-agent review evidence",
+    )
+    finalize_review.add_argument(
+        "--evidence-ref",
+        action="append",
+        default=[],
+        help="target-relative evidence reference to record",
+    )
+    finalize_review.add_argument(
+        "--accept-detected-high-risk",
+        action="store_true",
+        help="record accepted advisory evidence for detected high-risk surfaces",
+    )
+    finalize_review.add_argument(
+        "--apply",
+        action="store_true",
+        help="write finalized review evidence; default is dry-run",
+    )
+    finalize_review.add_argument(
+        "--yes",
+        action="store_true",
+        help="confirm apply-mode review finalization in non-interactive runs",
+    )
+    finalize_review.add_argument("--json", action="store_true")
+    finalize_review.add_argument(
+        "--json-report",
+        help="write finalization JSON to a target-relative path",
+    )
+    finalize_review.set_defaults(func=_finalize_review)
+
     init = subparsers.add_parser("init", help="create missing harness artifacts")
     init.add_argument("--target", type=Path, default=Path.cwd())
     init.add_argument("--agent-file", default="AGENTS.md")
@@ -210,6 +260,11 @@ def build_parser() -> argparse.ArgumentParser:
         help="also scaffold a manual HarnessForge CI workflow",
     )
     init.add_argument("--force", action="store_true")
+    init.add_argument(
+        "--yes",
+        action="store_true",
+        help="confirm destructive overwrite behavior in non-interactive runs",
+    )
     init.add_argument(
         "--enhance-existing",
         action="store_true",
@@ -250,6 +305,11 @@ def build_parser() -> argparse.ArgumentParser:
     )
     update.add_argument("--apply", action="store_true")
     update.add_argument("--force", action="store_true")
+    update.add_argument(
+        "--yes",
+        action="store_true",
+        help="confirm apply-mode update behavior in non-interactive runs",
+    )
     update.add_argument(
         "--enhance-existing",
         action="store_true",
@@ -397,6 +457,11 @@ def build_parser() -> argparse.ArgumentParser:
         help="execute planned checks explicitly instead of reporting plan mode",
     )
     verify.add_argument(
+        "--yes",
+        action="store_true",
+        help="confirm target command execution in non-interactive runs",
+    )
+    verify.add_argument(
         "--timeout-seconds",
         type=float,
         default=DEFAULT_TIMEOUT_SECONDS,
@@ -433,6 +498,11 @@ def build_parser() -> argparse.ArgumentParser:
     blueprint_apply.add_argument("--target", type=Path, default=Path.cwd())
     blueprint_apply.add_argument("--dry-run", action="store_true")
     blueprint_apply.add_argument("--force", action="store_true")
+    blueprint_apply.add_argument(
+        "--yes",
+        action="store_true",
+        help="confirm blueprint writes in non-interactive runs",
+    )
     blueprint_apply.add_argument("--json", action="store_true")
     blueprint_apply.set_defaults(func=_blueprint_apply)
 
@@ -693,6 +763,27 @@ def _quote_command(value: str) -> str:
     return value
 
 
+def _confirm_destructive(
+    action: str,
+    *,
+    confirmed: bool,
+    details: tuple[str, ...],
+) -> None:
+    if confirmed:
+        return
+    if not sys.stdin.isatty():
+        raise ValueError(
+            f"{action} can change repository state and requires --yes "
+            "in non-interactive runs"
+        )
+    print(f"WARNING: {action} can change repository state.", file=sys.stderr)
+    for detail in details:
+        print(f"- {detail}", file=sys.stderr)
+    answer = input("Type 'yes' to continue: ").strip()
+    if answer != "yes":
+        raise ValueError(f"{action} cancelled")
+
+
 def _corpus(args: argparse.Namespace) -> int:
     payload = build_public_repo_corpus_report()
     if args.json:
@@ -813,9 +904,63 @@ def _join_values(values: object) -> str:
     return str(values)
 
 
+def _finalize_review(args: argparse.Namespace) -> int:
+    if args.apply:
+        preview = build_review_finalization_plan(
+            args.target,
+            apply=False,
+            accept_detected_high_risk=args.accept_detected_high_risk,
+            explicit_package_manager=args.package_manager,
+            explicit_commands=tuple(args.commands),
+            reviewed_by=tuple(args.reviewed_by),
+            evidence_refs=tuple(args.evidence_ref),
+        )
+        if preview.payload["review"]["requiresHighRiskAcceptanceFlag"]:
+            raise ValueError(
+                "review finalization detected high-risk surfaces; rerun with "
+                "--accept-detected-high-risk to record accepted advisory evidence"
+            )
+        _confirm_destructive(
+            "finalize-review --apply",
+            confirmed=args.yes,
+            details=(
+                "writes first-agent review evidence and task retirement state",
+                "refreshes manifest metadata for reviewed generated files",
+            ),
+        )
+    plan = build_review_finalization_plan(
+        args.target,
+        apply=args.apply,
+        accept_detected_high_risk=args.accept_detected_high_risk,
+        explicit_package_manager=args.package_manager,
+        explicit_commands=tuple(args.commands),
+        reviewed_by=tuple(args.reviewed_by),
+        evidence_refs=tuple(args.evidence_ref),
+    )
+    json_path = write_json_payload(args.json_report or "", args.target, plan.payload)
+    if args.json:
+        output = dict(plan.payload)
+        output["jsonReport"] = json_path
+        print(json.dumps(output, indent=2))
+    else:
+        print(format_review_finalization_plan(plan.payload), end="")
+        if json_path:
+            print(f"JSON report written: {json_path}")
+    return 0
+
+
 def _init(args: argparse.Namespace) -> int:
     if args.json and not args.dry_run:
         raise ValueError("init --json currently requires --dry-run")
+    if args.force and not args.dry_run:
+        _confirm_destructive(
+            "init --force",
+            confirmed=args.yes,
+            details=(
+                "may overwrite existing generated harness files",
+                "preserved project-owned files should be reviewed first",
+            ),
+        )
     profile, results = create_harness(
         args.target,
         agent_file=args.agent_file,
@@ -927,6 +1072,15 @@ def _update(args: argparse.Namespace) -> int:
                 f"action={item.recommended_action}{suffix}"
             )
         return 0
+    if args.apply:
+        _confirm_destructive(
+            "update --apply",
+            confirmed=args.yes,
+            details=(
+                "writes harness corrections inside the target repository",
+                "use --drift-report first when reviewing generated-file changes",
+            ),
+        )
     before, profile, writes = plan_or_apply_update(
         args.target,
         apply=args.apply,
@@ -1084,6 +1238,15 @@ def _plan(args: argparse.Namespace) -> int:
 def _verify(args: argparse.Namespace) -> int:
     if args.timeout_seconds <= 0:
         raise ValueError("--timeout-seconds must be greater than 0")
+    if args.run:
+        _confirm_destructive(
+            "verify --run",
+            confirmed=args.yes,
+            details=(
+                "executes target repository verification commands",
+                "commands may write files or perform project-defined side effects",
+            ),
+        )
     profile = detect_project(
         args.target,
         explicit_package_manager=args.package_manager,
@@ -1153,6 +1316,15 @@ def _blueprint_show(args: argparse.Namespace) -> int:
 
 
 def _blueprint_apply(args: argparse.Namespace) -> int:
+    if not args.dry_run:
+        _confirm_destructive(
+            "blueprint apply",
+            confirmed=args.yes,
+            details=(
+                "writes optional blueprint artifacts inside the target repository",
+                "use --dry-run first and review generated artifacts before apply",
+            ),
+        )
     blueprint, writes = apply_blueprint(
         args.target,
         args.blueprint_id,

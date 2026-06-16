@@ -9,7 +9,9 @@ as the next product buildout. Release prep stays paused until structured
 high-risk surface acceptance, review finalization, state migration, manifest
 refresh, skill-wiring validation, and related report/maturity fixes are
 implemented or explicitly deferred by maintainers. Structured high-risk surface
-acceptance is implemented; review-finalization automation is next.
+acceptance and review-finalization automation are implemented. The next slice
+is structured review status fields plus the remaining state, skill-wiring,
+verification-evidence, report, and RunHaven-shaped fixture work.
 
 ## Product State
 
@@ -86,6 +88,15 @@ acceptance is implemented; review-finalization automation is next.
   evidence without treating generated pending placeholders as accepted review.
   This repo records accepted advisory review for its four instruction entry
   points and two workflows; generated target repos still start pending.
+- `harnessforge finalize-review` and Action `command: finalize-review` now
+  finalize first-agent review evidence explicitly. Apply mode can retire the
+  first-agent task, refresh manifest metadata, and record accepted advisory
+  high-risk surface evidence only when maintainers pass the acceptance flag.
+- Destructive, overwrite-capable, apply-mode, or command-executing local CLI
+  paths warn and require confirmation. Non-interactive runs must pass `--yes`;
+  interactive terminals must type `yes`. Covered paths include `init --force`,
+  `update --apply`, `blueprint apply`, `verify --run`, and
+  `finalize-review --apply`.
 
 ## Trusted Verification
 
@@ -113,6 +124,13 @@ acceptance is implemented; review-finalization automation is next.
   review-required `0`, accepted high-risk surfaces `6`, docs fan-out `warning`,
   maturity `reviewed`, and audit `100`. `python3 -m ruff check .` could not
   run because Ruff is not installed in the active interpreter.
+- After implementing review finalization and destructive confirmation, focused
+  CLI and Action tests passed; full unit discovery passed with 275 tests;
+  compileall passed; pin check passed; JSON validation passed; `git diff
+  --check` passed; self-audit stayed `100/100`; report JSON smoke showed audit
+  `100`, readiness `ready`, docs fan-out `warning`, and maturity `reviewed`;
+  `finalize-review --target . --json` produced parseable dry-run JSON with no
+  missing high-risk acceptance flag.
 - `PYTHONPATH=src:. python3 -m harnessforge release-check --target . --since HEAD --json`
   produced parseable JSON and returned the expected strict-gate blocked exit.
 - `PYTHONPATH=src:. python3 -m harnessforge quickstart --target . --interactive --json`
@@ -144,6 +162,7 @@ acceptance is implemented; review-finalization automation is next.
 - `src/harnessforge/assessment/`
 - `src/harnessforge/core/`
 - `src/harnessforge/evidence/high_risk_acceptance.py`
+- `src/harnessforge/project/finalize_review.py`
 - `src/harnessforge/generation/`
 - `src/harnessforge/project/`
 - `src/harnessforge/`
@@ -155,5 +174,5 @@ acceptance is implemented; review-finalization automation is next.
 
 ## Next Step
 
-Implement the RunHaven-derived review-finalization command or mode from
-`docs/roadmap.md` before release prep resumes.
+Implement structured review status fields, then continue the remaining
+RunHaven-derived backlog in `docs/roadmap.md` before release prep resumes.

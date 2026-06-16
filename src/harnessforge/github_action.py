@@ -21,6 +21,10 @@ from .evidence.report import build_report, format_report, write_markdown_report
 from .generation.generate import create_harness
 from .generation.update import plan_or_apply_update
 from .project.detect import detect_project
+from .project.finalize_review import (
+    build_review_finalization_plan,
+    format_review_finalization_plan,
+)
 from .project.readiness import inspect_readiness
 from .project.sync import format_sync_check, sync_check_to_dict, sync_exit_code
 from .project.verify import (
@@ -130,10 +134,18 @@ def run_from_env(env: Mapping[str, str]) -> int:
             html_report,
             markdown_report,
         )
+    elif command == "finalize-review":
+        return _run_finalize_review_command(
+            env,
+            target,
+            json_report,
+            html_report,
+            markdown_report,
+        )
     else:
         raise ValueError(
             "command must be one of: audit, init, update, sync, verify, "
-            "report, release-check, doctor"
+            "report, release-check, finalize-review, doctor"
         )
 
     json_path = _write_json_report(json_report, target, result)
@@ -359,6 +371,55 @@ def _run_release_check_command(
     return release_check_exit_code(payload)
 
 
+def _run_finalize_review_command(
+    env: Mapping[str, str],
+    target: Path,
+    json_report: str,
+    html_report: str,
+    markdown_report: str,
+) -> int:
+    if html_report:
+        raise ValueError("html-report is not supported for command=finalize-review")
+    if markdown_report:
+        raise ValueError("markdown-report is not supported for command=finalize-review")
+    plan = build_review_finalization_plan(
+        target,
+        apply=_bool_input(env.get("INPUT_APPLY", "false")),
+        accept_detected_high_risk=_bool_input(
+            env.get("INPUT_ACCEPT_DETECTED_HIGH_RISK", "false")
+        ),
+        explicit_commands=_commands_input(env.get("INPUT_REPORT_COMMAND", "")),
+        reviewed_by=_commands_input(env.get("INPUT_REVIEWED_BY", "")),
+        evidence_refs=_commands_input(env.get("INPUT_EVIDENCE_REF", "")),
+    )
+    payload = plan.payload
+    json_path = write_json_payload(json_report, target, payload)
+    text_report = format_review_finalization_plan(payload)
+    print(text_report)
+    _summary(
+        env,
+        "HarnessForge Review Finalization",
+        _finalize_review_summary_markdown(payload),
+    )
+    _output(
+        env,
+        {
+            "overall-score": "",
+            "bottleneck": "",
+            "report-json": json_path,
+            "report-html": "",
+            "report-markdown": "",
+            "changed-files": str(payload["changedFiles"]),
+            "verify-verdict": "",
+            "readiness-verdict": payload["readinessBefore"]["verdict"],
+            "sync-exit-code": "",
+            "docs-fanout-verdict": "",
+            "release-verdict": "",
+        },
+    )
+    return 0
+
+
 def _write_json_report(path_text: str, target: Path, result: Any) -> str:
     return write_json_payload(path_text, target, audit_to_dict(result))
 
@@ -455,18 +516,24 @@ def _report_summary_markdown(payload: dict[str, Any]) -> str:
         f"`{payload['readiness']['highRiskAcceptance']['summary']['acceptedCount']}` |",
         f"| Audit score | `{payload['audit']['overall']}/100` |",
         f"| Generated drift | `{payload['drift']['summary']['actionable']}` actionable |",
-        f"| Docs fan-out verdict | `{payload['docsFanout']['contract']['verdict']}` ({payload['docsFanout']['diff']['classification']}) |",
+        "| Docs fan-out verdict | "
+        f"`{payload['docsFanout']['contract']['verdict']}` "
+        f"({payload['docsFanout']['diff']['classification']}) |",
         f"| Verify evidence | `{verify_status}` |",
         f"| Effectiveness | `{payload['effectiveness']['verdict']}` |",
         f"| Instruction quality | `{payload['instructionQuality']['summary']['status']}` |",
         f"| First-agent lifecycle | `{payload['firstAgentTask']['lifecycle']['status']}` |",
         f"| Maturity level | `{payload['maturity']['currentLevel']}` |",
-        f"| Policy presets | `{payload['policyPresets']['status']}` ({len(payload['policyPresets']['recommendedPresets'])} recommended) |",
+        "| Policy presets | "
+        f"`{payload['policyPresets']['status']}` "
+        f"({len(payload['policyPresets']['recommendedPresets'])} recommended) |",
         f"| SBOM adapter | `{payload['sbomAdapter']['status']}` |",
         f"| Feature state | `{payload['featureState']['status']}` |",
         f"| Observability | `{payload['observability']['status']}` |",
         f"| Index adapters | `{payload['indexAdapters']['status']}` |",
-        f"| Repo map | `{repo_map['componentCount']}` components, `{repo_map['sourceOfTruthCount']}` source docs |",
+        "| Repo map | "
+        f"`{repo_map['componentCount']}` components, "
+        f"`{repo_map['sourceOfTruthCount']}` source docs |",
         f"| SBOM files | `{repo_map['sbomCount']}` |",
     ]
     if payload["nextActions"]:
@@ -496,6 +563,20 @@ def _release_check_summary_markdown(payload: dict[str, Any]) -> str:
         lines.extend(["", "Next actions:"])
         lines.extend(f"- {item}" for item in payload["nextActions"][:5])
     return "\n".join(lines)
+
+
+def _finalize_review_summary_markdown(payload: dict[str, Any]) -> str:
+    return "\n".join(
+        [
+            f"- Mode: `{payload['mode']}`",
+            f"- Readiness before: `{payload['readinessBefore']['verdict']}`",
+            f"- Planned writes: `{len(payload['plannedWrites'])}`",
+            f"- Changed files: `{payload['changedFiles']}`",
+            f"- High-risk surfaces: `{len(payload['highRiskSurfaces'])}`",
+            "- Requires high-risk acceptance flag: "
+            f"`{str(payload['review']['requiresHighRiskAcceptanceFlag']).lower()}`",
+        ]
+    )
 
 
 def _summary(env: Mapping[str, str], title: str, body: str) -> None:

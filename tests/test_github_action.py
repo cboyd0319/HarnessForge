@@ -74,6 +74,44 @@ def _write_verify_report(
     return path
 
 
+def _write_finalize_fixture(root: Path) -> None:
+    (root / "pyproject.toml").write_text(
+        "[project]\nname='demo'\n",
+        encoding="utf-8",
+    )
+    (root / "tests").mkdir()
+    (root / "tests" / "test_demo.py").write_text("", encoding="utf-8")
+    (root / "AGENTS.md").write_text(
+        "# AGENTS.md\n\n"
+        "## Project overview\n"
+        "This project is a Python repository with repo-owned harness docs.\n\n"
+        "## Startup\n"
+        "Read `README.md`, `feature_list.json`, and `current-state.md`.\n\n"
+        "## Verification\n"
+        "Run `python -m unittest discover -s tests` before completion.\n\n"
+        "## Constraints\n"
+        "Do not expose secrets. Preserve security boundaries and project docs.\n\n"
+        "## State\n"
+        "Use `current-state.md` and `docs/roadmap.md` for current work.\n\n"
+        "## Routing\n"
+        "See `docs/harness/README.md` for harness maintenance guidance.\n",
+        encoding="utf-8",
+    )
+    (root / ".github" / "workflows").mkdir(parents=True)
+    (root / ".github" / "workflows" / "ci.yml").write_text(
+        "name: ci\n"
+        "on:\n"
+        "  push:\n"
+        "jobs:\n"
+        "  test:\n"
+        "    steps:\n"
+        "      - run: python -m unittest discover -s tests\n"
+        "        env:\n"
+        "          TOKEN: ${{ secrets.GITHUB_TOKEN }}\n",
+        encoding="utf-8",
+    )
+
+
 class GitHubActionTests(unittest.TestCase):
     def test_action_manifest_quotes_description_values_with_colons(self) -> None:
         action = Path(__file__).resolve().parents[1] / "action.yml"
@@ -115,7 +153,8 @@ class GitHubActionTests(unittest.TestCase):
         docs = (root / "docs/action.md").read_text(encoding="utf-8")
 
         self.assertIn(
-            "audit, init, update, sync, verify, report, release-check, or doctor",
+            "audit, init, update, sync, verify, report, release-check, "
+            "finalize-review, or doctor",
             action,
         )
         self.assertIn("require-verify-evidence", action)
@@ -156,6 +195,19 @@ class GitHubActionTests(unittest.TestCase):
         self.assertIn("Release Evidence Check", docs)
         self.assertIn("release-verdict", docs)
         self.assertIn("require-sbom", docs)
+
+    def test_action_manifest_and_docs_expose_finalize_review_command(self) -> None:
+        root = Path(__file__).resolve().parents[1]
+        action = (root / "action.yml").read_text(encoding="utf-8")
+        docs = (root / "docs/action.md").read_text(encoding="utf-8")
+
+        self.assertIn("finalize-review", action)
+        self.assertIn("accept-detected-high-risk", action)
+        self.assertIn("reviewed-by", action)
+        self.assertIn("evidence-ref", action)
+        self.assertIn("command: finalize-review", docs)
+        self.assertIn("accept-detected-high-risk", docs)
+        self.assertIn("Review Finalization", docs)
 
     def test_action_audit_writes_outputs_and_reports(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -360,6 +412,63 @@ class GitHubActionTests(unittest.TestCase):
         self.assertIn("Accepted high-risk surfaces", summary_text)
         self.assertIn("Instruction quality", summary_text)
         self.assertIn("First-agent lifecycle", summary_text)
+
+    def test_action_finalize_review_applies_explicit_review_evidence(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            _write_finalize_fixture(root)
+            create_harness(
+                root,
+                commands=("python -m unittest discover -s tests",),
+            )
+            output = root / "outputs.txt"
+            summary = root / "summary.md"
+            env = {
+                "INPUT_COMMAND": "finalize-review",
+                "INPUT_TARGET": str(root),
+                "INPUT_APPLY": "true",
+                "INPUT_ACCEPT_DETECTED_HIGH_RISK": "true",
+                "INPUT_REVIEWED_BY": "Maintainer",
+                "INPUT_JSON_REPORT": "reports/review-finalization.json",
+                "GITHUB_OUTPUT": str(output),
+                "GITHUB_STEP_SUMMARY": str(summary),
+            }
+
+            with contextlib.redirect_stdout(io.StringIO()):
+                code = run_from_env(env)
+
+            payload = json.loads(
+                (root / "reports" / "review-finalization.json").read_text(
+                    encoding="utf-8"
+                )
+            )
+            evidence = json.loads(
+                (
+                    root / "docs/harness/evidence/first-agent-review.json"
+                ).read_text(encoding="utf-8")
+            )
+            outputs = _parse_github_output(output.read_text(encoding="utf-8"))
+            summary_text = summary.read_text(encoding="utf-8")
+
+        self.assertEqual(code, 0)
+        self.assertEqual(payload["mode"], "apply")
+        self.assertEqual(payload["changedFiles"], 3)
+        self.assertEqual(
+            {item["path"] for item in payload["highRiskSurfaces"]},
+            {"AGENTS.md", ".github/workflows/ci.yml"},
+        )
+        self.assertEqual(evidence["status"], "retired")
+        self.assertEqual(
+            len(evidence["highRiskSurfaceReview"]["surfaces"]),
+            2,
+        )
+        self.assertEqual(outputs["changed-files"], "3")
+        self.assertEqual(
+            outputs["report-json"],
+            "reports/review-finalization.json",
+        )
+        self.assertIn("HarnessForge Review Finalization", summary_text)
+        self.assertIn("High-risk surfaces", summary_text)
 
     def test_action_sync_verify_evidence_gate_blocks_missing_evidence(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

@@ -8,7 +8,7 @@ branding:
 
 inputs:
   command:
-    description: "Command to run: audit, init, update, sync, verify, report, release-check, or doctor."
+    description: "Command to run: audit, init, update, sync, verify, report, release-check, finalize-review, or doctor."
     required: false
     default: audit
   target:
@@ -28,7 +28,7 @@ inputs:
     required: false
     default: "true"
   apply:
-    description: Apply safe missing-file corrections when command is update.
+    description: Apply safe missing-file corrections when command is update or review finalization when command is finalize-review.
     required: false
     default: "false"
   force:
@@ -72,7 +72,7 @@ inputs:
     required: false
     default: ""
   report-command:
-    description: Optional newline-separated repo-owned readiness commands for command report.
+    description: Optional newline-separated repo-owned readiness commands for command report, release-check, or finalize-review.
     required: false
     default: ""
   report-max-files:
@@ -91,6 +91,18 @@ inputs:
     description: Fail command release-check when no existing SPDX or CycloneDX SBOM is detected.
     required: false
     default: "false"
+  accept-detected-high-risk:
+    description: Record accepted advisory evidence for detected high-risk surfaces when command is finalize-review.
+    required: false
+    default: "false"
+  reviewed-by:
+    description: Optional newline-separated reviewer names for command finalize-review.
+    required: false
+    default: ""
+  evidence-ref:
+    description: Optional newline-separated evidence references for command finalize-review.
+    required: false
+    default: ""
   html-report:
     description: Optional target-relative path for an HTML audit report.
     required: false
@@ -173,6 +185,9 @@ runs:
         INPUT_REPORT_SINCE: ${{ inputs.report-since }}
         INPUT_REQUIRE_DOCS_FANOUT_BUDGET: ${{ inputs.require-docs-fanout-budget }}
         INPUT_REQUIRE_SBOM: ${{ inputs.require-sbom }}
+        INPUT_ACCEPT_DETECTED_HIGH_RISK: ${{ inputs.accept-detected-high-risk }}
+        INPUT_REVIEWED_BY: ${{ inputs.reviewed-by }}
+        INPUT_EVIDENCE_REF: ${{ inputs.evidence-ref }}
         INPUT_HTML_REPORT: ${{ inputs.html-report }}
         INPUT_JSON_REPORT: ${{ inputs.json-report }}
         INPUT_MARKDOWN_REPORT: ${{ inputs.markdown-report }}

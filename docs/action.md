@@ -28,6 +28,10 @@ state files, or release process are present in the caller repository.
   gates from the same report evidence, writes only requested JSON or Markdown
   reports inside that target, and never publishes, tags, uploads, pushes, or
   runs target commands.
+- `finalize-review` reads the declared `target`, plans first-agent review
+  finalization, and writes only when `apply: "true"` is explicit. It records
+  accepted advisory high-risk surface evidence only when
+  `accept-detected-high-risk: "true"` is explicit.
 - `init` and applied `update` may write generated harness files inside
   `target`; callers should grant write permissions only when they intend to
   commit or open a pull request.
@@ -170,6 +174,41 @@ The `release-verdict`, `readiness-verdict`, `docs-fanout-verdict`,
 `overall-score`, `report-json`, and `report-markdown` outputs expose the gate
 result to later workflow steps.
 
+## Review Finalization
+
+Plan first-agent review finalization without writing files:
+
+```yaml
+- uses: cboyd0319/harnessforge@<reviewed-commit-sha> # v1
+  with:
+    command: finalize-review
+    json-report: docs/harness/evidence/review-finalization.json
+```
+
+Apply the reviewed finalization only after a maintainer accepts the detected
+surfaces:
+
+```yaml
+- uses: cboyd0319/harnessforge@<reviewed-commit-sha> # v1
+  with:
+    command: finalize-review
+    apply: "true"
+    accept-detected-high-risk: "true"
+    reviewed-by: |
+      repo maintainer
+    evidence-ref: |
+      docs/harness/evidence/evidence-log.md
+    json-report: docs/harness/evidence/review-finalization.json
+```
+
+`command: finalize-review` never runs target commands. It can retire the
+generated first-agent task, update `first-agent-review.json`, refresh manifest
+metadata for those reviewed generated files, and record accepted advisory
+high-risk surfaces. The caller still owns committing or opening a pull request.
+Because GitHub Actions cannot prompt, `apply: "true"` and
+`accept-detected-high-risk: "true"` are the explicit confirmation boundary for
+this write-capable command.
+
 ## Verify Project Checks
 
 Plan verification checks without running target commands:
@@ -248,12 +287,12 @@ and not behavior embedded in the composite Action runtime.
 
 | Input | Default | Purpose |
 | --- | --- | --- |
-| `command` | `audit` | `audit`, `init`, `update`, `sync`, `verify`, `report`, `release-check`, or `doctor` |
+| `command` | `audit` | `audit`, `init`, `update`, `sync`, `verify`, `report`, `release-check`, `finalize-review`, or `doctor` |
 | `target` | `.` | Repository path to inspect or modify |
 | `python-version` | `3.13.14` | Python version passed to `actions/setup-python` |
 | `min-score` | `85` | Minimum passing structural audit score from 0 to 100 |
 | `fail-on-score` | `true` | Fail the action when score is below threshold |
-| `apply` | `false` | Apply safe corrections for `update` |
+| `apply` | `false` | Apply safe corrections for `update` or review finalization for `finalize-review` |
 | `force` | `false` | Allow overwrites for generated files |
 | `enhance-existing` | `false` | Append reviewed guidance to existing instruction files without replacing project text |
 | `agent-file` | `AGENTS.md` | Root instruction file to generate |
@@ -264,13 +303,16 @@ and not behavior embedded in the composite Action runtime.
 | `verify-timeout-seconds` | `300` | Per-command timeout when `command` is `verify` and `verify-run` is `true` |
 | `require-verify-evidence` | `false` | Require current passed stored verify evidence when `command` is `sync` or `report`; release-check always requires it |
 | `sync-command` | empty | Optional newline-separated repo-owned readiness commands for `command: sync`; commands are not executed |
-| `report-command` | empty | Optional newline-separated repo-owned readiness commands for `command: report` or `command: release-check`; commands are not executed |
+| `report-command` | empty | Optional newline-separated repo-owned readiness commands for `command: report`, `command: release-check`, or `command: finalize-review`; commands are not executed |
 | `report-max-files` | `4000` | Maximum number of files included in the `command: report` or `command: release-check` structural index summary |
 | `report-since` | empty | Optional git ref for `command: report` or `command: release-check` docs fan-out analysis; no target commands are executed |
 | `require-docs-fanout-budget` | `false` | Fail `command: report` or block `command: release-check` when docs fan-out exceeds the budget or duplicate durable fact blocks are present |
 | `require-sbom` | `false` | Block `command: release-check` when no existing SPDX or CycloneDX SBOM is detected |
+| `accept-detected-high-risk` | `false` | Record accepted advisory high-risk surface evidence for `command: finalize-review` |
+| `reviewed-by` | empty | Optional newline-separated reviewer names for `command: finalize-review` |
+| `evidence-ref` | empty | Optional newline-separated evidence references for `command: finalize-review` |
 | `html-report` | empty | Optional target-relative HTML report path; POSIX and Windows absolute/rooted paths are rejected |
-| `json-report` | empty | Optional target-relative audit, sync, verify, report, or release-check JSON report path; POSIX and Windows absolute/rooted paths are rejected |
+| `json-report` | empty | Optional target-relative audit, sync, verify, report, release-check, or finalize-review JSON report path; POSIX and Windows absolute/rooted paths are rejected |
 | `markdown-report` | empty | Optional target-relative Markdown report path for `command: report` or `command: release-check`; POSIX and Windows absolute/rooted paths are rejected |
 
 Report paths must be relative and stay inside `target`. Absolute paths and
@@ -285,7 +327,7 @@ traversal outside the target repository are rejected.
 | `report-json` | Target-relative JSON report path when requested |
 | `report-html` | Target-relative HTML report path when requested |
 | `report-markdown` | Target-relative Markdown report path when requested |
-| `changed-files` | Number of files written or enhanced by `init` or applied `update` |
+| `changed-files` | Number of files written by `init`, applied `update`, or applied `finalize-review` |
 | `verify-verdict` | Verify verdict when `command` is `verify` |
 | `readiness-verdict` | Readiness verdict when `command` is `sync`, `report`, or `release-check` |
 | `sync-exit-code` | Sync readiness exit code when `command` is `sync` |
@@ -304,6 +346,9 @@ SBOM file count.
 `command: release-check` summarizes the release verdict, audit score,
 readiness, accepted high-risk surface count, verify evidence, maturity level,
 feature state, observability, and individual release gates.
+`command: finalize-review` summarizes dry-run/apply mode, planned writes,
+changed files, high-risk surface count, and whether high-risk acceptance is
+still missing.
 `command: sync` includes readiness, warning, review-required, accepted
 high-risk surface, runnable-check, instruction-quality, and first-agent
 lifecycle counts.

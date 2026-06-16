@@ -153,6 +153,7 @@ preflight.
 | `session` | Restart snapshot with git, readiness, audit, and state-file status |
 | `report` | Unified read-only harness status and maturity report with optional JSON and Markdown outputs |
 | `release-check` | Read-only release readiness and maturity gate over existing harness evidence |
+| `finalize-review` | Explicit first-agent review finalization and high-risk acceptance evidence |
 | `enhance` | Review existing instruction files without writing files |
 | `plan` | Diff-aware verification planning without command execution |
 | `sync --check` | CI-oriented readiness preflight with stable exit codes |
@@ -169,6 +170,9 @@ Run `harnessforge <command> --help` for command-specific options.
 ## Default Boundaries
 
 - Existing files are preserved unless `--force` is supplied.
+- Destructive, overwrite-capable, apply-mode, or command-executing CLI
+  operations warn and require confirmation. In non-interactive runs, pass
+  `--yes` intentionally.
 - Normal generation does not install dependencies, search the web, run target
   project commands, or create autonomous workflows.
 - User-specific research mandates, local tool preferences, MCP configs, memory

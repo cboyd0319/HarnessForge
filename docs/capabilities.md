@@ -46,6 +46,10 @@ boundaries it preserves. See [Usage](usage.md) for commands and
 - Assembles read-only release readiness gates from existing report evidence
   and the source report maturity level without publishing artifacts, tagging,
   pushing, uploading, or running target commands.
+- Finalizes first-agent review evidence only through explicit apply mode. It
+  can retire the generated first-agent task, update `first-agent-review.json`,
+  refresh manifest metadata, and record accepted advisory high-risk surfaces
+  when `--accept-detected-high-risk` is explicit.
 - Provides explicit blueprint mode for richer project operating models. Built-in
   packs cover agentic applications, open-source libraries, internal services,
   monorepos, CLI/dev tools, spec-driven projects, web services, data/ML,
@@ -58,7 +62,7 @@ boundaries it preserves. See [Usage](usage.md) for commands and
   metadata offline by default and checks remote heads only with
   `--verify-remote`.
 - Provides a composite GitHub Action for audit, init, update, sync, verify,
-  report, release-check, and doctor workflows.
+  report, release-check, finalize-review, and doctor workflows.
 
 ## Default Boundaries
 
@@ -74,9 +78,9 @@ boundaries it preserves. See [Usage](usage.md) for commands and
   automation. The only optional generated workflow scaffold is the manual
   HarnessForge CI scaffold.
 - It does not run target repository commands during `inspect`, `index`,
-  `effectiveness`, `session`, `report`, `release-check`, `sync --check`, `audit`,
-  `update --drift-report`, or default `verify`. Use `verify --run` when
-  command execution is explicitly wanted.
+  `effectiveness`, `session`, `report`, `release-check`, `finalize-review`,
+  `sync --check`, `audit`, `update --drift-report`, or default `verify`. Use
+  `verify --run` when command execution is explicitly wanted.
 - It does not clone public repositories or use network access during the
   offline `corpus` quality gate.
 - It does not generate SBOMs during normal flows. Existing SPDX and
@@ -119,10 +123,13 @@ default posture is intentionally restrictive. See [../SECURITY.md](../SECURITY.m
 for vulnerability reporting, scope, and severity guidance.
 
 - Normal `init`, `inspect`, `index`, `effectiveness`, `session`, `report`,
-  `release-check`, `enhance`, `sync --check`, `audit`, `update`, and `doctor`
-  commands use the Python standard library and do not install runtime
-  dependencies.
+  `release-check`, `finalize-review`, `enhance`, `sync --check`, `audit`,
+  `update`, and `doctor` commands use the Python standard library and do not
+  install runtime dependencies.
 - Existing files are preserved unless `--force` is explicitly supplied.
+- Destructive, overwrite-capable, apply-mode, or command-executing CLI
+  operations warn and require confirmation. Non-interactive runs must pass
+  `--yes` intentionally.
 - `--enhance-existing` appends reviewed instruction addenda without replacing
   existing project text.
 - Generated destination paths are preflighted before writes.

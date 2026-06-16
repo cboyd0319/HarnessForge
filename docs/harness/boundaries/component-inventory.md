@@ -105,9 +105,9 @@ work as pre-release product shaping.
 - `src/harnessforge/core/`: shared data models, path safety, redaction,
   report-path helpers, harness path constants, and doctor checks used across
   CLI, Action, audit, and reports.
-- `src/harnessforge/project/`: read-only target-repository analysis,
-  detection, indexing, readiness, planning, session, sync, spec-system, and
-  verify helpers.
+- `src/harnessforge/project/`: target-repository analysis and explicit
+  project-write helpers, including detection, indexing, readiness, review
+  finalization, planning, session, sync, spec-system, and verify helpers.
 - `src/harnessforge/generation/`: generated harness creation, optional
   blueprint writing, update planning, and offline public-repo fixture corpus.
   This is product code; generated target-repo content still lives under

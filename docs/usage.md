@@ -176,6 +176,7 @@ Readiness reports:
 - `governanceInventory`
 - `effectivenessInventory`
 - `verifyEvidence`
+- `highRiskAcceptance`
 
 `sync --check` wraps the same readiness report in a CI-friendly command with
 stable exit codes:
@@ -224,6 +225,32 @@ valid stored run-mode report, blocks on any invalid verify report, and requires
 the latest valid report to be fresh, passed, and free of failed, blocked,
 timed-out, or error summary counts.
 
+## Review Finalization
+
+Finalize the generated first-agent review after maintainers have inspected the
+target repo harness:
+
+```bash
+harnessforge finalize-review --target /path/to/repo
+harnessforge finalize-review --target /path/to/repo --json
+harnessforge finalize-review --target /path/to/repo --apply --accept-detected-high-risk --yes
+```
+
+`finalize-review` is dry-run by default. Apply mode can retire
+`docs/harness/state/first-agent-task.md`, update
+`docs/harness/evidence/first-agent-review.json`, refresh manifest metadata for
+those reviewed generated files, and record accepted advisory high-risk surface
+evidence. It never runs target commands. If unresolved high-risk surfaces are
+detected, apply mode requires `--accept-detected-high-risk` so HarnessForge
+does not silently mark project-owned instructions, workflows, container files,
+hooks, skills, or environment surfaces as accepted.
+
+Destructive, overwrite-capable, apply-mode, or command-executing CLI
+operations warn and require confirmation. In an interactive terminal, type
+`yes` at the prompt. In non-interactive runs, pass `--yes` intentionally. This
+applies to `finalize-review --apply`, `update --apply`, `init --force`,
+non-dry-run `blueprint apply`, and `verify --run`.
+
 ## Verify Project Checks
 
 HarnessForge has a `verify --json` report for project checks. Default plan mode
@@ -242,9 +269,9 @@ harnessforge verify --target /path/to/repo --json --command "python -m pytest"
 Run project verification checks explicitly:
 
 ```bash
-harnessforge verify --target /path/to/repo --json --run
-harnessforge verify --target /path/to/repo --json --run --timeout-seconds 120
-harnessforge verify --target /path/to/repo --run --json-report docs/harness/evidence/verify-YYYY-MM-DD.json
+harnessforge verify --target /path/to/repo --json --run --yes
+harnessforge verify --target /path/to/repo --json --run --yes --timeout-seconds 120
+harnessforge verify --target /path/to/repo --run --yes --json-report docs/harness/evidence/verify-YYYY-MM-DD.json
 ```
 
 Command execution is explicit opt-in through `--run`. Run mode uses argument
@@ -288,7 +315,7 @@ harnessforge blueprint list
 harnessforge blueprint show agentic-app
 harnessforge blueprint show agentic-app --json
 harnessforge blueprint apply agentic-app --target /path/to/repo --dry-run
-harnessforge blueprint apply agentic-app --target /path/to/repo
+harnessforge blueprint apply agentic-app --target /path/to/repo --yes
 ```
 
 Built-in blueprints:
@@ -432,7 +459,7 @@ harnessforge update --target /path/to/repo
 Apply safe missing-file corrections:
 
 ```bash
-harnessforge update --target /path/to/repo --apply
+harnessforge update --target /path/to/repo --apply --yes
 ```
 
 Report generated-file drift:
@@ -456,6 +483,7 @@ alone unless `--force` is supplied.
 | `harnessforge session` | Show a read-only restart snapshot with git, readiness, audit, and state-file status |
 | `harnessforge report` | Compose readiness, audit, drift, index, and evidence into one read-only report |
 | `harnessforge release-check` | Assemble read-only release readiness gates from existing evidence |
+| `harnessforge finalize-review` | Finalize first-agent review evidence with explicit apply and acceptance flags |
 | `harnessforge enhance` | Review existing instruction files without writing files |
 | `harnessforge plan` | Map changed files to a read-only verification plan |
 | `harnessforge sync --check` | Run a read-only CI preflight with readiness exit codes |

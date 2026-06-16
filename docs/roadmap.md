@@ -291,7 +291,10 @@ project-specific source-of-truth routing before unrelated feature work.
 
 ### RunHaven-Derived Review Finalization Flow
 
-Status: accepted as the next product buildout before release prep.
+Status: active before release prep. Structured high-risk acceptance and the
+explicit review-finalization command are implemented; state migration,
+skill-wiring validation, compact verification evidence capture, report polish,
+and the RunHaven-shaped fixture remain.
 
 The RunHaven harness overhaul showed that several correct target-repo actions
 were still manual even though HarnessForge had enough structure to guide or
@@ -918,14 +921,13 @@ Implemented shape:
 
 ## Suggested Build Order
 
-1. Implement structured high-risk surface acceptance evidence and update
-   readiness, report, release-check, Action summaries, and maturity scoring to
-   consume it.
+1. Implemented: structured high-risk surface acceptance evidence updates
+   readiness, report, release-check, Action summaries, and maturity scoring.
 2. Replace raw marker-string review detection with structured status fields and
    machine status values.
-3. Add the review-finalization command or mode for first-agent retirement,
-   high-risk acceptance evidence, compact verification evidence, and manifest
-   metadata refresh.
+3. Implemented in part: `finalize-review` can retire the first-agent task,
+   record high-risk acceptance evidence, and refresh manifest metadata. Compact
+   verification evidence capture remains.
 4. Add split-state migration planning and optional safe application for
    `progress.md` plus `session-handoff.md` to `current-state.md`.
 5. Add generated and enhanced harness skill-wiring validation.

@@ -111,6 +111,45 @@ def _write_first_agent_review(
     return path
 
 
+def _write_review_finalize_fixture(root: Path) -> None:
+    (root / "pyproject.toml").write_text(
+        "[project]\nname='demo'\n",
+        encoding="utf-8",
+    )
+    (root / "tests").mkdir()
+    (root / "tests" / "test_demo.py").write_text("", encoding="utf-8")
+    (root / "AGENTS.md").write_text(
+        "# AGENTS.md\n\n"
+        "## Project overview\n"
+        "This project is a Python repository with repo-owned harness docs.\n\n"
+        "## Startup\n"
+        "Read `README.md`, `feature_list.json`, and `current-state.md`.\n\n"
+        "## Verification\n"
+        "Run `python -m unittest discover -s tests` before completion.\n\n"
+        "## Constraints\n"
+        "Do not expose secrets. Preserve security boundaries and "
+        "project docs.\n\n"
+        "## State\n"
+        "Use `current-state.md` and `docs/roadmap.md` for current work.\n\n"
+        "## Routing\n"
+        "See `docs/harness/README.md` for harness maintenance guidance.\n",
+        encoding="utf-8",
+    )
+    (root / ".github" / "workflows").mkdir(parents=True)
+    (root / ".github" / "workflows" / "ci.yml").write_text(
+        "name: ci\n"
+        "on:\n"
+        "  push:\n"
+        "jobs:\n"
+        "  test:\n"
+        "    steps:\n"
+        "      - run: python -m unittest discover -s tests\n"
+        "        env:\n"
+        "          TOKEN: ${{ secrets.GITHUB_TOKEN }}\n",
+        encoding="utf-8",
+    )
+
+
 def _git(root: Path, *args: str) -> None:
     subprocess.run(
         ["git", "-C", str(root), *args],
@@ -150,6 +189,45 @@ class CliTests(unittest.TestCase):
         self.assertEqual(init_code, 0)
         self.assertEqual(audit_code, 0)
         self.assertIn("Detected stack", stdout.getvalue())
+
+    def test_init_force_requires_yes_non_interactive(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            agents = root / "AGENTS.md"
+            agents.write_text("# Existing\n", encoding="utf-8")
+            stderr = io.StringIO()
+            with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(
+                stderr
+            ):
+                code = main(["init", "--target", str(root), "--force"])
+
+            agents_text = agents.read_text(encoding="utf-8")
+
+        self.assertEqual(code, 2)
+        self.assertEqual(agents_text, "# Existing\n")
+        self.assertIn("requires --yes", stderr.getvalue())
+
+    def test_init_force_dry_run_does_not_require_yes(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "AGENTS.md").write_text("# Existing\n", encoding="utf-8")
+            stdout = io.StringIO()
+            with contextlib.redirect_stdout(stdout):
+                code = main(
+                    [
+                        "init",
+                        "--target",
+                        str(root),
+                        "--force",
+                        "--dry-run",
+                        "--json",
+                    ]
+                )
+
+            payload = json.loads(stdout.getvalue())
+
+        self.assertEqual(code, 0)
+        self.assertEqual(payload["mode"], "dry_run")
 
     def test_inspect_command_reports_profile_without_writing_files(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -1044,6 +1122,179 @@ class CliTests(unittest.TestCase):
             )
         )
         self.assertNotEqual(payload["maturity"]["currentLevel"], "generated")
+
+    def test_finalize_review_requires_explicit_high_risk_acceptance(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            _write_review_finalize_fixture(root)
+            with contextlib.redirect_stdout(io.StringIO()):
+                init_code = main(
+                    [
+                        "init",
+                        "--target",
+                        str(root),
+                        "--command",
+                        "python -m unittest discover -s tests",
+                    ]
+                )
+            stdout = io.StringIO()
+            with contextlib.redirect_stdout(stdout):
+                dry_run_code = main(["finalize-review", "--target", str(root), "--json"])
+            with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(
+                io.StringIO()
+            ):
+                apply_code = main(["finalize-review", "--target", str(root), "--apply"])
+
+            payload = json.loads(stdout.getvalue())
+            evidence = json.loads(
+                (
+                    root / "docs/harness/evidence/first-agent-review.json"
+                ).read_text(encoding="utf-8")
+            )
+
+        self.assertEqual(init_code, 0)
+        self.assertEqual(dry_run_code, 0)
+        self.assertEqual(apply_code, 2)
+        self.assertEqual(payload["schemaVersion"], "harnessforge.reviewFinalization.v1")
+        self.assertEqual(payload["mode"], "dry_run")
+        self.assertTrue(payload["review"]["requiresHighRiskAcceptanceFlag"])
+        self.assertEqual(
+            {item["path"] for item in payload["highRiskSurfaces"]},
+            {"AGENTS.md", ".github/workflows/ci.yml"},
+        )
+        self.assertEqual(evidence["status"], "pending")
+
+    def test_finalize_review_apply_requires_yes_non_interactive(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            _write_review_finalize_fixture(root)
+            with contextlib.redirect_stdout(io.StringIO()):
+                init_code = main(
+                    [
+                        "init",
+                        "--target",
+                        str(root),
+                        "--command",
+                        "python -m unittest discover -s tests",
+                    ]
+                )
+            stderr = io.StringIO()
+            with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(
+                stderr
+            ):
+                apply_code = main(
+                    [
+                        "finalize-review",
+                        "--target",
+                        str(root),
+                        "--apply",
+                        "--accept-detected-high-risk",
+                    ]
+                )
+            evidence = json.loads(
+                (
+                    root / "docs/harness/evidence/first-agent-review.json"
+                ).read_text(encoding="utf-8")
+            )
+
+        self.assertEqual(init_code, 0)
+        self.assertEqual(apply_code, 2)
+        self.assertIn("requires --yes", stderr.getvalue())
+        self.assertEqual(evidence["status"], "pending")
+
+    def test_finalize_review_apply_retires_task_and_accepts_surfaces(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            _write_review_finalize_fixture(root)
+            with contextlib.redirect_stdout(io.StringIO()):
+                init_code = main(
+                    [
+                        "init",
+                        "--target",
+                        str(root),
+                        "--command",
+                        "python -m unittest discover -s tests",
+                    ]
+                )
+            stdout = io.StringIO()
+            with contextlib.redirect_stdout(stdout):
+                finalize_code = main(
+                    [
+                        "finalize-review",
+                        "--target",
+                        str(root),
+                        "--apply",
+                        "--accept-detected-high-risk",
+                        "--yes",
+                        "--reviewed-by",
+                        "Maintainer",
+                        "--json",
+                    ]
+                )
+            report_stdout = io.StringIO()
+            with contextlib.redirect_stdout(report_stdout):
+                report_code = main(["report", "--target", str(root), "--json"])
+
+            payload = json.loads(stdout.getvalue())
+            report = json.loads(report_stdout.getvalue())
+            evidence = json.loads(
+                (
+                    root / "docs/harness/evidence/first-agent-review.json"
+                ).read_text(encoding="utf-8")
+            )
+            task = (
+                root / "docs/harness/state/first-agent-task.md"
+            ).read_text(encoding="utf-8")
+            manifest = json.loads(
+                (root / "docs/harness/manifest.json").read_text(encoding="utf-8")
+            )
+
+        self.assertEqual(init_code, 0)
+        self.assertEqual(finalize_code, 0)
+        self.assertEqual(report_code, 0)
+        self.assertEqual(payload["mode"], "apply")
+        self.assertEqual(payload["changedFiles"], 3)
+        self.assertEqual(
+            {item["path"] for item in payload["highRiskSurfaces"]},
+            {"AGENTS.md", ".github/workflows/ci.yml"},
+        )
+        self.assertEqual(evidence["status"], "retired")
+        self.assertEqual(evidence["reviewedBy"], ["Maintainer"])
+        self.assertEqual(
+            evidence["highRiskSurfaceReview"]["status"],
+            "accepted_advisory",
+        )
+        self.assertEqual(
+            {item["path"] for item in evidence["highRiskSurfaceReview"]["surfaces"]},
+            {"AGENTS.md", ".github/workflows/ci.yml"},
+        )
+        self.assertIn("Status: retired after first-agent review.", task)
+        self.assertNotIn("REVIEW REQUIRED", task)
+        self.assertNotIn(
+            "docs/harness/state/first-agent-task.md",
+            manifest["reviewRequired"],
+        )
+        self.assertNotIn(
+            "docs/harness/evidence/first-agent-review.json",
+            manifest["reviewRequired"],
+        )
+        self.assertEqual(
+            manifest["generatedFiles"]["docs/harness/state/first-agent-task.md"][
+                "ownership"
+            ],
+            "project-owned",
+        )
+        self.assertNotIn(
+            "REVIEW REQUIRED",
+            manifest["requiredHarnessSnippets"]["docs/harness/state/first-agent-task.md"],
+        )
+        self.assertEqual(report["readiness"]["verdict"], "ready")
+        self.assertEqual(report["readiness"]["reviewRequiredCount"], 0)
+        self.assertEqual(
+            report["readiness"]["highRiskAcceptance"]["summary"]["acceptedCount"],
+            2,
+        )
+        self.assertEqual(report["maturity"]["currentLevel"], "reviewed")
 
     def test_readiness_warns_when_first_agent_evidence_is_missing(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -2600,6 +2851,7 @@ class CliTests(unittest.TestCase):
                         str(root),
                         "--json",
                         "--run",
+                        "--yes",
                         "--command",
                         command,
                     ]
@@ -2622,6 +2874,34 @@ class CliTests(unittest.TestCase):
         self.assertIn("verification ok", payload["checks"][0]["stdoutPreview"])
         self.assertIsNone(payload["target"]["root"])
 
+    def test_verify_run_requires_yes_non_interactive(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            marker = root / "ran.txt"
+            command = _python_command(
+                "from pathlib import Path; "
+                "Path('ran.txt').write_text('ran', encoding='utf-8')"
+            )
+            stderr = io.StringIO()
+            with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(
+                stderr
+            ):
+                code = main(
+                    [
+                        "verify",
+                        "--target",
+                        str(root),
+                        "--json",
+                        "--run",
+                        "--command",
+                        command,
+                    ]
+                )
+
+        self.assertEqual(code, 2)
+        self.assertFalse(marker.exists())
+        self.assertIn("requires --yes", stderr.getvalue())
+
     def test_verify_run_reports_failed_command(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -2640,6 +2920,7 @@ class CliTests(unittest.TestCase):
                         str(root),
                         "--json",
                         "--run",
+                        "--yes",
                         "--command",
                         command,
                     ]
@@ -2661,7 +2942,9 @@ class CliTests(unittest.TestCase):
             (root / "README.md").write_text("# Demo\n", encoding="utf-8")
             stdout = io.StringIO()
             with contextlib.redirect_stdout(stdout):
-                code = main(["verify", "--target", str(root), "--json", "--run"])
+                code = main(
+                    ["verify", "--target", str(root), "--json", "--run", "--yes"]
+                )
 
             payload = json.loads(stdout.getvalue())
 
@@ -2684,6 +2967,7 @@ class CliTests(unittest.TestCase):
                         str(root),
                         "--json",
                         "--run",
+                        "--yes",
                         "--timeout-seconds",
                         "0.1",
                         "--command",
@@ -2711,6 +2995,7 @@ class CliTests(unittest.TestCase):
                         "--target",
                         str(root),
                         "--run",
+                        "--yes",
                         "--command",
                         command,
                         "--json-report",
@@ -2743,6 +3028,7 @@ class CliTests(unittest.TestCase):
                         str(root),
                         "--json",
                         "--run",
+                        "--yes",
                         "--command",
                         command,
                         "--json-report",
@@ -2842,6 +3128,30 @@ class CliTests(unittest.TestCase):
             "would_write",
         )
 
+    def test_blueprint_apply_requires_yes_non_interactive(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            stderr = io.StringIO()
+            with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(
+                stderr
+            ):
+                code = main(
+                    [
+                        "blueprint",
+                        "apply",
+                        "agentic-app",
+                        "--target",
+                        str(root),
+                        "--json",
+                    ]
+                )
+
+            blueprint_file = root / "docs/harness/blueprints/agentic-app.md"
+
+        self.assertEqual(code, 2)
+        self.assertFalse(blueprint_file.exists())
+        self.assertIn("requires --yes", stderr.getvalue())
+
     def test_blueprint_apply_writes_reviewed_artifacts_and_preserves_existing(
         self,
     ) -> None:
@@ -2856,6 +3166,7 @@ class CliTests(unittest.TestCase):
                         "agentic-app",
                         "--target",
                         str(root),
+                        "--yes",
                         "--json",
                     ]
                 )
@@ -2874,6 +3185,7 @@ class CliTests(unittest.TestCase):
                         "agentic-app",
                         "--target",
                         str(root),
+                        "--yes",
                         "--json",
                     ]
                 )
@@ -2913,6 +3225,7 @@ class CliTests(unittest.TestCase):
                         "--target",
                         str(root),
                         "--force",
+                        "--yes",
                         "--json",
                     ]
                 )
@@ -2942,6 +3255,7 @@ class CliTests(unittest.TestCase):
                         "agentic-app",
                         "--target",
                         str(root),
+                        "--yes",
                         "--json",
                     ]
                 )
@@ -2973,6 +3287,7 @@ class CliTests(unittest.TestCase):
                         "agentic-app",
                         "--target",
                         str(root),
+                        "--yes",
                         "--json",
                     ]
                 )
@@ -3131,7 +3446,9 @@ class CliTests(unittest.TestCase):
             manifest_path.write_text(json.dumps(manifest, indent=2), encoding="utf-8")
             stdout = io.StringIO()
             with contextlib.redirect_stdout(stdout):
-                update_code = main(["update", "--target", str(root), "--apply", "--json"])
+                update_code = main(
+                    ["update", "--target", str(root), "--apply", "--yes", "--json"]
+                )
             payload = json.loads(stdout.getvalue())
             agents_text = (root / "AGENTS.md").read_text(encoding="utf-8")
 
