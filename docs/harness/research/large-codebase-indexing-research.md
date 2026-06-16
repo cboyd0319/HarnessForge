@@ -1,6 +1,6 @@
 # Large Codebase Analysis And Indexing Research
 
-Reviewed: 2026-06-15 UTC.
+Reviewed: 2026-06-16 UTC.
 
 Status: repo-local research.
 
@@ -78,6 +78,8 @@ Primary source links:
 
 ### Phase 1: Built-In Structural Index
 
+Status: implemented.
+
 Implemented a read-only `harnessforge index --target . --json` command with no
 new runtime dependencies. Use `--max-files <N>` for deeper scans of large
 repositories. It reports:
@@ -89,14 +91,16 @@ repositories. It reports:
 - likely generated code and vendored code;
 - language distribution by file count and byte size;
 - high-signal entrypoints, scripts, local actions, and CI path filters;
-- missing or ambiguous boundaries that require project review.
+- missing or ambiguous boundaries that require project review;
 - file-scan and component-inventory truncation limits.
 
 The output should be a portable JSON report. It must not include local absolute
 paths, secrets, private code excerpts, embeddings, or large raw file lists by
 default.
 
-### Phase 2: Optional Repo Map
+### Phase 2: Compact Repo Map
+
+Status: partially implemented.
 
 Generate a compact repo map from the structural index:
 
@@ -107,13 +111,17 @@ Generate a compact repo map from the structural index:
 - confidence and unknowns;
 - exact target-relative source paths.
 
-This should feed generated instructions and `--enhance-existing` addenda. It
-should stay cited and compact so it improves harness quality without turning
-instruction files into code summaries.
+Read-only index and report surfaces already expose compact `repoMap` signals.
+Using the repo map to enrich generated instructions and `--enhance-existing`
+addenda should stay cited, compact, and review-required so it improves harness
+quality without turning instruction files into code summaries.
 
 ### Phase 3: Optional External Adapters
 
-Add opt-in adapters only after Phase 1 is stable:
+Status: future explicit opt-in.
+
+Add opt-in adapters only when they improve generated-output quality enough to
+justify their setup and trust boundary:
 
 - ctags adapter for symbols;
 - tree-sitter or ast-grep adapter for structural patterns;
@@ -148,12 +156,12 @@ Any future HarnessForge index should be:
 - No generated harness text that includes large code excerpts.
 - No machine-local absolute paths in index reports or generated files.
 
-## Open Questions
+## Follow-Up Questions
 
-- Should the first index command be `harnessforge index` or folded into
-  `harnessforge inspect --index`?
 - Should a persisted index live under `.harnessforge/` and be ignored by
   default, or should HarnessForge only write explicit `--json-report` files?
 - How should the index handle huge monorepos where a full file walk is cheap
   but language-specific parsing is expensive?
 - Which confidence model is useful enough without pretending to be exact?
+- Which optional adapters measurably improve generated harness quality enough
+  to justify the extra project review surface?

@@ -1,6 +1,6 @@
 # Reference Mining Notes
 
-Reviewed: 2026-06-15 UTC.
+Reviewed: 2026-06-16 UTC.
 
 This note records ideas mined from local sibling repositories and current open
 source projects that are closer to HarnessForge's job: creating, assessing, and
@@ -77,35 +77,28 @@ Accepted for HarnessForge in this pass:
 - Keep root instruction files as short maps to repository-owned source material
   rather than making them encyclopedias.
 
-High-value ideas to consider next:
+Ideas later implemented or routed:
 
-- Remaining ideas research is ranked in
-  `docs/harness/research/remaining-ideas-research.md`.
-- Existing-repository mode. If a repo already has a coherent control plane
-  such as specs, docs decisions, issue queues, or custom readiness scripts,
-  HarnessForge should improve that surface instead of adding a competing state
-  system.
-- Greenfield mode. Empty or very small repos may benefit from a lighter
-  first-run path that asks for project type, verification preference, platform
-  contract, and agent surfaces before writing the full harness.
-- Blueprint mode as an explicit opt-in. Domain-specific skill bundles and
-  validators can help, but they should not become the default generated
-  surface for arbitrary repos.
-- Stable machine-readable verification. The current `audit --json` is useful
-  for harness quality; a future project-check contract could expose checks,
-  statuses, durations, and actionable failure messages for agents to consume.
-- `sync --check` style drift detection. The current `update --drift-report`
-  covers generated-file drift; a shorter CI-oriented alias could improve
-  discoverability.
-- First-run UX. A `quickstart` or `wizard` command could explain what will be
-  generated, which existing files will be preserved, and which decisions need
-  project review.
-- Measured real-agent evaluations. Public claims should eventually come from
-  repeatable A/B tasks against pinned repos, with caveats, workspaces, and
-  reproduction commands.
-- Local instruction adapters. Cursor, Windsurf, Continue, and Aider support
-  may be useful, but only after their current loading rules are verified from
-  primary docs and the generated/local boundary is explicit.
+- Existing-repository improvement is handled by detection, readiness,
+  `enhance`, `--enhance-existing`, and review-required addenda. It improves
+  coherent project control planes instead of replacing them.
+- First-run and small-repo UX is handled by `quickstart`, guarded interactive
+  init, dry-run summaries, preserved-file reporting, and reproducible JSON
+  plans.
+- Blueprint mode is implemented as an explicit opt-in with review-required
+  artifacts outside normal `init`.
+- Stable machine-readable verification is handled by `verify --json`,
+  `verify --evidence-summary`, report JSON, and release-check evidence gates.
+- `sync --check` is implemented as a short read-only generated-drift and
+  readiness surface.
+- Measured real-agent claims are routed through the effectiveness evidence
+  contract instead of structural audit scores.
+
+Remaining candidate idea:
+
+- Local instruction adapters for Cursor, Windsurf, Continue, Aider, or similar
+  tools may be useful after current loading rules are verified from primary
+  docs and the generated/local boundary is explicit.
 
 Ideas to defer unless a target repo opts in:
 
@@ -168,7 +161,7 @@ Accepted in this pass:
   over-broad verification. HarnessForge exposes the generic version as a static
   planner over detected or explicit checks instead of executing workflows.
 
-High-value ideas to consider next:
+Remaining candidate idea:
 
 - Harness score and benchmark commands. JobSentinel's score and benchmark
   commands are useful for its repo-native harness, but HarnessForge should not

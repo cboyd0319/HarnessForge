@@ -4,10 +4,11 @@ Last Updated: 2026-06-16 UTC
 
 ## Current Objective
 
-README dedupe is complete when the main repository README is a lean landing
-page, detailed command and boundary inventories live in dedicated docs,
-required README snippets remain intact, focused docs verification passes, and
-the result is committed and pushed to `main`. Release prep resumes next.
+Capabilities and research-doc cleanup is complete when
+`docs/capabilities.md` is easier to read, repo-local research docs are current
+and clear about generated versus human-maintained surfaces, required manifest
+snippets remain intact, focused docs verification passes, and the result is
+committed and pushed to `main`. Release prep resumes next.
 
 ## Product State
 
@@ -145,6 +146,16 @@ the result is committed and pushed to `main`. Release prep resumes next.
   harnesses contained machine-local absolute paths and failed installed-package
   report/audit expectations. CLI and Action tests now use portable `python3`
   on POSIX and `python` on Windows for generated fixture commands.
+- `docs/capabilities.md` is now organized as a reader-facing guide: quick map,
+  repository understanding, harness generation, existing-instruction review,
+  audit/report/release evidence, opt-in extensions, default boundaries,
+  generated files, security model, effectiveness boundary, and repo-local
+  self-healing.
+- `docs/harness/research/` was refreshed and tightened. The source inbox and
+  lock file were regenerated from the fixed allowlist, the human-maintained
+  research notes now distinguish implemented work from future candidates, and
+  `sources.md` records which research files are generated versus
+  human-maintained.
 
 ## Trusted Verification
 
@@ -180,6 +191,16 @@ the result is committed and pushed to `main`. Release prep resumes next.
 - Current README dedupe verification: required README manifest snippet check
   passed with no missing snippets; literal duplicate meaningful-line scan found
   no repeated lines; README is 181 lines and 969 words before final checks.
+- Current capabilities/research cleanup verification: refreshed 107 research
+  sources with 1 known source failure (`redhat-structured-workflows` returns
+  HTTP 403); `scripts/refresh_research.py --root . --check` passed; JSON
+  validation for all research JSON files passed; durable research docs local
+  path scan found no leaks; required capabilities manifest snippet check passed
+  with no missing snippets; duplicate meaningful-line scan for
+  `docs/capabilities.md` found no repeats; `tests.test_generate_audit`,
+  `tests.test_pins`, and `tests.test_verify_contract` passed with 85 tests;
+  self-audit passed at `100/100`; `git diff --check` passed; `./init.sh`
+  passed with 287 tests and self-audit `100/100`.
 - Current cleanup pass removed ignored local artifacts: `__pycache__`, `*.pyc`,
   `.DS_Store`, `.pytest_cache`, `htmlcov`, and `.coverage` if present.
 - Current known local verification gap: `pwsh -NoProfile -File ./init.ps1`
@@ -192,7 +213,8 @@ the result is committed and pushed to `main`. Release prep resumes next.
 ## Touched Surfaces
 
 - `current-state.md`
-- `README.md`
+- `docs/capabilities.md`
+- `docs/harness/research/`
 
 ## Blockers
 
@@ -204,4 +226,5 @@ the result is committed and pushed to `main`. Release prep resumes next.
 
 ## Next Step
 
-Commit and push the README dedupe, then resume release prep.
+Commit and push the capabilities and research-doc cleanup, then resume release
+prep.

@@ -1,6 +1,6 @@
 # Remaining Ideas Research
 
-Reviewed: 2026-06-15 UTC.
+Reviewed: 2026-06-16 UTC.
 
 This repo-local note records the compact outcome of the remaining-ideas mining
 pass. It is not generated into target repositories. The full prior research
@@ -52,7 +52,7 @@ Current release boundary:
 | Action summary and release evidence automation | Implemented for report, sync, and release-check | Read-only unless report paths are explicitly requested |
 | Harness maturity levels | Implemented as evidence-gated report/release-check output | Separate from structural score and real-agent effectiveness |
 
-## Still Worth Considering
+## Future Release Candidates
 
 These remain useful but should stay behind explicit roadmap/release decisions:
 

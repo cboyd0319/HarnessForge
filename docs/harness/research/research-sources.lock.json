@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-06-14T20:56:44+00:00",
+  "checkedAt": "2026-06-16T15:57:59+00:00",
   "failureCount": 1,
   "sourceCount": 107,
   "sources": [
@@ -18,7 +18,7 @@
       ],
       "httpStatus": 200,
       "id": "openai-harness-engineering",
-      "sha256": "9f31badcb1c49a62b4b6677cbcb29edaa0f4e29f5b245a650a34a060ebdb3b92",
+      "sha256": "3557b8b7ef4f51e1e274beb837c45e3d64c564bc16e5cde240c76d44542d27d7",
       "status": "ok",
       "title": "Harness engineering: leveraging Codex in an agent-first world | OpenAI",
       "url": "https://openai.com/index/harness-engineering/"
@@ -38,7 +38,7 @@
       ],
       "httpStatus": 200,
       "id": "openai-ai-native-engineering",
-      "sha256": "6122333e857b7a9d21585e215ab44d01144b1c1d96ae8e5e8bc146b86c60f64b",
+      "sha256": "0db63d042d6a7585c95d5327e3d1c6f692880ce9525ff4732ddb0fbb7d660f67",
       "status": "ok",
       "title": "Building an AI-Native Engineering Team \u2013 Codex | OpenAI Developers",
       "url": "https://developers.openai.com/codex/guides/build-ai-native-engineering-team"
@@ -56,7 +56,7 @@
       ],
       "httpStatus": 200,
       "id": "anthropic-effective-harnesses",
-      "sha256": "646b3649917541529f7f1c7dfb5450fd5335f9da15038e66fc46a2661b6ccf94",
+      "sha256": "77e92158030972cb113092e96324505b7f764b3b34d57c2999f39fc80e5d3c90",
       "status": "ok",
       "title": "Effective harnesses for long-running agents \\ Anthropic",
       "url": "https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents"
@@ -76,7 +76,7 @@
       ],
       "httpStatus": 200,
       "id": "anthropic-long-running-apps",
-      "sha256": "e9bc3349aa3e12e73116fdbcfab1302e6c221ae445939a18bccba04520cf783b",
+      "sha256": "d8fbe265774ad444f45702ce7cb65db29a19be4ce39cf442f704a3dc153a6fbd",
       "status": "ok",
       "title": "Harness design for long-running application development \\ Anthropic",
       "url": "https://www.anthropic.com/engineering/harness-design-long-running-apps"
@@ -96,7 +96,7 @@
       ],
       "httpStatus": 200,
       "id": "martin-fowler-harness-engineering",
-      "sha256": "d56bf3e78f2987b12af13ddf2f98f96751ab9239276879201d48e6fc5ff1d759",
+      "sha256": "01d371bc607de8c0522fdc26e559e669dcd27a26d29c1b9ccccc49cc200dfebe",
       "status": "ok",
       "title": "Harness engineering for coding agent users",
       "url": "https://martinfowler.com/articles/harness-engineering.html"
@@ -116,7 +116,7 @@
       ],
       "httpStatus": 200,
       "id": "martin-fowler-maintainability-sensors",
-      "sha256": "5ef6beb8001788ae06870161498510de590c39b4c31ff33da8775d18c631a4b4",
+      "sha256": "d8b72e3d266d3fd54bf07d083ab445c2651c32931b3b52dce11fa0e255f1fb4e",
       "status": "ok",
       "title": "Maintainability sensors for coding agents",
       "url": "https://martinfowler.com/articles/sensors-for-coding-agents.html"
@@ -143,7 +143,7 @@
       ],
       "httpStatus": 200,
       "id": "thoughtworks-coding-sensors",
-      "sha256": "1a89d77e1a4f794741f59db2b43ddabca6ed3616b59c2cac1afb704309936b3d",
+      "sha256": "1c1d35d5fed7d4d79aee25d0086d4aa6711a5b13577160d814934bd3838e85d9",
       "status": "ok",
       "title": "Harness engineering and agent feedback: Exploring AI coding sensors | Thoughtworks United States",
       "url": "https://www.thoughtworks.com/en-us/insights/blog/generative-ai/harness-engineering-agent-feedback-exploring-ai-coding-sensors"
@@ -163,7 +163,7 @@
       ],
       "httpStatus": 200,
       "id": "langchain-agent-harness",
-      "sha256": "a2093bab96ef0db5843340758e530d0def6c8f9588ca05a8f044330e404df919",
+      "sha256": "dcf7bc0d06834aa210148a956ef4cbf2732e67b68443e3a1d3cf772ae1201f3c",
       "status": "ok",
       "title": "The Anatomy of an Agent Harness",
       "url": "https://www.langchain.com/blog/the-anatomy-of-an-agent-harness"
@@ -183,7 +183,7 @@
       ],
       "httpStatus": 200,
       "id": "langchain-deepagents-harness",
-      "sha256": "96023b8c73540db984cfa9ba8cd52087b69d6341c18655c2018537250b7bd696",
+      "sha256": "ddfd1eb6d861b25bdd772292b5f6e07cd02b263b7b3d8ef28dda13c7cd106fc7",
       "status": "ok",
       "title": "Harness capabilities - Docs by LangChain",
       "url": "https://docs.langchain.com/oss/python/deepagents/harness"
@@ -202,7 +202,7 @@
       ],
       "httpStatus": 200,
       "id": "agents-md",
-      "sha256": "c70fa7aaa423b4e4c04a279cb2ce7d080b8929d05e1e2ba246a53cbe5f6a2e5b",
+      "sha256": "4fe043e8b7fc3775d13d0d47947ed09da851d60204442137aab0ecba60965932",
       "status": "ok",
       "title": "AGENTS.md",
       "url": "https://agents.md/"
@@ -222,7 +222,7 @@
       ],
       "httpStatus": 200,
       "id": "claude-code-memory",
-      "sha256": "e376546f7f1f450305adc02b00c55a6bc58da0ac4eb5bf7b9be146e4fa52ff95",
+      "sha256": "3da7235da18c7227ab25541d06f6d0ff2902760e2b7f882a42e3fbac5cc15fa9",
       "status": "ok",
       "title": "How Claude remembers your project - Claude Code Docs",
       "url": "https://code.claude.com/docs/en/memory"
@@ -261,7 +261,7 @@
       ],
       "httpStatus": 200,
       "id": "google-antigravity-agent",
-      "sha256": "1a616375e43ff03bddebf0fae871f4ceb0de5f83cd0a9217e04fe8a380ba7044",
+      "sha256": "b7f759b23fd19f1b87b59440b06ef53e9bfa92fc3c0c90bff212b7771e9ce2da",
       "status": "ok",
       "title": "Antigravity Agent | Gemini API | Google AI for Developers",
       "url": "https://ai.google.dev/gemini-api/docs/antigravity-agent"
@@ -281,7 +281,7 @@
       ],
       "httpStatus": 200,
       "id": "github-copilot-custom-instructions",
-      "sha256": "3ded4260cec97c179cf7bb02c149ca3ce18f25e99d1231ad6f16efdc14357dd0",
+      "sha256": "a3b26484696a05ba5de603bfc61b429c05495280f1d9f193b1b95d314bcde58b",
       "status": "ok",
       "title": "Adding repository custom instructions for GitHub Copilot - GitHub Docs",
       "url": "https://docs.github.com/copilot/customizing-copilot/adding-custom-instructions-for-github-copilot"
@@ -301,7 +301,7 @@
       ],
       "httpStatus": 200,
       "id": "github-copilot-cli-custom-instructions",
-      "sha256": "28c6704b1e21ba1b08afc710fb8efb844e70b7eca88280917644bb85e4270ab9",
+      "sha256": "05896baaa482e877348f72998aa5ece32e8ce738930232261024e33462d0cdc1",
       "status": "ok",
       "title": "Adding custom instructions for GitHub Copilot CLI - GitHub Docs",
       "url": "https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/add-custom-instructions"
@@ -319,7 +319,7 @@
       ],
       "httpStatus": 200,
       "id": "walkinglabs-course",
-      "sha256": "e8049fffea829a693818c1ce3b3e96c58dd5f49e7fd240147644b7fd9cc18c8a",
+      "sha256": "f2b74986d019025812b50cdb01d08919ee93e4ba3e460e97e2b6c6f290a74dfe",
       "status": "ok",
       "title": "Welcome to Learn Harness Engineering | Learn Harness Engineering",
       "url": "https://walkinglabs.github.io/learn-harness-engineering/en/"
@@ -339,7 +339,7 @@
       ],
       "httpStatus": 200,
       "id": "walkinglabs-github",
-      "sha256": "e612c4701b89b5356602e2a7968f5b7cdf5b06112af20298374a6e22211a0b11",
+      "sha256": "2dbc90eb180c9e9809d59ef91f80931bea241938f4a38e5db7e8d63331ea6a56",
       "status": "ok",
       "title": "GitHub - walkinglabs/learn-harness-engineering: Harness engineering beginner tutorial, from 0 to 1 \u00b7 GitHub",
       "url": "https://github.com/walkinglabs/learn-harness-engineering"
@@ -359,7 +359,7 @@
       ],
       "httpStatus": 200,
       "id": "walkinglabs-lecture-02",
-      "sha256": "a9faa4a0334679a250952d91e2149e40da76b5ec06d7e6944797cdddfc863409",
+      "sha256": "f861610a178e340cd6d6719489ddb60b9d3299f4f7f1b9379c307647ad568a47",
       "status": "ok",
       "title": "Lecture 02. What a Harness Actually Is | Learn Harness Engineering",
       "url": "https://walkinglabs.github.io/learn-harness-engineering/en/lectures/lecture-02-what-a-harness-actually-is/"
@@ -379,7 +379,7 @@
       ],
       "httpStatus": 200,
       "id": "walkinglabs-harness-creator-skill",
-      "sha256": "efd8a89b7e115eb321909bc1fea801c6c112c8c6b2384d1ee6d865942fd11ac1",
+      "sha256": "884c9d933effbf371150b9c165a9ffcbfd6a9a4966c62b9e20d8df1086cc656d",
       "status": "ok",
       "title": "learn-harness-engineering/skills/harness-creator at main \u00b7 walkinglabs/learn-harness-engineering \u00b7 GitHub",
       "url": "https://github.com/walkinglabs/learn-harness-engineering/tree/main/skills/harness-creator"
@@ -399,7 +399,7 @@
       ],
       "httpStatus": 200,
       "id": "agentpatterns-copilot-harness",
-      "sha256": "4cbaee77235f5567a90f824399e09f2f405af81f190cbea0e26fda0252c9a6f0",
+      "sha256": "73f22c5aba2285c8c06aa60146a26e568ab250715e1763ed29eb0d6ae8c1df55",
       "status": "ok",
       "title": "GitHub Copilot: Harness Engineering for Agent-Ready Code - AgentPatterns.ai",
       "url": "https://agentpatterns.ai/training/copilot/harness-engineering/"
@@ -447,7 +447,7 @@
       ],
       "httpStatus": 200,
       "id": "charlesanim-harness-engineering",
-      "sha256": "faed4ca40d903288bee674aed0701612ece1347409eb49b752546f0effa89033",
+      "sha256": "1f645dca2d154e0443b46f3641e6da520ced55a68893de2ec7037d95e06b5a51",
       "status": "ok",
       "title": "GitHub - charlesanim/harness-engineering: Agent skill: set up OpenAI's harness engineering methodology in any repo. Works with Copilot, Codex, Claude, Cursor. \u00b7 GitHub",
       "url": "https://github.com/charlesanim/harness-engineering"
@@ -527,7 +527,7 @@
       ],
       "httpStatus": 200,
       "id": "vscode-copilot-harness",
-      "sha256": "9846630d908b77a600ef9b0b7d12daa32c7d969fd82e4b5a85761756d6be8806",
+      "sha256": "0a0f4929a2eba63540bf4c67bf6ac256d965687d355368a32f898aabb9517abb",
       "status": "ok",
       "title": "The Coding Harness Behind GitHub Copilot in VS Code",
       "url": "https://code.visualstudio.com/blogs/2026/05/15/agent-harnesses-github-copilot-vscode"
@@ -546,7 +546,7 @@
       ],
       "httpStatus": 200,
       "id": "humanlayer-harness-engineering",
-      "sha256": "51fca3f5e635645fdee09af70824776e8f6ec3d8eb5800f441bf08cfa9b5bbab",
+      "sha256": "1e163e6967e7cd46b7d378b067ecc523b36cf453ae65c868901bd44536b6e7b2",
       "status": "ok",
       "title": "Skill Issue: Harness Engineering for Coding Agents | HumanLayer Blog",
       "url": "https://www.humanlayer.dev/blog/skill-issue-harness-engineering-for-coding-agents"
@@ -566,7 +566,7 @@
       ],
       "httpStatus": 200,
       "id": "github-readme-docs",
-      "sha256": "c73bb9fb4be2995cceb4b93f7dbbed972d1ed6156a1580077299166f6348fc35",
+      "sha256": "3160c8f4c2fc0cc40d98fe6a262b337a4529f6811ebe7c5ddfb9ba1c9c9332db",
       "status": "ok",
       "title": "About the repository README file - GitHub Docs",
       "url": "https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-readmes"
@@ -586,7 +586,7 @@
       ],
       "httpStatus": 200,
       "id": "github-markdown-syntax",
-      "sha256": "d5bca3f34d06e24cec41f2d3ec9852de3fdff6d7ed2ea4992c925fc0aa6abee3",
+      "sha256": "cc09585ad58388ed4c98d619e6356504b14467895fde0bfe7e22c6e0076cc936",
       "status": "ok",
       "title": "Basic writing and formatting syntax - GitHub Docs",
       "url": "https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax"
@@ -600,7 +600,7 @@
       ],
       "httpStatus": 200,
       "id": "turingway-readme",
-      "sha256": "20b6e89fe10272393083586b037d52a3a9777dbeed44d9e2af3ee65992d09e09",
+      "sha256": "f3fb4415d6979a8eebcc491357d4ccf3d4ca3b8d001bc2d5f0c8f3ca3987c626",
       "status": "ok",
       "title": "Landing Page - README File - The Turing Way",
       "url": "https://book.the-turing-way.org/project-design/pd-overview/project-repo/project-repo-readme/"
@@ -788,7 +788,7 @@
       ],
       "httpStatus": 200,
       "id": "python-packaging-pyproject",
-      "sha256": "4ecafb8455c89bbea2c20fa623746faf67b4eefa81798bf2c2a229084fba543b",
+      "sha256": "fe0b872228fcc3f056b26506fb0e099a2835129f705a262b1a02dc70b9356034",
       "status": "ok",
       "title": "Writing your pyproject.toml - Python Packaging User Guide",
       "url": "https://packaging.python.org/en/latest/guides/writing-pyproject-toml/"
@@ -803,7 +803,7 @@
       ],
       "httpStatus": 200,
       "id": "python-cmdline-env",
-      "sha256": "159926fb9c3c69cff9d4c7ce10ac2aa5d520afdf6e6b21ba4f94d02a42bf7ab1",
+      "sha256": "c04494b0baea98ad7ad6ca11a771f0bef5b7ce8ca51f9dc26faf911f9724baf7",
       "status": "ok",
       "title": "1. Command line and environment \u2014 Python 3.14.6 documentation",
       "url": "https://docs.python.org/3/using/cmdline.html"
@@ -823,7 +823,7 @@
       ],
       "httpStatus": 200,
       "id": "python-urllib-request",
-      "sha256": "6410bc47ae80c7290baaae12e472caba154afe11fc8fa793e2c81c2d376dd005",
+      "sha256": "04ebbaa4d569f722d437f16dbc4623e4a1670650d8f0647f9210545431f6da84",
       "status": "ok",
       "title": "urllib.request \u2014 Extensible library for opening URLs \u2014 Python 3.14.6 documentation",
       "url": "https://docs.python.org/3/library/urllib.request.html"
@@ -843,7 +843,7 @@
       ],
       "httpStatus": 200,
       "id": "github-actions-secure-use",
-      "sha256": "58034464ee5578fa3d3239c49cf2bb558d04cc9a28fb388ad63c6dea9d16de32",
+      "sha256": "fa1f8bd63712d2653f7c20989658820cce2482448701e88d2d74b9ceb0f5bb06",
       "status": "ok",
       "title": "Secure use reference - GitHub Docs",
       "url": "https://docs.github.com/en/actions/reference/security/secure-use"
@@ -863,7 +863,7 @@
       ],
       "httpStatus": 200,
       "id": "github-actions-checkout",
-      "sha256": "9adee40504b6b39ddfaf5152a6e2e65cf1d5495d47899848b5e9b6f31419921d",
+      "sha256": "1021aef044be9fc4da835ca6ab54c945b51a65833f6c923caae0a8d30cc2dbca",
       "status": "ok",
       "title": "GitHub - actions/checkout: Action for checking out a repo \u00b7 GitHub",
       "url": "https://github.com/actions/checkout"
@@ -883,7 +883,7 @@
       ],
       "httpStatus": 200,
       "id": "github-composite-actions",
-      "sha256": "d8cb1507d012b0a58483335d3ec6dda420fe3f54cd7943e52a5c444899a26e13",
+      "sha256": "c17e0c2a7b11485fbf3f2af5e79faa6c40ceba05e90e13451bec7f2281bd5477",
       "status": "ok",
       "title": "Creating a composite action - GitHub Docs",
       "url": "https://docs.github.com/en/actions/tutorials/create-actions/create-a-composite-action"
@@ -917,7 +917,7 @@
       ],
       "httpStatus": 200,
       "id": "owasp-cheat-sheet-series",
-      "sha256": "a3b57c8548253c4d1bb304842eecc980cd150481bbd13c44ab6c6bebb9236b65",
+      "sha256": "d7a7c93200fbcd33f9032ef3f2810d5377e49c288aeb2be84396ce0e15453709",
       "status": "ok",
       "title": "OWASP Foundation - The Open Source Foundation for Application Security",
       "url": "https://www.owasp.community/projects/cheat-sheet-series"
@@ -937,7 +937,7 @@
       ],
       "httpStatus": 200,
       "id": "owasp-security-shepherd",
-      "sha256": "9d795633c962d0691b2fa5888e076be28130c0a154c3ec2defc5dfa08976037a",
+      "sha256": "441ec37799f1edd1c5c56f50724213b0428c615845a239e9e9c6ab6a327483f5",
       "status": "ok",
       "title": "GitHub - OWASP/SecurityShepherd: Web and mobile application security training platform \u00b7 GitHub",
       "url": "https://github.com/OWASP/SecurityShepherd"
@@ -957,7 +957,7 @@
       ],
       "httpStatus": 200,
       "id": "owasp-pytm",
-      "sha256": "27dc3c4614b82bddfab148fcaa4dbf56b029ca4d11064472802fdf424a4ce945",
+      "sha256": "cd08f0fd342c1b06f6999ea1183225ffef83bbec684385a7c3102ad943c8f03e",
       "status": "ok",
       "title": "GitHub - OWASP/pytm: A Pythonic framework for threat modeling \u00b7 GitHub",
       "url": "https://github.com/OWASP/pytm"
@@ -1262,7 +1262,7 @@
       ],
       "httpStatus": 200,
       "id": "owasp-llm-top-10",
-      "sha256": "ae2a95d5709a71e231028545c48bd543da608c1df3ff425a29210e0cff8619a3",
+      "sha256": "37a07bf4b05c0dbb8542dcd2a2759b709095aca388c16e0c29d76e86a613506a",
       "status": "ok",
       "title": "OWASP Top 10 for Large Language Model Applications | OWASP Foundation",
       "url": "https://owasp.org/www-project-top-10-for-large-language-model-applications/"
@@ -1282,7 +1282,7 @@
       ],
       "httpStatus": 200,
       "id": "owasp-agentic-applications-top-10",
-      "sha256": "306428594640d264d178aa7b8ffbf0704a9ae89425bf71250fcb7b96fe21409e",
+      "sha256": "bfd9b34c91d9afcc2e83cd43ffdce80f039209f7564b8f446ea843da833aa4e4",
       "status": "ok",
       "title": "OWASP Top 10 for Agentic Applications for 2026 - OWASP Gen AI Security Project",
       "url": "https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/"
@@ -1313,7 +1313,7 @@
       ],
       "httpStatus": 200,
       "id": "owasp-agentic-applications-crosswalk",
-      "sha256": "8e7c1f29be4a583ffe68b6ee83a00dec951c080071f23ec370d4f379b3f34321",
+      "sha256": "85914c4857733e4f21f88764c5dc2ba5f032589457c70e5be779337d1c6b136c",
       "status": "ok",
       "title": "AIUC-1: Crosswalks OWASP Top 10 For Agentic Applications - OWASP Gen AI Security Project",
       "url": "https://genai.owasp.org/resource/aiuc-1-crosswalks-owasp-top-10-for-agentic-applications/"
@@ -1333,7 +1333,7 @@
       ],
       "httpStatus": 200,
       "id": "owasp-agentic-red-teaming-landscape",
-      "sha256": "7033cf102b3d3acdbcba5d15c996c58b49bef8c01bed06f5396788c732a19a55",
+      "sha256": "deb9772f88c714c05410db5efe66467a03a6a625e11a9d87a53690464a83460b",
       "status": "ok",
       "title": "AI Security Solutions Landscape For AI and Agentic Red Teaming Q2 2026 - OWASP Gen AI Security Project",
       "url": "https://genai.owasp.org/resource/ai-security-solutions-landscape-for-ai-and-agentic-red-teaming-q2-2026/"
@@ -1353,7 +1353,7 @@
       ],
       "httpStatus": 200,
       "id": "owasp-agentic-skills-top-10",
-      "sha256": "ad155984a6737abe1367a4dd46fccb40bfc3a4fd2fd1d9e0a1d65b2451bcee41",
+      "sha256": "13d8590080355e7c0e5f998fc3b5fbfbe710ad2b284b85f75796f377153cb427",
       "status": "ok",
       "title": "OWASP Agentic Skills Top 10 | OWASP Foundation",
       "url": "https://owasp.org/www-project-agentic-skills-top-10/"
@@ -1373,7 +1373,7 @@
       ],
       "httpStatus": 200,
       "id": "owasp-agentic-skills-github",
-      "sha256": "f8abfd501c98612551de03372766dc51ca0aaa92a71f57eb3aad7b6aa9ddbca1",
+      "sha256": "5170d8a34c79382023a715a7ff9bcf47695c7d3edd5914433f8c4401a1c6f9c7",
       "status": "ok",
       "title": "GitHub - OWASP/www-project-agentic-skills-top-10: OWASP Foundation web repository \u00b7 GitHub",
       "url": "https://github.com/OWASP/www-project-agentic-skills-top-10"
@@ -1393,7 +1393,7 @@
       ],
       "httpStatus": 200,
       "id": "microsoft-agt-prompt-injection-benchmark",
-      "sha256": "59b10e7a44d2116d8b505a1025531bdb4f7ad17b29534bd2173ca575b50d2b97",
+      "sha256": "5ae78b2e1673b5865e9c9d16bbbc6aa9a809fbb6a634a7d093c79dc911592018",
       "status": "ok",
       "title": "agent-governance-toolkit/benchmarks/prompt-injection at main \u00b7 microsoft/agent-governance-toolkit \u00b7 GitHub",
       "url": "https://github.com/microsoft/agent-governance-toolkit/tree/main/benchmarks/prompt-injection"
@@ -1413,7 +1413,7 @@
       ],
       "httpStatus": 200,
       "id": "practical-devsecops-agentic-top-10",
-      "sha256": "e4bbaa5ea5cab37336d4362af6fb4a000f07072ed894e169500b4ed973411d49",
+      "sha256": "424b8da09f95a9be023ebf533740215377257fd748109c36f40188a8cf12f2c4",
       "status": "ok",
       "title": "OWASP Top 10 for Agentic Applications for 2026",
       "url": "https://www.practical-devsecops.com/owasp-top-10-agentic-applications/"
@@ -1450,7 +1450,7 @@
       ],
       "httpStatus": 200,
       "id": "endor-ai-code-security-benchmark",
-      "sha256": "1942f79a251f1798832a3bd153bcce4d6a7f3f75e483870aaa4027cab8d49bc4",
+      "sha256": "78d33a338ffc22e8e651b1a42d9eef4db82e57f92029e4bed7ff50844d0e4da2",
       "status": "ok",
       "title": "AI Coding Agent Security Benchmark | Endor Labs",
       "url": "https://www.endorlabs.com/research/ai-code-security-benchmark"
@@ -1470,7 +1470,7 @@
       ],
       "httpStatus": 200,
       "id": "lakera-training-data-poisoning",
-      "sha256": "29b7e408f49edc629a1740adbfdf0c6a309b378c540c2694efd002b7f6acd7c7",
+      "sha256": "04367d5039c352907c9af5ed53948eec10c5880298bed663125a35b50e996e7f",
       "status": "ok",
       "title": "Introduction to Data Poisoning: A 2026 Perspective | Lakera \u2013 Protecting AI teams that disrupt the world.",
       "url": "https://www.lakera.ai/blog/training-data-poisoning"
@@ -1501,7 +1501,7 @@
       ],
       "httpStatus": 200,
       "id": "pnpm-workspaces",
-      "sha256": "d86329a368117ffcbb7c3238a708ad5804ebf3ee1529e92c519b9830d72d60d6",
+      "sha256": "94c4a3f66ad4b9a7eae4dce1cdd58a21f47e8a676b7729c1ab8c946d456ced98",
       "status": "ok",
       "title": "Workspace | pnpm",
       "url": "https://pnpm.io/workspaces"
@@ -1518,7 +1518,7 @@
       ],
       "httpStatus": 200,
       "id": "yarn-workspaces",
-      "sha256": "0c5cfaff237d0760319af8ef2939528395eb953c30dc37072a5e01e1952ca205",
+      "sha256": "ca676ad8965104b326159660f5466b44ace7694e40faa1b5e6c5c6986adba675",
       "status": "ok",
       "title": "Workspaces | Yarn",
       "url": "https://yarnpkg.com/features/workspaces"
@@ -1554,7 +1554,7 @@
       ],
       "httpStatus": 200,
       "id": "bun-workspaces",
-      "sha256": "07d9c3a81139d18f39959b79df819cab8511a1cb62f10d3396d0f7d8720e622b",
+      "sha256": "fcacb049999d4e84d9100ccdd7bd65d36f0c157af4f506f74ac3916a1c5c8135",
       "status": "ok",
       "title": "Workspaces - Bun",
       "url": "https://bun.sh/docs/pm/workspaces"
@@ -1587,7 +1587,7 @@
       ],
       "httpStatus": 200,
       "id": "nx-project-configuration",
-      "sha256": "bc010fcaaf6f781efbc564cd1e5e92efbe2bc09681a466ddb6669354eedc5d9c",
+      "sha256": "4309c0fdb646c36056c5753c23e77317a74b6466b746b2b3ed09fa4599f4d16a",
       "status": "ok",
       "title": "Project Configuration | Nx",
       "url": "https://nx.dev/docs/reference/project-configuration"
@@ -1729,7 +1729,7 @@
       ],
       "httpStatus": 200,
       "id": "bazel-modules",
-      "sha256": "8a5369711841139d19fc4d25574ce77f7b8863eee3c545eb11e2a209ed4966b1",
+      "sha256": "fd2dba4cba3ac812ae1a8276b424a5371499a3d987d6d908be093ef270a0b53e",
       "status": "ok",
       "title": "Bazel modules",
       "url": "https://bazel.build/external/module"
@@ -1768,7 +1768,7 @@
       ],
       "httpStatus": 200,
       "id": "buck2-buckconfig",
-      "sha256": "14df24f8d8e6b6d961c3bbe66c0f72ef8dcd52fe83df315980b9802fa2b1520a",
+      "sha256": "8363b4ef5a51cb09c4a72b0119b5716d17093b031822df41275288837e133d7b",
       "status": "ok",
       "title": ".buckconfig | Buck2",
       "url": "https://buck2.build/docs/concepts/buckconfig/"
@@ -1788,7 +1788,7 @@
       ],
       "httpStatus": 200,
       "id": "github-actions-workflow-syntax",
-      "sha256": "4ac7a9c460fc848de40f3512cf97f133f3b574b264752751b2c17e57a55c7d04",
+      "sha256": "3ead0d600d2570a24676bce15a097bddf0d5d4703451ebd16f8a2aca5393f878",
       "status": "ok",
       "title": "Workflow syntax for GitHub Actions - GitHub Docs",
       "url": "https://docs.github.com/actions/using-workflows/workflow-syntax-for-github-actions"
@@ -1802,7 +1802,7 @@
       ],
       "httpStatus": 200,
       "id": "terraform-standard-module-structure",
-      "sha256": "ac7e46a091549fbda45aa3018d9a8dcb39bac8fcc73b577e78a20fbeae349ca3",
+      "sha256": "76efd4b2dda075b4209e51f52f7d4a1f4e3f1a5cb7731fc547d9145f0dedcee6",
       "status": "ok",
       "title": "Standard Module Structure | Terraform | HashiCorp Developer",
       "url": "https://developer.hashicorp.com/terraform/language/modules/develop/structure"
@@ -1833,7 +1833,7 @@
       ],
       "httpStatus": 200,
       "id": "medium-monorepos-guide",
-      "sha256": "6580c0b9c33b3e3dc89d28e03bf28f3154a49a32fa77ad720c3483724d96b4da",
+      "sha256": "0b19a3adf3f3c5deeb934541ba4d8a601bd67858873327fde308a93111d4a25c",
       "status": "ok",
       "title": "Monorepos: A Comprehensive Guide with Examples | by Md Julakadar | Medium",
       "url": "https://medium.com/@julakadaredrishi/monorepos-a-comprehensive-guide-with-examples-63202cfab711"
@@ -1873,7 +1873,7 @@
       ],
       "httpStatus": 200,
       "id": "github-actions-vanilla-monorepo-example",
-      "sha256": "cfe397b4a27e6c6acf95c4243629364d275bada4fb435a204978a2c9dd0a8b20",
+      "sha256": "6188025b9fcfd7047a5d1515faa7aaa081f9e98e21e0c0007dc8cf033e2538bb",
       "status": "ok",
       "title": "GitHub - gamgi/github-actions-vanilla-monorepo-example: An example on how to use GitHub actions in a monorepo. \u00b7 GitHub",
       "url": "https://github.com/gamgi/github-actions-vanilla-monorepo-example"
@@ -1890,7 +1890,7 @@
       ],
       "httpStatus": 200,
       "id": "repo-local-harnesses-linkedin",
-      "sha256": "b32521b0fc1e5366c56ecfaa39de1bec6214cfb30ed667abdbe7f9be561e1912",
+      "sha256": "5b5c5d431829a024e76c348c4cac6defc76ad6faaa80b3caadc00887adc254e6",
       "status": "ok",
       "title": "Repo-Local Harnesses for Coding Agents, Part 1: Why the Harness Belongs in the Repo",
       "url": "https://www.linkedin.com/pulse/repo-local-harnesses-coding-agents-part-1-why-harness-chris-mamon-c71nf/"
@@ -1930,7 +1930,7 @@
       ],
       "httpStatus": 200,
       "id": "harness-idp-sandbox-monorepo",
-      "sha256": "605917d2c3140b5c846c70f9de73eb5f443d2896a7df3ed2c8c4eebe68eb7e49",
+      "sha256": "6e6159e77b0b868f7fe55259dc043f037ecc3212e0b22958da0126d3a59f8a4c",
       "status": "ok",
       "title": "GitHub - harness-idp-sandbox/harness-monorepo \u00b7 GitHub",
       "url": "https://github.com/harness-idp-sandbox/harness-monorepo"
@@ -1950,7 +1950,7 @@
       ],
       "httpStatus": 200,
       "id": "awesome-monorepo",
-      "sha256": "b0578b13cfc913c7e4bbca3b2a734000f6af9b74fd2ad6021dcdc549151d0463",
+      "sha256": "88775bdd16385f2535d4760aa958981089726543d7a90a32e8b377be28cff1d8",
       "status": "ok",
       "title": "GitHub - korfuri/awesome-monorepo: A curated list of awesome Monorepo tools, software and architectures. \u00b7 GitHub",
       "url": "https://github.com/korfuri/awesome-monorepo"
@@ -1970,7 +1970,7 @@
       ],
       "httpStatus": 200,
       "id": "tomsoir-bazel-monorepo",
-      "sha256": "1d33fe493838130d6a24e37ce8ee990c521511acd91727d11e5d031f876cee62",
+      "sha256": "30283261059768b215e7fa7b2e4ad74c4fdcd38a0138ecd3f8b79afa60ef023b",
       "status": "ok",
       "title": "GitHub - tomsoir/bazel-monorepo: Bazel monorepo example \u00b7 GitHub",
       "url": "https://github.com/tomsoir/bazel-monorepo"

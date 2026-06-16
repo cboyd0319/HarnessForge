@@ -1,79 +1,131 @@
 # Capabilities
 
-This document explains what HarnessForge creates, what it detects, and the
-boundaries it preserves. See [Usage](usage.md) for commands and
+HarnessForge creates and checks repository-owned harnesses for AI coding
+agents. This page explains what it can do, what it generates, and where it
+draws the line.
+
+Use this with [Usage](usage.md) for command syntax and
 [Installation](installation.md) for setup.
+
+## Quick Map
+
+| Need | HarnessForge provides |
+| --- | --- |
+| Understand a repo before writing | `quickstart`, `inspect`, `index`, readiness checks, and source-of-truth detection |
+| Generate an initial harness | Agent instructions, state files, verification docs, repo skill wiring, and a manifest |
+| Improve existing instructions | `enhance` review plans and optional `--enhance-existing` addenda |
+| Check harness health | `audit`, `sync --check`, drift detection, report output, and maturity evidence |
+| Prepare release evidence | `release-check` from existing evidence without publishing artifacts |
+| Keep generated content honest | Offline corpus fixtures, including a RunHaven-shaped reviewed-harness fixture |
 
 ## Core Capabilities
 
-- Detects repository shape, stacks, package managers, verification commands,
-  monorepo markers, source-of-truth docs, Spec Kit-style SDD surfaces,
-  ASPEC-style folders, work-item templates, and workflow control surfaces.
-- Provides a read-only guided first-run summary that explains detected context,
-  readiness, preserved files, planned generated files, review placeholders, and
-  next commands. The JSON form can emit reproducible decisions for an
-  interactive-ready first run without prompting or writing files.
-- Generates a compact harness with agent entrypoints, project state files,
-  local verification scripts, security boundaries, evidence docs, lifecycle
-  docs, a target-owned authoritative fact map, and a manifest.
-- Treats a harness as five core subsystems: instructions, tools, environment,
-  state, and feedback. Generated docs make feedback and verification commands
-  the first repair target when agent output is weak.
-- Treats changes to instruction, tool, filesystem, git, startup, verification,
-  hook, lint/sensor, workflow-permission, and evaluator-loop surfaces as
-  effective-agent changes.
-- Adds a review-required first-agent task so the first agent session in a newly
-  harnessed repo can deepen component boundaries, verification routing,
-  source-of-truth guidance, evidence sensors, and security notes.
-- Preserves existing files by default.
-- Can append a reviewed HarnessForge quality addendum to existing instruction
-  files with `--enhance-existing`, including smallest-correct-change discipline
-  for assumptions, scope, dependencies, and verification.
-- Can produce a read-only `harnessforge enhance --json` review plan that parses
-  existing instruction sections, reports canonical section coverage, proposes
-  review-required section/finding cleanup edits with placeholder patch
-  previews, and flags duplicate guidance, local absolute paths, user-specific
-  tool mandates, and verification conflicts before writing.
-- Audits harness structure and reports actionable failures.
-- Reports generated-file drift and static readiness without running target
-  project commands.
-- Reports structured review surfaces with machine-readable status values so
-  tools can distinguish pending review from accepted advisory high-risk
-  surfaces without parsing human-readable messages.
-- Composes readiness, audit, generated drift, structural index, verify
-  evidence, effectiveness evidence, first-agent task status, platform
-  contract, docs fan-out routing status, policy preset recommendations, SBOM
-  adapter status, feature-state scope, runtime/process observability,
-  optional index-adapter status, release-control presence, and evidence-gated maturity
-  into one read-only JSON or Markdown report.
-- Assembles read-only release readiness gates from existing report evidence
-  and the source report maturity level without publishing artifacts, tagging,
-  pushing, uploading, or running target commands.
-- Finalizes first-agent review evidence only through explicit apply mode. It
-  can retire the generated first-agent task, update `first-agent-review.json`,
-  refresh manifest metadata, and record accepted advisory high-risk surfaces
-  when `--accept-detected-high-risk` is explicit.
-- Provides explicit blueprint mode for richer project operating models. Built-in
-  packs cover agentic applications, open-source libraries, internal services,
-  monorepos, CLI/dev tools, spec-driven projects, web services, data/ML,
-  security-sensitive repos, infrastructure/IaC, mobile/desktop apps,
-  docs/research repos, legacy migrations, education/training repos, and
-  workflow automation.
-- Provides an offline public-repo fixture corpus for generated-content quality
-  and detection regression checks without cloning public repositories,
-  including a RunHaven-shaped reviewed-harness fixture.
-- Provides an explicit public-corpus refresh script that validates fixture
-  metadata offline by default and checks remote heads only with
-  `--verify-remote`.
-- Provides a composite GitHub Action for audit, init, update, sync, verify,
-  report, release-check, finalize-review, migrate-state, and doctor workflows.
-- Provides compact verify evidence summaries for release gates when durable
-  evidence should omit stdout and stderr previews.
-- Provides explicit legacy state migration from root `progress.md` and
-  `session-handoff.md` into `current-state.md`; apply mode preserves the
-  legacy files and requires confirmation in the CLI.
+### Repository Understanding
+
+HarnessForge detects repository shape before it writes anything:
+
+- Stacks, package managers, monorepo markers, workflows, verification commands,
+  source-of-truth docs, Spec Kit-style SDD surfaces, ASPEC-style folders, work
+  item templates, existing harness files, SBOM evidence, and workflow control
+  surfaces.
+- Structural index signals such as file class, language, manifest,
+  component, entrypoint, generated, vendor, workflow, review-required,
+  source-of-truth, and compact `repoMap` data.
+- Existing SPDX and CycloneDX-style SBOM files as evidence. HarnessForge does
+  not generate SBOMs during normal flows.
+
+`quickstart` gives a read-only first-run summary with detected context,
+readiness, preserved files, planned generated files, review placeholders, and
+next commands. JSON output can capture reproducible decisions for automated or
+interactive-ready flows.
+
+### Harness Generation
+
+The default generated harness is compact and repo-owned. It includes:
+
+- Agent entrypoints and short platform routers.
+- Project state, local verification scripts, security boundaries, evidence
+  docs, lifecycle docs, a target-owned `authoritative-facts.md`, and a
+  manifest.
+- A zero-install `.agents/skills/harness/SKILL.md` so future agents can
+  improve the repo harness even when HarnessForge is not installed.
+- A review-required first-agent task for deeper component boundaries,
+  verification routing, source-of-truth guidance, evidence sensors, and
+  security notes.
+
+Generated guidance treats a harness as five subsystems:
+
+| Subsystem | What it covers |
+| --- | --- |
+| Instructions | Startup files, repo purpose, hard constraints, and links to detail |
+| Tools | Local commands, least-privilege automation, and optional owner checks |
+| Environment | Runtime versions, dependencies, setup facts, and reproducible context |
+| State | Current work, backlog, blockers, handoff, and durable decisions |
+| Feedback | Verification commands, evidence, sensors, rubrics, and evaluator loops |
+
+Changes to instructions, tools, filesystem scope, git access, startup scripts,
+verification commands, hooks, lint or sensor checks, workflow permissions, or
+evaluator loops are treated as effective-agent changes.
+
+### Existing Instruction Review
+
+HarnessForge preserves existing files by default. For repositories that already
+have instruction files, it can:
+
+- Append a reviewed HarnessForge quality addendum with `--enhance-existing`.
+- Produce a read-only `harnessforge enhance --json` review plan.
+- Parse existing sections and report canonical coverage gaps.
+- Propose review-required cleanup for duplicate guidance, local absolute
+  paths, user-specific tool mandates, and verification conflicts.
+- Add smallest-correct-change discipline for assumptions, scope,
+  dependencies, and verification.
+
+### Audit, Report, And Release Evidence
+
+HarnessForge can assess a harness without running target project commands:
+
+- `audit` reports structural failures and actionable repair guidance.
+- `update --drift-report` and `sync --check` report generated-file drift.
+- `report` composes readiness, audit, generated drift, index summary, verify
+  evidence, effectiveness evidence, first-agent task status, platform contract,
+  instruction quality, docs fan-out, policy presets, SBOM adapter status,
+  feature state, observability, optional index adapters, review work,
+  structured review surfaces, skill wiring, and evidence-gated maturity into
+  read-only JSON or Markdown.
+- `release-check` assembles release readiness gates from existing report
+  evidence without tagging, pushing, uploading, publishing artifacts, or
+  running target commands.
+- `verify --evidence-summary` writes compact verify evidence without stdout or
+  stderr previews.
+- `finalize-review` can retire the first-agent task, update
+  `first-agent-review.json`, refresh manifest metadata, and record accepted
+  advisory high-risk surfaces only through explicit apply mode.
+- `migrate-state` can plan and apply migration from legacy root `progress.md`
+  and `session-handoff.md` files into `current-state.md`. Apply mode preserves
+  legacy files and requires confirmation.
+
+### Opt-In Extensions
+
+HarnessForge also provides explicit opt-in paths:
+
+- Blueprint mode for richer project operating models, including agentic apps,
+  open-source libraries, internal services, monorepos, CLI/dev tools,
+  spec-driven projects, web services, data/ML, security-sensitive repos,
+  infrastructure/IaC, mobile/desktop apps, docs/research repos, legacy
+  migrations, education/training repos, and workflow automation.
+- An offline public-repo fixture corpus for generated-content quality and
+  detection regression checks without cloning public repositories. The corpus
+  includes a RunHaven-shaped reviewed-harness fixture.
+- A public-corpus refresh script that validates fixture metadata offline by
+  default and checks remote heads only with `--verify-remote`.
+- A composite GitHub Action for `audit`, `init`, `update`, `sync`, `verify`,
+  `report`, `release-check`, `finalize-review`, `migrate-state`, and `doctor`
+  workflows.
 
 ## Default Boundaries
+
+HarnessForge intentionally avoids several behaviors unless the repo owner opts
+in:
 
 - It does not overwrite existing project files unless `--force` is supplied.
 - It does not generate user-specific research mandates, local tool
@@ -81,8 +133,8 @@ boundaries it preserves. See [Usage](usage.md) for commands and
 - It does not install Spec Kit, `.specify`, slash commands, presets,
   extensions, catalogs, ASPEC, AWMAN, Maki, or workflow engines into target
   repositories.
-- It does not apply richer blueprint guidance during normal `init`. Blueprints
-  are explicit opt-ins and land in a separate review area.
+- It does not apply blueprint guidance during normal `init`; blueprints are
+  explicit opt-ins and land in a separate review area.
 - It does not generate target-repo self-healing, setup, teardown, push, or PR
   automation. The only optional generated workflow scaffold is the manual
   HarnessForge CI scaffold.
@@ -97,8 +149,8 @@ boundaries it preserves. See [Usage](usage.md) for commands and
   offline `corpus` quality gate.
 - It does not generate SBOMs during normal flows. Existing SPDX and
   CycloneDX-style SBOMs are detected as evidence; generation or project-owned
-  SBOM imports require an explicit future adapter path.
-- It does not use structural scores as proof of real task performance.
+  SBOM imports require a future explicit adapter path.
+- It does not treat structural scores as proof of real task performance.
 
 ## Generated Files
 
@@ -121,90 +173,68 @@ The default generated harness includes:
 Each generated file is recorded in `docs/harness/manifest.json` with ownership
 metadata and hashes. Project-owned existing files are tracked separately so
 drift reporting can distinguish generated changes from preserved local content.
-Generated instructions and review docs include a smallest-correct-change gate:
-surface assumptions, avoid speculative scope, prefer existing behavior and
-dependencies before new code, and verify non-trivial logic with focused checks.
 
 See [harness/manifest.json](harness/manifest.json) for this repo's current
 generated inventory and required-file contract.
 
 ## Security Model
 
-People may run this tool on personal machines and private repositories, so the
-default posture is intentionally restrictive. See [../SECURITY.md](../SECURITY.md)
-for vulnerability reporting, scope, and severity guidance.
+People may run HarnessForge on personal machines and private repositories, so
+safe defaults matter. See [../SECURITY.md](../SECURITY.md) for vulnerability
+reporting, scope, and severity guidance.
 
-- Normal `init`, `inspect`, `index`, `effectiveness`, `session`, `report`,
-  `release-check`, `finalize-review`, `enhance`, `sync --check`, `audit`,
-  `update`, and `doctor` commands use the Python standard library and do not
-  install runtime dependencies.
-- Existing files are preserved unless `--force` is explicitly supplied.
-- Destructive, overwrite-capable, apply-mode, or command-executing CLI
-  operations warn and require confirmation. Non-interactive runs must pass
-  `--yes` intentionally.
-- `--enhance-existing` appends reviewed instruction addenda without replacing
-  existing project text.
-- Generated destination paths are preflighted before writes.
-- Absolute instruction paths, traversal, and unsafe instruction filenames are
-  rejected.
-- Symlinked directories are skipped during discovery.
-- Root manifest symlinks that resolve outside the target repository are ignored
-  during project detection.
-- Audit reads known files only when they resolve inside the target repository.
-- Local home paths are redacted from durable output.
-- GitHub Action outputs use GitHub environment-file delimiter blocks instead
-  of flattening line breaks before writing to `$GITHUB_OUTPUT`.
-- GitHub Action report paths must be relative in both POSIX and Windows syntax
-  and stay inside the target repository.
-- GitHub Action report outputs use target-relative forward-slash paths on every
-  runner.
-- The composite Action sets `PYTHONSAFEPATH=1` so the caller repository's
-  working directory cannot shadow the Action library at Python startup.
-- Generated harnesses preserve intentionally vulnerable training, demo, or
-  fixture code unless remediation is explicitly in scope.
-- Material AI/RAG/agent, tool, external-service, auth, secret, data-flow, or
-  deployment changes require updated boundary/threat model evidence and focused
-  checks.
+| Control | Behavior |
+| --- | --- |
+| Writes | Existing files are preserved unless `--force` is supplied. Destructive, overwrite-capable, apply-mode, or command-executing operations warn and require confirmation; non-interactive runs must pass `--yes`. |
+| Dependencies | Normal local commands use the Python standard library and do not install runtime dependencies. |
+| Paths | Destination paths are preflighted. Absolute instruction paths, traversal, unsafe instruction filenames, symlink escapes, and outside-repo manifest targets are rejected or ignored. |
+| Discovery | Symlinked directories are skipped, and audit reads known files only when they resolve inside the target repository. |
+| Privacy | Local home paths are redacted from durable output. |
+| GitHub Action | Report paths must be target-relative, stay inside the repository, use forward-slash output paths, and write multi-line values through GitHub environment-file delimiter blocks. The Action sets `PYTHONSAFEPATH=1` so caller repository files cannot shadow the Action library at Python startup. |
+| Training or fixture code | Intentionally vulnerable training, demo, or fixture code is preserved unless remediation is explicitly in scope. |
+| High-risk changes | Material AI/RAG/agent, tool, external-service, auth, secret, data-flow, deployment, or workflow-permission changes require boundary or threat-model evidence plus focused checks. |
 
-Network access is limited to explicit research-refresh workflows and normal
-GitHub Actions setup behavior, not routine local harness generation. Research
-refresh reads only the checked-in fixed allowlist in
-`docs/harness/research/research-sources.json`; it does not search the web, discover
-latest research, or follow unreviewed source expansion. It accepts default-port
-HTTPS public-source URLs only; local files, credentials, localhost,
-private-address targets, private DNS resolutions, and unsafe redirects are
-rejected. Connections are opened to validated public DNS results while
-preserving the original host for TLS verification.
+Network access is not part of routine local harness generation. It is limited
+to explicit research-refresh workflows and normal GitHub Actions setup
+behavior. Research refresh uses only the checked-in allowlist in
+`docs/harness/research/research-sources.json`; it does not search the web,
+discover latest research, or follow unreviewed source expansion. It accepts
+default-port HTTPS public-source URLs only and rejects local files,
+credentials, localhost, private-address targets, private DNS resolutions, and
+unsafe redirects.
 
 ## Effectiveness Boundary
 
-HarnessForge has a proposed evidence contract for real-agent or benchmark
-claims. It keeps structural harness quality separate from measured agent
-effectiveness and defines the minimum review surface before promoting an
-evolved, synthesized, or benchmark-winning harness change.
+HarnessForge can score structure and stored evidence. It cannot prove that a
+specific agent will complete a specific task correctly.
 
-Static readiness can find eval surfaces. It cannot validate them. The
-`effectiveness` command assesses stored evidence only and does not run
-benchmarks or create a score when representative evidence is missing.
+The `effectiveness` command reviews target-contained real-agent or benchmark
+evidence. It does not run benchmarks, synthesize a score from missing evidence,
+or promote an evolved or benchmark-winning harness change without reviewable
+evidence.
 
-See [harness/feedback/effectiveness-eval-contract.md](harness/feedback/effectiveness-eval-contract.md).
+Static readiness can find evaluation surfaces. It cannot validate them. Keep
+structural harness quality separate from measured agent effectiveness.
+
+See
+[harness/feedback/effectiveness-eval-contract.md](harness/feedback/effectiveness-eval-contract.md).
 
 ## Repo-Local Self-Healing
 
 This repository has its own local maintenance workflows. Those workflows are
-repo-local and are not the same thing as the generated harness for other
-repositories.
+repo-local and are not the generated harness for other repositories.
 
 The scheduled workflow in
 [../.github/workflows/harness-self-heal.yml](../.github/workflows/harness-self-heal.yml)
 refreshes research metadata, applies only safe harness updates, runs
 verification, and opens a pull request when changes are detected. It does not
-silently mutate `main`. Fetched titles, headings, and hashes are treated as
-untrusted metadata for human review, not executable instructions. Metadata that
-resembles prompt injection, indirect prompt injection, data poisoning,
-credential-exfiltration instructions, invisible Unicode, or Markdown/HTML
-exfiltration markers is withheld from durable output and recorded as review
-signals.
+silently mutate `main`.
+
+Fetched titles, headings, and hashes are treated as untrusted metadata for
+human review, not executable instructions. Metadata that resembles prompt
+injection, indirect prompt injection, data poisoning, credential-exfiltration
+instructions, invisible Unicode, or Markdown/HTML exfiltration markers is
+withheld from durable output and recorded as review signals.
 
 Research sources are tracked in:
 
@@ -216,6 +246,6 @@ Research sources are tracked in:
 Project-owned source records use
 [harness/research/source-record.schema.json](harness/research/source-record.schema.json)
 and
-[harness/research/source-record-example.json](harness/research/source-record-example.json). They
-are for curated project provenance and stay separate from the fixed
+[harness/research/source-record-example.json](harness/research/source-record-example.json).
+They are for curated project provenance and stay separate from the fixed
 HarnessForge research allowlist.
