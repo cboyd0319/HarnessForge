@@ -140,6 +140,24 @@ class TokenEconomicsTests(unittest.TestCase):
                             {
                                 "type": "item.completed",
                                 "item": {
+                                    "type": "command_execution",
+                                    "command": "sed -n '1,80p' vitest.config.ts",
+                                },
+                            }
+                        ),
+                        json.dumps(
+                            {
+                                "type": "item.completed",
+                                "item": {
+                                    "type": "command_execution",
+                                    "command": "rg configLoader node_modules/vitest -n",
+                                },
+                            }
+                        ),
+                        json.dumps(
+                            {
+                                "type": "item.completed",
+                                "item": {
                                     "type": "tool_call",
                                     "name": "apply_patch",
                                 },
@@ -207,9 +225,9 @@ class TokenEconomicsTests(unittest.TestCase):
             record["trajectory"],
             {
                 "turns": 2,
-                "toolCalls": 7,
-                "fileReads": 3,
-                "searchCalls": 0,
+                "toolCalls": 9,
+                "fileReads": 4,
+                "searchCalls": 1,
                 "editCalls": 2,
                 "verificationRuns": 2,
                 "retries": 0,

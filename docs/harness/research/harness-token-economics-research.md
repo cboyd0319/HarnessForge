@@ -376,9 +376,9 @@ Summary:
 
 | Profile | Repeats | Loaded harness chars | Total visible tokens | Median total | Cached input range | Median duration seconds | Tool calls | File reads | Verification runs | Outcome |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
-| minimal | 3 | 434 | 269,155-378,017 | 352,355 | 226,816-286,976 | 76.572 | 19-26 | 6-11 | 4-6 | 3/3 passed |
-| moderate | 3 | 2,164 | 304,734-353,176 | 306,817 | 209,792-291,968 | 67.195 | 16-23 | 6-12 | 5-6 | 3/3 passed |
-| comprehensive | 3 | 4,079 | 260,553-464,436 | 313,196 | 221,184-396,416 | 84.365 | 16-33 | 8-15 | 4-10 | 3/3 passed |
+| minimal | 3 | 434 | 269,155-378,017 | 352,355 | 226,816-286,976 | 76.572 | 19-26 | 6-11 | 3 | 3/3 passed |
+| moderate | 3 | 2,164 | 304,734-353,176 | 306,817 | 209,792-291,968 | 67.195 | 16-23 | 6-12 | 3 | 3/3 passed |
+| comprehensive | 3 | 4,079 | 260,553-464,436 | 313,196 | 221,184-396,416 | 84.365 | 16-33 | 8-15 | 3 | 3/3 passed |
 
 Human quality review:
 
@@ -398,16 +398,52 @@ Initial interpretation:
   focused UI repair.
 - Moderate had the lowest median total and duration in this React/TypeScript
   batch.
-- Comprehensive had one very long trajectory, which widened the range and
-  raised its median above moderate. It did not improve final quality for this
-  focused UI repair.
+- Comprehensive had one very long trajectory and a middle run that stayed above
+  moderate's median. The extra harness docs did not improve final quality for
+  this focused UI repair.
 - This second external ecosystem strengthens the mixed conclusion. Token cost
   followed trajectory and task framing more than profile label or stored
   harness size alone.
 
 This batch also expanded the Codex JSONL normalizer's verification-command
 recognition for JavaScript/TypeScript checks such as `npm test`, `vitest`,
-`pnpm test`, `yarn test`, `node --test`, and `playwright test`.
+`pnpm test`, `yarn test`, `node --test`, and `playwright test`. A follow-up
+review tightened that matching so reads of files such as `vitest.config.ts` and
+searches under `node_modules/vitest` are not counted as verification runs.
+
+## Bluepeak Trajectory Delta Review
+
+The Bluepeak batch did not show comprehensive as lower than moderate because
+the comprehensive harness text did not shorten the actual repair path.
+
+After correcting the verification counter, all nine runs executed three actual
+`npm test` commands: an initial environment/config failure, a source-failure or
+post-workaround test, and a final passing test. The token difference came from
+the commands around those checks:
+
+| Profile | Median total | Median tool calls | Median file reads | Median searches | Main trajectory shape |
+| --- | ---: | ---: | ---: | ---: | --- |
+| minimal | 352,355 | 21 | 11 | 5 | Less harness context, but more broad orientation and Vite/node_modules diagnosis. |
+| moderate | 306,817 | 23 | 12 | 4 | Enough startup context to proceed, with the shortest median duration despite similar reads. |
+| comprehensive | 313,196 | 21 | 11 | 3 | More startup docs plus one long tooling-environment investigation in repeat 3. |
+
+Comprehensive repeat 1 was the cheapest single Bluepeak run at `260,553`
+visible tokens, so comprehensive was not inherently worse. The expensive tail
+was comprehensive repeat 3: `464,436` visible tokens, `112.653` seconds, `33`
+tool calls, `15` file reads, `5` searches, and repeated Vite/Vitest
+environment inspection before the same one-file repair. Moderate repeat 3
+completed the same task with `304,734` visible tokens, `62.474` seconds, `16`
+tool calls, `6` file reads, and `4` searches.
+
+Interpretation: the comprehensive startup docs added context but did not add
+task-disambiguating information beyond what the focused test and component
+source already supplied. On this task, the harness mechanism under test was not
+"more context"; it was whether routed context avoided wasted trajectory. The
+moderate profile had enough guidance, while comprehensive did not prevent the
+agent from spending extra work on the Vite/Vitest environment. This keeps the
+research conclusion mixed and points the next evidence slice toward larger
+held-out tasks where deeper harness docs can plausibly affect routing,
+ownership, or verification choices.
 
 ## Required Trace Evidence Still Missing
 

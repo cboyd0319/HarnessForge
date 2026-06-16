@@ -329,10 +329,13 @@ by the maintainer.
   `84.365` seconds. The result remains `inconclusive`: moderate was cheapest
   in this React/TypeScript batch, while minimal was cheapest in the external
   pytm batch.
-- Token-economics normalization now counts common JavaScript/TypeScript
-  verification commands including `npm test`, `vitest`, `pnpm test`,
-  `yarn test`, `node --test`, and `playwright test` so non-Python repair
-  trajectories do not undercount verification runs.
+- A Bluepeak trajectory-delta review corrected JavaScript/TypeScript
+  verification matching so config-file reads and `node_modules/vitest` searches
+  do not count as verification runs. The nine Bluepeak records were
+  regenerated; each now records three actual `npm test` executions. The review
+  explains the unexpected comprehensive result: extra startup docs did not
+  shorten this focused UI repair, and comprehensive repeat 3 spent the most
+  work on Vite/Vitest environment inspection.
 - Research refresh now allows normal fetch mode to regenerate stale generated
   lock and inbox files after source allowlist changes while keeping
   `--check` strict about generated-output consistency.
@@ -607,11 +610,11 @@ by the maintainer.
   post-checks passed in all nine targets with
   `npm test -- --run react/tests/trust-ui.test.tsx`; nine normalized records
   were generated under `docs/harness/evidence/token-economics/`.
-  Focused token-economics/local-entrypoint tests passed with 10 tests; full
-  unit discovery passed with 311 tests; compileall, research source check,
-  JSON validation, durable local-path scan, diff hygiene, and self-audit
-  `100/100` passed after adding the JavaScript/TypeScript
-  verification-command regression.
+  Follow-up trajectory review regenerated those records with corrected
+  JavaScript/TypeScript verification matching; all nine now show three actual
+  `npm test` executions. Full unit discovery passed with 311 tests; compileall,
+  research source check, JSON validation, durable local-path scan, diff
+  hygiene, and self-audit `100/100` passed for this correction slice.
 - Current known local verification gap: `pwsh -NoProfile -File ./init.ps1`
   cannot run in this shell because PowerShell command execution fails before
   repo code loads with a .NET `System.IO.FileLoadException`. `pwsh -v` reports
@@ -623,7 +626,6 @@ by the maintainer.
 
 - `current-state.md`
 - `feature_list.json`
-- `docs/roadmap.md`
 - `docs/harness/evidence/evidence-log.md`
 - `docs/harness/evidence/token-economics/codex-external-bluepeak-*-2026-06-16.json`
 - `docs/harness/research/harness-token-economics-research.md`

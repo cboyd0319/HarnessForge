@@ -87,6 +87,6 @@
     "searchCalls": 4,
     "toolCalls": 16,
     "turns": 1,
-    "verificationRuns": 5
+    "verificationRuns": 3
   }
 }

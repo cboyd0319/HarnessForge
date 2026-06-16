@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import copy
 import json
+import re
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any, Mapping
@@ -147,7 +148,7 @@ def _codex_trajectory_summary(events: list[dict[str, Any]]) -> dict[str, Any]:
         ),
         "editCalls": sum(1 for text in tool_events if _matches_any(text, _EDIT_TERMS)),
         "verificationRuns": sum(
-            1 for text in tool_events if _matches_any(text, _VERIFICATION_TERMS)
+            1 for text in tool_events if _is_verification_text(text)
         ),
         "retries": sum(1 for event in events if _is_retry_event(event)),
         "durationSeconds": _duration_seconds(events),
@@ -192,23 +193,28 @@ _SEARCH_TERMS = (
     "tool_search",
 )
 _EDIT_TERMS = ("apply_patch", "edit", "file_change", "write_file", "patch")
-_VERIFICATION_TERMS = (
-    "unittest",
-    "pytest",
-    "vitest",
-    "npm test",
-    "pnpm test",
-    "yarn test",
-    "node --test",
-    "playwright test",
-    "compileall",
-    "check_pins",
-    "refresh_research",
-    "harnessforge audit",
-    "harnessforge verify",
-    "./init.sh",
-    "init.ps1",
+_COMMAND_BOUNDARY = r"(?:^|[\s\"';&|()])"
+_COMMAND_END = r"(?:\s|$)"
+_PYTHON_CMD = r"(?:python(?:3(?:\.\d+)?)?|py)"
+_VERIFICATION_PATTERNS = (
+    re.compile(_COMMAND_BOUNDARY + _PYTHON_CMD + r"\s+-m\s+unittest" + _COMMAND_END),
+    re.compile(_COMMAND_BOUNDARY + _PYTHON_CMD + r"\s+-m\s+pytest" + _COMMAND_END),
+    re.compile(_COMMAND_BOUNDARY + r"pytest" + _COMMAND_END),
+    re.compile(_COMMAND_BOUNDARY + r"(?:npx\s+)?vitest" + _COMMAND_END),
+    re.compile(_COMMAND_BOUNDARY + r"npm\s+test" + _COMMAND_END),
+    re.compile(_COMMAND_BOUNDARY + r"pnpm\s+test" + _COMMAND_END),
+    re.compile(_COMMAND_BOUNDARY + r"yarn\s+test" + _COMMAND_END),
+    re.compile(_COMMAND_BOUNDARY + r"node\s+--test" + _COMMAND_END),
+    re.compile(_COMMAND_BOUNDARY + r"(?:npx\s+)?playwright\s+test" + _COMMAND_END),
+    re.compile(_COMMAND_BOUNDARY + _PYTHON_CMD + r"\s+-m\s+compileall" + _COMMAND_END),
+    re.compile(_COMMAND_BOUNDARY + r"(?:python(?:3(?:\.\d+)?)?\s+)?scripts/check_pins\.py" + _COMMAND_END),
+    re.compile(_COMMAND_BOUNDARY + r"(?:python(?:3(?:\.\d+)?)?\s+)?scripts/refresh_research\.py" + _COMMAND_END),
+    re.compile(_COMMAND_BOUNDARY + r"harnessforge\s+audit" + _COMMAND_END),
+    re.compile(_COMMAND_BOUNDARY + r"harnessforge\s+verify" + _COMMAND_END),
+    re.compile(_COMMAND_BOUNDARY + r"\./init\.sh" + _COMMAND_END),
+    re.compile(_COMMAND_BOUNDARY + r"(?:\.\\)?init\.ps1" + _COMMAND_END),
 )
+_HELP_FLAG_PATTERN = re.compile(r"(?:^|\s)(?:--help|-h)(?:\s|$)")
 
 
 def _is_tool_event(event: Mapping[str, Any]) -> bool:
@@ -259,6 +265,12 @@ def _tool_text(event: Mapping[str, Any]) -> str:
 
 def _matches_any(text: str, terms: tuple[str, ...]) -> bool:
     return any(term in text for term in terms)
+
+
+def _is_verification_text(text: str) -> bool:
+    if _HELP_FLAG_PATTERN.search(text):
+        return False
+    return any(pattern.search(text) for pattern in _VERIFICATION_PATTERNS)
 
 
 def _is_retry_event(event: Mapping[str, Any]) -> bool:
