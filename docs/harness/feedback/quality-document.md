@@ -1,6 +1,6 @@
 # Quality Document
 
-Last Updated: 2026-06-14
+Last Updated: 2026-06-16
 
 Use this as a periodic codebase health snapshot. It is separate from the
 evaluator rubric: the rubric scores one work session, while this document scores
@@ -10,7 +10,7 @@ the repo over time.
 
 | Domain | Grade | Verification Status | Agent Legibility | Key Gaps |
 | --- | --- | --- | --- | --- |
-| CLI package | A | 92 local tests pass | Clear module boundaries | No current cleanup gap |
+| CLI package | A | 285 local tests pass | Clear module boundaries | No current cleanup gap |
 | GitHub Action | A | Local adapter tests, pin checks, and prior hosted Action smoke pass | Action docs present | Manual platform workflow remains a release checkpoint |
 | Harness templates | A | Self-audit is 100/100 and generated update dry run is clean | Templates include state, security, privacy, component, and lifecycle docs | Real agent effectiveness still needs representative task runs |
 | Supply chain | A | Pin checker passes | Exact package pins and SHA-pinned Actions are documented and enforced | Release-time SBOM/provenance remains a decision |
@@ -37,7 +37,7 @@ missing, stale, or vague.
 | Subsystem | Status | Evidence | Next Improvement |
 | --- | --- | --- | --- |
 | Instructions | A | Root instructions and platform routers exist; self-audit instructions domain passes | Keep root instructions map-like |
-| Tools | A | CLI, Action, POSIX, and PowerShell entrypoints are documented and tested locally | Keep shell/tool access least-privilege and sufficient for real work |
+| Tools | A | CLI, Action, and POSIX entrypoints are verified; PowerShell entrypoint is documented with a current local host-runtime gap | Keep shell/tool access least-privilege and sufficient for real work |
 | Environment | A | `pyproject.toml`, CI matrix, component inventory, and dependency policy are current | Keep platform and dependency evidence fresh |
 | State | A | `feature_list.json`, `current-state.md`, and `docs/roadmap.md` are maintained | Keep only one active objective unless explicit multi-agent ownership exists |
 | Feedback | A | Unit tests, pin check, research source check, self-audit, verification matrix, and sensor registry are current | Keep verification commands explicit before adding broader process |
@@ -53,7 +53,7 @@ Track these dimensions at session exit and during periodic cleanup.
 | Current and feature state are accurate | B | `current-state.md`, `feature_list.json`, and `docs/roadmap.md` are maintained during backlog work | Keep state writes limited to the file that owns the changed fact |
 | Complexity and scope stayed minimal | B | Root and generated instructions, change contract, rubric, and operating model now gate assumptions, speculative features, new dependencies, drive-by refactors, and intentional simplification ceilings | Need representative real-agent tasks to prove the guidance reduces rework |
 | Temporary or stale artifacts are removed or documented | A | Local-path scans and diff hygiene are part of verification | Keep scratch reports and generated evidence target-relative |
-| Standard startup path still works | A | `./init.sh` and `init.ps1` are the declared full local entrypoints | Run both before release prep resumes |
+| Standard startup path still works | B | `./init.sh` passed with 285 tests and self-audit `100/100`; local `pwsh` command execution currently fails before repo code loads | Re-run `init.ps1` on a healthy PowerShell host or after local `pwsh` is repaired before publishing release evidence |
 
 ## Benchmark Or Task Evidence
 

@@ -2,9 +2,10 @@
 
 Status: live
 
-REVIEW REQUIRED: update owner, source, purpose, retirement condition, and
-review cadence whenever a check is added, removed, renamed, or promoted into a
-release, sync, or self-heal gate.
+This repo-local registry has been reviewed. Generated target registries start
+with `REVIEW REQUIRED`; this local file uses reviewed entries. Update owner,
+source, purpose, retirement condition, and review cadence whenever a check is
+added, removed, renamed, or promoted into a release, sync, or self-heal gate.
 
 This registry records the checks and signals HarnessForge uses for local
 completion, release prep, and recurring maintenance. It is not a command
@@ -26,7 +27,7 @@ runner. Use `verification-matrix.md` to choose checks for a change and
 | `docs/roadmap.md` | README start-here table, `current-state.md` | Tracks accepted roadmap and backlog scope so product decisions do not live only in chat or research notes. | HarnessForge maintainer | Replace if roadmap state moves into a stronger issue tracker or generated planning contract. | Brainstorm acceptance, backlog reshaping, release-prep scope changes |
 | `docs/harness/authoritative-facts.md` | Harness Maintenance Optimization | Routes fact ownership and docs updates so small changes do not require broad harness doc fan-out. | HarnessForge maintainer | Replace if report/audit can fully derive docs routing from structured metadata. | Before updating more than one durable doc or state file for routine changes |
 | `./init.sh` | POSIX root entrypoint | Runs the local macOS/Linux verification contract. | HarnessForge maintainer | Replace if POSIX support or entrypoint policy changes. | End of non-trivial slices and release prep |
-| `pwsh -NoProfile -File ./init.ps1` | Windows/PowerShell root entrypoint | Runs the local Windows-compatible verification contract from PowerShell. | HarnessForge maintainer | Replace if Windows support or entrypoint policy changes. | End of non-trivial slices and release prep |
+| `pwsh -NoProfile -File ./init.ps1` | Windows/PowerShell root entrypoint | Runs the Windows-compatible verification contract from PowerShell; current local macOS `pwsh` command execution is blocked before repo code by a host .NET assembly-load error. | HarnessForge maintainer | Replace if Windows support or entrypoint policy changes. | Release prep on a healthy PowerShell host or after local `pwsh` is repaired |
 
 ## Agent-Oriented Failure Feedback
 

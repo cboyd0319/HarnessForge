@@ -4,10 +4,11 @@ Last Updated: 2026-06-16 UTC
 
 ## Current Objective
 
-All accepted pre-release backlog and RunHaven-derived product buildout items
-are implemented. Release prep can resume next. Any additional RunHaven or
-sibling-repo quality passes are release-prep field evidence, not open backlog
-blockers.
+Repo cleanup and docs accuracy pass is complete when the working tree is clean,
+docs match the current product state, local artifacts are removed, verification
+is recorded, and the result is pushed to `main`. Release prep resumes next.
+Any additional RunHaven or sibling-repo quality passes are release-prep field
+evidence, not open backlog blockers.
 
 ## Product State
 
@@ -125,127 +126,46 @@ blockers.
 
 ## Trusted Verification
 
-- `PYTHONPATH=src:. python3 -m unittest discover -s tests` passed with 266 tests.
-- `PYTHONPATH=src:. python3 scripts/check_pins.py --root .` passed.
-- `PYTHONPATH=src:. python3 scripts/refresh_research.py --root . --check`
-  passed.
-- `PYTHONPATH=src:. python3 scripts/refresh_public_repo_corpus.py` passed.
-- `PYTHONPATH=src:. python3 -m harnessforge corpus --min-score 90` passed
-  with 13 fixtures and minimum score `100`.
-- `PYTHONPATH=src:. python3 -m harnessforge audit --target . --min-score 100`
-  passed at `100/100`.
-- `PYTHONPATH=src:. python3 -m harnessforge report --target . --since HEAD --json`
-  produced parseable JSON with audit `100`, feature-state `aligned`,
-  observability `strong`, and index-adapter status `tool_available`.
-- After locking the RunHaven-derived next tasks, JSON validation, Markdown
-  link check, `git diff --check`, self-audit, and report JSON smoke passed.
-  The report showed audit `100`, feature-state `aligned`, docs fan-out
-  `not_required`, readiness `warning`, and maturity `generated` with next
-  level `reviewed`.
-- After implementing structured high-risk acceptance, focused CLI/generator/
-  Action/maturity tests passed with 172 tests; full unit discovery passed with
-  266 tests; compileall passed; pin check passed; `git diff --check` passed;
-  self-audit stayed `100/100`; report JSON smoke showed readiness `ready`,
-  review-required `0`, accepted high-risk surfaces `6`, docs fan-out `warning`,
-  maturity `reviewed`, and audit `100`. `python3 -m ruff check .` could not
-  run because Ruff is not installed in the active interpreter.
-- After implementing review finalization and destructive confirmation, focused
-  CLI and Action tests passed; full unit discovery passed with 275 tests;
-  compileall passed; pin check passed; JSON validation passed; `git diff
-  --check` passed; self-audit stayed `100/100`; report JSON smoke showed audit
-  `100`, readiness `ready`, docs fan-out `warning`, and maturity `reviewed`;
-  `finalize-review --target . --json` produced parseable dry-run JSON with no
-  missing high-risk acceptance flag.
-- After implementing structured review status fields, focused readiness,
-  report, finalize-review, and Action tests passed; broader CLI/Action/
-  generator/maturity tests passed with 181 tests; compileall passed; JSON
-  validation passed; `git diff --check` passed; self-audit stayed `100/100`;
-  report JSON smoke showed audit `100`, readiness `ready`,
-  `reviewStatusSummary` with `0` pending and `10` accepted advisory surfaces,
-  and maturity `reviewed`.
-- After implementing split-state migration, focused migration and audit tests
-  passed; related CLI/Action/generated-audit suites passed with 184 tests; full
-  unit discovery passed with 281 tests; compileall passed; pin check passed;
-  JSON validation passed; `git diff --check` passed; self-audit stayed
-  `100/100`; `migrate-state --target . --json` produced parseable dry-run JSON
-  with zero writes; report JSON smoke showed audit `100`, readiness `ready`,
-  docs fan-out `warning`, `0` pending review surfaces, and maturity `reviewed`;
-  release-check JSON smoke returned the expected strict-gate `blocked` verdict
-  because current run-mode verify evidence is not committed; public-repo corpus
-  stayed at 13 fixtures with minimum score `100`.
-- After implementing skill-wiring validation, focused CLI/Action tests passed;
-  related CLI/Action/generated-audit/maturity suites passed with 188 tests;
-  full unit discovery passed with 282 tests; compileall passed; pin check
-  passed; JSON validation passed; `git diff --check` passed; self-audit stayed
-  `100/100`; report JSON smoke showed `skillWiring.status` as `wired` with
-  `AGENTS.md` as the instruction route; release-check JSON smoke showed the
-  `skill-wiring` gate passed while the overall release verdict remained
-  blocked only because current run-mode verify evidence is not committed.
-- `PYTHONPATH=src:. python3 -m harnessforge release-check --target . --since HEAD --json`
-  produced parseable JSON and returned the expected strict-gate blocked exit.
-- `PYTHONPATH=src:. python3 -m harnessforge quickstart --target . --interactive --json`
-  produced parseable JSON.
-- `./init.sh` passed with 265 tests and self-audit `100/100`.
-- `pwsh -NoProfile -File ./init.ps1` passed with 265 tests and self-audit
-  `100/100`.
-- `git diff --check`, compileall, JSON validation, durable-doc local-path
-  scan, and stale artifact cleanup passed.
-- Final backlog completion verification passed: affected CLI/Action/generator/
-  corpus/report/maturity suite passed with 198 tests; full unit discovery
-  passed with 285 tests; `./init.sh` passed with 285 tests and self-audit
-  `100/100`; compileall, pin check, research source check, public corpus
-  metadata check, JSON validation, `git diff --check`, durable-doc local-path
-  scan, self-audit `100/100`, report JSON smoke, expected-block release-check
-  JSON smoke, and offline corpus quality gate with 14 fixtures at minimum score
-  `100` passed.
-- `pwsh -NoProfile -File ./init.ps1` could not run in the local shell because
-  PowerShell command execution fails before repo code loads with a .NET
-  `System.IO.FileLoadException`. `pwsh -v` reports PowerShell 7.6.2, but even
-  `pwsh -NoProfile -NonInteractive -Command 'Write-Output ok'` fails the same
-  way. Record this as a local PowerShell runtime verification gap, not a
-  HarnessForge script failure.
+- Latest completed full verification: affected CLI/Action/generator/corpus/
+  report/maturity suite passed with 198 tests; full unit discovery passed with
+  285 tests; `./init.sh` passed with 285 tests and self-audit `100/100`;
+  compileall, pin check, research source check, public corpus metadata check,
+  JSON validation, `git diff --check`, durable-doc local-path scan, self-audit
+  `100/100`, report JSON smoke, expected-block release-check JSON smoke, and
+  offline corpus quality gate with 14 fixtures at minimum score `100` passed.
+- Current cleanup/docs pass verification: `./init.sh` passed with 285 tests and
+  self-audit `100/100`; `harnessforge corpus --min-score 90` passed with 14
+  fixtures at minimum score `100`; report JSON smoke showed schema
+  `harnessforge.report.v1`, audit `100`, readiness `ready`, skill wiring
+  `wired`, and `0` unresolved review-work items; release-check JSON smoke
+  returned the expected strict-gate blocked exit for missing current run-mode
+  verify evidence; JSON validation, stale-doc scans, artifact scans, and `git
+  diff --check` passed.
+- Current cleanup pass removed ignored local artifacts: `__pycache__`, `*.pyc`,
+  `.DS_Store`, `.pytest_cache`, `htmlcov`, and `.coverage` if present.
+- Current known local verification gap: `pwsh -NoProfile -File ./init.ps1`
+  cannot run in this shell because PowerShell command execution fails before
+  repo code loads with a .NET `System.IO.FileLoadException`. `pwsh -v` reports
+  PowerShell 7.6.2, but even `pwsh -NoProfile -NonInteractive -Command
+  'Write-Output ok'` fails the same way. This is a local PowerShell runtime
+  gap, not evidence of a HarnessForge script failure.
 
 ## Touched Surfaces
 
 - `current-state.md`
 - `docs/roadmap.md`
+- `docs/harness/feedback/quality-document.md`
+- `docs/harness/feedback/sensor-registry.md`
 - `docs/harness/evidence/evidence-log.md`
-- `feature_list.json`
-- `docs/action.md`
-- `docs/capabilities.md`
-- `docs/usage.md`
-- `docs/harness/boundaries/component-inventory.md`
-- `docs/harness/evidence/first-agent-review.json`
-- `docs/harness/feedback/report-json-contract.md`
-- `docs/harness/feedback/verification-matrix.md`
-- `docs/harness/feedback/verify-json-contract.md`
-- `docs/harness/manifest.json`
-- `docs/harness/research/source-record.schema.json`
-- `docs/harness/research/source-record-example.json`
-- `docs/harness/state/first-agent-task.md`
-- `docs/harness/state/roadmap.md`
-- `.agents/skills/harness/`
-- `scripts/refresh_public_repo_corpus.py`
-- `src/harnessforge/assessment/`
-- `src/harnessforge/core/`
-- `src/harnessforge/evidence/high_risk_acceptance.py`
-- `src/harnessforge/project/finalize_review.py`
-- `src/harnessforge/project/state_migration.py`
-- `src/harnessforge/project/readiness.py`
-- `src/harnessforge/assessment/audit.py`
-- `src/harnessforge/evidence/skill_wiring.py`
-- `src/harnessforge/evidence/release_check.py`
-- `src/harnessforge/evidence/report.py`
-- `src/harnessforge/evidence/verify_evidence.py`
-- `src/harnessforge/generation/`
-- `src/harnessforge/project/`
-- `src/harnessforge/project/verify.py`
-- `src/harnessforge/`
-- `tests/`
+- ignored local cache artifacts removed from the working tree
 
 ## Blockers
 
-- No known blockers.
+- No product blockers.
+- Local PowerShell command execution is blocked by a host .NET assembly-load
+  error before repo code runs; use direct Python/POSIX verification until the
+  local `pwsh` runtime is repaired or run `init.ps1` on a healthy Windows or
+  PowerShell host.
 
 ## Next Step
 

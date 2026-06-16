@@ -1,6 +1,6 @@
 # Roadmap
 
-Last reviewed: 2026-06-15 UTC.
+Last reviewed: 2026-06-16 UTC.
 
 This roadmap captures accepted product improvements and candidate follow-up
 ideas. It is separate from
@@ -26,10 +26,10 @@ The main boundary remains unchanged:
 
 ## Current Release Boundary
 
-Release prep is paused until the RunHaven-derived review-finalization work
-below is complete. The previous pre-release backlog was closed, but the
-RunHaven field pass exposed product gaps that should be fixed before release
-prep resumes.
+Release prep can resume. The accepted pre-release backlog and RunHaven-derived
+review-finalization work are complete. New field-test findings should stay as
+release-prep evidence or candidate roadmap items until maintainers explicitly
+accept them as product work.
 
 HarnessForge is still alpha/pre-release, has not been deployed, and has no
 external users. Accepted backlog work should optimize for the clean current
@@ -364,8 +364,8 @@ Surface impact:
   instruction routers, CI workflow, multiple Containerfiles, current-state,
   first-agent evidence, high-risk acceptance evidence, and report/maturity
   expectations.
-- Release surface: release prep remains blocked until this flow is implemented
-  or explicitly deferred by maintainers.
+- Release surface: implemented; release prep can resume with real-repo field
+  quality passes as release evidence.
 
 Done when:
 
