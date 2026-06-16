@@ -63,4 +63,4 @@ echo "== Research source check =="
 "$PYTHON_BIN" scripts/refresh_research.py --root . --check
 
 echo "== Self audit =="
-"$PYTHON_BIN" -m harnessforge audit --target . --min-score 85
+"$PYTHON_BIN" -m harnessforge audit --target . --min-score 100

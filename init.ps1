@@ -102,4 +102,4 @@ Write-Host "== Research source check =="
 Invoke-Native $PythonBin scripts/refresh_research.py --root . --check
 
 Write-Host "== Self audit =="
-Invoke-Native $PythonBin -m harnessforge audit --target . --min-score 85
+Invoke-Native $PythonBin -m harnessforge audit --target . --min-score 100

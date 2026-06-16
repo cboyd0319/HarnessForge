@@ -46,7 +46,7 @@ Focused checks:
 ```bash
 PYTHONPATH=src:. python3 -m unittest discover -s tests
 PYTHONPATH=src:. python3 scripts/check_pins.py --root .
-PYTHONPATH=src:. python3 -m harnessforge audit --target . --min-score 85
+PYTHONPATH=src:. python3 -m harnessforge audit --target . --min-score 100
 PYTHONPATH=src:. python3 scripts/refresh_research.py --root . --check
 ```
 

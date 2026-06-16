@@ -4,11 +4,10 @@ Last Updated: 2026-06-16 UTC
 
 ## Current Objective
 
-Repo cleanup and docs accuracy pass is complete when the working tree is clean,
-docs match the current product state, local artifacts are removed, verification
-is recorded, and the result is pushed to `main`. Release prep resumes next.
-Any additional RunHaven or sibling-repo quality passes are release-prep field
-evidence, not open backlog blockers.
+Repo-local `.github/` inspection and repair is complete when live workflows,
+Copilot routing, PR template guidance, manifest snippets, and recurring
+verification gates are checked; focused and full local verification pass; and
+any commit or push decision is explicit. Release prep resumes next.
 
 ## Product State
 
@@ -123,6 +122,14 @@ evidence, not open backlog blockers.
   verification guidance, and the live manifest are updated for compact verify
   evidence, review-work reporting, the report JSON contract, and the
   RunHaven-shaped fixture.
+- Repo-local `.github/` surfaces were rechecked. The Copilot router and PR
+  template remain short, portable, and repo-owned. CI now compiles `scripts`,
+  runs the research ledger check, uses job timeouts, and gates this repo at
+  self-audit score `100`. The scheduled self-heal workflow now passes `--yes`
+  for non-interactive writes, verifies the research ledger, stages
+  `.agents/skills/harness`, fails on unstaged or untracked output, and uses
+  signed-off commits. Generated target-repo templates still keep the generic
+  audit default and do not receive repo-local self-healing.
 
 ## Trusted Verification
 
@@ -141,6 +148,11 @@ evidence, not open backlog blockers.
   returned the expected strict-gate blocked exit for missing current run-mode
   verify evidence; JSON validation, stale-doc scans, artifact scans, and `git
   diff --check` passed.
+- Current `.github/` pass verification: `tests.test_pins` passed with 21
+  tests; `tests.test_generate_audit tests.test_local_entrypoints` passed with
+  63 tests; full unit discovery passed with 287 tests; compileall, pin check,
+  research source check, JSON validation, self-audit `100/100`, and `./init.sh`
+  passed.
 - Current cleanup pass removed ignored local artifacts: `__pycache__`, `*.pyc`,
   `.DS_Store`, `.pytest_cache`, `htmlcov`, and `.coverage` if present.
 - Current known local verification gap: `pwsh -NoProfile -File ./init.ps1`
@@ -153,11 +165,15 @@ evidence, not open backlog blockers.
 ## Touched Surfaces
 
 - `current-state.md`
-- `docs/roadmap.md`
-- `docs/harness/feedback/quality-document.md`
+- `.github/workflows/ci.yml`
+- `.github/workflows/harness-self-heal.yml`
+- `AGENTS.md`
+- `init.sh`
+- `init.ps1`
+- `tests/test_pins.py`
+- `docs/harness/manifest.json`
 - `docs/harness/feedback/sensor-registry.md`
 - `docs/harness/evidence/evidence-log.md`
-- ignored local cache artifacts removed from the working tree
 
 ## Blockers
 
@@ -169,5 +185,6 @@ evidence, not open backlog blockers.
 
 ## Next Step
 
-Resume release prep. Start with release evidence, packaging/publish checks, and
-real-repo field quality passes as release-prep evidence.
+Review the final diff, then commit and push only if requested. Otherwise resume
+release prep with release evidence, packaging/publish checks, and real-repo
+field quality passes as release-prep evidence.

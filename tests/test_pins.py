@@ -515,6 +515,19 @@ class PinCheckTests(unittest.TestCase):
         self.assertIn("github.event.pull_request.number || github.ref", workflow)
         self.assertIn("cancel-in-progress: true", workflow)
 
+    def test_ci_matches_local_verification_gate_shape(self) -> None:
+        root = Path(__file__).resolve().parents[1]
+        workflow = (root / ".github/workflows/ci.yml").read_text(encoding="utf-8")
+
+        self.assertIn("timeout-minutes: 20", workflow)
+        self.assertIn("timeout-minutes: 30", workflow)
+        self.assertIn("python -m compileall scripts src tests", workflow)
+        self.assertIn("python scripts/refresh_research.py --root . --check", workflow)
+        self.assertIn(
+            "python -m harnessforge audit --target . --min-score 100", workflow
+        )
+        self.assertIn('min-score: "100"', workflow)
+
     def test_ci_keeps_platform_checks_manual(self) -> None:
         root = Path(__file__).resolve().parents[1]
         workflow = (root / ".github/workflows/ci.yml").read_text(encoding="utf-8")
@@ -543,6 +556,7 @@ class PinCheckTests(unittest.TestCase):
             "CLAUDE.md",
             "GEMINI.md",
             ".github/copilot-instructions.md",
+            ".agents/skills/harness",
             "current-state.md",
             "feature_list.json",
             "pins.toml",
@@ -551,6 +565,27 @@ class PinCheckTests(unittest.TestCase):
         ):
             with self.subTest(path=path):
                 self.assertIn(path, git_add_line)
+
+    def test_self_heal_uses_confirmed_signed_reviewable_writes(self) -> None:
+        root = Path(__file__).resolve().parents[1]
+        workflow = (root / ".github/workflows/harness-self-heal.yml").read_text(
+            encoding="utf-8"
+        )
+
+        self.assertIn(
+            "python -m harnessforge update --target . --apply --yes --agent-file AGENTS.md",
+            workflow,
+        )
+        self.assertIn("python scripts/refresh_research.py --root . --check", workflow)
+        self.assertIn(
+            "python -m harnessforge audit --target . --min-score 100", workflow
+        )
+        self.assertIn("git diff --name-only --exit-code", workflow)
+        self.assertIn("git ls-files --others --exclude-standard", workflow)
+        self.assertIn(
+            'git commit -s -m "docs(harness): refresh self-healing research"',
+            workflow,
+        )
 
 
 def _multiline_run_first_commands(text: str) -> list[tuple[int, str]]:
