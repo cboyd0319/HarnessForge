@@ -26,9 +26,10 @@ The main boundary remains unchanged:
 
 ## Current Release Boundary
 
-Release prep can resume after the current commit. The accepted pre-release
-backlog is closed; candidate ideas below need a new maintainer decision before
-they become release-blocking work.
+Release prep is paused until the RunHaven-derived review-finalization work
+below is complete. The previous pre-release backlog was closed, but the
+RunHaven field pass exposed product gaps that should be fixed before release
+prep resumes.
 
 HarnessForge is still alpha/pre-release, has not been deployed, and has no
 external users. Accepted backlog work should optimize for the clean current
@@ -287,6 +288,93 @@ The first-agent lifecycle should preserve initialization as its own phase. A
 newly generated harness should ask the first agent to confirm runnable startup,
 at least one trustworthy verification path, current progress visibility, and
 project-specific source-of-truth routing before unrelated feature work.
+
+### RunHaven-Derived Review Finalization Flow
+
+Status: accepted as the next product buildout before release prep.
+
+The RunHaven harness overhaul showed that several correct target-repo actions
+were still manual even though HarnessForge had enough structure to guide or
+automate them. HarnessForge should provide a safe review-finalization flow that
+keeps repo-owned docs authoritative while reducing hand-written harness
+maintenance.
+
+Accepted behavior:
+
+- Detect split or stale state contracts such as `progress.md` plus
+  `session-handoff.md` and offer a safe migration to `current-state.md`.
+- Add a review-finalization command or explicit mode that can retire the
+  first-agent task, update `first-agent-review.json`, record accepted
+  high-risk surfaces, and show exactly what changed.
+- Generate and consume structured high-risk surface acceptance evidence for
+  instruction routers, CI/workflow files, container runtime files, agent
+  skills, hooks, environment templates, MCP configs, and other governance
+  surfaces.
+- Wire target-side high-risk acceptance evidence into readiness, report,
+  release-check, Action summaries, and maturity scoring.
+- Replace raw marker-string review detection with structured fields and
+  machine status values such as `review_required`, `reviewed`, `retired`,
+  and `accepted_advisory`.
+- Provide a safe manifest metadata refresh for reviewed target-owned generated
+  files without rewriting project-owned prose.
+- Validate repo-local harness skill wiring, reference paths, trigger text, and
+  first-agent status in generated and enhanced repositories.
+- Capture compact verification evidence from known command results into
+  `current-state.md`, `docs/harness/evidence/evidence-log.md`, or target
+  evidence JSON without pasting raw logs.
+- Separate advisory detected high-risk inventory from unresolved actionable
+  review work in human and JSON report output.
+- Publish or document the stable report JSON schema fields used by downstream
+  tools and Action summaries.
+
+Boundaries:
+
+- Default `inspect`, `report`, `audit`, `index`, `sync --check`, and dry-run
+  flows remain read-only.
+- Target-side finalization writes require an explicit command or flag and must
+  stay target-contained.
+- HarnessForge must not make itself canonical for a target repo after initial
+  generation unless the repo owner opts into the CLI or Action as a recurring
+  gate.
+- Existing project-owned instruction files, workflows, scripts, and docs
+  remain project-owned. HarnessForge can propose or record reviewed evidence;
+  it cannot silently claim ownership.
+- No target command execution, dependency installation, workflow creation,
+  push, PR, credential action, or remote Action adoption happens without
+  explicit opt-in.
+
+Surface impact:
+
+- Local repo harness: track this as the active pre-release objective and keep
+  the product boundary clear.
+- Generated target harness: update templates for first-agent review evidence,
+  source-record status values, current-state migration guidance, and harness
+  skill validation.
+- CLI runtime: add the finalization command or mode, state migration planning,
+  evidence writing, manifest refresh, and clearer report fields.
+- Existing project files: preserve existing owner files unless the user
+  explicitly approves applying a reviewed patch.
+- GitHub Action: surface the same readiness, maturity, and high-risk
+  acceptance state in summaries and outputs; do not write target files unless
+  the Action input explicitly selects a write-capable command.
+- Optional workflow scaffolds: no default change.
+- Tests and fixture corpus: add a RunHaven-shaped fixture with root
+  instruction routers, CI workflow, multiple Containerfiles, current-state,
+  first-agent evidence, high-risk acceptance evidence, and report/maturity
+  expectations.
+- Release surface: release prep remains blocked until this flow is implemented
+  or explicitly deferred by maintainers.
+
+Done when:
+
+- a target repo can move from generated/pending review to reviewed maturity
+  using target-contained evidence;
+- RunHaven-style high-risk surfaces no longer require manual JSON invention;
+- false-positive review markers from schema vocabulary are gone;
+- state migration, first-agent retirement, manifest refresh, skill wiring
+  validation, and evidence capture have focused tests;
+- report, release-check, Action summary, and corpus fixtures agree on
+  advisory versus actionable review state.
 
 ### Feature-State Gate And Scope Surface
 
@@ -830,22 +918,30 @@ Implemented shape:
 
 ## Suggested Build Order
 
-1. Keep the generated target wording advisory unless the repo owner opts into
+1. Implement structured high-risk surface acceptance evidence and update
+   readiness, report, release-check, Action summaries, and maturity scoring to
+   consume it.
+2. Replace raw marker-string review detection with structured status fields and
+   machine status values.
+3. Add the review-finalization command or mode for first-agent retirement,
+   high-risk acceptance evidence, compact verification evidence, and manifest
+   metadata refresh.
+4. Add split-state migration planning and optional safe application for
+   `progress.md` plus `session-handoff.md` to `current-state.md`.
+5. Add generated and enhanced harness skill-wiring validation.
+6. Add the RunHaven-shaped fixture to the public-repo quality corpus and assert
+   the reviewed maturity/report behavior.
+7. Re-run real-repo quality passes against RunHaven and selected sibling repos.
+8. Resume release prep only after the above is complete or explicitly deferred
+   by maintainers.
+9. Keep the generated target wording advisory unless the repo owner opts into
    the Action, and continue quality passes against real repositories.
-2. Keep the pinned public-repo quality corpus and generated-artifact scorer
+10. Keep the pinned public-repo quality corpus and generated-artifact scorer
    green as quality and detection gates evolve.
-3. Expand `harnessforge report` with policy preset status. Done.
-4. Add evidence-gated feature-state and deeper instruction-quality reporting
-   to the generated-harness quality scorer. Done for report/release-check and
-   enhance review output.
-5. Design the optional SBOM adapter before adding any SBOM generation behavior.
-   Done for read-only reporting; generation remains future explicit opt-in.
-6. Add expanded policy presets. Done for the initial blueprint-backed catalog.
-7. Design the interactive quickstart/init UX once the underlying decisions are
-   stable. Done for the reproducible JSON decision plan and guarded TTY prompt.
-8. Reorganize `src/harnessforge/` and run focused import, CLI, Action, and
-   generator checks. Done for the package split across assessment, core,
-   project, generation, evidence, and top-level entrypoints.
+11. Previously completed: policy preset report status, evidence-gated
+   feature-state and instruction-quality reporting, read-only SBOM adapter
+   status, expanded policy presets, interactive quickstart decision plan, and
+   source package reorganization.
 
 ## Rejected Defaults
 

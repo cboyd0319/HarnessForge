@@ -4,9 +4,11 @@ Last Updated: 2026-06-16 UTC
 
 ## Current Objective
 
-Docs and source reorganization is complete. Resume from a clean organized
-docs/harness and `src/harnessforge/` boundary, then commit and move back to
-release prep.
+RunHaven field testing exposed review-finalization gaps that are now accepted
+as the next product buildout. Release prep stays paused until structured
+high-risk surface acceptance, review finalization, state migration, manifest
+refresh, skill-wiring validation, and related report/maturity fixes are
+implemented or explicitly deferred by maintainers.
 
 ## Product State
 
@@ -71,6 +73,12 @@ release prep.
   and correctly scores this repo's roadmap router against `docs/roadmap.md`.
 - The accepted pre-release backlog is closed. Optional package/release evidence
   imports remain release-prep decisions, not current buildout blockers.
+- RunHaven's manual harness repair exposed accepted next tasks: target-side
+  high-risk review evidence, a review-finalization command or mode, split-state
+  migration to `current-state.md`, structured review status values, manifest
+  metadata refresh, harness skill-wiring validation, compact verification
+  evidence capture, clearer advisory-versus-actionable report output, and a
+  RunHaven-shaped regression fixture.
 
 ## Trusted Verification
 
@@ -86,6 +94,11 @@ release prep.
 - `PYTHONPATH=src:. python3 -m harnessforge report --target . --since HEAD --json`
   produced parseable JSON with audit `100`, feature-state `aligned`,
   observability `strong`, and index-adapter status `tool_available`.
+- After locking the RunHaven-derived next tasks, JSON validation, Markdown
+  link check, `git diff --check`, self-audit, and report JSON smoke passed.
+  The report showed audit `100`, feature-state `aligned`, docs fan-out
+  `not_required`, readiness `warning`, and maturity `generated` with next
+  level `reviewed`.
 - `PYTHONPATH=src:. python3 -m harnessforge release-check --target . --since HEAD --json`
   produced parseable JSON and returned the expected strict-gate blocked exit.
 - `PYTHONPATH=src:. python3 -m harnessforge quickstart --target . --interactive --json`
@@ -98,7 +111,10 @@ release prep.
 
 ## Touched Surfaces
 
+- `current-state.md`
 - `docs/roadmap.md`
+- `docs/harness/evidence/evidence-log.md`
+- `feature_list.json`
 - `docs/action.md`
 - `docs/capabilities.md`
 - `docs/usage.md`
@@ -122,4 +138,5 @@ release prep.
 
 ## Next Step
 
-Commit the backlog-closure and reorganization changes, then begin release prep.
+Implement the RunHaven-derived review-finalization buildout from
+`docs/roadmap.md` before release prep resumes.
