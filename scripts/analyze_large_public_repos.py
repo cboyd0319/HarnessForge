@@ -631,9 +631,10 @@ def cross_repo_findings(results: list[dict[str, Any]]) -> list[dict[str, str]]:
             {
                 "code": "file_discovery_priority",
                 "message": (
-                    "file coverage is now visible, and sampled large repos still "
-                    "show budget-limited categories; improve deterministic "
-                    "priority ordering before representative source/test scanning."
+                    "file coverage now distinguishes eligible from intentionally "
+                    "skipped files, and some sampled large repos still show "
+                    "budget-limited eligible categories; improve deeper "
+                    "deterministic ranking for Kubernetes-scale scans."
                 ),
             }
         )
@@ -745,14 +746,14 @@ def format_markdown_report(payload: dict[str, Any]) -> str:
             "",
             "## Repository Results",
             "",
-            "| Repo | Status | Stack | Tracked | Scanned | Coverage | Components | Nested Plan | Top Gaps |",
-            "| --- | --- | --- | ---: | ---: | --- | ---: | --- | --- |",
+            "| Repo | Status | Stack | Tracked | Eligible | Scanned | Skipped | Coverage | Components | Nested Plan | Top Gaps |",
+            "| --- | --- | --- | ---: | ---: | ---: | ---: | --- | ---: | --- | --- |",
         ]
     )
     for repo in payload["repositories"]:
         if repo["status"] != "analyzed":
             lines.append(
-                f"| `{repo['id']}` | `{repo['status']}` | n/a | 0 | 0 | n/a | 0 | n/a | "
+                f"| `{repo['id']}` | `{repo['status']}` | n/a | 0 | 0 | 0 | 0 | n/a | 0 | n/a | "
                 f"{repo['qualityGaps'][0]['message']} |"
             )
             continue
@@ -760,7 +761,9 @@ def format_markdown_report(payload: dict[str, Any]) -> str:
         lines.append(
             f"| `{repo['id']}` | `analyzed` | `{repo['detected']['stack']}` | "
             f"{repo['trackedFileCount']} | "
+            f"{repo['fileCoverage'].get('scanEligibleFileCount') or 'unknown'} | "
             f"{repo['indexSummary']['fileCount']} | "
+            f"{repo['fileCoverage'].get('skippedFileCount', 0)} | "
             f"`{repo['fileCoverage']['status']}` | "
             f"{repo['detected']['componentCount']} | "
             f"{repo['nestedInstructionPlan']['candidateCount']} candidates | "
@@ -789,14 +792,31 @@ def file_coverage_summary(file_coverage: dict[str, Any]) -> dict[str, Any]:
         for category in file_coverage["categories"]
         if category["budgetLimited"]
     ]
+    skipped_files = sum(
+        category.get("skippedFiles", 0)
+        for category in file_coverage["categories"]
+    )
     return {
         "schemaVersion": file_coverage["schemaVersion"],
         "inventorySource": file_coverage["inventorySource"],
         "scannedFileCount": file_coverage["scannedFileCount"],
         "totalFileCount": file_coverage["totalFileCount"],
+        "scanEligibleFileCount": file_coverage.get("scanEligibleFileCount"),
+        "skippedFileCount": skipped_files,
         "coverageComplete": file_coverage["coverageComplete"],
         "status": "complete" if file_coverage["coverageComplete"] else "budget_limited",
         "budgetLimitedCategories": budget_limited[:12],
+        "categorySummary": [
+            {
+                "id": category["id"],
+                "scannedFiles": category["scannedFiles"],
+                "totalFiles": category["totalFiles"],
+                "scanEligibleFiles": category.get("scanEligibleFiles"),
+                "skippedFiles": category.get("skippedFiles", 0),
+                "budgetLimited": category["budgetLimited"],
+            }
+            for category in file_coverage["categories"]
+        ],
     }
 
 

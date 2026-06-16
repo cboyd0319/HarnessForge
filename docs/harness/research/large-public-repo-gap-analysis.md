@@ -81,15 +81,17 @@ Definition of done:
 Verification: the 2026-06-16 field refresh across Kubernetes, VS Code, and
 Bazel shows dry-run generation using the requested 20,000-file scan limit for
 all three repositories. Remaining cross-repo findings are nested instruction
-planning and deterministic file-discovery priority ordering.
+planning and deeper deterministic file-discovery ranking for very large
+eligible file sets.
 
 ### 2. File Discovery Needs Large-Repo Coverage Signals
 
 Severity: high.
 
 Observed: Kubernetes has 30,513 tracked files and still hit the 20,000-file
-scan limit. The current scanner reports truncation, but it cannot yet tell the
-user which high-signal categories were definitely covered.
+scan limit. VS Code and Bazel show why tracked-file counts alone are not enough:
+large repositories can contain tracked files under directories HarnessForge
+intentionally excludes from normal scans, and symlinks are skipped for safety.
 
 Implemented deterministic fix:
 
@@ -101,15 +103,28 @@ Implemented deterministic fix:
   count, total tracked count when known, inventory source, category coverage,
   omitted examples, and warnings.
 - The GitHub Action report summary includes file coverage.
-- The large-public-repo field analyzer records file-coverage status and reports
-  `file_coverage_budget_limited` when a capped scan misses tracked categories.
+- The large-public-repo field analyzer records file-coverage status,
+  scan-eligible counts, intentionally skipped tracked-file counts, category
+  summaries, and `file_coverage_budget_limited` when a capped scan misses
+  scan-eligible categories.
 - Keep target-relative paths only.
+
+Implemented deterministic priority slice:
+
+- `detect_project` now adds root instruction/runtime files, workflow files,
+  harness docs, source-of-truth docs, specs, agent skills, and devcontainer
+  files through bounded priority passes before the general source/test walk.
+- `fileCoverage.categories[*]` now separates `scanEligibleFiles` from
+  `skippedFiles`, so ignored build directories and symlinks do not masquerade
+  as budget misses.
 
 Remaining optimization:
 
-- Split future discovery into deterministic priority passes:
-  root instruction/runtime files, workflow files, manifests, source-of-truth
-  docs, SBOM files, then remaining files up to budget.
+- Kubernetes-scale eligible file sets still need deeper ranking for tests,
+  manifests, source-of-truth docs, and remaining files when the scan cap is
+  lower than the eligible tracked-file inventory.
+- Component ranking and overflow reporting should use the same eligible versus
+  intentionally skipped distinction.
 
 Definition of done:
 
@@ -119,11 +134,13 @@ Definition of done:
   coverage model.
 
 Verification: the 2026-06-16 field refresh across Kubernetes, VS Code, and
-Bazel reports `harnessforge.fileCoverage.v1` for all three repositories. All
-three remain `budget_limited`, which confirms reporting is implemented and the
-next improvement is deterministic priority ordering before representative
-source/test scanning; the field report tracks that remaining work as
-`file_discovery_priority`.
+Bazel reports `harnessforge.fileCoverage.v1` for all three repositories. Bazel
+now reports complete eligible coverage with 8,333 scanned files, 13,265 tracked
+files, and 4,932 intentionally skipped files. VS Code now has only `remaining`
+budget-limited after 15,407 eligible files and 376 intentionally skipped files.
+Kubernetes remains budget-limited with 30,461 eligible files against the
+20,000-file cap. The field report keeps `file_discovery_priority` open for
+deeper Kubernetes-scale ranking.
 
 ### 3. Component Inventory Needs Ranking And Overflow
 
@@ -278,8 +295,9 @@ Definition of done:
 
 1. Done for explicit scan limits: add `max_files` plumbing to generation
    dry-runs. Shared profile/index reuse remains an optional optimization.
-2. Add deterministic file coverage reporting using git inventory when
-   available.
+2. Done for initial priority and coverage reporting: add deterministic file
+   coverage reporting using git inventory when available, priority pre-passes
+   for high-signal files, and eligible versus intentionally skipped counts.
 3. Add component ranking, grouping, overflow, and `--component-limit`.
 4. Done for initial product surfaces: promote nested instruction planning from
    the field script into product code.

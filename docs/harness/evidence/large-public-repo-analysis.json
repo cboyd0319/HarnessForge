@@ -21,7 +21,7 @@
     },
     {
       "code": "file_discovery_priority",
-      "message": "file coverage is now visible, and sampled large repos still show budget-limited categories; improve deterministic priority ordering before representative source/test scanning."
+      "message": "file coverage now distinguishes eligible from intentionally skipped files, and some sampled large repos still show budget-limited eligible categories; improve deeper deterministic ranking for Kubernetes-scale scans."
     }
   ],
   "execution": {
@@ -33,7 +33,7 @@
     "normalHarnessGenerationNetworkAccess": false,
     "targetWritesPerformed": false
   },
-  "generatedAt": "2026-06-16T17:42:48+00:00",
+  "generatedAt": "2026-06-16T18:00:19+00:00",
   "mode": "real_public_repo_field_analysis",
   "repositories": [
     {
@@ -120,10 +120,62 @@
           "tests",
           "remaining"
         ],
+        "categorySummary": [
+          {
+            "budgetLimited": false,
+            "id": "root_instructions",
+            "scanEligibleFiles": 1,
+            "scannedFiles": 1,
+            "skippedFiles": 0,
+            "totalFiles": 1
+          },
+          {
+            "budgetLimited": true,
+            "id": "runtime_manifests",
+            "scanEligibleFiles": 134,
+            "scannedFiles": 55,
+            "skippedFiles": 9,
+            "totalFiles": 143
+          },
+          {
+            "budgetLimited": true,
+            "id": "source_of_truth",
+            "scanEligibleFiles": 387,
+            "scannedFiles": 131,
+            "skippedFiles": 1,
+            "totalFiles": 388
+          },
+          {
+            "budgetLimited": true,
+            "id": "source",
+            "scanEligibleFiles": 15768,
+            "scannedFiles": 11211,
+            "skippedFiles": 19,
+            "totalFiles": 15787
+          },
+          {
+            "budgetLimited": true,
+            "id": "tests",
+            "scanEligibleFiles": 3684,
+            "scannedFiles": 8,
+            "skippedFiles": 0,
+            "totalFiles": 3684
+          },
+          {
+            "budgetLimited": true,
+            "id": "remaining",
+            "scanEligibleFiles": 10487,
+            "scannedFiles": 8594,
+            "skippedFiles": 23,
+            "totalFiles": 10510
+          }
+        ],
         "coverageComplete": false,
         "inventorySource": "git_tracked",
+        "scanEligibleFileCount": 30461,
         "scannedFileCount": 20000,
         "schemaVersion": "harnessforge.fileCoverage.v1",
+        "skippedFileCount": 52,
         "status": "budget_limited",
         "totalFileCount": 30513
       },
@@ -131,14 +183,14 @@
       "headMatchesPinnedRef": true,
       "id": "kubernetes-kubernetes",
       "indexSummary": {
-        "byteCount": 188333831,
+        "byteCount": 188168829,
         "componentCount": 44,
         "componentsTruncated": false,
         "fileCount": 20000,
         "manifestCount": 55,
         "reviewRequiredCount": 0,
         "sbomCount": 0,
-        "sourceOfTruthCount": 102,
+        "sourceOfTruthCount": 100,
         "truncated": true
       },
       "nestedInstructionPlan": {
@@ -439,15 +491,15 @@
         ],
         "primaryLanguages": [
           {
-            "files": 11233,
+            "files": 11212,
             "language": "go"
           },
           {
-            "files": 260,
+            "files": 258,
             "language": "docs"
           },
           {
-            "files": 207,
+            "files": 204,
             "language": "shell"
           },
           {
@@ -468,16 +520,6 @@
           {
             "kind": "project-doc",
             "path": "README.md",
-            "reason": "High-signal project documentation name."
-          },
-          {
-            "kind": "project-doc",
-            "path": "third_party/forked/gonum/graph/README.md",
-            "reason": "High-signal project documentation name."
-          },
-          {
-            "kind": "project-doc",
-            "path": "third_party/gimme/README.md",
             "reason": "High-signal project documentation name."
           },
           {
@@ -508,6 +550,16 @@
           {
             "kind": "project-doc",
             "path": "cluster/addons/addon-manager/README.md",
+            "reason": "High-signal project documentation name."
+          },
+          {
+            "kind": "project-doc",
+            "path": "cluster/addons/calico-policy-controller/README.md",
+            "reason": "High-signal project documentation name."
+          },
+          {
+            "kind": "project-doc",
+            "path": "cluster/addons/cluster-loadbalancing/glbc/README.md",
             "reason": "High-signal project documentation name."
           }
         ],
@@ -613,16 +665,72 @@
       },
       "fileCoverage": {
         "budgetLimitedCategories": [
-          "runtime_manifests",
-          "source_of_truth",
-          "source",
-          "tests",
           "remaining"
+        ],
+        "categorySummary": [
+          {
+            "budgetLimited": false,
+            "id": "root_instructions",
+            "scanEligibleFiles": 2,
+            "scannedFiles": 2,
+            "skippedFiles": 0,
+            "totalFiles": 2
+          },
+          {
+            "budgetLimited": false,
+            "id": "runtime_manifests",
+            "scanEligibleFiles": 146,
+            "scannedFiles": 146,
+            "skippedFiles": 10,
+            "totalFiles": 156
+          },
+          {
+            "budgetLimited": false,
+            "id": "workflows",
+            "scanEligibleFiles": 16,
+            "scannedFiles": 16,
+            "skippedFiles": 0,
+            "totalFiles": 16
+          },
+          {
+            "budgetLimited": false,
+            "id": "source_of_truth",
+            "scanEligibleFiles": 70,
+            "scannedFiles": 70,
+            "skippedFiles": 2,
+            "totalFiles": 72
+          },
+          {
+            "budgetLimited": false,
+            "id": "source",
+            "scanEligibleFiles": 9474,
+            "scannedFiles": 9474,
+            "skippedFiles": 188,
+            "totalFiles": 9662
+          },
+          {
+            "budgetLimited": false,
+            "id": "tests",
+            "scanEligibleFiles": 2091,
+            "scannedFiles": 2091,
+            "skippedFiles": 12,
+            "totalFiles": 2103
+          },
+          {
+            "budgetLimited": true,
+            "id": "remaining",
+            "scanEligibleFiles": 3608,
+            "scannedFiles": 3607,
+            "skippedFiles": 164,
+            "totalFiles": 3772
+          }
         ],
         "coverageComplete": false,
         "inventorySource": "git_tracked",
+        "scanEligibleFileCount": 15407,
         "scannedFileCount": 15407,
         "schemaVersion": "harnessforge.fileCoverage.v1",
+        "skippedFileCount": 376,
         "status": "budget_limited",
         "totalFileCount": 15783
       },
@@ -792,7 +900,7 @@
       "qualityGaps": [
         {
           "code": "file_coverage_budget_limited",
-          "message": "bounded scan did not cover all tracked file categories: runtime_manifests, source_of_truth, source, tests, remaining",
+          "message": "bounded scan did not cover all tracked file categories: remaining",
           "severity": "medium"
         },
         {
@@ -970,8 +1078,28 @@
             "reason": "Agent instruction surface."
           },
           {
+            "kind": "agent-instructions",
+            "path": ".github/copilot-instructions.md",
+            "reason": "Agent instruction surface."
+          },
+          {
             "kind": "project-doc",
             "path": "README.md",
+            "reason": "High-signal project documentation name."
+          },
+          {
+            "kind": "project-doc",
+            "path": ".github/skills/auto-perf-optimize/scratchpad/README.md",
+            "reason": "High-signal project documentation name."
+          },
+          {
+            "kind": "project-doc",
+            "path": ".github/skills/heap-snapshot-analysis/scratchpad/README.md",
+            "reason": "High-signal project documentation name."
+          },
+          {
+            "kind": "project-doc",
+            "path": ".devcontainer/README.md",
             "reason": "High-signal project documentation name."
           },
           {
@@ -993,26 +1121,6 @@
             "kind": "project-doc",
             "path": "src/vs/sessions/README.md",
             "reason": "High-signal project documentation name."
-          },
-          {
-            "kind": "project-doc",
-            "path": "src/vs/sessions/test/e2e/README.md",
-            "reason": "High-signal project documentation name."
-          },
-          {
-            "kind": "project-doc",
-            "path": "src/vs/workbench/contrib/terminalContrib/README.md",
-            "reason": "High-signal project documentation name."
-          },
-          {
-            "kind": "project-doc",
-            "path": "src/vscode-dts/README.md",
-            "reason": "High-signal project documentation name."
-          },
-          {
-            "kind": "agent-instructions",
-            "path": ".github/copilot-instructions.md",
-            "reason": "Agent instruction surface."
           }
         ],
         "unknowns": [
@@ -1105,17 +1213,72 @@
         }
       },
       "fileCoverage": {
-        "budgetLimitedCategories": [
-          "source_of_truth",
-          "source",
-          "tests",
-          "remaining"
+        "budgetLimitedCategories": [],
+        "categorySummary": [
+          {
+            "budgetLimited": false,
+            "id": "root_instructions",
+            "scanEligibleFiles": 1,
+            "scannedFiles": 1,
+            "skippedFiles": 0,
+            "totalFiles": 1
+          },
+          {
+            "budgetLimited": false,
+            "id": "runtime_manifests",
+            "scanEligibleFiles": 11,
+            "scannedFiles": 11,
+            "skippedFiles": 0,
+            "totalFiles": 11
+          },
+          {
+            "budgetLimited": false,
+            "id": "workflows",
+            "scanEligibleFiles": 9,
+            "scannedFiles": 9,
+            "skippedFiles": 0,
+            "totalFiles": 9
+          },
+          {
+            "budgetLimited": false,
+            "id": "source_of_truth",
+            "scanEligibleFiles": 26,
+            "scannedFiles": 26,
+            "skippedFiles": 3,
+            "totalFiles": 29
+          },
+          {
+            "budgetLimited": false,
+            "id": "source",
+            "scanEligibleFiles": 1608,
+            "scannedFiles": 1608,
+            "skippedFiles": 4437,
+            "totalFiles": 6045
+          },
+          {
+            "budgetLimited": false,
+            "id": "tests",
+            "scanEligibleFiles": 60,
+            "scannedFiles": 60,
+            "skippedFiles": 5,
+            "totalFiles": 65
+          },
+          {
+            "budgetLimited": false,
+            "id": "remaining",
+            "scanEligibleFiles": 6618,
+            "scannedFiles": 6618,
+            "skippedFiles": 487,
+            "totalFiles": 7105
+          }
         ],
-        "coverageComplete": false,
+        "coverageComplete": true,
         "inventorySource": "git_tracked",
+        "scanEligibleFileCount": 8333,
         "scannedFileCount": 8333,
         "schemaVersion": "harnessforge.fileCoverage.v1",
-        "status": "budget_limited",
+        "skippedFileCount": 4932,
+        "status": "complete",
         "totalFileCount": 13265
       },
       "head": "b1eed3b9a51e86b605f58b3182ab97feb2f1a939",
@@ -1274,11 +1437,6 @@
       },
       "pinnedRef": "b1eed3b9a51e86b605f58b3182ab97feb2f1a939",
       "qualityGaps": [
-        {
-          "code": "file_coverage_budget_limited",
-          "message": "bounded scan did not cover all tracked file categories: source_of_truth, source, tests, remaining",
-          "severity": "medium"
-        },
         {
           "code": "component_scan_truncated",
           "message": "component inventory reached the bounded component limit",
@@ -1497,7 +1655,7 @@
     "missing": 0,
     "qualityGapCounts": {
       "component_scan_truncated": 2,
-      "file_coverage_budget_limited": 3,
+      "file_coverage_budget_limited": 2,
       "file_scan_truncated": 1,
       "nested_agents_review_needed": 3,
       "no_existing_sbom_detected": 2

@@ -1,6 +1,6 @@
 # Large Public Repo Analysis
 
-Generated: 2026-06-16T17:42:48+00:00
+Generated: 2026-06-16T18:00:19+00:00
 
 ## Boundary
 
@@ -21,15 +21,15 @@ Generated: 2026-06-16T17:42:48+00:00
 ## Cross-Repo Findings
 
 - `nested_agents_plan`: large monorepos produce review-required nested AGENTS.md candidates; keep them advisory and improve ranking before any explicit write mode.
-- `file_discovery_priority`: file coverage is now visible, and sampled large repos still show budget-limited categories; improve deterministic priority ordering before representative source/test scanning.
+- `file_discovery_priority`: file coverage now distinguishes eligible from intentionally skipped files, and some sampled large repos still show budget-limited eligible categories; improve deeper deterministic ranking for Kubernetes-scale scans.
 
 ## Repository Results
 
-| Repo | Status | Stack | Tracked | Scanned | Coverage | Components | Nested Plan | Top Gaps |
-| --- | --- | --- | ---: | ---: | --- | ---: | --- | --- |
-| `kubernetes-kubernetes` | `analyzed` | `go` | 30513 | 20000 | `budget_limited` | 44 | 43 candidates | file_scan_truncated, file_coverage_budget_limited, nested_agents_review_needed, no_existing_sbom_detected |
-| `microsoft-vscode` | `analyzed` | `typescript-react` | 15783 | 15407 | `budget_limited` | 80 | 77 candidates | file_coverage_budget_limited, component_scan_truncated, nested_agents_review_needed, no_existing_sbom_detected |
-| `bazelbuild-bazel` | `analyzed` | `bazel` | 13265 | 8333 | `budget_limited` | 80 | 79 candidates | file_coverage_budget_limited, component_scan_truncated, nested_agents_review_needed |
+| Repo | Status | Stack | Tracked | Eligible | Scanned | Skipped | Coverage | Components | Nested Plan | Top Gaps |
+| --- | --- | --- | ---: | ---: | ---: | ---: | --- | ---: | --- | --- |
+| `kubernetes-kubernetes` | `analyzed` | `go` | 30513 | 30461 | 20000 | 52 | `budget_limited` | 44 | 43 candidates | file_scan_truncated, file_coverage_budget_limited, nested_agents_review_needed, no_existing_sbom_detected |
+| `microsoft-vscode` | `analyzed` | `typescript-react` | 15783 | 15407 | 15407 | 376 | `budget_limited` | 80 | 77 candidates | file_coverage_budget_limited, component_scan_truncated, nested_agents_review_needed, no_existing_sbom_detected |
+| `bazelbuild-bazel` | `analyzed` | `bazel` | 13265 | 8333 | 8333 | 4932 | `complete` | 80 | 79 candidates | component_scan_truncated, nested_agents_review_needed |
 
 ## Nested Instruction Candidate Examples
 

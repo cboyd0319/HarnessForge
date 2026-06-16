@@ -497,6 +497,48 @@ class CliTests(unittest.TestCase):
         self.assertTrue(any(item["budgetLimited"] for item in coverage["categories"]))
         self.assertIn("budget-limited", "\n".join(payload["warnings"]))
 
+    def test_index_json_distinguishes_intentionally_skipped_tracked_files(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "README.md").write_text("# Demo\n", encoding="utf-8")
+            (root / "build").mkdir()
+            (root / "build" / "package.json").write_text("{}\n", encoding="utf-8")
+            try:
+                os.symlink("README.md", root / "Makefile")
+            except (NotImplementedError, OSError) as exc:
+                self.skipTest(f"symlink creation is unavailable: {exc}")
+            _git(root, "init")
+            _git(root, "add", ".")
+            stdout = io.StringIO()
+            with contextlib.redirect_stdout(stdout):
+                code = main(
+                    [
+                        "index",
+                        "--target",
+                        str(root),
+                        "--max-files",
+                        "20",
+                        "--json",
+                    ]
+                )
+
+            payload = json.loads(stdout.getvalue())
+
+        coverage = payload["fileCoverage"]
+        categories = {item["id"]: item for item in coverage["categories"]}
+        manifests = categories["runtime_manifests"]
+        self.assertEqual(code, 0)
+        self.assertTrue(coverage["coverageComplete"])
+        self.assertEqual(coverage["scanEligibleFileCount"], 1)
+        self.assertEqual(manifests["totalFiles"], 2)
+        self.assertEqual(manifests["scanEligibleFiles"], 0)
+        self.assertEqual(manifests["skippedFiles"], 2)
+        self.assertFalse(manifests["budgetLimited"])
+        self.assertEqual(
+            {item["reason"] for item in manifests["skippedExamples"]},
+            {"ignored_dir:build", "symlink"},
+        )
+
     def test_init_dry_run_json_accepts_explicit_file_scan_limit(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

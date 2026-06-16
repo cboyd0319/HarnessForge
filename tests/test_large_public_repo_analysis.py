@@ -113,6 +113,9 @@ class LargePublicRepoAnalysisTests(unittest.TestCase):
                 {gap["code"] for gap in repo["qualityGaps"]},
             )
             self.assertEqual(repo["fileCoverage"]["status"], "budget_limited")
+            self.assertIn("scanEligibleFileCount", repo["fileCoverage"])
+            self.assertIn("skippedFileCount", repo["fileCoverage"])
+            self.assertTrue(repo["fileCoverage"]["categorySummary"])
             self.assertIn(
                 "file_coverage_budget_limited",
                 {gap["code"] for gap in repo["qualityGaps"]},

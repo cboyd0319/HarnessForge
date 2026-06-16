@@ -5,6 +5,7 @@ from pathlib import Path, PurePosixPath
 from typing import Any
 
 from ..core.models import ProjectProfile
+from .detect import IGNORED_DIRS
 
 SCHEMA_VERSION = "harnessforge.fileCoverage.v1"
 GIT_TIMEOUT_SECONDS = 10
@@ -75,12 +76,18 @@ def build_file_coverage_report(profile: ProjectProfile) -> dict[str, Any]:
         total_known = True
     scanned_set = set(profile.files)
     categories = _category_reports(
+        root=profile.root,
         inventory_files=inventory_files,
         scanned_set=scanned_set,
         total_known=total_known,
         scan_truncated=profile.file_scan_truncated,
     )
     total_file_count = len(inventory_files) if total_known else None
+    scan_eligible_file_count = (
+        sum(category["scanEligibleFiles"] for category in categories)
+        if total_known
+        else None
+    )
     budget_limited = any(category["budgetLimited"] for category in categories)
     warnings = []
     if inventory_source == "filesystem_scan" and profile.file_scan_truncated:
@@ -98,6 +105,7 @@ def build_file_coverage_report(profile: ProjectProfile) -> dict[str, Any]:
         "fileScanLimit": profile.file_scan_limit,
         "scannedFileCount": len(profile.files),
         "totalFileCount": total_file_count,
+        "scanEligibleFileCount": scan_eligible_file_count,
         "coverageComplete": not budget_limited,
         "categories": categories,
         "warnings": warnings,
@@ -132,6 +140,7 @@ def _is_safe_relative_path(path: str) -> bool:
 
 def _category_reports(
     *,
+    root: Path,
     inventory_files: list[str],
     scanned_set: set[str],
     total_known: bool,
@@ -139,37 +148,70 @@ def _category_reports(
 ) -> list[dict[str, Any]]:
     by_category: dict[str, list[str]] = {}
     scanned_by_category: dict[str, list[str]] = {}
+    skipped_by_category: dict[str, list[tuple[str, str]]] = {}
     for path in inventory_files:
         category = _category_for_path(path)
         by_category.setdefault(category, []).append(path)
+        skip_reason = _scan_exclusion_reason(root, path)
+        if skip_reason is not None:
+            skipped_by_category.setdefault(category, []).append((path, skip_reason))
+            continue
         if path in scanned_set:
             scanned_by_category.setdefault(category, []).append(path)
     reports = []
     for category_id, label in _category_order():
         total_paths = by_category.get(category_id, [])
         scanned_paths = scanned_by_category.get(category_id, [])
+        skipped_paths = skipped_by_category.get(category_id, [])
+        skipped_set = {path for path, _reason in skipped_paths}
+        eligible_paths = [path for path in total_paths if path not in skipped_set]
         if not total_paths and not scanned_paths:
             continue
         total = len(total_paths) if total_known else None
+        eligible_total = len(eligible_paths) if total_known else None
         budget_limited = (
-            len(scanned_paths) < len(total_paths)
+            len(scanned_paths) < len(eligible_paths)
             if total_known
             else scan_truncated
         )
-        omitted = [path for path in total_paths if path not in scanned_set]
+        omitted = [
+            path
+            for path in eligible_paths
+            if path not in scanned_set
+        ]
         reports.append(
             {
                 "id": category_id,
                 "label": label,
                 "scannedFiles": len(scanned_paths),
                 "totalFiles": total,
+                "scanEligibleFiles": eligible_total,
+                "skippedFiles": len(skipped_paths),
                 "fullyCovered": not budget_limited,
                 "budgetLimited": budget_limited,
                 "examples": scanned_paths[:EXAMPLE_LIMIT],
                 "omittedExamples": omitted[:EXAMPLE_LIMIT],
+                "skippedExamples": [
+                    {"path": path, "reason": reason}
+                    for path, reason in skipped_paths[:EXAMPLE_LIMIT]
+                ],
             }
         )
     return reports
+
+
+def _scan_exclusion_reason(root: Path, path: str) -> str | None:
+    pure = PurePosixPath(path)
+    for part in pure.parts:
+        if part in IGNORED_DIRS:
+            return f"ignored_dir:{part}"
+    try:
+        local_path = root / Path(*pure.parts)
+    except TypeError:
+        return None
+    if local_path.is_symlink():
+        return "symlink"
+    return None
 
 
 def _category_order() -> tuple[tuple[str, str], ...]:

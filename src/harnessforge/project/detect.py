@@ -92,6 +92,43 @@ COMPONENT_MARKERS = {
     "versions.tf",
 }
 
+ROOT_PRIORITY_FILES = (
+    "AGENTS.md",
+    "CLAUDE.md",
+    "GEMINI.md",
+    ".github/copilot-instructions.md",
+    "README.md",
+    "CONTRIBUTING.md",
+    "SECURITY.md",
+    "pyproject.toml",
+    "package.json",
+    "go.mod",
+    "go.work",
+    "Cargo.toml",
+    "pom.xml",
+    "MODULE.bazel",
+    "WORKSPACE",
+    "WORKSPACE.bazel",
+    ".bazelrc",
+    ".bazelversion",
+    ".nvmrc",
+    ".python-version",
+    "Dockerfile",
+    "Containerfile",
+    "Makefile",
+    "Justfile",
+    "justfile",
+)
+PRIORITY_DIRECTORY_PASSES = (
+    (".github", 300),
+    (".agents", 200),
+    ("docs/harness", 300),
+    ("docs", 500),
+    ("specs", 300),
+    ("aspec", 300),
+    ("workflows", 200),
+    (".devcontainer", 100),
+)
 DIRECTORY_PRIORITY = {
     "src": 0,
     "scripts": 1,
@@ -101,11 +138,15 @@ DIRECTORY_PRIORITY = {
     "packages": 5,
     "services": 6,
     "examples": 7,
-    "third_party": 8,
-    ".github": 9,
+    ".github": 8,
+    ".agents": 9,
     ".devcontainer": 10,
+    "third_party": 80,
     "docs": 90,
-    "site": 91,
+    "specs": 91,
+    "aspec": 92,
+    "workflows": 93,
+    "site": 94,
 }
 COMPONENT_SCAN_LIMIT = 80
 
@@ -229,10 +270,35 @@ def detect_project(
 
 def list_project_files(root: Path, *, max_files: int = 4000) -> list[str]:
     results: list[str] = []
+    seen: set[str] = set()
 
-    def walk(current: Path, relative: str) -> None:
+    def add_file(relative: str, local_budget: list[int] | None = None) -> bool:
+        if len(results) >= max_files:
+            return False
+        if local_budget is not None and local_budget[0] <= 0:
+            return False
+        if relative in seen or _ignored_relative_path(relative):
+            return False
+        path = root / relative
+        if not path.is_file() or path.is_symlink():
+            return False
+        results.append(relative)
+        seen.add(relative)
+        if local_budget is not None:
+            local_budget[0] -= 1
+        return True
+
+    def walk(
+        current: Path,
+        relative: str,
+        *,
+        local_budget: list[int] | None = None,
+    ) -> None:
         if len(results) >= max_files:
             return
+        if local_budget is not None and local_budget[0] <= 0:
+            return
+
         try:
             entries = sorted(current.iterdir(), key=lambda item: item.name.lower())
         except OSError:
@@ -245,20 +311,38 @@ def list_project_files(root: Path, *, max_files: int = 4000) -> list[str]:
         for entry in files:
             if len(results) >= max_files:
                 return
-            if entry.name in IGNORED_DIRS:
-                continue
+            if local_budget is not None and local_budget[0] <= 0:
+                return
             rel = f"{relative}/{entry.name}" if relative else entry.name
-            results.append(rel)
+            add_file(rel, local_budget=local_budget)
         for entry in directories:
             if len(results) >= max_files:
+                return
+            if local_budget is not None and local_budget[0] <= 0:
                 return
             if entry.name in IGNORED_DIRS:
                 continue
             rel = f"{relative}/{entry.name}" if relative else entry.name
-            walk(entry, rel)
+            if _ignored_relative_path(rel):
+                continue
+            walk(entry, rel, local_budget=local_budget)
 
+    for relative in ROOT_PRIORITY_FILES:
+        add_file(relative)
+    for relative, local_limit in PRIORITY_DIRECTORY_PASSES:
+        path = root / relative
+        if (
+            path.is_dir()
+            and not path.is_symlink()
+            and not _ignored_relative_path(relative)
+        ):
+            walk(path, relative, local_budget=[local_limit])
     walk(root, "")
     return results
+
+
+def _ignored_relative_path(relative: str) -> bool:
+    return any(part in IGNORED_DIRS for part in Path(relative).parts)
 
 
 def _detect_languages(

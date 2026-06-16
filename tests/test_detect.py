@@ -148,6 +148,39 @@ class DetectProjectTests(unittest.TestCase):
         self.assertTrue(profile.component_scan_truncated)
         self.assertEqual(profile.component_scan_limit, 80)
 
+    def test_file_scan_prioritizes_control_docs_before_source_examples(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "README.md").write_text("# Demo\n", encoding="utf-8")
+            (root / "package.json").write_text(
+                json.dumps({"scripts": {"test": "node --test"}}),
+                encoding="utf-8",
+            )
+            (root / ".github" / "workflows").mkdir(parents=True)
+            (root / ".github" / "workflows" / "ci.yml").write_text(
+                "name: CI\n",
+                encoding="utf-8",
+            )
+            (root / "docs").mkdir()
+            (root / "docs" / "architecture.md").write_text(
+                "# Architecture\n",
+                encoding="utf-8",
+            )
+            (root / "src").mkdir()
+            for index in range(20):
+                (root / "src" / f"file_{index:02d}.ts").write_text(
+                    "export const ok = true\n",
+                    encoding="utf-8",
+                )
+
+            profile = detect_project(root, max_files=6)
+
+        self.assertTrue(profile.file_scan_truncated)
+        self.assertIn("package.json", profile.files)
+        self.assertIn(".github/workflows/ci.yml", profile.files)
+        self.assertIn("docs/architecture.md", profile.files)
+        self.assertTrue(any(file.startswith("src/") for file in profile.files))
+
     def test_detects_agent_skill_catalog_routing(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

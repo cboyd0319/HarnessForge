@@ -231,18 +231,22 @@ commit embeddings, private code summaries, or machine-local paths by default.
 
 ### Deterministic Large-Repo File Discovery Priority
 
-Status: accepted, not started.
+Status: initial priority pre-pass and eligible/skipped coverage distinction
+implemented.
 
 The 2026-06-16 Kubernetes, VS Code, and Bazel field refresh shows
-`harnessforge.fileCoverage.v1` is now visible, but all three sampled large
-repos still have budget-limited file categories. The next indexing improvement
-is deterministic priority ordering before representative source/test scanning.
+`harnessforge.fileCoverage.v1` is now visible and distinguishes scan-eligible
+files from tracked files intentionally skipped by safety/noise rules such as
+ignored build directories and symlinks. Bazel now reports complete eligible
+coverage at the same `--max-files 20000` setting, VS Code only has one
+remaining eligible uncategorized fixture path, and Kubernetes remains genuinely
+budget-limited.
 
 Scope:
 
-- CLI/runtime: improve `detect_project` or index discovery ordering so root
+- CLI/runtime: `detect_project` discovery now prioritizes root
   instructions, runtime files, workflows, source-of-truth docs, harness docs,
-  manifests, and SBOM evidence are scanned before broad source/test examples.
+  manifests, and SBOM evidence before broad source/test examples.
 - Generated target harness: no new default files unless the improved signal
   changes generated guidance quality.
 - GitHub Action: report and release-check paths should inherit the same
@@ -254,11 +258,16 @@ Scope:
 
 Definition of done:
 
-- Large-repo field evidence shows fewer high-signal categories marked
+- Done: large-repo field evidence shows fewer high-signal categories marked
   budget-limited at the same `--max-files` value.
-- `fileCoverage.categories[*]` distinguishes budget limits from intentionally
-  skipped categories if the scanner excludes tracked vendor/generated files.
-- Generated guidance quality improves without increasing default harness size.
+- Done: `fileCoverage.categories[*]` distinguishes budget limits from
+  intentionally skipped categories when the scanner excludes tracked
+  vendor/generated files or symlinks.
+- Remaining: Kubernetes-scale repos still need deeper ranking for tests,
+  manifests, source-of-truth docs, and remaining files when the eligible set is
+  larger than the scan cap.
+- Remaining: generated guidance quality should improve from the new signals
+  without increasing default harness size.
 
 ### SBOM-Aware Indexing
 

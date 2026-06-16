@@ -201,9 +201,12 @@ monorepo scopes.
 - Large-repo file coverage reporting now uses `harnessforge.fileCoverage.v1`.
   `index`, `report`, `quickstart`, `init --dry-run`, Action report summaries,
   and large-public-repo field evidence expose scanned count, total tracked
-  count when git is available, inventory source, category coverage, omitted
-  examples, and warnings. The refreshed Kubernetes, VS Code, and Bazel field
-  run records `file_discovery_priority` as the remaining indexing gap.
+  count when git is available, scan-eligible counts, intentionally skipped
+  tracked-file counts, inventory source, category coverage, omitted examples,
+  and warnings. The refreshed Kubernetes, VS Code, and Bazel field run shows
+  Bazel complete for eligible coverage, VS Code budget-limited only for one
+  remaining eligible path, and Kubernetes still genuinely budget-limited;
+  `file_discovery_priority` remains open for deeper Kubernetes-scale ranking.
 
 ## Trusted Verification
 
@@ -234,10 +237,13 @@ monorepo scopes.
 - Current file-coverage verification: affected CLI, Action, field-analysis,
   and report-contract tests passed with 141 tests; focused field-analysis and
   report-contract tests passed with 7 tests after doc/manifest alignment;
-  full unit discovery passed with 297 tests; compileall, pin check, research
-  source check, JSON validation, durable-doc local-path scan, and diff hygiene
+  full unit discovery passed with 299 tests; compileall, pin check, research
+  source check, JSON validation, report JSON smoke, expected-block
+  release-check JSON smoke, durable-doc local-path scan, and diff hygiene
   passed; self-audit stayed `100/100`; refreshed field evidence analyzed
-  Kubernetes, VS Code, and Bazel with zero failures.
+  Kubernetes, VS Code, and Bazel with zero failures, Bazel complete for
+  eligible coverage, and VS Code budget-limited only for one remaining
+  eligible path.
 - Current README pass verification: required README manifest snippet check
   passed with no missing snippets; duplicate literal prose scan found no
   repeated meaningful lines; `tests.test_generate_audit` passed with 59 tests;
