@@ -4,10 +4,10 @@ Last Updated: 2026-06-16 UTC
 
 ## Current Objective
 
-CI repair is complete when the latest failing GitHub Actions run is diagnosed,
-the failure is reproduced locally through the same editable-install test path,
-the portable fix is verified, and the result is committed and pushed to
-`main`. Release prep resumes next.
+README dedupe is complete when the main repository README is a lean landing
+page, detailed command and boundary inventories live in dedicated docs,
+required README snippets remain intact, focused docs verification passes, and
+the result is committed and pushed to `main`. Release prep resumes next.
 
 ## Product State
 
@@ -135,6 +135,10 @@ the portable fix is verified, and the result is committed and pushed to
   repo-local versus generated versus Action boundaries. The duplicate
   at-a-glance/value-prop table was removed, while required README snippets and
   command references remain intact.
+- The main README dedupe pass removed the duplicate command catalog and merged
+  repeated boundary/default-safety prose into one concise section. Detailed
+  command usage stays in `docs/usage.md`; full generated-file and security
+  boundaries stay in `docs/capabilities.md`.
 - Latest CI failure on `main` was traced to test helpers that used
   `sys.executable` as a generated target verification command. In CI-style
   editable installs that value is a temp venv path, so generated fixture
@@ -173,6 +177,9 @@ the portable fix is verified, and the result is committed and pushed to
   release-check tests passed locally; a fresh Python 3.13 venv reproduced the
   CI editable-install path; installed-package `python -m unittest discover -s
   tests` passed with 287 tests after the fix.
+- Current README dedupe verification: required README manifest snippet check
+  passed with no missing snippets; literal duplicate meaningful-line scan found
+  no repeated lines; README is 181 lines and 969 words before final checks.
 - Current cleanup pass removed ignored local artifacts: `__pycache__`, `*.pyc`,
   `.DS_Store`, `.pytest_cache`, `htmlcov`, and `.coverage` if present.
 - Current known local verification gap: `pwsh -NoProfile -File ./init.ps1`
@@ -185,9 +192,7 @@ the portable fix is verified, and the result is committed and pushed to
 ## Touched Surfaces
 
 - `current-state.md`
-- `tests/test_cli.py`
-- `tests/test_github_action.py`
-- `docs/harness/evidence/evidence-log.md`
+- `README.md`
 
 ## Blockers
 
@@ -199,4 +204,4 @@ the portable fix is verified, and the result is committed and pushed to
 
 ## Next Step
 
-Commit and push the CI fix, then monitor the new `main` CI run.
+Commit and push the README dedupe, then resume release prep.

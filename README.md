@@ -25,11 +25,8 @@ assessing, and safely updating AI coding-agent harnesses in existing
 repositories.
 
 A good harness is the operating layer around the model: instructions, tools,
-environment, state, and feedback. HarnessForge turns that layer into files a
-repo can review, version, test, and improve. It generates compact agent
-instructions, detects project context, routes agents to source-of-truth docs,
-records durable state, declares verification commands, and captures security
-and workflow boundaries.
+environment, state, and feedback. HarnessForge turns that layer into repo-owned
+files an agent can read and a maintainer can review, version, test, and improve.
 
 This repo ships two related surfaces:
 
@@ -49,21 +46,17 @@ doing.
 HarnessForge gives a repo an explicit agent operating model:
 
 - New agents get a clear startup route instead of hunting through random docs.
-- Existing `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, and Copilot instructions can
-  be reviewed and improved without taking ownership away from the project.
 - Verification commands, state files, evidence docs, and first-agent review
   tasks live with the code instead of in chat history.
 - Large or unfamiliar repos get structural indexing, source-of-truth routing,
   workflow inventory, and review-required surface detection before writes.
-- Maintainers can inspect harness drift, readiness, maturity, and release
-  evidence with read-only commands before trusting generated changes.
+- Maintainers can inspect drift, readiness, maturity, and release evidence with
+  read-only commands before trusting generated changes.
 
 ## What Makes It Cool
 
 - It treats agent readiness as real repository infrastructure, not prompt
   decoration.
-- It keeps product boundaries explicit: this repo's local harness, generated
-  target harnesses, and the GitHub Action are separate surfaces.
 - It respects existing project systems. It detects specs, work items, ASPEC
   style folders, workflow definitions, verification commands, SBOM evidence,
   and source-of-truth docs before generating guidance.
@@ -85,16 +78,20 @@ HarnessForge gives a repo an explicit agent operating model:
   no autonomous target workflows, and structural scores kept separate from
   real-agent performance claims.
 
-## Product Boundary
+## Boundaries
 
-HarnessForge generates portable harness infrastructure, detects repo-local
-systems, and routes agents toward the right source of truth. It does not copy
-one repo's personal preferences, local research habits, self-healing workflow,
-MCP setup, memory tree, or platform permission files into another project.
+This repo's local harness, generated target harnesses, optional generated
+workflows, and the GitHub Action are separate product surfaces. HarnessForge
+does not copy this repo's self-healing workflow, personal research preferences,
+MCP setup, memory tree, local paths, or platform permission files into target
+repos.
 
-Generated target repos should treat HarnessForge as an optional owner tool
-after initial generation unless the repo owner explicitly adopts the CLI or
-GitHub Action as a maintenance gate.
+Existing files are preserved unless `--force` is supplied. Destructive,
+overwrite-capable, apply-mode, or command-executing CLI operations warn and
+require confirmation; in non-interactive runs, pass `--yes` intentionally.
+Generated target repos should treat HarnessForge as an optional owner tool after
+initial generation unless the repo owner explicitly adopts the CLI or GitHub
+Action as a maintenance gate.
 
 ## Start Here
 
@@ -115,51 +112,28 @@ HarnessForge is usable for local harness generation, existing-instruction
 review, structural assessment, reporting, and release evidence assembly. It is
 still pre-`v1`.
 
-The core loop is already useful: inspect a repo, preview a harness, create
-missing files, audit the result, and keep drift visible over time. The audit
-score is structural. It checks whether a harness is coherent, portable,
-reviewable, and wired to useful feedback loops. It does not prove that a
-specific agent will complete a specific project task correctly. Real agent
-effectiveness still needs representative task runs and human review.
+The audit score is structural. It checks whether a harness is coherent,
+portable, reviewable, and wired to useful feedback loops. It does not prove that
+a specific agent will complete a specific project task correctly.
 
 ## Quick Start
 
 Install from a clone, then run `harnessforge --help`. See
 [Installation](docs/installation.md) for exact setup commands.
 
-Run the guided first-run summary before writing anything:
+Run the guided first-run summary before writing anything, then preview and
+generate:
 
 ```bash
 harnessforge quickstart --target /path/to/repo
-```
-
-Preview generated files:
-
-```bash
 harnessforge init --target /path/to/repo --dry-run
-```
-
-Review existing instruction files without writing:
-
-```bash
-harnessforge enhance --target /path/to/repo
-```
-
-Create missing harness files:
-
-```bash
 harnessforge init --target /path/to/repo
 ```
 
-Audit the result:
+Audit and report:
 
 ```bash
 harnessforge audit --target /path/to/repo --min-score 85
-```
-
-Create one review artifact:
-
-```bash
 harnessforge report --target /path/to/repo --markdown-report docs/harness/evidence/report.md
 ```
 
@@ -169,58 +143,9 @@ Prepare release evidence:
 harnessforge release-check --target /path/to/repo --markdown-report docs/harness/evidence/release-check.md
 ```
 
-Plan legacy state consolidation:
-
-```bash
-harnessforge migrate-state --target /path/to/repo
-```
-
-See [Usage](docs/usage.md) for readiness checks, repo indexing,
-existing-instruction review, verification plans, unified reports, explicit
-verify runs, `harnessforge update` drift workflows, blueprints, and CI
-preflight.
-
-## Core Surfaces
-
-| Surface | Purpose |
-| --- | --- |
-| `quickstart` | Guided first run without writing files |
-| `inspect` | Repository detection and static readiness |
-| `index` | Read-only structural map for large existing repos |
-| `session` | Restart snapshot with git, readiness, audit, and state-file status |
-| `report` | Unified read-only harness status and maturity report with optional JSON and Markdown outputs |
-| `release-check` | Read-only release readiness and maturity gate over existing harness evidence |
-| `finalize-review` | Explicit first-agent review finalization and high-risk acceptance evidence |
-| `migrate-state` | Dry-run or explicitly apply migration from split root state files into `current-state.md` |
-| `enhance` | Review existing instruction files without writing files |
-| `plan` | Diff-aware verification planning without command execution |
-| `sync --check` | CI-oriented readiness preflight with stable exit codes |
-| `verify` | Planned project checks by default, explicit execution with `--run` |
-| `blueprint` | Optional review-required operating-model overlays |
-| `corpus` | Offline public-repo fixture quality gate for generated content |
-| `init` | Create missing harness artifacts |
-| `audit` | Score an existing repo harness |
-| `update` | Plan or apply safe missing-file corrections and report drift |
-| `doctor` | Check local runtime support |
-
-Run `harnessforge <command> --help` for command-specific options.
-
-## Default Boundaries
-
-- Existing files are preserved unless `--force` is supplied.
-- Destructive, overwrite-capable, apply-mode, or command-executing CLI
-  operations warn and require confirmation. In non-interactive runs, pass
-  `--yes` intentionally.
-- Normal generation does not install dependencies, search the web, run target
-  project commands, or create autonomous workflows.
-- User-specific research mandates, local tool preferences, MCP configs, memory
-  trees, and platform permission files are not generated into target repos.
-- Optional blueprints and the generated CI workflow scaffold are explicit
-  opt-ins.
-- Structural audit scores are not treated as real-agent performance evidence.
-
-See [Capabilities](docs/capabilities.md) for the full generated-file inventory,
-security model, and repo-local maintenance boundaries.
+See [Usage](docs/usage.md) for `harnessforge update`, `finalize-review`,
+`migrate-state`, `corpus`, existing-instruction review, maturity report output,
+blueprints, CI preflight, and command-specific options.
 
 ## Verify This Repository
 
@@ -237,8 +162,7 @@ On Windows:
 ```
 
 The local harness check runs the package doctor, bytecode compilation, unit
-tests, pin checks, research source checks, and a self-audit. More focused
-verification commands are in [Installation](docs/installation.md).
+tests, pin checks, research source checks, and a self-audit.
 
 ## Repository Layout
 
