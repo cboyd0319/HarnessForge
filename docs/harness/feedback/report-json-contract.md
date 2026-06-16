@@ -23,6 +23,7 @@ Downstream tools and GitHub Action summaries may rely on these fields:
 | `audit` | Structural score, bottleneck, failed checks, and recommendations |
 | `drift` | Generated-file drift summary and recommended actions |
 | `index` | Structural index summary, compact repo map, SBOM evidence, and source-of-truth docs |
+| `nestedInstructionPlan` | Review-required nested `AGENTS.md` candidates for monorepos; never default writes |
 | `verifyEvidence` | Stored full or compact verify evidence inventory |
 | `effectiveness` | Stored real-agent or benchmark evidence assessment summary |
 | `instructionQuality` | Startup instruction signal, budget, and section-quality summary |

@@ -34,6 +34,10 @@ Use `--max-files` with `quickstart`, `init`, or applied `update` when a large
 repository needs generated content rendered from a deeper file scan than the
 default 4,000 files. Dry-run JSON reports the file count, limit, and truncation
 status, and generated manifests retain the same scan coverage metadata.
+For monorepos, quickstart output and `init --dry-run` surface review-required
+nested `AGENTS.md` candidates; JSON modes include the same
+`nestedInstructionPlan`. HarnessForge does not write nested instruction files
+by default.
 
 After `init`, the generated canonical agent instruction routes the first agent
 session to `docs/harness/state/first-agent-task.md` and the generated
@@ -107,11 +111,12 @@ fan-out routing status. It also includes instruction-quality and context-budget
 signals for startup instruction files, the compact repo-map summary from
 `index`, policy preset recommendations, feature-state scope, runtime/process
 observability, optional index-adapter status, repo-local harness skill wiring,
-and SBOM adapter status. It also reports accepted high-risk surface review
-evidence, separates unresolved actionable review work from accepted advisory
-inventory in `reviewWork`, and includes an evidence-gated maturity level from
-`generated` to `measured` without treating structural audit score as proof of
-real-agent effectiveness.
+SBOM adapter status, and review-required nested `AGENTS.md` scope candidates
+for monorepos. It also reports accepted high-risk surface review evidence,
+separates unresolved actionable review work from accepted advisory inventory in
+`reviewWork`, and includes an evidence-gated maturity level from `generated` to
+`measured` without treating structural audit score as proof of real-agent
+effectiveness.
 It is read-only by default, does not run target repository commands, and writes
 files only when a target-relative `--json-report` or `--markdown-report` path
 is supplied.

@@ -184,6 +184,15 @@ monorepo scopes.
   explicit file scan limits; dry-run JSON and generated manifests report scan
   coverage; `.harnessforge/` scratch checkouts are ignored by repo detection.
   Refreshed field evidence no longer reports `generator_default_scan_limit`.
+- Nested instruction planning now uses shared product code through
+  `harnessforge.nestedInstructionPlan.v1`. `report`, `quickstart`, and
+  `init --dry-run` surface review-required nested `AGENTS.md` candidates for
+  monorepos without writing nested instruction files by default. The field
+  analyzer consumes the same planner.
+- `docs/roadmap.md` now includes an accepted research-backed harness token
+  economics task requiring receipts on whether comprehensive repo harnesses
+  increase or decrease agent token consumption before generated sizing or
+  loading behavior changes.
 
 ## Trusted Verification
 
@@ -255,6 +264,13 @@ monorepo scopes.
   VS Code, and Bazel passed with 3 analyzed repos, 0 failures, and no
   `generator_default_scan_limit` finding. Remaining cross-repo finding is
   `nested_agents_plan`.
+- Current nested-instruction verification: focused CLI, Action, and
+  field-analysis tests passed with 135 tests; full unit discovery passed with
+  296 tests; compileall, pin check, research check, self-audit `100/100`, JSON
+  validation, local-path scan, and diff hygiene passed; real field analysis
+  against Kubernetes, VS Code, and Bazel passed with 3 analyzed repos, 0
+  failures, and `harnessforge.nestedInstructionPlan.v1` candidate plans for
+  all three repos.
 - Current cleanup pass removed ignored local artifacts: `__pycache__`, `*.pyc`,
   `.DS_Store`, `.pytest_cache`, `htmlcov`, and `.coverage` if present.
 - Current known local verification gap: `pwsh -NoProfile -File ./init.ps1`
@@ -272,8 +288,11 @@ monorepo scopes.
 - `docs/harness/evidence/large-public-repo-analysis.md`
 - `docs/harness/evidence/large-public-repo-analysis.json`
 - `docs/harness/manifest.json`
+- `docs/harness/feedback/report-json-contract.md`
 - `docs/harness/research/large-public-repo-gap-analysis.md`
+- `docs/roadmap.md`
 - `scripts/analyze_large_public_repos.py`
+- `src/harnessforge/project/nested_instructions.py`
 - `tests/test_large_public_repo_analysis.py`
 - `.gitignore`
 - `src/harnessforge/templates/`
@@ -301,6 +320,6 @@ monorepo scopes.
 
 ## Next Step
 
-Implement the next real-repo quality fix: product report and dry-run planning
-should surface review-required nested `AGENTS.md` scope candidates for large
-monorepos without writing nested instruction files by default.
+Implement deterministic file coverage reporting with git inventory so
+`index`, `report`, `quickstart`, and `init --dry-run --json` can say which
+high-signal categories were covered and which were budget-limited.

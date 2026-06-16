@@ -475,6 +475,32 @@ the task touches those surfaces.
 Done condition met for the current pre-release contract. Reopen only if a
 routine low-risk change again needs broad manual doc/state edits.
 
+### Harness Token Economics Research
+
+Status: accepted, not started.
+
+Research whether comprehensive repository harnesses increase or decrease agent
+token consumption in real work. This must be evidence-backed, not assumed from
+intuition or anecdote.
+
+Required research receipts:
+
+- current primary or high-quality public sources on agent context usage,
+  prompt/instruction length, retrieval, task success, and cost tradeoffs;
+- measured HarnessForge field evidence from representative repos with minimal,
+  moderate, and comprehensive harnesses;
+- before/after task traces or controlled evaluations that compare token usage,
+  tool calls, retries, completion quality, and verification success;
+- a clear separation between startup-token cost, repeated-session savings,
+  reduced rework, and any failure modes from instruction bloat;
+- conclusions that state whether the evidence shows net token increase, net
+  token decrease, mixed results, or insufficient evidence.
+
+Output should be a research note with citations, a compact metric schema for
+future evaluations, and a recommendation for how HarnessForge should size,
+route, summarize, or lazily load harness content. Do not turn the conclusion
+into generated behavior until the receipts show the tradeoff.
+
 ### Generated Harness Skill Fallback
 
 Status: implemented for the current generated-harness contract.

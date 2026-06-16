@@ -26,15 +26,16 @@ nested instruction files by default.
 
 | Repo | Stack | Tracked Files | Scanned Files | Components | Observed Gaps |
 | --- | --- | ---: | ---: | ---: | --- |
-| `kubernetes-kubernetes` | Go | 30,513 | 20,000 | 44 | file scan truncation, generator default scan limit, nested instruction plan needed, no existing SBOM |
-| `microsoft-vscode` | TypeScript/React | 15,783 | 15,407 | 80 | component scan truncation, generator default scan limit, nested instruction plan needed, no existing SBOM |
-| `bazelbuild-bazel` | Bazel | 13,265 | 8,333 | 80 | component scan truncation, generator default scan limit, nested instruction plan needed |
+| `kubernetes-kubernetes` | Go | 30,513 | 20,000 | 44 | file scan truncation, nested instruction plan needed, no existing SBOM |
+| `microsoft-vscode` | TypeScript/React | 15,783 | 15,407 | 80 | component scan truncation, nested instruction plan needed, no existing SBOM |
+| `bazelbuild-bazel` | Bazel | 13,265 | 8,333 | 80 | component scan truncation, nested instruction plan needed |
 
 Cross-repo signals:
 
-- `create_harness(..., dry_run=True)` used the default 4,000-file scan for all
-  three repos, even when field analysis used `--max-files 20000`.
-- All three repos produced nested instruction-scope candidates.
+- Dry-run generation now uses the requested 20,000-file scan limit in all
+  three analyzed repos.
+- All three repos produce `harnessforge.nestedInstructionPlan.v1`
+  review-required nested instruction-scope candidates.
 - VS Code already has nested `AGENTS.md` files, proving the pattern exists in a
   large public monorepo and should be detected as project-owned guidance.
 - Kubernetes exceeded the 20,000-file field scan limit.
@@ -137,21 +138,28 @@ Definition of done:
 ### 4. Nested Instruction Planning Is A Product Feature
 
 Severity: high for large monorepo quality; medium for default generation
-safety.
+safety. Status: initial product implementation for report and dry-run flows;
+index and enhance integration remain follow-up work.
 
 Observed: all three repos produced nested instruction candidates. VS Code also
 has existing nested `AGENTS.md` files.
 
-Deterministic fix:
+Implemented deterministic fix:
 
 - Add a `nestedInstructionPlan` model outside the repo-local field script.
 - Feed it from deterministic signals:
-  existing nested `AGENTS.md`, component manifests, workspace markers,
-  workflow path filters, workflow working directories, verification command
-  prefixes, top-level package directories, and source-of-truth docs.
-- Surface the plan in `index`, `report`, `quickstart`, `init --dry-run --json`,
-  and `enhance`.
+  existing nested `AGENTS.md`, component manifests, workspace markers, and
+  component inventory truncation.
+- Surface the plan in `report`, `quickstart --json`, and
+  `init --dry-run --json`.
 - Never write nested `AGENTS.md` by default.
+
+Remaining deterministic follow-up:
+
+- Add workflow path filters, workflow working directories, verification command
+  prefixes, top-level package directories, and source-of-truth docs to the
+  signal model.
+- Surface the plan in `index` and `enhance`.
 - When writes are later supported, require explicit path selection and
   confirmation.
 
@@ -160,7 +168,7 @@ Definition of done:
 - Large monorepo dry-runs produce a compact review-required nested instruction
   plan.
 - Existing nested `AGENTS.md` files are treated as project-owned guidance and
-  routed from the root instruction plan.
+  skipped when producing new candidate paths.
 
 ### 5. Verification Command Detection Needs Classification
 
@@ -252,13 +260,16 @@ Definition of done:
 
 ## Recommended Build Order
 
-1. Add `max_files` plumbing and shared profile/index reuse to generation
-   dry-runs.
+1. Done for explicit scan limits: add `max_files` plumbing to generation
+   dry-runs. Shared profile/index reuse remains an optional optimization.
 2. Add deterministic file coverage reporting using git inventory when
    available.
 3. Add component ranking, grouping, overflow, and `--component-limit`.
-4. Promote nested instruction planning from the field script into product code.
-5. Surface nested plans in report, quickstart, init dry-run JSON, and enhance.
+4. Done for initial product surfaces: promote nested instruction planning from
+   the field script into product code.
+5. Done for report and dry-run flows: surface nested plans in report,
+   quickstart, and init dry-run JSON. Enhance and index integration remain
+   follow-up work.
 6. Add verification command classification and source attribution.
 7. Split source-of-truth ranking from local component docs.
 8. Expand the real public corpus run after each deterministic slice.

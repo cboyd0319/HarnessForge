@@ -1,6 +1,6 @@
 # Large Public Repo Analysis
 
-Generated: 2026-06-16T17:07:04+00:00
+Generated: 2026-06-16T17:20:16+00:00
 
 ## Boundary
 
@@ -20,15 +20,15 @@ Generated: 2026-06-16T17:07:04+00:00
 
 ## Cross-Repo Findings
 
-- `nested_agents_plan`: large monorepos should get a review-required nested AGENTS.md plan instead of only a root instruction file.
+- `nested_agents_plan`: large monorepos produce review-required nested AGENTS.md candidates; keep them advisory and improve ranking before any explicit write mode.
 
 ## Repository Results
 
 | Repo | Status | Stack | Tracked | Scanned | Components | Nested Plan | Top Gaps |
 | --- | --- | --- | ---: | ---: | ---: | --- | --- |
-| `kubernetes-kubernetes` | `analyzed` | `go` | 30513 | 20000 | 44 | 20 candidates | file_scan_truncated, nested_agents_review_needed, no_existing_sbom_detected |
-| `microsoft-vscode` | `analyzed` | `typescript-react` | 15783 | 15407 | 80 | 20 candidates | component_scan_truncated, nested_agents_review_needed, no_existing_sbom_detected |
-| `bazelbuild-bazel` | `analyzed` | `bazel` | 13265 | 8333 | 80 | 20 candidates | component_scan_truncated, nested_agents_review_needed |
+| `kubernetes-kubernetes` | `analyzed` | `go` | 30513 | 20000 | 44 | 43 candidates | file_scan_truncated, nested_agents_review_needed, no_existing_sbom_detected |
+| `microsoft-vscode` | `analyzed` | `typescript-react` | 15783 | 15407 | 80 | 77 candidates | component_scan_truncated, nested_agents_review_needed, no_existing_sbom_detected |
+| `bazelbuild-bazel` | `analyzed` | `bazel` | 13265 | 8333 | 80 | 79 candidates | component_scan_truncated, nested_agents_review_needed |
 
 ## Nested Instruction Candidate Examples
 
@@ -42,7 +42,7 @@ Generated: 2026-06-16T17:07:04+00:00
 - `hack/tools/instrumentation`
 - `cluster/addons/dns/coredns`
 - `cluster/addons/dns/kube-dns`
-- ... 12 more candidates in JSON report
+- ... 35 more candidates in JSON report
 
 ### `microsoft-vscode`
 
@@ -54,7 +54,7 @@ Generated: 2026-06-16T17:07:04+00:00
 - `test`
 - `extensions/bat`
 - `extensions/clojure`
-- ... 12 more candidates in JSON report
+- ... 69 more candidates in JSON report
 
 ### `bazelbuild-bazel`
 
@@ -66,4 +66,4 @@ Generated: 2026-06-16T17:07:04+00:00
 - `third_party`
 - `tools`
 - `examples/cpp`
-- ... 12 more candidates in JSON report
+- ... 71 more candidates in JSON report

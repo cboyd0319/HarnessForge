@@ -185,6 +185,7 @@ class GitHubActionTests(unittest.TestCase):
         self.assertIn("report-markdown", docs)
         self.assertIn("report-since", docs)
         self.assertIn("generation-max-files", docs)
+        self.assertIn("nested instruction-plan status", docs)
         self.assertIn("require-docs-fanout-budget", docs)
 
     def test_action_manifest_and_docs_expose_release_check_command(self) -> None:

@@ -8,7 +8,7 @@ import subprocess
 import sys
 from collections import Counter
 from datetime import UTC, datetime
-from pathlib import Path, PurePosixPath
+from pathlib import Path
 from typing import Any
 
 from harnessforge.assessment.audit import audit_target, audit_to_dict
@@ -16,6 +16,7 @@ from harnessforge.core.redact import redact_local_paths
 from harnessforge.generation.generate import create_harness
 from harnessforge.project.detect import MISSING_VERIFICATION_COMMAND, detect_project
 from harnessforge.project.indexer import build_index_report
+from harnessforge.project.nested_instructions import build_nested_instruction_plan
 from harnessforge.project.readiness import inspect_readiness, readiness_to_dict
 
 SCHEMA_VERSION = "harnessforge.largePublicRepoAnalysis.v1"
@@ -305,7 +306,7 @@ def analyze_repo(
         readiness = readiness_to_dict(inspect_readiness(profile))
         audit = audit_to_dict(audit_target(checkout))
         dry_run = dry_run_generation(checkout, max_files=max_files)
-        nested_plan = nested_instruction_plan(profile, repo)
+        nested_plan = build_nested_instruction_plan(profile)
         gaps = quality_gaps(
             profile=profile,
             index=index,
@@ -496,63 +497,6 @@ def dry_run_generation(checkout: Path, *, max_files: int) -> dict[str, Any]:
     }
 
 
-def nested_instruction_plan(
-    profile: Any, repo: dict[str, Any]
-) -> dict[str, Any]:
-    existing = sorted(
-        file
-        for file in profile.files
-        if PurePosixPath(file).name == "AGENTS.md" and file != "AGENTS.md"
-    )
-    component_roots = [
-        component_path(component)
-        for component in profile.components
-        if component_path(component) not in {"", "."}
-    ]
-    monorepo_signal = (
-        "monorepo" in repo.get("categories", [])
-        or "multiple nested component manifests" in profile.workspace_markers
-        or len(component_roots) >= 4
-    )
-    candidates = []
-    if monorepo_signal:
-        for path in component_roots:
-            if len(candidates) >= 20:
-                break
-            if has_nested_agent(existing, path):
-                continue
-            candidates.append(
-                {
-                    "path": path,
-                    "reason": "component has its own manifest or boundary signal",
-                    "recommendedAction": "review_required",
-                }
-            )
-    return {
-        "status": "review_required" if candidates else "no_action",
-        "writeByDefault": False,
-        "rootAgentsPresent": "AGENTS.md" in profile.files,
-        "existingNestedAgents": existing[:20],
-        "existingNestedAgentCount": len(existing),
-        "candidateComponents": candidates,
-        "candidateCount": len(candidates),
-        "guidance": (
-            "Use root AGENTS.md as a short repo-wide router. Add nested "
-            "AGENTS.md only for meaningful components whose stack, commands, "
-            "ownership, constraints, or verification differ."
-        ),
-    }
-
-
-def component_path(component: str) -> str:
-    return component.split(" (", 1)[0].strip()
-
-
-def has_nested_agent(existing: list[str], component: str) -> bool:
-    prefix = component.rstrip("/") + "/"
-    return any(path.startswith(prefix) for path in existing)
-
-
 def quality_gaps(
     *,
     profile: Any,
@@ -655,8 +599,9 @@ def cross_repo_findings(results: list[dict[str, Any]]) -> list[dict[str, str]]:
             {
                 "code": "nested_agents_plan",
                 "message": (
-                    "large monorepos should get a review-required nested "
-                    "AGENTS.md plan instead of only a root instruction file."
+                    "large monorepos produce review-required nested AGENTS.md "
+                    "candidates; keep them advisory and improve ranking before "
+                    "any explicit write mode."
                 ),
             }
         )

@@ -17,7 +17,7 @@
   "crossRepoFindings": [
     {
       "code": "nested_agents_plan",
-      "message": "large monorepos should get a review-required nested AGENTS.md plan instead of only a root instruction file."
+      "message": "large monorepos produce review-required nested AGENTS.md candidates; keep them advisory and improve ranking before any explicit write mode."
     }
   ],
   "execution": {
@@ -29,7 +29,7 @@
     "normalHarnessGenerationNetworkAccess": false,
     "targetWritesPerformed": false
   },
-  "generatedAt": "2026-06-16T17:07:04+00:00",
+  "generatedAt": "2026-06-16T17:20:16+00:00",
   "mode": "real_public_repo_field_analysis",
   "repositories": [
     {
@@ -125,111 +125,139 @@
       "nestedInstructionPlan": {
         "candidateComponents": [
           {
+            "instructionPath": "hack/tools/AGENTS.md",
             "path": "hack/tools",
-            "reason": "component has its own manifest or boundary signal",
+            "reason": "component has boundary markers: go.mod, go.work",
             "recommendedAction": "review_required"
           },
           {
+            "instructionPath": "cluster/addons/addon-manager/AGENTS.md",
             "path": "cluster/addons/addon-manager",
-            "reason": "component has its own manifest or boundary signal",
+            "reason": "component has boundary markers: Dockerfile, Makefile",
             "recommendedAction": "review_required"
           },
           {
+            "instructionPath": "cluster/images/etcd-version-monitor/AGENTS.md",
             "path": "cluster/images/etcd-version-monitor",
-            "reason": "component has its own manifest or boundary signal",
+            "reason": "component has boundary markers: Dockerfile, Makefile",
             "recommendedAction": "review_required"
           },
           {
+            "instructionPath": "cluster/images/kubemark/AGENTS.md",
             "path": "cluster/images/kubemark",
-            "reason": "component has its own manifest or boundary signal",
+            "reason": "component has boundary markers: Dockerfile, Makefile",
             "recommendedAction": "review_required"
           },
           {
+            "instructionPath": "hack/tools/golangci-lint/AGENTS.md",
             "path": "hack/tools/golangci-lint",
-            "reason": "component has its own manifest or boundary signal",
+            "reason": "component has boundary markers: go.mod, go.work",
             "recommendedAction": "review_required"
           },
           {
+            "instructionPath": "hack/tools/instrumentation/AGENTS.md",
             "path": "hack/tools/instrumentation",
-            "reason": "component has its own manifest or boundary signal",
+            "reason": "component has boundary markers: go.mod, go.work",
             "recommendedAction": "review_required"
           },
           {
+            "instructionPath": "cluster/addons/dns/coredns/AGENTS.md",
             "path": "cluster/addons/dns/coredns",
-            "reason": "component has its own manifest or boundary signal",
+            "reason": "component has boundary markers: Makefile",
             "recommendedAction": "review_required"
           },
           {
+            "instructionPath": "cluster/addons/dns/kube-dns/AGENTS.md",
             "path": "cluster/addons/dns/kube-dns",
-            "reason": "component has its own manifest or boundary signal",
+            "reason": "component has boundary markers: Makefile",
             "recommendedAction": "review_required"
           },
           {
+            "instructionPath": "cluster/gce/gci/mounter/AGENTS.md",
             "path": "cluster/gce/gci/mounter",
-            "reason": "component has its own manifest or boundary signal",
+            "reason": "component has boundary markers: Dockerfile, Makefile",
             "recommendedAction": "review_required"
           },
           {
+            "instructionPath": "staging/src/k8s.io/api/AGENTS.md",
             "path": "staging/src/k8s.io/api",
-            "reason": "component has its own manifest or boundary signal",
+            "reason": "component has boundary markers: go.mod",
             "recommendedAction": "review_required"
           },
           {
+            "instructionPath": "staging/src/k8s.io/apiextensions-apiserver/AGENTS.md",
             "path": "staging/src/k8s.io/apiextensions-apiserver",
-            "reason": "component has its own manifest or boundary signal",
+            "reason": "component has boundary markers: go.mod",
             "recommendedAction": "review_required"
           },
           {
+            "instructionPath": "staging/src/k8s.io/apimachinery/AGENTS.md",
             "path": "staging/src/k8s.io/apimachinery",
-            "reason": "component has its own manifest or boundary signal",
+            "reason": "component has boundary markers: go.mod",
             "recommendedAction": "review_required"
           },
           {
+            "instructionPath": "staging/src/k8s.io/apiserver/AGENTS.md",
             "path": "staging/src/k8s.io/apiserver",
-            "reason": "component has its own manifest or boundary signal",
+            "reason": "component has boundary markers: go.mod",
             "recommendedAction": "review_required"
           },
           {
+            "instructionPath": "staging/src/k8s.io/cli-runtime/AGENTS.md",
             "path": "staging/src/k8s.io/cli-runtime",
-            "reason": "component has its own manifest or boundary signal",
+            "reason": "component has boundary markers: go.mod",
             "recommendedAction": "review_required"
           },
           {
+            "instructionPath": "staging/src/k8s.io/client-go/AGENTS.md",
             "path": "staging/src/k8s.io/client-go",
-            "reason": "component has its own manifest or boundary signal",
+            "reason": "component has boundary markers: go.mod",
             "recommendedAction": "review_required"
           },
           {
+            "instructionPath": "staging/src/k8s.io/cloud-provider/AGENTS.md",
             "path": "staging/src/k8s.io/cloud-provider",
-            "reason": "component has its own manifest or boundary signal",
+            "reason": "component has boundary markers: go.mod",
             "recommendedAction": "review_required"
           },
           {
+            "instructionPath": "staging/src/k8s.io/cluster-bootstrap/AGENTS.md",
             "path": "staging/src/k8s.io/cluster-bootstrap",
-            "reason": "component has its own manifest or boundary signal",
+            "reason": "component has boundary markers: go.mod",
             "recommendedAction": "review_required"
           },
           {
+            "instructionPath": "staging/src/k8s.io/code-generator/AGENTS.md",
             "path": "staging/src/k8s.io/code-generator",
-            "reason": "component has its own manifest or boundary signal",
+            "reason": "component has boundary markers: go.mod",
             "recommendedAction": "review_required"
           },
           {
+            "instructionPath": "staging/src/k8s.io/component-base/AGENTS.md",
             "path": "staging/src/k8s.io/component-base",
-            "reason": "component has its own manifest or boundary signal",
+            "reason": "component has boundary markers: go.mod",
             "recommendedAction": "review_required"
           },
           {
+            "instructionPath": "staging/src/k8s.io/component-helpers/AGENTS.md",
             "path": "staging/src/k8s.io/component-helpers",
-            "reason": "component has its own manifest or boundary signal",
+            "reason": "component has boundary markers: go.mod",
             "recommendedAction": "review_required"
           }
         ],
-        "candidateCount": 20,
+        "candidateCount": 43,
+        "candidateLimit": 20,
+        "candidateListTruncated": true,
         "existingNestedAgentCount": 0,
         "existingNestedAgents": [],
         "guidance": "Use root AGENTS.md as a short repo-wide router. Add nested AGENTS.md only for meaningful components whose stack, commands, ownership, constraints, or verification differ.",
+        "monorepoSignals": [
+          "go.work",
+          "multiple nested component manifests",
+          "4+ detected component boundaries"
+        ],
         "rootAgentsPresent": true,
+        "schemaVersion": "harnessforge.nestedInstructionPlan.v1",
         "status": "review_required",
         "writeByDefault": false
       },
@@ -576,107 +604,129 @@
       "nestedInstructionPlan": {
         "candidateComponents": [
           {
+            "instructionPath": ".devcontainer/AGENTS.md",
             "path": ".devcontainer",
-            "reason": "component has its own manifest or boundary signal",
+            "reason": "component has boundary markers: Dockerfile",
             "recommendedAction": "review_required"
           },
           {
+            "instructionPath": ".eslint-plugin-local/AGENTS.md",
             "path": ".eslint-plugin-local",
-            "reason": "component has its own manifest or boundary signal",
+            "reason": "component has boundary markers: package.json",
             "recommendedAction": "review_required"
           },
           {
+            "instructionPath": "cli/AGENTS.md",
             "path": "cli",
-            "reason": "component has its own manifest or boundary signal",
+            "reason": "component has boundary markers: Cargo.toml",
             "recommendedAction": "review_required"
           },
           {
+            "instructionPath": "remote/AGENTS.md",
             "path": "remote",
-            "reason": "component has its own manifest or boundary signal",
+            "reason": "component has boundary markers: package.json",
             "recommendedAction": "review_required"
           },
           {
+            "instructionPath": "scripts/AGENTS.md",
             "path": "scripts",
-            "reason": "component has its own manifest or boundary signal",
+            "reason": "component has boundary markers: package.json",
             "recommendedAction": "review_required"
           },
           {
+            "instructionPath": "test/AGENTS.md",
             "path": "test",
-            "reason": "component has its own manifest or boundary signal",
+            "reason": "component has boundary markers: package.json",
             "recommendedAction": "review_required"
           },
           {
+            "instructionPath": "extensions/bat/AGENTS.md",
             "path": "extensions/bat",
-            "reason": "component has its own manifest or boundary signal",
+            "reason": "component has boundary markers: package.json",
             "recommendedAction": "review_required"
           },
           {
+            "instructionPath": "extensions/clojure/AGENTS.md",
             "path": "extensions/clojure",
-            "reason": "component has its own manifest or boundary signal",
+            "reason": "component has boundary markers: package.json",
             "recommendedAction": "review_required"
           },
           {
+            "instructionPath": "extensions/coffeescript/AGENTS.md",
             "path": "extensions/coffeescript",
-            "reason": "component has its own manifest or boundary signal",
+            "reason": "component has boundary markers: package.json",
             "recommendedAction": "review_required"
           },
           {
+            "instructionPath": "extensions/configuration-editing/AGENTS.md",
             "path": "extensions/configuration-editing",
-            "reason": "component has its own manifest or boundary signal",
+            "reason": "component has boundary markers: package.json",
             "recommendedAction": "review_required"
           },
           {
+            "instructionPath": "extensions/cpp/AGENTS.md",
             "path": "extensions/cpp",
-            "reason": "component has its own manifest or boundary signal",
+            "reason": "component has boundary markers: package.json",
             "recommendedAction": "review_required"
           },
           {
+            "instructionPath": "extensions/csharp/AGENTS.md",
             "path": "extensions/csharp",
-            "reason": "component has its own manifest or boundary signal",
+            "reason": "component has boundary markers: package.json",
             "recommendedAction": "review_required"
           },
           {
+            "instructionPath": "extensions/css/AGENTS.md",
             "path": "extensions/css",
-            "reason": "component has its own manifest or boundary signal",
+            "reason": "component has boundary markers: package.json",
             "recommendedAction": "review_required"
           },
           {
+            "instructionPath": "extensions/css-language-features/AGENTS.md",
             "path": "extensions/css-language-features",
-            "reason": "component has its own manifest or boundary signal",
+            "reason": "component has boundary markers: package.json",
             "recommendedAction": "review_required"
           },
           {
+            "instructionPath": "extensions/dart/AGENTS.md",
             "path": "extensions/dart",
-            "reason": "component has its own manifest or boundary signal",
+            "reason": "component has boundary markers: package.json",
             "recommendedAction": "review_required"
           },
           {
+            "instructionPath": "extensions/debug-auto-launch/AGENTS.md",
             "path": "extensions/debug-auto-launch",
-            "reason": "component has its own manifest or boundary signal",
+            "reason": "component has boundary markers: package.json",
             "recommendedAction": "review_required"
           },
           {
+            "instructionPath": "extensions/debug-server-ready/AGENTS.md",
             "path": "extensions/debug-server-ready",
-            "reason": "component has its own manifest or boundary signal",
+            "reason": "component has boundary markers: package.json",
             "recommendedAction": "review_required"
           },
           {
+            "instructionPath": "extensions/diff/AGENTS.md",
             "path": "extensions/diff",
-            "reason": "component has its own manifest or boundary signal",
+            "reason": "component has boundary markers: package.json",
             "recommendedAction": "review_required"
           },
           {
+            "instructionPath": "extensions/docker/AGENTS.md",
             "path": "extensions/docker",
-            "reason": "component has its own manifest or boundary signal",
+            "reason": "component has boundary markers: package.json",
             "recommendedAction": "review_required"
           },
           {
+            "instructionPath": "extensions/dotenv/AGENTS.md",
             "path": "extensions/dotenv",
-            "reason": "component has its own manifest or boundary signal",
+            "reason": "component has boundary markers: package.json",
             "recommendedAction": "review_required"
           }
         ],
-        "candidateCount": 20,
+        "candidateCount": 77,
+        "candidateLimit": 20,
+        "candidateListTruncated": true,
         "existingNestedAgentCount": 7,
         "existingNestedAgents": [
           "extensions/copilot/src/extension/chatSessions/claude/AGENTS.md",
@@ -688,7 +738,14 @@
           "src/vs/workbench/contrib/imageCarousel/AGENTS.md"
         ],
         "guidance": "Use root AGENTS.md as a short repo-wide router. Add nested AGENTS.md only for meaningful components whose stack, commands, ownership, constraints, or verification differ.",
+        "monorepoSignals": [
+          "multiple nested component manifests",
+          "4+ detected component boundaries",
+          "component inventory truncated",
+          "existing nested AGENTS.md"
+        ],
         "rootAgentsPresent": true,
+        "schemaVersion": "harnessforge.nestedInstructionPlan.v1",
         "status": "review_required",
         "writeByDefault": false
       },
@@ -1020,111 +1077,140 @@
       "nestedInstructionPlan": {
         "candidateComponents": [
           {
+            "instructionPath": "docs/AGENTS.md",
             "path": "docs",
-            "reason": "component has its own manifest or boundary signal",
+            "reason": "component has boundary markers: BUILD.bazel",
             "recommendedAction": "review_required"
           },
           {
+            "instructionPath": "examples/AGENTS.md",
             "path": "examples",
-            "reason": "component has its own manifest or boundary signal",
+            "reason": "component has boundary markers: BUILD",
             "recommendedAction": "review_required"
           },
           {
+            "instructionPath": "scripts/AGENTS.md",
             "path": "scripts",
-            "reason": "component has its own manifest or boundary signal",
+            "reason": "component has boundary markers: BUILD",
             "recommendedAction": "review_required"
           },
           {
+            "instructionPath": "site/AGENTS.md",
             "path": "site",
-            "reason": "component has its own manifest or boundary signal",
+            "reason": "component has boundary markers: BUILD",
             "recommendedAction": "review_required"
           },
           {
+            "instructionPath": "src/AGENTS.md",
             "path": "src",
-            "reason": "component has its own manifest or boundary signal",
+            "reason": "component has boundary markers: BUILD",
             "recommendedAction": "review_required"
           },
           {
+            "instructionPath": "third_party/AGENTS.md",
             "path": "third_party",
-            "reason": "component has its own manifest or boundary signal",
+            "reason": "component has boundary markers: BUILD",
             "recommendedAction": "review_required"
           },
           {
+            "instructionPath": "tools/AGENTS.md",
             "path": "tools",
-            "reason": "component has its own manifest or boundary signal",
+            "reason": "component has boundary markers: BUILD",
             "recommendedAction": "review_required"
           },
           {
+            "instructionPath": "examples/cpp/AGENTS.md",
             "path": "examples/cpp",
-            "reason": "component has its own manifest or boundary signal",
+            "reason": "component has boundary markers: BUILD",
             "recommendedAction": "review_required"
           },
           {
+            "instructionPath": "examples/gen/AGENTS.md",
             "path": "examples/gen",
-            "reason": "component has its own manifest or boundary signal",
+            "reason": "component has boundary markers: BUILD",
             "recommendedAction": "review_required"
           },
           {
+            "instructionPath": "examples/go/AGENTS.md",
             "path": "examples/go",
-            "reason": "component has its own manifest or boundary signal",
+            "reason": "component has boundary markers: BUILD",
             "recommendedAction": "review_required"
           },
           {
+            "instructionPath": "examples/java-native/AGENTS.md",
             "path": "examples/java-native",
-            "reason": "component has its own manifest or boundary signal",
+            "reason": "component has boundary markers: BUILD",
             "recommendedAction": "review_required"
           },
           {
+            "instructionPath": "examples/java-starlark/AGENTS.md",
             "path": "examples/java-starlark",
-            "reason": "component has its own manifest or boundary signal",
+            "reason": "component has boundary markers: BUILD",
             "recommendedAction": "review_required"
           },
           {
+            "instructionPath": "examples/py/AGENTS.md",
             "path": "examples/py",
-            "reason": "component has its own manifest or boundary signal",
+            "reason": "component has boundary markers: BUILD",
             "recommendedAction": "review_required"
           },
           {
+            "instructionPath": "examples/py_native/AGENTS.md",
             "path": "examples/py_native",
-            "reason": "component has its own manifest or boundary signal",
+            "reason": "component has boundary markers: BUILD",
             "recommendedAction": "review_required"
           },
           {
+            "instructionPath": "examples/shell/AGENTS.md",
             "path": "examples/shell",
-            "reason": "component has its own manifest or boundary signal",
+            "reason": "component has boundary markers: BUILD",
             "recommendedAction": "review_required"
           },
           {
+            "instructionPath": "scripts/docs/AGENTS.md",
             "path": "scripts/docs",
-            "reason": "component has its own manifest or boundary signal",
+            "reason": "component has boundary markers: BUILD",
             "recommendedAction": "review_required"
           },
           {
+            "instructionPath": "scripts/packages/AGENTS.md",
             "path": "scripts/packages",
-            "reason": "component has its own manifest or boundary signal",
+            "reason": "component has boundary markers: BUILD",
             "recommendedAction": "review_required"
           },
           {
+            "instructionPath": "scripts/release/AGENTS.md",
             "path": "scripts/release",
-            "reason": "component has its own manifest or boundary signal",
+            "reason": "component has boundary markers: BUILD",
             "recommendedAction": "review_required"
           },
           {
+            "instructionPath": "scripts/zsh_completion/AGENTS.md",
             "path": "scripts/zsh_completion",
-            "reason": "component has its own manifest or boundary signal",
+            "reason": "component has boundary markers: BUILD",
             "recommendedAction": "review_required"
           },
           {
+            "instructionPath": "site/en/AGENTS.md",
             "path": "site/en",
-            "reason": "component has its own manifest or boundary signal",
+            "reason": "component has boundary markers: BUILD.bazel",
             "recommendedAction": "review_required"
           }
         ],
-        "candidateCount": 20,
+        "candidateCount": 79,
+        "candidateLimit": 20,
+        "candidateListTruncated": true,
         "existingNestedAgentCount": 0,
         "existingNestedAgents": [],
         "guidance": "Use root AGENTS.md as a short repo-wide router. Add nested AGENTS.md only for meaningful components whose stack, commands, ownership, constraints, or verification differ.",
+        "monorepoSignals": [
+          "MODULE.bazel",
+          "multiple nested component manifests",
+          "4+ detected component boundaries",
+          "component inventory truncated"
+        ],
         "rootAgentsPresent": true,
+        "schemaVersion": "harnessforge.nestedInstructionPlan.v1",
         "status": "review_required",
         "writeByDefault": false
       },

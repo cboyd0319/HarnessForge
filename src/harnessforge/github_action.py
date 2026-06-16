@@ -614,6 +614,9 @@ def _report_summary_markdown(payload: dict[str, Any]) -> str:
         f"| Feature state | `{payload['featureState']['status']}` |",
         f"| Observability | `{payload['observability']['status']}` |",
         f"| Index adapters | `{payload['indexAdapters']['status']}` |",
+        "| Nested instruction plan | "
+        f"`{payload['nestedInstructionPlan']['status']}` "
+        f"({payload['nestedInstructionPlan']['candidateCount']} candidates) |",
         "| Repo map | "
         f"`{repo_map['componentCount']}` components, "
         f"`{repo_map['sourceOfTruthCount']}` source docs |",

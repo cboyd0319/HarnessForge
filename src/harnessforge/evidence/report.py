@@ -22,6 +22,7 @@ from ..core.reports import report_path, relative_to_target
 from ..generation.update import build_drift_report
 from ..project.detect import detect_project
 from ..project.indexer import build_index_report
+from ..project.nested_instructions import build_nested_instruction_plan
 from ..project.planner import DiffPlanReport, build_diff_plan
 from ..project.readiness import inspect_readiness, readiness_to_dict
 
@@ -94,6 +95,7 @@ def build_report(
     feature_state = build_feature_state_report(profile.root, diff_plan=diff_plan)
     observability = build_observability_report(profile.root, profile.files)
     index_adapters = build_index_adapter_report(profile.files)
+    nested_instruction_plan = build_nested_instruction_plan(profile)
     payload = {
         "schemaVersion": SCHEMA_VERSION,
         "target": {
@@ -112,6 +114,7 @@ def build_report(
         "audit": _audit_summary(audit_payload),
         "drift": _drift_summary(drift),
         "index": _index_summary(index),
+        "nestedInstructionPlan": nested_instruction_plan,
         "verifyEvidence": readiness_payload["verifyEvidence"],
         "effectiveness": _effectiveness_summary(effectiveness),
         "instructionQuality": readiness_payload["instructionQuality"],
@@ -140,6 +143,7 @@ def build_report(
         feature_state,
         observability,
         index_adapters,
+        nested_instruction_plan,
     )
     return payload
 
@@ -189,9 +193,17 @@ def format_report(payload: dict[str, Any]) -> str:
         f"- Manifests: {payload['index']['summary']['manifestCount']}",
         f"- Source-of-truth docs: {payload['index']['summary']['sourceOfTruthCount']}",
         f"- SBOM files: {payload['index']['summary']['sbomCount']}",
-        f"- Repo-map unknowns: {len(payload['index']['repoMap']['unknowns'])}",
-        "",
-        "## Verify Evidence",
+            f"- Repo-map unknowns: {len(payload['index']['repoMap']['unknowns'])}",
+            "",
+            "## Nested Instruction Plan",
+            "",
+            f"- Status: `{payload['nestedInstructionPlan']['status']}`",
+            "- Write by default: "
+            f"`{str(payload['nestedInstructionPlan']['writeByDefault']).lower()}`",
+            f"- Candidates: {payload['nestedInstructionPlan']['candidateCount']}",
+            f"- Existing nested agents: {payload['nestedInstructionPlan']['existingNestedAgentCount']}",
+            "",
+            "## Verify Evidence",
         "",
     ]
     latest = payload["verifyEvidence"]["latest"]
@@ -845,6 +857,7 @@ def _next_actions(
     feature_state: dict[str, Any],
     observability: dict[str, Any],
     index_adapters: dict[str, Any],
+    nested_instruction_plan: dict[str, Any],
 ) -> list[str]:
     actions: list[str] = [
         "Run harnessforge report --target <repo> --markdown-report "
@@ -863,6 +876,11 @@ def _next_actions(
     actions.extend(feature_state["nextActions"])
     actions.extend(observability["nextActions"])
     actions.extend(index_adapters["nextActions"])
+    if nested_instruction_plan["status"] == "review_required":
+        actions.append(
+            "Review nested AGENTS.md candidates before adding component-specific "
+            "instruction files; do not write nested instructions by default."
+        )
     if docs_fanout["authoritativeMap"]["status"] == "missing":
         actions.append(
             "Add docs/harness/authoritative-facts.md to reduce harness docs fan-out."

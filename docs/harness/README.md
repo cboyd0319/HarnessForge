@@ -142,9 +142,10 @@ present, state-file presence, and next actions without running target commands.
 audit, generated drift, structural index summary, verify evidence,
 effectiveness evidence, first-agent task status, platform contract,
 instruction quality, skill wiring, feature state, observability, index-adapter
-status, review-work classification, and docs fan-out without running target
-commands. It also reports policy preset recommendations and SBOM adapter status
-while keeping preset application and SBOM generation explicit opt-ins. Use
+status, review-work classification, nested instruction-scope candidates, and
+docs fan-out without running target commands. It also reports policy preset
+recommendations and SBOM adapter status while keeping preset application,
+nested instruction writes, and SBOM generation explicit opt-ins. Use
 `--json-report` or `--markdown-report` with a target-relative path to persist
 review evidence. Stable report fields are documented in
 `feedback/report-json-contract.md`.

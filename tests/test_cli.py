@@ -480,6 +480,44 @@ class CliTests(unittest.TestCase):
         self.assertEqual(payload["repositoryScan"]["fileCount"], 3)
         self.assertTrue(payload["repositoryScan"]["truncated"])
 
+    def test_init_dry_run_json_reports_nested_instruction_plan(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "package.json").write_text(
+                json.dumps(
+                    {
+                        "name": "demo",
+                        "workspaces": ["packages/*"],
+                        "scripts": {"test": "node --test"},
+                    }
+                ),
+                encoding="utf-8",
+            )
+            for package in ("api", "web"):
+                package_root = root / "packages" / package
+                package_root.mkdir(parents=True)
+                (package_root / "package.json").write_text(
+                    json.dumps({"name": package}),
+                    encoding="utf-8",
+                )
+            stdout = io.StringIO()
+            with contextlib.redirect_stdout(stdout):
+                code = main(["init", "--target", str(root), "--dry-run", "--json"])
+            payload = json.loads(stdout.getvalue())
+
+        plan = payload["nestedInstructionPlan"]
+        instruction_paths = {
+            item["instructionPath"] for item in plan["candidateComponents"]
+        }
+        self.assertEqual(code, 0)
+        self.assertEqual(plan["schemaVersion"], "harnessforge.nestedInstructionPlan.v1")
+        self.assertEqual(plan["status"], "review_required")
+        self.assertFalse(plan["writeByDefault"])
+        self.assertIn("package.json workspaces", plan["monorepoSignals"])
+        self.assertIn("packages/api/AGENTS.md", instruction_paths)
+        self.assertIn("packages/web/AGENTS.md", instruction_paths)
+        self.assertFalse((root / "packages" / "api" / "AGENTS.md").exists())
+
     def test_index_ignores_harnessforge_scratch_directory(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -988,6 +1026,11 @@ class CliTests(unittest.TestCase):
             "docs/harness/feedback/verification-matrix.md",
             payload["skillWiring"]["resolvedReferences"],
         )
+        self.assertEqual(
+            payload["nestedInstructionPlan"]["schemaVersion"],
+            "harnessforge.nestedInstructionPlan.v1",
+        )
+        self.assertEqual(payload["nestedInstructionPlan"]["status"], "no_action")
         self.assertEqual(payload["firstAgentTask"]["status"], "pending_review")
         self.assertEqual(payload["firstAgentTask"]["lifecycle"]["status"], "pending")
         self.assertEqual(
@@ -1043,6 +1086,47 @@ class CliTests(unittest.TestCase):
         self.assertIn("Run harnessforge report", payload["nextActions"][0])
         self.assertTrue(
             any("first-agent-review.json" in item for item in payload["nextActions"])
+        )
+
+    def test_report_json_reports_nested_instruction_candidates(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "package.json").write_text(
+                json.dumps(
+                    {
+                        "name": "demo",
+                        "workspaces": ["packages/*"],
+                        "scripts": {"test": "node --test"},
+                    }
+                ),
+                encoding="utf-8",
+            )
+            for package in ("api", "web"):
+                package_root = root / "packages" / package
+                package_root.mkdir(parents=True)
+                (package_root / "package.json").write_text(
+                    json.dumps({"name": package}),
+                    encoding="utf-8",
+                )
+            stdout = io.StringIO()
+            with contextlib.redirect_stdout(stdout):
+                code = main(["report", "--target", str(root), "--json"])
+            payload = json.loads(stdout.getvalue())
+
+        plan = payload["nestedInstructionPlan"]
+        self.assertEqual(code, 0)
+        self.assertEqual(plan["status"], "review_required")
+        self.assertFalse(plan["writeByDefault"])
+        self.assertEqual(plan["candidateCount"], 2)
+        self.assertEqual(
+            {item["instructionPath"] for item in plan["candidateComponents"]},
+            {"packages/api/AGENTS.md", "packages/web/AGENTS.md"},
+        )
+        self.assertTrue(
+            any(
+                "nested AGENTS.md candidates" in action
+                for action in payload["nextActions"]
+            )
         )
 
     def test_inspect_readiness_reports_broken_skill_wiring(self) -> None:

@@ -47,6 +47,7 @@ from .project.finalize_review import (
     format_review_finalization_plan,
 )
 from .project.indexer import build_index_report, format_index_report
+from .project.nested_instructions import build_nested_instruction_plan
 from .project.planner import build_diff_plan, diff_plan_to_dict, format_diff_plan
 from .project.readiness import (
     ReadinessReport,
@@ -744,6 +745,7 @@ def _quickstart_to_dict(
         },
         "decisions": decisions,
         "readiness": readiness_to_dict(report),
+        "nestedInstructionPlan": build_nested_instruction_plan(profile),
         "plannedWrites": planned_paths,
         "preservedFiles": preserved,
         "reviewRequired": list(report.review_required),
@@ -1075,6 +1077,9 @@ def _init(args: argparse.Namespace) -> int:
         relative = _relative(result.path, profile.root)
         suffix = f" ({result.reason})" if result.reason else ""
         print(f"{result.status.upper()} {relative}{suffix}")
+    if args.dry_run:
+        for line in _nested_instruction_lines(profile):
+            print(line)
     for warning in _preserved_file_warnings(results, profile.root):
         print(warning)
     for warning in _workflow_warnings(args.with_ci_workflow):
@@ -1110,6 +1115,7 @@ def _init_plan_to_dict(
             "writesPerformed": False,
         },
         "verificationCommands": list(profile.verification_commands),
+        "nestedInstructionPlan": build_nested_instruction_plan(profile),
         "writes": [
             {
                 "path": _relative(result.path, profile.root),
@@ -1501,6 +1507,12 @@ def _format_quickstart(
     _append_cli_section(lines, "Existing files preserved", preserved)
     _append_cli_section(lines, "Files HarnessForge would enhance", would_enhance)
     _append_cli_section(lines, "Files HarnessForge would create", would_create)
+    nested_plan = build_nested_instruction_plan(profile)
+    _append_cli_section(
+        lines,
+        "Nested AGENTS.md candidates",
+        _nested_instruction_candidate_lines(nested_plan),
+    )
     _append_cli_section(
         lines,
         "Generated files needing project review",
@@ -1587,6 +1599,34 @@ def _scan_to_dict(profile: ProjectProfile) -> dict[str, object]:
         "maxFiles": profile.file_scan_limit,
         "truncated": profile.file_scan_truncated,
     }
+
+
+def _nested_instruction_lines(profile: ProjectProfile) -> tuple[str, ...]:
+    candidates = _nested_instruction_candidate_lines(
+        build_nested_instruction_plan(profile)
+    )
+    if not candidates:
+        return ()
+    return (
+        "REVIEW REQUIRED nested AGENTS.md candidates:",
+        *(f"  - {candidate}" for candidate in candidates),
+    )
+
+
+def _nested_instruction_candidate_lines(plan: dict[str, object]) -> tuple[str, ...]:
+    if plan.get("status") != "review_required":
+        return ()
+    candidates = plan.get("candidateComponents", [])
+    if not isinstance(candidates, list):
+        return ()
+    lines = [
+        str(item["instructionPath"])
+        for item in candidates[:10]
+        if isinstance(item, dict) and isinstance(item.get("instructionPath"), str)
+    ]
+    if plan.get("candidateListTruncated"):
+        lines.append("... more candidates in JSON output")
+    return tuple(lines)
 
 
 def _list_or_none(values: tuple[str, ...]) -> str:
