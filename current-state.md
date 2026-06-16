@@ -207,6 +207,12 @@ monorepo scopes.
   Bazel complete for eligible coverage, VS Code budget-limited only for one
   remaining eligible path, and Kubernetes still genuinely budget-limited;
   `file_discovery_priority` remains open for deeper Kubernetes-scale ranking.
+- Component inventory overflow now uses `harnessforge.componentOverflow.v1`.
+  `index`, `report`, `quickstart`, `init`, `update`, `release-check`, the
+  GitHub Action, and the field analyzer accept component limits where they
+  already expose file scan limits. Field evidence now reports Kubernetes
+  `44/44`, VS Code `80/145`, and Bazel `80/186` included/detected
+  components at the default cap.
 
 ## Trusted Verification
 
@@ -244,6 +250,14 @@ monorepo scopes.
   Kubernetes, VS Code, and Bazel with zero failures, Bazel complete for
   eligible coverage, and VS Code budget-limited only for one remaining
   eligible path.
+- Current component-overflow verification: focused detect, CLI, Action, and
+  field-analysis tests passed with 47 tests; compile/py_compile checks passed;
+  full unit discovery passed with 301 tests; compileall, pin check, research
+  source check, JSON validation, report JSON smoke, expected-block
+  release-check JSON smoke, durable-doc local-path scan, diff hygiene, and
+  self-audit `100/100` passed. Refreshed Kubernetes, VS Code, and Bazel field
+  evidence analyzed 3/3 repos with zero failures and records included/total
+  component counts.
 - Current README pass verification: required README manifest snippet check
   passed with no missing snippets; duplicate literal prose scan found no
   repeated meaningful lines; `tests.test_generate_audit` passed with 59 tests;

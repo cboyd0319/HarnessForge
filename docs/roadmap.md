@@ -269,6 +269,37 @@ Definition of done:
 - Remaining: generated guidance quality should improve from the new signals
   without increasing default harness size.
 
+### Component Inventory Ranking And Overflow
+
+Status: initial ranking, grouping, overflow reporting, and component-limit
+plumbing implemented.
+
+Large repositories can expose more component manifests than HarnessForge should
+include by default. The current product keeps the 80-component default cap but
+now ranks root, workspace, source, tooling, tests, docs, examples, vendor, and
+other component groups deterministically. `index`, `report`, `quickstart`,
+`init`, `update`, `release-check`, the GitHub Action, and the large-public-repo
+field analyzer accept explicit component limits where they already expose file
+scan limits.
+
+Implemented behavior:
+
+- `ProjectProfile` records included components, total detected components,
+  omitted component examples, and truncation state.
+- `index --json` and report JSON include
+  `harnessforge.componentOverflow.v1` with included, total, omitted, group
+  counts, omitted examples, and recommended review action.
+- Human-readable index/report/Action summaries show included versus detected
+  components instead of only the capped count.
+- Generated manifests retain component inventory total and omitted examples.
+
+Remaining:
+
+- Use component overflow to improve nested instruction candidate ranking and
+  generated component guidance without increasing default generated size.
+- Improve ranking with verification-command source attribution and CI
+  path-filter evidence.
+
 ### SBOM-Aware Indexing
 
 Status: default detection of existing SPDX and CycloneDX-style SBOM files is

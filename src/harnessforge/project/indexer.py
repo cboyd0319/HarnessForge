@@ -227,6 +227,7 @@ def build_index_report(profile: ProjectProfile) -> dict[str, Any]:
     source_of_truth = _source_of_truth_records(records)
     review_required = _review_required_records(records)
     components = _component_records(profile.components)
+    component_overflow = _component_overflow_report(profile)
     language_breakdown = _language_breakdown(records)
     entrypoints = _entrypoints(records, profile.verification_commands)
     sboms = _sbom_records(records)
@@ -239,8 +240,9 @@ def build_index_report(profile: ProjectProfile) -> dict[str, Any]:
     warnings.extend(file_coverage["warnings"])
     if profile.component_scan_truncated:
         warnings.append(
-            "Component inventory reached the "
-            f"{profile.component_scan_limit}-component detection limit."
+            "Component inventory selected "
+            f"{len(components)} of {profile.component_scan_total} detected "
+            f"components at the {profile.component_scan_limit}-component limit."
         )
     if not source_of_truth:
         warnings.append("No high-signal source-of-truth documents were detected.")
@@ -265,6 +267,8 @@ def build_index_report(profile: ProjectProfile) -> dict[str, Any]:
             "fileCount": len(records),
             "byteCount": total_bytes,
             "componentCount": len(components),
+            "componentTotalCount": profile.component_scan_total,
+            "componentOmittedCount": len(profile.component_overflow),
             "manifestCount": len(manifests),
             "sourceOfTruthCount": len(source_of_truth),
             "reviewRequiredCount": len(review_required),
@@ -275,6 +279,7 @@ def build_index_report(profile: ProjectProfile) -> dict[str, Any]:
         "languageBreakdown": language_breakdown,
         "fileClasses": class_totals,
         "components": components,
+        "componentOverflow": component_overflow,
         "manifests": manifests,
         "entrypoints": entrypoints,
         "sourceOfTruth": source_of_truth,
@@ -323,7 +328,11 @@ def format_index_report(report: dict[str, Any]) -> str:
             f"{file_coverage['scannedFileCount']} scanned / {total_files} total "
             f"from {file_coverage['inventorySource']} ({coverage_status})"
         ),
-        f"Components: {report['summary']['componentCount']}",
+        (
+            "Components: "
+            f"{report['summary']['componentCount']} included / "
+            f"{report['summary']['componentTotalCount']} detected"
+        ),
         "",
         "Languages:",
     ]
@@ -434,11 +443,76 @@ def _component_records(components: tuple[str, ...]) -> list[dict[str, Any]]:
             {
                 "path": path,
                 "markers": markers,
+                "group": _component_group(path),
+                "rankReason": _component_rank_reason(path, markers),
                 "confidence": "high" if markers else "medium",
                 "source": "manifest",
             }
         )
     return records
+
+
+def _component_overflow_report(profile: ProjectProfile) -> dict[str, Any]:
+    omitted = _component_records(profile.component_overflow)
+    return {
+        "schemaVersion": "harnessforge.componentOverflow.v1",
+        "limit": profile.component_scan_limit,
+        "includedCount": len(profile.components),
+        "totalCount": profile.component_scan_total,
+        "omittedCount": len(profile.component_overflow),
+        "truncated": profile.component_scan_truncated,
+        "omittedExamples": omitted[:20],
+        "groupCounts": _component_group_counts(
+            _component_records(profile.components + profile.component_overflow)
+        ),
+        "recommendedAction": (
+            "Raise --component-limit or add important omitted boundaries manually."
+            if profile.component_scan_truncated
+            else "none"
+        ),
+    }
+
+
+def _component_group_counts(components: list[dict[str, Any]]) -> dict[str, int]:
+    counts: dict[str, int] = {}
+    for component in components:
+        group = str(component["group"])
+        counts[group] = counts.get(group, 0) + 1
+    return dict(sorted(counts.items()))
+
+
+def _component_group(path: str) -> str:
+    if path == ".":
+        return "root"
+    first_segment = path.split("/", 1)[0]
+    if first_segment in {"apps", "packages", "services", "crates"}:
+        return "workspace"
+    if first_segment in {"src", "cmd", "pkg", "lib"}:
+        return "source"
+    if first_segment in {"tools", "scripts", "hack"}:
+        return "tooling"
+    if first_segment in {"test", "tests", "spec"}:
+        return "tests"
+    if first_segment in {"docs", "site"}:
+        return "docs"
+    if first_segment in {"examples", "samples"}:
+        return "examples"
+    if first_segment in {"vendor", "third_party", "external"}:
+        return "vendor"
+    return "other"
+
+
+def _component_rank_reason(path: str, markers: list[str]) -> str:
+    group = _component_group(path)
+    if group == "root":
+        return "root manifest boundary"
+    if group in {"workspace", "source", "tooling"}:
+        return f"{group} component boundary"
+    if "BUILD" in markers or "BUILD.bazel" in markers:
+        return "build graph boundary"
+    if group in {"docs", "examples", "vendor"}:
+        return f"lower-priority {group} boundary"
+    return "manifest boundary"
 
 
 def _manifest_records(records: list[dict[str, Any]]) -> list[dict[str, str]]:

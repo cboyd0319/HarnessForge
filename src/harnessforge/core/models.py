@@ -22,6 +22,8 @@ class ProjectProfile:
     file_scan_truncated: bool = False
     component_scan_limit: int = 80
     component_scan_truncated: bool = False
+    component_scan_total: int = 0
+    component_overflow: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)

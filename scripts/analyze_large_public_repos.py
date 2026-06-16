@@ -42,6 +42,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--repo", action="append", default=[])
     parser.add_argument("--limit", type=int)
     parser.add_argument("--max-files", type=int, default=20_000)
+    parser.add_argument("--component-limit", type=int, default=80)
     parser.add_argument("--timeout-seconds", type=int, default=900)
     parser.add_argument(
         "--clone",
@@ -70,6 +71,8 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.max_files <= 0:
         parser.error("--max-files must be greater than 0")
+    if args.component_limit <= 0:
+        parser.error("--component-limit must be greater than 0")
     if args.timeout_seconds <= 0:
         parser.error("--timeout-seconds must be greater than 0")
 
@@ -98,6 +101,7 @@ def main(argv: list[str] | None = None) -> int:
         workdir=args.workdir,
         clone_missing=args.clone,
         max_files=args.max_files,
+        component_limit=args.component_limit,
         timeout_seconds=args.timeout_seconds,
     )
     write_report(args.json_report, json.dumps(payload, indent=2, sort_keys=True) + "\n")
@@ -193,6 +197,7 @@ def analyze_repos(
     workdir: Path,
     clone_missing: bool,
     max_files: int,
+    component_limit: int,
     timeout_seconds: int,
 ) -> dict[str, Any]:
     checkout_root = workdir / "checkouts"
@@ -204,6 +209,7 @@ def analyze_repos(
             checkout_root=checkout_root,
             clone_missing=clone_missing,
             max_files=max_files,
+            component_limit=component_limit,
             timeout_seconds=timeout_seconds,
         )
         for repo in repos
@@ -232,6 +238,7 @@ def analyze_repos(
             "missingReposAreCloned": clone_missing,
             "normalHarnessGenerationNetworkAccess": False,
             "maxFiles": max_files,
+            "componentLimit": component_limit,
         },
         "summary": {
             "selected": len(results),
@@ -262,6 +269,7 @@ def analyze_repo(
     checkout_root: Path,
     clone_missing: bool,
     max_files: int,
+    component_limit: int,
     timeout_seconds: int,
 ) -> dict[str, Any]:
     checkout = checkout_root / repo["id"]
@@ -301,11 +309,19 @@ def analyze_repo(
             ["git", "-C", str(checkout), "ls-files"],
             timeout_seconds,
         ).splitlines()
-        profile = detect_project(checkout, max_files=max_files)
+        profile = detect_project(
+            checkout,
+            max_files=max_files,
+            max_components=component_limit,
+        )
         index = build_index_report(profile)
         readiness = readiness_to_dict(inspect_readiness(profile))
         audit = audit_to_dict(audit_target(checkout))
-        dry_run = dry_run_generation(checkout, max_files=max_files)
+        dry_run = dry_run_generation(
+            checkout,
+            max_files=max_files,
+            component_limit=component_limit,
+        )
         nested_plan = build_nested_instruction_plan(profile)
         gaps = quality_gaps(
             profile=profile,
@@ -337,6 +353,7 @@ def analyze_repo(
                 "componentScanTruncated": profile.component_scan_truncated,
             },
             "indexSummary": index["summary"],
+            "componentOverflow": component_overflow_summary(index["componentOverflow"]),
             "repoMap": {
                 "primaryLanguages": index["repoMap"]["summary"]["primaryLanguages"],
                 "components": index["repoMap"]["components"][:12],
@@ -470,9 +487,19 @@ def git_output(root: Path, command: list[str], timeout_seconds: int) -> str:
     return result.stdout
 
 
-def dry_run_generation(checkout: Path, *, max_files: int) -> dict[str, Any]:
+def dry_run_generation(
+    checkout: Path,
+    *,
+    max_files: int,
+    component_limit: int,
+) -> dict[str, Any]:
     try:
-        profile, writes = create_harness(checkout, dry_run=True, max_files=max_files)
+        profile, writes = create_harness(
+            checkout,
+            dry_run=True,
+            max_files=max_files,
+            max_components=component_limit,
+        )
     except Exception as exc:  # pragma: no cover - defensive field-run boundary
         return {
             "status": "failed",
@@ -482,6 +509,8 @@ def dry_run_generation(checkout: Path, *, max_files: int) -> dict[str, Any]:
             "usesDefaultFileScanLimit": False,
             "requestedFileScanLimit": max_files,
             "fileScanLimit": 4000,
+            "requestedComponentLimit": component_limit,
+            "componentLimit": 80,
         }
     counts = Counter(write.status for write in writes)
     return {
@@ -495,6 +524,9 @@ def dry_run_generation(checkout: Path, *, max_files: int) -> dict[str, Any]:
         "requestedFileScanLimit": max_files,
         "fileScanLimit": profile.file_scan_limit,
         "fileScanTruncated": profile.file_scan_truncated,
+        "requestedComponentLimit": component_limit,
+        "componentLimit": profile.component_scan_limit,
+        "componentScanTruncated": profile.component_scan_truncated,
     }
 
 
@@ -765,7 +797,8 @@ def format_markdown_report(payload: dict[str, Any]) -> str:
             f"{repo['indexSummary']['fileCount']} | "
             f"{repo['fileCoverage'].get('skippedFileCount', 0)} | "
             f"`{repo['fileCoverage']['status']}` | "
-            f"{repo['detected']['componentCount']} | "
+            f"{repo['componentOverflow']['includedCount']}/"
+            f"{repo['componentOverflow']['totalCount']} | "
             f"{repo['nestedInstructionPlan']['candidateCount']} candidates | "
             f"{gaps} |"
         )
@@ -817,6 +850,19 @@ def file_coverage_summary(file_coverage: dict[str, Any]) -> dict[str, Any]:
             }
             for category in file_coverage["categories"]
         ],
+    }
+
+
+def component_overflow_summary(component_overflow: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "schemaVersion": component_overflow["schemaVersion"],
+        "limit": component_overflow["limit"],
+        "includedCount": component_overflow["includedCount"],
+        "totalCount": component_overflow["totalCount"],
+        "omittedCount": component_overflow["omittedCount"],
+        "truncated": component_overflow["truncated"],
+        "groupCounts": component_overflow["groupCounts"],
+        "omittedExamples": component_overflow["omittedExamples"][:12],
     }
 
 

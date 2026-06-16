@@ -66,6 +66,12 @@ def run_from_env(env: Mapping[str, str]) -> int:
     )
     if generation_max_files <= 0:
         raise ValueError("generation-max-files must be greater than 0")
+    generation_component_limit = _int_input(
+        env.get("INPUT_GENERATION_COMPONENT_LIMIT", "80"),
+        "generation-component-limit",
+    )
+    if generation_component_limit <= 0:
+        raise ValueError("generation-component-limit must be greater than 0")
     changed_files = 0
 
     if command == "doctor":
@@ -100,6 +106,7 @@ def run_from_env(env: Mapping[str, str]) -> int:
             with_ci_workflow=_bool_input(env.get("INPUT_WITH_CI_WORKFLOW", "false")),
             platform_contract=env.get("INPUT_PLATFORM_CONTRACT", "cross-platform"),
             max_files=generation_max_files,
+            max_components=generation_component_limit,
         )
         changed_files = sum(
             1 for write in writes if write.status in {"written", "enhanced"}
@@ -116,6 +123,7 @@ def run_from_env(env: Mapping[str, str]) -> int:
             with_ci_workflow=_bool_input(env.get("INPUT_WITH_CI_WORKFLOW", "false")),
             platform_contract=env.get("INPUT_PLATFORM_CONTRACT", "cross-platform"),
             max_files=generation_max_files,
+            max_components=generation_component_limit,
         )
         changed_files = sum(
             1 for write in writes if write.status in {"written", "enhanced"}
@@ -312,10 +320,17 @@ def _run_report_command(
     )
     if max_files <= 0:
         raise ValueError("report-max-files must be greater than 0")
+    max_components = _int_input(
+        env.get("INPUT_REPORT_COMPONENT_LIMIT", "80"),
+        "report-component-limit",
+    )
+    if max_components <= 0:
+        raise ValueError("report-component-limit must be greater than 0")
     payload = build_report(
         target,
         explicit_commands=_commands_input(env.get("INPUT_REPORT_COMMAND", "")),
         max_files=max_files,
+        max_components=max_components,
         since=env.get("INPUT_REPORT_SINCE", "").strip() or None,
         require_verify_evidence=_bool_input(
             env.get("INPUT_REQUIRE_VERIFY_EVIDENCE", "false")
@@ -363,10 +378,17 @@ def _run_release_check_command(
     )
     if max_files <= 0:
         raise ValueError("report-max-files must be greater than 0")
+    max_components = _int_input(
+        env.get("INPUT_REPORT_COMPONENT_LIMIT", "80"),
+        "report-component-limit",
+    )
+    if max_components <= 0:
+        raise ValueError("report-component-limit must be greater than 0")
     payload = build_release_check(
         target,
         explicit_commands=_commands_input(env.get("INPUT_REPORT_COMMAND", "")),
         max_files=max_files,
+        max_components=max_components,
         min_score=_score_input(env.get("INPUT_MIN_SCORE", "85"), "min-score"),
         since=env.get("INPUT_REPORT_SINCE", "").strip() or None,
         require_docs_fanout_budget=_bool_input(
@@ -624,7 +646,8 @@ def _report_summary_markdown(payload: dict[str, Any]) -> str:
         f"`{payload['nestedInstructionPlan']['status']}` "
         f"({payload['nestedInstructionPlan']['candidateCount']} candidates) |",
         "| Repo map | "
-        f"`{repo_map['componentCount']}` components, "
+        f"`{payload['index']['summary']['componentCount']}`/"
+        f"`{payload['index']['summary']['componentTotalCount']}` components, "
         f"`{repo_map['sourceOfTruthCount']}` source docs |",
         "| File coverage | "
         f"`{file_coverage['scannedFileCount']}` scanned / `{total_files}` total "

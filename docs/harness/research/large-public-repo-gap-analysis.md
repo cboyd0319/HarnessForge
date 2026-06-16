@@ -147,26 +147,27 @@ deeper Kubernetes-scale ranking.
 Severity: high.
 
 Observed: VS Code and Bazel reached the 80-component cap. The cap prevents
-unbounded output, but today the omitted components are not ranked or grouped
-well enough for harness design.
+unbounded output, but omitted components need to remain visible and grouped so
+maintainers can decide whether to raise the limit or add manual boundaries.
 
-Deterministic fix:
+Implemented deterministic fix:
 
-- Add component ranking:
-  root and workspace manifests, workflow working directories, path-filtered CI
-  directories, existing nested instruction scopes, package manifests with test
-  scripts, then leaf examples/docs/vendor areas.
-- Add component groups:
-  root, packages/apps/services, language/runtime, tooling, docs/site, examples,
-  vendor/third-party, generated.
-- Expose `componentOverflow` with omitted count, top omitted examples, and
-  recommended review action.
-- Add an explicit `--component-limit` option for index/report/dry-run paths.
+- Added deterministic component ranking across root, workspace, source,
+  tooling, tests, docs, examples, vendor, and other groups.
+- Added component groups in index/report records.
+- Exposed `harnessforge.componentOverflow.v1` with included count, total
+  count, omitted count, group counts, omitted examples, and recommended review
+  action.
+- Added explicit `--component-limit` options for index, report, quickstart,
+  init dry-run, update, release-check, the GitHub Action, and the real
+  public-repo field analyzer.
 
 Definition of done:
 
 - Component caps remain bounded, but reports show why chosen components were
   chosen and what kind of work was omitted.
+- Latest field evidence reports Kubernetes `44/44`, VS Code `80/145`, and
+  Bazel `80/186` included/detected components.
 
 ### 4. Nested Instruction Planning Is A Product Feature
 
@@ -298,14 +299,17 @@ Definition of done:
 2. Done for initial priority and coverage reporting: add deterministic file
    coverage reporting using git inventory when available, priority pre-passes
    for high-signal files, and eligible versus intentionally skipped counts.
-3. Add component ranking, grouping, overflow, and `--component-limit`.
+3. Done for initial component overflow: add component ranking, grouping,
+   overflow, and `--component-limit`.
 4. Done for initial product surfaces: promote nested instruction planning from
    the field script into product code.
 5. Done for report and dry-run flows: surface nested plans in report,
    quickstart, and init dry-run JSON. Enhance and index integration remain
    follow-up work.
 6. Add verification command classification and source attribution.
-7. Split source-of-truth ranking from local component docs.
+7. Split source-of-truth ranking from local component docs and use it to
+   improve component/nested instruction ranking without increasing default
+   generated size.
 8. Expand the real public corpus run after each deterministic slice.
 
 ## Optional Adapters

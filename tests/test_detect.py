@@ -147,6 +147,42 @@ class DetectProjectTests(unittest.TestCase):
         self.assertEqual(len(profile.components), 80)
         self.assertTrue(profile.component_scan_truncated)
         self.assertEqual(profile.component_scan_limit, 80)
+        self.assertEqual(profile.component_scan_total, 85)
+        self.assertEqual(len(profile.component_overflow), 5)
+
+    def test_component_scan_prioritizes_root_and_workspace_components(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "pyproject.toml").write_text(
+                "[project]\nname='demo'\n",
+                encoding="utf-8",
+            )
+            (root / "apps" / "web").mkdir(parents=True)
+            (root / "apps" / "web" / "package.json").write_text(
+                "{}\n",
+                encoding="utf-8",
+            )
+            (root / "docs" / "site").mkdir(parents=True)
+            (root / "docs" / "site" / "package.json").write_text(
+                "{}\n",
+                encoding="utf-8",
+            )
+            (root / "third_party" / "vendor").mkdir(parents=True)
+            (root / "third_party" / "vendor" / "go.mod").write_text(
+                "module vendor.example\n",
+                encoding="utf-8",
+            )
+
+            profile = detect_project(root, max_components=2)
+
+        self.assertEqual(
+            profile.components,
+            (". (pyproject.toml)", "apps/web (package.json)"),
+        )
+        self.assertEqual(profile.component_scan_total, 4)
+        self.assertTrue(profile.component_scan_truncated)
+        self.assertIn("docs/site (package.json)", profile.component_overflow)
+        self.assertIn("third_party/vendor (go.mod)", profile.component_overflow)
 
     def test_file_scan_prioritizes_control_docs_before_source_examples(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

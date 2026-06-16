@@ -125,8 +125,10 @@ release-gate verify evidence blockers.
 Use `report-command` when detection cannot infer repo-owned verification
 commands. Report mode records those commands as readiness context but does not
 execute them. Use `report-max-files` to raise the bounded structural index
-scan limit for large repositories; report JSON and the step summary include
-file coverage from `git ls-files` when the caller target is a git checkout.
+scan limit for large repositories and `report-component-limit` to raise the
+included component inventory for large monorepos; report JSON and the step
+summary include file coverage from `git ls-files` when the caller target is a
+git checkout.
 Use `report-since` to add read-only docs fan-out analysis for changed files
 since a git ref. Use
 `require-docs-fanout-budget: "true"` when that analysis should fail the Action
@@ -305,7 +307,9 @@ manifest and drift report to distinguish template-owned changes from local
 project edits.
 For large repositories, set `generation-max-files` so `command: init` or
 applied `command: update` renders generated content from the same deeper scan
-you expect from `report-max-files`.
+you expect from `report-max-files`. Set `generation-component-limit` and
+`report-component-limit` together when a large monorepo has more than 80
+detected component manifests.
 
 The optional CI workflow scaffold is off by default:
 
@@ -341,6 +345,7 @@ and not behavior embedded in the composite Action runtime.
 | `platform-contract` | `cross-platform` | Generated harness platform contract: `cross-platform`, `macos-only`, `windows-only`, or `linux-only` |
 | `with-ci-workflow` | `false` | Include optional manual HarnessForge CI workflow scaffolding during `init` or applied `update` |
 | `generation-max-files` | `4000` | Maximum number of files scanned while rendering generated files for `command: init` or applied `command: update` |
+| `generation-component-limit` | `80` | Maximum number of detected components included while rendering generated files for `command: init` or applied `command: update` |
 | `verify-run` | `false` | Execute checks when `command` is `verify`; default verify mode is read-only plan mode |
 | `verify-command` | empty | Optional newline-separated repo-owned verification commands for `command: verify` |
 | `verify-timeout-seconds` | `300` | Per-command timeout when `command` is `verify` and `verify-run` is `true` |
@@ -349,6 +354,7 @@ and not behavior embedded in the composite Action runtime.
 | `sync-command` | empty | Optional newline-separated repo-owned readiness commands for `command: sync`; commands are not executed |
 | `report-command` | empty | Optional newline-separated repo-owned readiness commands for `command: report`, `command: release-check`, or `command: finalize-review`; commands are not executed |
 | `report-max-files` | `4000` | Maximum number of files included in the `command: report` or `command: release-check` structural index summary |
+| `report-component-limit` | `80` | Maximum number of detected components included in the `command: report` or `command: release-check` structural index summary |
 | `report-since` | empty | Optional git ref for `command: report` or `command: release-check` docs fan-out analysis; no target commands are executed |
 | `require-docs-fanout-budget` | `false` | Fail `command: report` or block `command: release-check` when docs fan-out exceeds the budget or duplicate durable fact blocks are present |
 | `require-sbom` | `false` | Block `command: release-check` when no existing SPDX or CycloneDX SBOM is detected |

@@ -55,6 +55,10 @@ inputs:
     description: Maximum number of repository files to scan during command init or applied command update.
     required: false
     default: "4000"
+  generation-component-limit:
+    description: Maximum number of detected components to include during command init or applied command update.
+    required: false
+    default: "80"
   verify-run:
     description: Execute verification checks when command is verify. Default verify mode is read-only plan mode.
     required: false
@@ -87,6 +91,10 @@ inputs:
     description: Maximum number of repository files to include in command report index summary.
     required: false
     default: "4000"
+  report-component-limit:
+    description: Maximum number of detected components to include in command report or release-check index summary.
+    required: false
+    default: "80"
   report-since:
     description: Optional git ref for command report docs fan-out analysis.
     required: false
@@ -187,6 +195,7 @@ runs:
         INPUT_PLATFORM_CONTRACT: ${{ inputs.platform-contract }}
         INPUT_WITH_CI_WORKFLOW: ${{ inputs.with-ci-workflow }}
         INPUT_GENERATION_MAX_FILES: ${{ inputs.generation-max-files }}
+        INPUT_GENERATION_COMPONENT_LIMIT: ${{ inputs.generation-component-limit }}
         INPUT_VERIFY_RUN: ${{ inputs.verify-run }}
         INPUT_VERIFY_COMMAND: ${{ inputs.verify-command }}
         INPUT_VERIFY_TIMEOUT_SECONDS: ${{ inputs.verify-timeout-seconds }}
@@ -195,6 +204,7 @@ runs:
         INPUT_SYNC_COMMAND: ${{ inputs.sync-command }}
         INPUT_REPORT_COMMAND: ${{ inputs.report-command }}
         INPUT_REPORT_MAX_FILES: ${{ inputs.report-max-files }}
+        INPUT_REPORT_COMPONENT_LIMIT: ${{ inputs.report-component-limit }}
         INPUT_REPORT_SINCE: ${{ inputs.report-since }}
         INPUT_REQUIRE_DOCS_FANOUT_BUDGET: ${{ inputs.require-docs-fanout-budget }}
         INPUT_REQUIRE_SBOM: ${{ inputs.require-sbom }}

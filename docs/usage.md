@@ -34,6 +34,10 @@ Use `--max-files` with `quickstart`, `init`, or applied `update` when a large
 repository needs generated content rendered from a deeper file scan than the
 default 4,000 files. Dry-run JSON reports the file count, limit, and truncation
 status, and generated manifests retain the same scan coverage metadata.
+Use `--component-limit` with `quickstart`, `init`, `update`, `index`,
+`report`, or `release-check` when the default 80 included components is too
+small for a large monorepo. JSON output reports included, total, and omitted
+component counts plus omitted examples.
 For monorepos, quickstart output and `init --dry-run` surface review-required
 nested `AGENTS.md` candidates; JSON modes include the same
 `nestedInstructionPlan`. HarnessForge does not write nested instruction files
@@ -59,16 +63,18 @@ Build a read-only structural index for a large existing repo:
 ```bash
 harnessforge index --target /path/to/repo --json
 harnessforge index --target /path/to/repo --max-files 20000 --json
+harnessforge index --target /path/to/repo --max-files 20000 --component-limit 200 --json
 ```
 
 The default index scans up to 4,000 files for fast first-pass analysis. Use
-`--max-files` for larger repositories. The JSON report includes
+`--max-files` for larger repositories and `--component-limit` for large
+monorepos with more than 80 detected component manifests. The JSON report includes
 `fileCoverage`: when the target is a git checkout, HarnessForge compares the
 bounded scan against `git ls-files` and reports scanned versus tracked files by
 category. For non-git targets it reports coverage from the bounded filesystem
-scan. The JSON report also states when the bounded component inventory was
-truncated, so humans can add important omitted boundaries to
-`docs/harness/boundaries/component-inventory.md`.
+scan. The JSON report also includes `componentOverflow` with included, total,
+omitted, grouped, and example component boundaries so humans can add important
+omitted boundaries to `docs/harness/boundaries/component-inventory.md`.
 
 `index --json` includes a compact `repoMap` built from the structural index:
 primary languages, component candidates, source-of-truth docs, manifest kinds,

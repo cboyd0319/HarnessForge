@@ -1,6 +1,6 @@
 # Large Public Repo Analysis
 
-Generated: 2026-06-16T18:00:19+00:00
+Generated: 2026-06-16T18:17:19+00:00
 
 ## Boundary
 
@@ -27,44 +27,44 @@ Generated: 2026-06-16T18:00:19+00:00
 
 | Repo | Status | Stack | Tracked | Eligible | Scanned | Skipped | Coverage | Components | Nested Plan | Top Gaps |
 | --- | --- | --- | ---: | ---: | ---: | ---: | --- | ---: | --- | --- |
-| `kubernetes-kubernetes` | `analyzed` | `go` | 30513 | 30461 | 20000 | 52 | `budget_limited` | 44 | 43 candidates | file_scan_truncated, file_coverage_budget_limited, nested_agents_review_needed, no_existing_sbom_detected |
-| `microsoft-vscode` | `analyzed` | `typescript-react` | 15783 | 15407 | 15407 | 376 | `budget_limited` | 80 | 77 candidates | file_coverage_budget_limited, component_scan_truncated, nested_agents_review_needed, no_existing_sbom_detected |
-| `bazelbuild-bazel` | `analyzed` | `bazel` | 13265 | 8333 | 8333 | 4932 | `complete` | 80 | 79 candidates | component_scan_truncated, nested_agents_review_needed |
+| `kubernetes-kubernetes` | `analyzed` | `go` | 30513 | 30461 | 20000 | 52 | `budget_limited` | 44/44 | 43 candidates | file_scan_truncated, file_coverage_budget_limited, nested_agents_review_needed, no_existing_sbom_detected |
+| `microsoft-vscode` | `analyzed` | `typescript-react` | 15783 | 15407 | 15407 | 376 | `budget_limited` | 80/145 | 77 candidates | file_coverage_budget_limited, component_scan_truncated, nested_agents_review_needed, no_existing_sbom_detected |
+| `bazelbuild-bazel` | `analyzed` | `bazel` | 13265 | 8333 | 8333 | 4932 | `complete` | 80/186 | 79 candidates | component_scan_truncated, nested_agents_review_needed |
 
 ## Nested Instruction Candidate Examples
 
 ### `kubernetes-kubernetes`
 
 - `hack/tools`
+- `hack/tools/golangci-lint`
+- `hack/tools/instrumentation`
 - `cluster/addons/addon-manager`
 - `cluster/images/etcd-version-monitor`
 - `cluster/images/kubemark`
-- `hack/tools/golangci-lint`
-- `hack/tools/instrumentation`
 - `cluster/addons/dns/coredns`
 - `cluster/addons/dns/kube-dns`
 - ... 35 more candidates in JSON report
 
 ### `microsoft-vscode`
 
-- `.devcontainer`
-- `.eslint-plugin-local`
-- `cli`
-- `remote`
+- `src/vs/sessions/test/e2e`
+- `src/vs/sessions/test/e2e/extensions/sessions-e2e-mock`
 - `scripts`
 - `test`
-- `extensions/bat`
-- `extensions/clojure`
+- `test/automation`
+- `test/mcp`
+- `test/monaco`
+- `test/sanity`
 - ... 69 more candidates in JSON report
 
 ### `bazelbuild-bazel`
 
-- `docs`
-- `examples`
-- `scripts`
-- `site`
 - `src`
-- `third_party`
-- `tools`
-- `examples/cpp`
+- `src/conditions`
+- `src/java_tools/buildjar`
+- `src/java_tools/import_deps_checker`
+- `src/java_tools/junitrunner`
+- `src/java_tools/singlejar`
+- `src/main/cpp`
+- `src/main/native`
 - ... 71 more candidates in JSON report

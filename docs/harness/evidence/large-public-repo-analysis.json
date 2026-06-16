@@ -27,13 +27,14 @@
   "execution": {
     "checkoutRoot": ".harnessforge/large-public-repos/checkouts",
     "commandsExecuted": true,
+    "componentLimit": 80,
     "maxFiles": 20000,
     "missingReposAreCloned": false,
     "networkAccess": false,
     "normalHarnessGenerationNetworkAccess": false,
     "targetWritesPerformed": false
   },
-  "generatedAt": "2026-06-16T18:00:19+00:00",
+  "generatedAt": "2026-06-16T18:17:19+00:00",
   "mode": "real_public_repo_field_analysis",
   "repositories": [
     {
@@ -57,6 +58,20 @@
         "clonedThisRun": false,
         "message": "existing checkout reused",
         "status": "available"
+      },
+      "componentOverflow": {
+        "groupCounts": {
+          "other": 40,
+          "root": 1,
+          "tooling": 3
+        },
+        "includedCount": 44,
+        "limit": 80,
+        "omittedCount": 0,
+        "omittedExamples": [],
+        "schemaVersion": "harnessforge.componentOverflow.v1",
+        "totalCount": 44,
+        "truncated": false
       },
       "detected": {
         "componentCount": 44,
@@ -100,9 +115,12 @@
         ]
       },
       "dryRunGeneration": {
+        "componentLimit": 80,
+        "componentScanTruncated": false,
         "fileScanLimit": 20000,
         "fileScanTruncated": true,
         "plannedWriteCount": 38,
+        "requestedComponentLimit": 80,
         "requestedFileScanLimit": 20000,
         "status": "planned",
         "usesDefaultFileScanLimit": false,
@@ -185,6 +203,8 @@
       "indexSummary": {
         "byteCount": 188168829,
         "componentCount": 44,
+        "componentOmittedCount": 0,
+        "componentTotalCount": 44,
         "componentsTruncated": false,
         "fileCount": 20000,
         "manifestCount": 55,
@@ -198,6 +218,18 @@
           {
             "instructionPath": "hack/tools/AGENTS.md",
             "path": "hack/tools",
+            "reason": "component has boundary markers: go.mod, go.work",
+            "recommendedAction": "review_required"
+          },
+          {
+            "instructionPath": "hack/tools/golangci-lint/AGENTS.md",
+            "path": "hack/tools/golangci-lint",
+            "reason": "component has boundary markers: go.mod, go.work",
+            "recommendedAction": "review_required"
+          },
+          {
+            "instructionPath": "hack/tools/instrumentation/AGENTS.md",
+            "path": "hack/tools/instrumentation",
             "reason": "component has boundary markers: go.mod, go.work",
             "recommendedAction": "review_required"
           },
@@ -217,18 +249,6 @@
             "instructionPath": "cluster/images/kubemark/AGENTS.md",
             "path": "cluster/images/kubemark",
             "reason": "component has boundary markers: Dockerfile, Makefile",
-            "recommendedAction": "review_required"
-          },
-          {
-            "instructionPath": "hack/tools/golangci-lint/AGENTS.md",
-            "path": "hack/tools/golangci-lint",
-            "reason": "component has boundary markers: go.mod, go.work",
-            "recommendedAction": "review_required"
-          },
-          {
-            "instructionPath": "hack/tools/instrumentation/AGENTS.md",
-            "path": "hack/tools/instrumentation",
-            "reason": "component has boundary markers: go.mod, go.work",
             "recommendedAction": "review_required"
           },
           {
@@ -386,106 +406,130 @@
         "components": [
           {
             "confidence": "high",
+            "group": "root",
             "markers": [
               "go.mod",
               "go.work"
             ],
             "path": ".",
+            "rankReason": "root manifest boundary",
             "source": "manifest"
           },
           {
             "confidence": "high",
+            "group": "tooling",
             "markers": [
               "go.mod",
               "go.work"
             ],
             "path": "hack/tools",
+            "rankReason": "tooling component boundary",
             "source": "manifest"
           },
           {
             "confidence": "high",
-            "markers": [
-              "Dockerfile",
-              "Makefile"
-            ],
-            "path": "cluster/addons/addon-manager",
-            "source": "manifest"
-          },
-          {
-            "confidence": "high",
-            "markers": [
-              "Dockerfile",
-              "Makefile"
-            ],
-            "path": "cluster/images/etcd-version-monitor",
-            "source": "manifest"
-          },
-          {
-            "confidence": "high",
-            "markers": [
-              "Dockerfile",
-              "Makefile"
-            ],
-            "path": "cluster/images/kubemark",
-            "source": "manifest"
-          },
-          {
-            "confidence": "high",
+            "group": "tooling",
             "markers": [
               "go.mod",
               "go.work"
             ],
             "path": "hack/tools/golangci-lint",
+            "rankReason": "tooling component boundary",
             "source": "manifest"
           },
           {
             "confidence": "high",
+            "group": "tooling",
             "markers": [
               "go.mod",
               "go.work"
             ],
             "path": "hack/tools/instrumentation",
+            "rankReason": "tooling component boundary",
             "source": "manifest"
           },
           {
             "confidence": "high",
+            "group": "other",
+            "markers": [
+              "Dockerfile",
+              "Makefile"
+            ],
+            "path": "cluster/addons/addon-manager",
+            "rankReason": "manifest boundary",
+            "source": "manifest"
+          },
+          {
+            "confidence": "high",
+            "group": "other",
+            "markers": [
+              "Dockerfile",
+              "Makefile"
+            ],
+            "path": "cluster/images/etcd-version-monitor",
+            "rankReason": "manifest boundary",
+            "source": "manifest"
+          },
+          {
+            "confidence": "high",
+            "group": "other",
+            "markers": [
+              "Dockerfile",
+              "Makefile"
+            ],
+            "path": "cluster/images/kubemark",
+            "rankReason": "manifest boundary",
+            "source": "manifest"
+          },
+          {
+            "confidence": "high",
+            "group": "other",
             "markers": [
               "Makefile"
             ],
             "path": "cluster/addons/dns/coredns",
+            "rankReason": "manifest boundary",
             "source": "manifest"
           },
           {
             "confidence": "high",
+            "group": "other",
             "markers": [
               "Makefile"
             ],
             "path": "cluster/addons/dns/kube-dns",
+            "rankReason": "manifest boundary",
             "source": "manifest"
           },
           {
             "confidence": "high",
+            "group": "other",
             "markers": [
               "Dockerfile",
               "Makefile"
             ],
             "path": "cluster/gce/gci/mounter",
+            "rankReason": "manifest boundary",
             "source": "manifest"
           },
           {
             "confidence": "high",
+            "group": "other",
             "markers": [
               "go.mod"
             ],
             "path": "staging/src/k8s.io/api",
+            "rankReason": "manifest boundary",
             "source": "manifest"
           },
           {
             "confidence": "high",
+            "group": "other",
             "markers": [
               "go.mod"
             ],
             "path": "staging/src/k8s.io/apiextensions-apiserver",
+            "rankReason": "manifest boundary",
             "source": "manifest"
           }
         ],
@@ -594,6 +638,143 @@
         "message": "existing checkout reused",
         "status": "available"
       },
+      "componentOverflow": {
+        "groupCounts": {
+          "other": 131,
+          "root": 1,
+          "source": 2,
+          "tests": 10,
+          "tooling": 1
+        },
+        "includedCount": 80,
+        "limit": 80,
+        "omittedCount": 65,
+        "omittedExamples": [
+          {
+            "confidence": "high",
+            "group": "other",
+            "markers": [
+              "package.json"
+            ],
+            "path": "extensions/razor",
+            "rankReason": "manifest boundary",
+            "source": "manifest"
+          },
+          {
+            "confidence": "high",
+            "group": "other",
+            "markers": [
+              "package.json"
+            ],
+            "path": "extensions/references-view",
+            "rankReason": "manifest boundary",
+            "source": "manifest"
+          },
+          {
+            "confidence": "high",
+            "group": "other",
+            "markers": [
+              "package.json"
+            ],
+            "path": "extensions/restructuredtext",
+            "rankReason": "manifest boundary",
+            "source": "manifest"
+          },
+          {
+            "confidence": "high",
+            "group": "other",
+            "markers": [
+              "package.json"
+            ],
+            "path": "extensions/ruby",
+            "rankReason": "manifest boundary",
+            "source": "manifest"
+          },
+          {
+            "confidence": "high",
+            "group": "other",
+            "markers": [
+              "package.json"
+            ],
+            "path": "extensions/rust",
+            "rankReason": "manifest boundary",
+            "source": "manifest"
+          },
+          {
+            "confidence": "high",
+            "group": "other",
+            "markers": [
+              "package.json"
+            ],
+            "path": "extensions/scss",
+            "rankReason": "manifest boundary",
+            "source": "manifest"
+          },
+          {
+            "confidence": "high",
+            "group": "other",
+            "markers": [
+              "package.json"
+            ],
+            "path": "extensions/search-result",
+            "rankReason": "manifest boundary",
+            "source": "manifest"
+          },
+          {
+            "confidence": "high",
+            "group": "other",
+            "markers": [
+              "package.json"
+            ],
+            "path": "extensions/shaderlab",
+            "rankReason": "manifest boundary",
+            "source": "manifest"
+          },
+          {
+            "confidence": "high",
+            "group": "other",
+            "markers": [
+              "package.json"
+            ],
+            "path": "extensions/shellscript",
+            "rankReason": "manifest boundary",
+            "source": "manifest"
+          },
+          {
+            "confidence": "high",
+            "group": "other",
+            "markers": [
+              "package.json"
+            ],
+            "path": "extensions/simple-browser",
+            "rankReason": "manifest boundary",
+            "source": "manifest"
+          },
+          {
+            "confidence": "high",
+            "group": "other",
+            "markers": [
+              "package.json"
+            ],
+            "path": "extensions/sql",
+            "rankReason": "manifest boundary",
+            "source": "manifest"
+          },
+          {
+            "confidence": "high",
+            "group": "other",
+            "markers": [
+              "package.json"
+            ],
+            "path": "extensions/swift",
+            "rankReason": "manifest boundary",
+            "source": "manifest"
+          }
+        ],
+        "schemaVersion": "harnessforge.componentOverflow.v1",
+        "totalCount": 145,
+        "truncated": true
+      },
       "detected": {
         "componentCount": 80,
         "componentScanLimit": 80,
@@ -651,9 +832,12 @@
         ]
       },
       "dryRunGeneration": {
+        "componentLimit": 80,
+        "componentScanTruncated": true,
         "fileScanLimit": 20000,
         "fileScanTruncated": false,
         "plannedWriteCount": 38,
+        "requestedComponentLimit": 80,
         "requestedFileScanLimit": 20000,
         "status": "planned",
         "usesDefaultFileScanLimit": false,
@@ -740,6 +924,8 @@
       "indexSummary": {
         "byteCount": 482098536,
         "componentCount": 80,
+        "componentOmittedCount": 65,
+        "componentTotalCount": 145,
         "componentsTruncated": true,
         "fileCount": 15407,
         "manifestCount": 120,
@@ -750,6 +936,84 @@
       },
       "nestedInstructionPlan": {
         "candidateComponents": [
+          {
+            "instructionPath": "src/vs/sessions/test/e2e/AGENTS.md",
+            "path": "src/vs/sessions/test/e2e",
+            "reason": "component has boundary markers: package.json",
+            "recommendedAction": "review_required"
+          },
+          {
+            "instructionPath": "src/vs/sessions/test/e2e/extensions/sessions-e2e-mock/AGENTS.md",
+            "path": "src/vs/sessions/test/e2e/extensions/sessions-e2e-mock",
+            "reason": "component has boundary markers: package.json",
+            "recommendedAction": "review_required"
+          },
+          {
+            "instructionPath": "scripts/AGENTS.md",
+            "path": "scripts",
+            "reason": "component has boundary markers: package.json",
+            "recommendedAction": "review_required"
+          },
+          {
+            "instructionPath": "test/AGENTS.md",
+            "path": "test",
+            "reason": "component has boundary markers: package.json",
+            "recommendedAction": "review_required"
+          },
+          {
+            "instructionPath": "test/automation/AGENTS.md",
+            "path": "test/automation",
+            "reason": "component has boundary markers: package.json",
+            "recommendedAction": "review_required"
+          },
+          {
+            "instructionPath": "test/mcp/AGENTS.md",
+            "path": "test/mcp",
+            "reason": "component has boundary markers: package.json",
+            "recommendedAction": "review_required"
+          },
+          {
+            "instructionPath": "test/monaco/AGENTS.md",
+            "path": "test/monaco",
+            "reason": "component has boundary markers: package.json",
+            "recommendedAction": "review_required"
+          },
+          {
+            "instructionPath": "test/sanity/AGENTS.md",
+            "path": "test/sanity",
+            "reason": "component has boundary markers: package.json",
+            "recommendedAction": "review_required"
+          },
+          {
+            "instructionPath": "test/smoke/AGENTS.md",
+            "path": "test/smoke",
+            "reason": "component has boundary markers: package.json",
+            "recommendedAction": "review_required"
+          },
+          {
+            "instructionPath": "test/componentFixtures/playwright/AGENTS.md",
+            "path": "test/componentFixtures/playwright",
+            "reason": "component has boundary markers: package.json",
+            "recommendedAction": "review_required"
+          },
+          {
+            "instructionPath": "test/integration/browser/AGENTS.md",
+            "path": "test/integration/browser",
+            "reason": "component has boundary markers: package.json",
+            "recommendedAction": "review_required"
+          },
+          {
+            "instructionPath": "test/unit/node/AGENTS.md",
+            "path": "test/unit/node",
+            "reason": "component has boundary markers: package.json",
+            "recommendedAction": "review_required"
+          },
+          {
+            "instructionPath": "test/smoke/extensions/vscode-smoketest-ext-host/AGENTS.md",
+            "path": "test/smoke/extensions/vscode-smoketest-ext-host",
+            "reason": "component has boundary markers: package.json",
+            "recommendedAction": "review_required"
+          },
           {
             "instructionPath": ".devcontainer/AGENTS.md",
             "path": ".devcontainer",
@@ -775,18 +1039,6 @@
             "recommendedAction": "review_required"
           },
           {
-            "instructionPath": "scripts/AGENTS.md",
-            "path": "scripts",
-            "reason": "component has boundary markers: package.json",
-            "recommendedAction": "review_required"
-          },
-          {
-            "instructionPath": "test/AGENTS.md",
-            "path": "test",
-            "reason": "component has boundary markers: package.json",
-            "recommendedAction": "review_required"
-          },
-          {
             "instructionPath": "extensions/bat/AGENTS.md",
             "path": "extensions/bat",
             "reason": "component has boundary markers: package.json",
@@ -801,72 +1053,6 @@
           {
             "instructionPath": "extensions/coffeescript/AGENTS.md",
             "path": "extensions/coffeescript",
-            "reason": "component has boundary markers: package.json",
-            "recommendedAction": "review_required"
-          },
-          {
-            "instructionPath": "extensions/configuration-editing/AGENTS.md",
-            "path": "extensions/configuration-editing",
-            "reason": "component has boundary markers: package.json",
-            "recommendedAction": "review_required"
-          },
-          {
-            "instructionPath": "extensions/cpp/AGENTS.md",
-            "path": "extensions/cpp",
-            "reason": "component has boundary markers: package.json",
-            "recommendedAction": "review_required"
-          },
-          {
-            "instructionPath": "extensions/csharp/AGENTS.md",
-            "path": "extensions/csharp",
-            "reason": "component has boundary markers: package.json",
-            "recommendedAction": "review_required"
-          },
-          {
-            "instructionPath": "extensions/css/AGENTS.md",
-            "path": "extensions/css",
-            "reason": "component has boundary markers: package.json",
-            "recommendedAction": "review_required"
-          },
-          {
-            "instructionPath": "extensions/css-language-features/AGENTS.md",
-            "path": "extensions/css-language-features",
-            "reason": "component has boundary markers: package.json",
-            "recommendedAction": "review_required"
-          },
-          {
-            "instructionPath": "extensions/dart/AGENTS.md",
-            "path": "extensions/dart",
-            "reason": "component has boundary markers: package.json",
-            "recommendedAction": "review_required"
-          },
-          {
-            "instructionPath": "extensions/debug-auto-launch/AGENTS.md",
-            "path": "extensions/debug-auto-launch",
-            "reason": "component has boundary markers: package.json",
-            "recommendedAction": "review_required"
-          },
-          {
-            "instructionPath": "extensions/debug-server-ready/AGENTS.md",
-            "path": "extensions/debug-server-ready",
-            "reason": "component has boundary markers: package.json",
-            "recommendedAction": "review_required"
-          },
-          {
-            "instructionPath": "extensions/diff/AGENTS.md",
-            "path": "extensions/diff",
-            "reason": "component has boundary markers: package.json",
-            "recommendedAction": "review_required"
-          },
-          {
-            "instructionPath": "extensions/docker/AGENTS.md",
-            "path": "extensions/docker",
-            "reason": "component has boundary markers: package.json",
-            "recommendedAction": "review_required"
-          },
-          {
-            "instructionPath": "extensions/dotenv/AGENTS.md",
-            "path": "extensions/dotenv",
             "reason": "component has boundary markers: package.json",
             "recommendedAction": "review_required"
           }
@@ -954,98 +1140,122 @@
         "components": [
           {
             "confidence": "high",
+            "group": "root",
             "markers": [
               "package.json"
             ],
             "path": ".",
+            "rankReason": "root manifest boundary",
             "source": "manifest"
           },
           {
             "confidence": "high",
-            "markers": [
-              "Dockerfile"
-            ],
-            "path": ".devcontainer",
-            "source": "manifest"
-          },
-          {
-            "confidence": "high",
+            "group": "source",
             "markers": [
               "package.json"
             ],
-            "path": ".eslint-plugin-local",
+            "path": "src/vs/sessions/test/e2e",
+            "rankReason": "source component boundary",
             "source": "manifest"
           },
           {
             "confidence": "high",
-            "markers": [
-              "Cargo.toml"
-            ],
-            "path": "cli",
-            "source": "manifest"
-          },
-          {
-            "confidence": "high",
+            "group": "source",
             "markers": [
               "package.json"
             ],
-            "path": "extensions",
+            "path": "src/vs/sessions/test/e2e/extensions/sessions-e2e-mock",
+            "rankReason": "source component boundary",
             "source": "manifest"
           },
           {
             "confidence": "high",
-            "markers": [
-              "package.json"
-            ],
-            "path": "remote",
-            "source": "manifest"
-          },
-          {
-            "confidence": "high",
+            "group": "tooling",
             "markers": [
               "package.json"
             ],
             "path": "scripts",
+            "rankReason": "tooling component boundary",
             "source": "manifest"
           },
           {
             "confidence": "high",
+            "group": "tests",
             "markers": [
               "package.json"
             ],
             "path": "test",
+            "rankReason": "manifest boundary",
             "source": "manifest"
           },
           {
             "confidence": "high",
+            "group": "tests",
             "markers": [
               "package.json"
             ],
-            "path": "extensions/bat",
+            "path": "test/automation",
+            "rankReason": "manifest boundary",
             "source": "manifest"
           },
           {
             "confidence": "high",
+            "group": "tests",
             "markers": [
               "package.json"
             ],
-            "path": "extensions/clojure",
+            "path": "test/mcp",
+            "rankReason": "manifest boundary",
             "source": "manifest"
           },
           {
             "confidence": "high",
+            "group": "tests",
             "markers": [
               "package.json"
             ],
-            "path": "extensions/coffeescript",
+            "path": "test/monaco",
+            "rankReason": "manifest boundary",
             "source": "manifest"
           },
           {
             "confidence": "high",
+            "group": "tests",
             "markers": [
               "package.json"
             ],
-            "path": "extensions/configuration-editing",
+            "path": "test/sanity",
+            "rankReason": "manifest boundary",
+            "source": "manifest"
+          },
+          {
+            "confidence": "high",
+            "group": "tests",
+            "markers": [
+              "package.json"
+            ],
+            "path": "test/smoke",
+            "rankReason": "manifest boundary",
+            "source": "manifest"
+          },
+          {
+            "confidence": "high",
+            "group": "tests",
+            "markers": [
+              "package.json"
+            ],
+            "path": "test/componentFixtures/playwright",
+            "rankReason": "manifest boundary",
+            "source": "manifest"
+          },
+          {
+            "confidence": "high",
+            "group": "tests",
+            "markers": [
+              "package.json"
+            ],
+            "path": "test/integration/browser",
+            "rankReason": "manifest boundary",
             "source": "manifest"
           }
         ],
@@ -1154,6 +1364,144 @@
         "message": "existing checkout reused",
         "status": "available"
       },
+      "componentOverflow": {
+        "groupCounts": {
+          "docs": 3,
+          "examples": 17,
+          "root": 1,
+          "source": 77,
+          "tooling": 63,
+          "vendor": 25
+        },
+        "includedCount": 80,
+        "limit": 80,
+        "omittedCount": 106,
+        "omittedExamples": [
+          {
+            "confidence": "high",
+            "group": "tooling",
+            "markers": [
+              "BUILD"
+            ],
+            "path": "scripts/docs",
+            "rankReason": "tooling component boundary",
+            "source": "manifest"
+          },
+          {
+            "confidence": "high",
+            "group": "tooling",
+            "markers": [
+              "BUILD"
+            ],
+            "path": "scripts/packages",
+            "rankReason": "tooling component boundary",
+            "source": "manifest"
+          },
+          {
+            "confidence": "high",
+            "group": "tooling",
+            "markers": [
+              "BUILD"
+            ],
+            "path": "scripts/release",
+            "rankReason": "tooling component boundary",
+            "source": "manifest"
+          },
+          {
+            "confidence": "high",
+            "group": "tooling",
+            "markers": [
+              "BUILD"
+            ],
+            "path": "scripts/zsh_completion",
+            "rankReason": "tooling component boundary",
+            "source": "manifest"
+          },
+          {
+            "confidence": "high",
+            "group": "tooling",
+            "markers": [
+              "BUILD"
+            ],
+            "path": "tools/allowlists",
+            "rankReason": "tooling component boundary",
+            "source": "manifest"
+          },
+          {
+            "confidence": "high",
+            "group": "tooling",
+            "markers": [
+              "BUILD"
+            ],
+            "path": "tools/android",
+            "rankReason": "tooling component boundary",
+            "source": "manifest"
+          },
+          {
+            "confidence": "high",
+            "group": "tooling",
+            "markers": [
+              "BUILD"
+            ],
+            "path": "tools/aquery_differ",
+            "rankReason": "tooling component boundary",
+            "source": "manifest"
+          },
+          {
+            "confidence": "high",
+            "group": "tooling",
+            "markers": [
+              "BUILD"
+            ],
+            "path": "tools/bash",
+            "rankReason": "tooling component boundary",
+            "source": "manifest"
+          },
+          {
+            "confidence": "high",
+            "group": "tooling",
+            "markers": [
+              "BUILD"
+            ],
+            "path": "tools/build_defs",
+            "rankReason": "tooling component boundary",
+            "source": "manifest"
+          },
+          {
+            "confidence": "high",
+            "group": "tooling",
+            "markers": [
+              "BUILD"
+            ],
+            "path": "tools/build_rules",
+            "rankReason": "tooling component boundary",
+            "source": "manifest"
+          },
+          {
+            "confidence": "high",
+            "group": "tooling",
+            "markers": [
+              "BUILD"
+            ],
+            "path": "tools/buildstamp",
+            "rankReason": "tooling component boundary",
+            "source": "manifest"
+          },
+          {
+            "confidence": "high",
+            "group": "tooling",
+            "markers": [
+              "BUILD"
+            ],
+            "path": "tools/compliance",
+            "rankReason": "tooling component boundary",
+            "source": "manifest"
+          }
+        ],
+        "schemaVersion": "harnessforge.componentOverflow.v1",
+        "totalCount": 186,
+        "truncated": true
+      },
       "detected": {
         "componentCount": 80,
         "componentScanLimit": 80,
@@ -1200,9 +1548,12 @@
         ]
       },
       "dryRunGeneration": {
+        "componentLimit": 80,
+        "componentScanTruncated": true,
         "fileScanLimit": 20000,
         "fileScanTruncated": false,
         "plannedWriteCount": 38,
+        "requestedComponentLimit": 80,
         "requestedFileScanLimit": 20000,
         "status": "planned",
         "usesDefaultFileScanLimit": false,
@@ -1287,6 +1638,8 @@
       "indexSummary": {
         "byteCount": 164334239,
         "componentCount": 80,
+        "componentOmittedCount": 106,
+        "componentTotalCount": 186,
         "componentsTruncated": true,
         "fileCount": 8333,
         "manifestCount": 120,
@@ -1298,123 +1651,123 @@
       "nestedInstructionPlan": {
         "candidateComponents": [
           {
-            "instructionPath": "docs/AGENTS.md",
-            "path": "docs",
-            "reason": "component has boundary markers: BUILD.bazel",
-            "recommendedAction": "review_required"
-          },
-          {
-            "instructionPath": "examples/AGENTS.md",
-            "path": "examples",
-            "reason": "component has boundary markers: BUILD",
-            "recommendedAction": "review_required"
-          },
-          {
-            "instructionPath": "scripts/AGENTS.md",
-            "path": "scripts",
-            "reason": "component has boundary markers: BUILD",
-            "recommendedAction": "review_required"
-          },
-          {
-            "instructionPath": "site/AGENTS.md",
-            "path": "site",
-            "reason": "component has boundary markers: BUILD",
-            "recommendedAction": "review_required"
-          },
-          {
             "instructionPath": "src/AGENTS.md",
             "path": "src",
             "reason": "component has boundary markers: BUILD",
             "recommendedAction": "review_required"
           },
           {
-            "instructionPath": "third_party/AGENTS.md",
-            "path": "third_party",
+            "instructionPath": "src/conditions/AGENTS.md",
+            "path": "src/conditions",
             "reason": "component has boundary markers: BUILD",
             "recommendedAction": "review_required"
           },
           {
-            "instructionPath": "tools/AGENTS.md",
-            "path": "tools",
+            "instructionPath": "src/java_tools/buildjar/AGENTS.md",
+            "path": "src/java_tools/buildjar",
             "reason": "component has boundary markers: BUILD",
             "recommendedAction": "review_required"
           },
           {
-            "instructionPath": "examples/cpp/AGENTS.md",
-            "path": "examples/cpp",
+            "instructionPath": "src/java_tools/import_deps_checker/AGENTS.md",
+            "path": "src/java_tools/import_deps_checker",
             "reason": "component has boundary markers: BUILD",
             "recommendedAction": "review_required"
           },
           {
-            "instructionPath": "examples/gen/AGENTS.md",
-            "path": "examples/gen",
+            "instructionPath": "src/java_tools/junitrunner/AGENTS.md",
+            "path": "src/java_tools/junitrunner",
             "reason": "component has boundary markers: BUILD",
             "recommendedAction": "review_required"
           },
           {
-            "instructionPath": "examples/go/AGENTS.md",
-            "path": "examples/go",
+            "instructionPath": "src/java_tools/singlejar/AGENTS.md",
+            "path": "src/java_tools/singlejar",
             "reason": "component has boundary markers: BUILD",
             "recommendedAction": "review_required"
           },
           {
-            "instructionPath": "examples/java-native/AGENTS.md",
-            "path": "examples/java-native",
+            "instructionPath": "src/main/cpp/AGENTS.md",
+            "path": "src/main/cpp",
             "reason": "component has boundary markers: BUILD",
             "recommendedAction": "review_required"
           },
           {
-            "instructionPath": "examples/java-starlark/AGENTS.md",
-            "path": "examples/java-starlark",
+            "instructionPath": "src/main/native/AGENTS.md",
+            "path": "src/main/native",
             "reason": "component has boundary markers: BUILD",
             "recommendedAction": "review_required"
           },
           {
-            "instructionPath": "examples/py/AGENTS.md",
-            "path": "examples/py",
+            "instructionPath": "src/main/protobuf/AGENTS.md",
+            "path": "src/main/protobuf",
             "reason": "component has boundary markers: BUILD",
             "recommendedAction": "review_required"
           },
           {
-            "instructionPath": "examples/py_native/AGENTS.md",
-            "path": "examples/py_native",
+            "instructionPath": "src/main/res/AGENTS.md",
+            "path": "src/main/res",
             "reason": "component has boundary markers: BUILD",
             "recommendedAction": "review_required"
           },
           {
-            "instructionPath": "examples/shell/AGENTS.md",
-            "path": "examples/shell",
+            "instructionPath": "src/main/tools/AGENTS.md",
+            "path": "src/main/tools",
             "reason": "component has boundary markers: BUILD",
             "recommendedAction": "review_required"
           },
           {
-            "instructionPath": "scripts/docs/AGENTS.md",
-            "path": "scripts/docs",
+            "instructionPath": "src/test/cpp/AGENTS.md",
+            "path": "src/test/cpp",
             "reason": "component has boundary markers: BUILD",
             "recommendedAction": "review_required"
           },
           {
-            "instructionPath": "scripts/packages/AGENTS.md",
-            "path": "scripts/packages",
+            "instructionPath": "src/test/gen/AGENTS.md",
+            "path": "src/test/gen",
             "reason": "component has boundary markers: BUILD",
             "recommendedAction": "review_required"
           },
           {
-            "instructionPath": "scripts/release/AGENTS.md",
-            "path": "scripts/release",
+            "instructionPath": "src/test/shell/AGENTS.md",
+            "path": "src/test/shell",
             "reason": "component has boundary markers: BUILD",
             "recommendedAction": "review_required"
           },
           {
-            "instructionPath": "scripts/zsh_completion/AGENTS.md",
-            "path": "scripts/zsh_completion",
+            "instructionPath": "src/test/tools/AGENTS.md",
+            "path": "src/test/tools",
             "reason": "component has boundary markers: BUILD",
             "recommendedAction": "review_required"
           },
           {
-            "instructionPath": "site/en/AGENTS.md",
-            "path": "site/en",
-            "reason": "component has boundary markers: BUILD.bazel",
+            "instructionPath": "src/tools/bzlmod/AGENTS.md",
+            "path": "src/tools/bzlmod",
+            "reason": "component has boundary markers: BUILD",
+            "recommendedAction": "review_required"
+          },
+          {
+            "instructionPath": "src/tools/diskcache/AGENTS.md",
+            "path": "src/tools/diskcache",
+            "reason": "component has boundary markers: BUILD",
+            "recommendedAction": "review_required"
+          },
+          {
+            "instructionPath": "src/tools/execlog/AGENTS.md",
+            "path": "src/tools/execlog",
+            "reason": "component has boundary markers: BUILD",
+            "recommendedAction": "review_required"
+          },
+          {
+            "instructionPath": "src/tools/launcher/AGENTS.md",
+            "path": "src/tools/launcher",
+            "reason": "component has boundary markers: BUILD",
+            "recommendedAction": "review_required"
+          },
+          {
+            "instructionPath": "src/tools/one_version/AGENTS.md",
+            "path": "src/tools/one_version",
+            "reason": "component has boundary markers: BUILD",
             "recommendedAction": "review_required"
           }
         ],
@@ -1468,6 +1821,7 @@
         "components": [
           {
             "confidence": "high",
+            "group": "root",
             "markers": [
               "BUILD",
               "MODULE.bazel",
@@ -1475,94 +1829,117 @@
               "requirements.txt"
             ],
             "path": ".",
+            "rankReason": "root manifest boundary",
             "source": "manifest"
           },
           {
             "confidence": "high",
-            "markers": [
-              "BUILD.bazel"
-            ],
-            "path": "docs",
-            "source": "manifest"
-          },
-          {
-            "confidence": "high",
-            "markers": [
-              "BUILD"
-            ],
-            "path": "examples",
-            "source": "manifest"
-          },
-          {
-            "confidence": "high",
-            "markers": [
-              "BUILD"
-            ],
-            "path": "scripts",
-            "source": "manifest"
-          },
-          {
-            "confidence": "high",
-            "markers": [
-              "BUILD"
-            ],
-            "path": "site",
-            "source": "manifest"
-          },
-          {
-            "confidence": "high",
+            "group": "source",
             "markers": [
               "BUILD"
             ],
             "path": "src",
+            "rankReason": "source component boundary",
             "source": "manifest"
           },
           {
             "confidence": "high",
+            "group": "source",
             "markers": [
               "BUILD"
             ],
-            "path": "third_party",
+            "path": "src/conditions",
+            "rankReason": "source component boundary",
             "source": "manifest"
           },
           {
             "confidence": "high",
+            "group": "source",
             "markers": [
               "BUILD"
             ],
-            "path": "tools",
+            "path": "src/java_tools/buildjar",
+            "rankReason": "source component boundary",
             "source": "manifest"
           },
           {
             "confidence": "high",
+            "group": "source",
             "markers": [
               "BUILD"
             ],
-            "path": "examples/cpp",
+            "path": "src/java_tools/import_deps_checker",
+            "rankReason": "source component boundary",
             "source": "manifest"
           },
           {
             "confidence": "high",
+            "group": "source",
             "markers": [
               "BUILD"
             ],
-            "path": "examples/gen",
+            "path": "src/java_tools/junitrunner",
+            "rankReason": "source component boundary",
             "source": "manifest"
           },
           {
             "confidence": "high",
+            "group": "source",
             "markers": [
               "BUILD"
             ],
-            "path": "examples/go",
+            "path": "src/java_tools/singlejar",
+            "rankReason": "source component boundary",
             "source": "manifest"
           },
           {
             "confidence": "high",
+            "group": "source",
             "markers": [
               "BUILD"
             ],
-            "path": "examples/java-native",
+            "path": "src/main/cpp",
+            "rankReason": "source component boundary",
+            "source": "manifest"
+          },
+          {
+            "confidence": "high",
+            "group": "source",
+            "markers": [
+              "BUILD"
+            ],
+            "path": "src/main/native",
+            "rankReason": "source component boundary",
+            "source": "manifest"
+          },
+          {
+            "confidence": "high",
+            "group": "source",
+            "markers": [
+              "BUILD"
+            ],
+            "path": "src/main/protobuf",
+            "rankReason": "source component boundary",
+            "source": "manifest"
+          },
+          {
+            "confidence": "high",
+            "group": "source",
+            "markers": [
+              "BUILD"
+            ],
+            "path": "src/main/res",
+            "rankReason": "source component boundary",
+            "source": "manifest"
+          },
+          {
+            "confidence": "high",
+            "group": "source",
+            "markers": [
+              "BUILD"
+            ],
+            "path": "src/main/tools",
+            "rankReason": "source component boundary",
             "source": "manifest"
           }
         ],

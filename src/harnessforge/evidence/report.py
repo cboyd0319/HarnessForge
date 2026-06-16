@@ -54,17 +54,21 @@ def build_report(
     explicit_package_manager: str | None = None,
     explicit_commands: tuple[str, ...] = (),
     max_files: int = 4000,
+    max_components: int = 80,
     require_verify_evidence: bool = False,
     require_docs_fanout_budget: bool = False,
     since: str | None = None,
 ) -> dict[str, Any]:
     if max_files <= 0:
         raise ValueError("max-files must be greater than 0")
+    if max_components <= 0:
+        raise ValueError("component-limit must be greater than 0")
     profile = detect_project(
         target,
         explicit_package_manager=explicit_package_manager,
         explicit_commands=explicit_commands,
         max_files=max_files,
+        max_components=max_components,
     )
     readiness = inspect_readiness(
         profile,
@@ -196,7 +200,9 @@ def format_report(payload: dict[str, Any]) -> str:
         "## Index Summary",
         "",
         f"- Files: {payload['index']['summary']['fileCount']}",
-        f"- Components: {payload['index']['summary']['componentCount']}",
+        "- Components: "
+        f"{payload['index']['summary']['componentCount']} included / "
+        f"{payload['index']['summary']['componentTotalCount']} detected",
         f"- Manifests: {payload['index']['summary']['manifestCount']}",
         f"- Source-of-truth docs: {payload['index']['summary']['sourceOfTruthCount']}",
         f"- SBOM files: {payload['index']['summary']['sbomCount']}",
@@ -432,6 +438,7 @@ def _index_summary(index: dict[str, Any]) -> dict[str, Any]:
         "warnings": index["warnings"],
         "fileClasses": index["fileClasses"],
         "fileCoverage": index["fileCoverage"],
+        "componentOverflow": index["componentOverflow"],
         "repoMap": index["repoMap"],
         "sbom": index["sbom"],
         "sourceOfTruth": index["sourceOfTruth"][:10],

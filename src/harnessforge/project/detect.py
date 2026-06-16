@@ -157,9 +157,12 @@ def detect_project(
     explicit_package_manager: str | None = None,
     explicit_commands: tuple[str, ...] = (),
     max_files: int = 4000,
+    max_components: int = COMPONENT_SCAN_LIMIT,
 ) -> ProjectProfile:
     if max_files <= 0:
         raise ValueError("--max-files must be greater than 0")
+    if max_components <= 0:
+        raise ValueError("--component-limit must be greater than 0")
     root = root.resolve()
     files = tuple(list_project_files(root, max_files=max_files))
     file_set = set(files)
@@ -237,7 +240,10 @@ def detect_project(
         package_managers,
         stack,
     )
-    components, component_scan_truncated = _detect_components(file_set)
+    components, component_overflow = _detect_components(
+        file_set,
+        max_components=max_components,
+    )
     workspace_markers = _detect_workspace_markers(
         root, file_set, package_json, pyproject, cargo_toml, composer_json
     )
@@ -263,8 +269,10 @@ def detect_project(
         config_precedence=config_precedence,
         file_scan_limit=max_files,
         file_scan_truncated=len(files) >= max_files,
-        component_scan_limit=COMPONENT_SCAN_LIMIT,
-        component_scan_truncated=component_scan_truncated,
+        component_scan_limit=max_components,
+        component_scan_truncated=bool(component_overflow),
+        component_scan_total=len(components) + len(component_overflow),
+        component_overflow=component_overflow,
     )
 
 
@@ -537,7 +545,11 @@ def _config_precedence(
     return tuple(_dedupe(sources))
 
 
-def _detect_components(file_set: set[str]) -> tuple[tuple[str, ...], bool]:
+def _detect_components(
+    file_set: set[str],
+    *,
+    max_components: int = COMPONENT_SCAN_LIMIT,
+) -> tuple[tuple[str, ...], tuple[str, ...]]:
     directories: dict[str, list[str]] = {}
     for file_name in sorted(file_set):
         path = Path(file_name)
@@ -550,13 +562,46 @@ def _detect_components(file_set: set[str]) -> tuple[tuple[str, ...], bool]:
         directories.setdefault(directory, []).append(path.name)
 
     components: list[str] = []
-    for directory in sorted(directories, key=lambda item: (item.count("/"), item)):
+    for directory in sorted(
+        directories,
+        key=lambda item: _component_sort_key(item, directories[item]),
+    ):
         markers = ", ".join(_dedupe(sorted(directories[directory])))
         components.append(f"{directory} ({markers})")
     return (
-        tuple(components[:COMPONENT_SCAN_LIMIT]),
-        len(components) > COMPONENT_SCAN_LIMIT,
+        tuple(components[:max_components]),
+        tuple(components[max_components:]),
     )
+
+
+def _component_sort_key(directory: str, markers: list[str]) -> tuple[int, int, str]:
+    return (
+        _component_priority(directory, markers),
+        0 if directory == "." else directory.count("/") + 1,
+        directory,
+    )
+
+
+def _component_priority(directory: str, markers: list[str]) -> int:
+    marker_set = set(markers)
+    if directory == ".":
+        return 0
+    first_segment = directory.split("/", 1)[0]
+    if first_segment in {"apps", "packages", "services", "crates"}:
+        return 10
+    if first_segment in {"src", "cmd", "pkg", "lib"}:
+        return 20
+    if first_segment in {"tools", "scripts", "hack"}:
+        return 30
+    if "BUILD" in marker_set or "BUILD.bazel" in marker_set:
+        return 40
+    if first_segment in {"test", "tests", "spec"}:
+        return 50
+    if first_segment in {"docs", "site", "examples", "samples"}:
+        return 70
+    if first_segment in {"vendor", "third_party", "external"}:
+        return 90
+    return 60
 
 
 def _detect_workspace_markers(

@@ -133,6 +133,12 @@ def build_parser() -> argparse.ArgumentParser:
         default=4000,
         help="maximum number of repository files to include in the structural index",
     )
+    index.add_argument(
+        "--component-limit",
+        type=int,
+        default=80,
+        help="maximum number of detected components to include in the index",
+    )
     index.add_argument("--json", action="store_true")
     index.set_defaults(func=_index)
 
@@ -169,6 +175,12 @@ def build_parser() -> argparse.ArgumentParser:
         type=int,
         default=4000,
         help="maximum number of repository files to scan for the dry-run plan",
+    )
+    quickstart.add_argument(
+        "--component-limit",
+        type=int,
+        default=80,
+        help="maximum number of detected components to include in the dry-run plan",
     )
     quickstart.add_argument(
         "--enhance-existing",
@@ -296,6 +308,12 @@ def build_parser() -> argparse.ArgumentParser:
         help="maximum number of repository files to scan while generating the harness",
     )
     init.add_argument(
+        "--component-limit",
+        type=int,
+        default=80,
+        help="maximum number of detected components to include while generating",
+    )
+    init.add_argument(
         "--with-ci-workflow",
         action="store_true",
         help="also scaffold a manual HarnessForge CI workflow",
@@ -349,6 +367,12 @@ def build_parser() -> argparse.ArgumentParser:
         type=int,
         default=4000,
         help="maximum number of repository files to scan while updating the harness",
+    )
+    update.add_argument(
+        "--component-limit",
+        type=int,
+        default=80,
+        help="maximum number of detected components to include while updating",
     )
     update.add_argument("--apply", action="store_true")
     update.add_argument("--force", action="store_true")
@@ -408,6 +432,12 @@ def build_parser() -> argparse.ArgumentParser:
         help="maximum number of repository files to include in the index summary",
     )
     report.add_argument(
+        "--component-limit",
+        type=int,
+        default=80,
+        help="maximum number of detected components to include in the index summary",
+    )
+    report.add_argument(
         "--require-verify-evidence",
         action="store_true",
         help="include release-gate verify evidence blockers in readiness",
@@ -445,6 +475,12 @@ def build_parser() -> argparse.ArgumentParser:
         type=int,
         default=4000,
         help="maximum number of repository files to include in the index summary",
+    )
+    release_check.add_argument(
+        "--component-limit",
+        type=int,
+        default=80,
+        help="maximum number of detected components to include in the index summary",
     )
     release_check.add_argument(
         "--since",
@@ -620,6 +656,7 @@ def _index(args: argparse.Namespace) -> int:
         explicit_package_manager=args.package_manager,
         explicit_commands=tuple(args.commands),
         max_files=args.max_files,
+        max_components=args.component_limit,
     )
     report = build_index_report(profile)
     if args.json:
@@ -654,12 +691,21 @@ def _quickstart(args: argparse.Namespace) -> int:
         project_name=args.project_name,
         platform_contract=args.platform_contract,
         max_files=args.max_files,
+        max_components=args.component_limit,
     )
     report = inspect_readiness(profile)
     if args.json:
         print(json.dumps(_quickstart_to_dict(args, profile, report, writes), indent=2))
     else:
-        print(_format_quickstart(profile, report, writes, max_files=args.max_files))
+        print(
+            _format_quickstart(
+                profile,
+                report,
+                writes,
+                max_files=args.max_files,
+                component_limit=args.component_limit,
+            )
+        )
         if args.interactive:
             return _quickstart_interactive_prompt(args, writes)
     return 0
@@ -696,6 +742,7 @@ def _quickstart_interactive_prompt(
         project_name=args.project_name,
         platform_contract=args.platform_contract,
         max_files=args.max_files,
+        max_components=args.component_limit,
     )
     print("Writes:")
     for write in applied:
@@ -728,6 +775,7 @@ def _quickstart_to_dict(
         "enhanceExisting": bool(args.enhance_existing),
         "verificationCommands": list(args.commands),
         "maxFiles": args.max_files,
+        "componentLimit": args.component_limit,
         "writeMode": "dry_run",
     }
     return {
@@ -770,6 +818,8 @@ def _quickstart_repro_command(args: argparse.Namespace) -> str:
         args.platform_contract,
         "--max-files",
         str(args.max_files),
+        "--component-limit",
+        str(args.component_limit),
     ]
     if args.package_manager:
         parts.extend(["--package-manager", args.package_manager])
@@ -797,6 +847,8 @@ def _quickstart_init_repro_command(args: argparse.Namespace) -> str:
         args.platform_contract,
         "--max-files",
         str(args.max_files),
+        "--component-limit",
+        str(args.component_limit),
     ]
     if args.package_manager:
         parts.extend(["--package-manager", args.package_manager])
@@ -1059,6 +1111,7 @@ def _init(args: argparse.Namespace) -> int:
         with_ci_workflow=args.with_ci_workflow,
         platform_contract=args.platform_contract,
         max_files=args.max_files,
+        max_components=args.component_limit,
     )
     if args.json:
         print(
@@ -1182,6 +1235,7 @@ def _update(args: argparse.Namespace) -> int:
         with_ci_workflow=args.with_ci_workflow,
         platform_contract=args.platform_contract,
         max_files=args.max_files,
+        max_components=args.component_limit,
     )
     if args.json:
         payload = {
@@ -1250,6 +1304,7 @@ def _report(args: argparse.Namespace) -> int:
         explicit_package_manager=args.package_manager,
         explicit_commands=tuple(args.commands),
         max_files=args.max_files,
+        max_components=args.component_limit,
         require_verify_evidence=args.require_verify_evidence,
         require_docs_fanout_budget=args.require_docs_fanout_budget,
         since=args.since,
@@ -1287,6 +1342,7 @@ def _release_check(args: argparse.Namespace) -> int:
         explicit_package_manager=args.package_manager,
         explicit_commands=tuple(args.commands),
         max_files=args.max_files,
+        max_components=args.component_limit,
         min_score=args.min_score,
         require_docs_fanout_budget=args.require_docs_fanout_budget,
         require_sbom=args.require_sbom,
@@ -1466,6 +1522,7 @@ def _format_quickstart(
     writes: tuple[WriteResult, ...],
     *,
     max_files: int = 4000,
+    component_limit: int = 80,
 ) -> str:
     would_create = tuple(
         _relative(result.path, profile.root)
@@ -1528,7 +1585,12 @@ def _format_quickstart(
     _append_cli_section(
         lines,
         "Next commands",
-        _quickstart_commands(report, has_planned_writes, max_files=max_files),
+        _quickstart_commands(
+            report,
+            has_planned_writes,
+            max_files=max_files,
+            component_limit=component_limit,
+        ),
     )
     return "\n".join(lines).rstrip()
 
@@ -1546,7 +1608,11 @@ def _quickstart_next_actions(
 
 
 def _quickstart_commands(
-    report: ReadinessReport, has_planned_writes: bool, *, max_files: int = 4000
+    report: ReadinessReport,
+    has_planned_writes: bool,
+    *,
+    max_files: int = 4000,
+    component_limit: int = 80,
 ) -> tuple[str, ...]:
     if report.verdict == "blocked":
         return (
@@ -1559,10 +1625,17 @@ def _quickstart_commands(
         max_files_suffix = (
             f" --max-files {max_files}" if max_files != 4000 else ""
         )
+        component_limit_suffix = (
+            f" --component-limit {component_limit}"
+            if component_limit != 80
+            else ""
+        )
         commands.extend(
             [
-                f"harnessforge init --target <repo> --dry-run{max_files_suffix}",
-                f"harnessforge init --target <repo>{max_files_suffix}",
+                "harnessforge init --target <repo> --dry-run"
+                f"{max_files_suffix}{component_limit_suffix}",
+                "harnessforge init --target <repo>"
+                f"{max_files_suffix}{component_limit_suffix}",
             ]
         )
     commands.extend(
@@ -1584,10 +1657,7 @@ def _profile_to_dict(profile: ProjectProfile) -> dict[str, object]:
         "verificationCommands": list(profile.verification_commands),
         "components": list(profile.components),
         "fileScan": _scan_to_dict(profile),
-        "componentScan": {
-            "limit": profile.component_scan_limit,
-            "truncated": profile.component_scan_truncated,
-        },
+        "componentScan": _component_scan_to_dict(profile),
         "workspaceMarkers": list(profile.workspace_markers),
         "routingMarkers": list(profile.routing_markers),
         "configPrecedence": list(profile.config_precedence),
@@ -1600,6 +1670,18 @@ def _scan_to_dict(profile: ProjectProfile) -> dict[str, object]:
         "maxFiles": profile.file_scan_limit,
         "truncated": profile.file_scan_truncated,
         "coverage": build_file_coverage_report(profile),
+        "componentScan": _component_scan_to_dict(profile),
+    }
+
+
+def _component_scan_to_dict(profile: ProjectProfile) -> dict[str, object]:
+    return {
+        "limit": profile.component_scan_limit,
+        "includedCount": len(profile.components),
+        "totalCount": profile.component_scan_total,
+        "omittedCount": len(profile.component_overflow),
+        "truncated": profile.component_scan_truncated,
+        "omittedExamples": list(profile.component_overflow[:20]),
     }
 
 

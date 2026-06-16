@@ -176,7 +176,9 @@ class GitHubActionTests(unittest.TestCase):
         self.assertIn("markdown-report", action)
         self.assertIn("report-command", action)
         self.assertIn("report-max-files", action)
+        self.assertIn("report-component-limit", action)
         self.assertIn("generation-max-files", action)
+        self.assertIn("generation-component-limit", action)
         self.assertIn("report-since", action)
         self.assertIn("require-docs-fanout-budget", action)
         self.assertIn("docs-fanout-verdict", action)
@@ -185,6 +187,8 @@ class GitHubActionTests(unittest.TestCase):
         self.assertIn("report-markdown", docs)
         self.assertIn("report-since", docs)
         self.assertIn("generation-max-files", docs)
+        self.assertIn("generation-component-limit", docs)
+        self.assertIn("report-component-limit", docs)
         self.assertIn("nested instruction-plan status", docs)
         self.assertIn("require-docs-fanout-budget", docs)
 

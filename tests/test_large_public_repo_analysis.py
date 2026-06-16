@@ -81,6 +81,8 @@ class LargePublicRepoAnalysisTests(unittest.TestCase):
                     "sample-monorepo",
                     "--max-files",
                     "4",
+                    "--component-limit",
+                    "3",
                     "--json-report",
                     str(json_report),
                     "--markdown-report",
@@ -106,6 +108,8 @@ class LargePublicRepoAnalysisTests(unittest.TestCase):
             self.assertTrue(repo["headMatchesPinnedRef"])
             self.assertEqual(repo["dryRunGeneration"]["requestedFileScanLimit"], 4)
             self.assertEqual(repo["dryRunGeneration"]["fileScanLimit"], 4)
+            self.assertEqual(repo["dryRunGeneration"]["requestedComponentLimit"], 3)
+            self.assertEqual(repo["dryRunGeneration"]["componentLimit"], 3)
             self.assertTrue(repo["dryRunGeneration"]["usesRequestedFileScanLimit"])
             self.assertFalse(repo["dryRunGeneration"]["usesDefaultFileScanLimit"])
             self.assertIn(
@@ -116,6 +120,10 @@ class LargePublicRepoAnalysisTests(unittest.TestCase):
             self.assertIn("scanEligibleFileCount", repo["fileCoverage"])
             self.assertIn("skippedFileCount", repo["fileCoverage"])
             self.assertTrue(repo["fileCoverage"]["categorySummary"])
+            self.assertEqual(
+                repo["componentOverflow"]["schemaVersion"],
+                "harnessforge.componentOverflow.v1",
+            )
             self.assertIn(
                 "file_coverage_budget_limited",
                 {gap["code"] for gap in repo["qualityGaps"]},

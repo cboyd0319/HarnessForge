@@ -651,9 +651,41 @@ class CliTests(unittest.TestCase):
 
         self.assertEqual(code, 0)
         self.assertEqual(payload["summary"]["componentCount"], 80)
+        self.assertEqual(payload["summary"]["componentTotalCount"], 85)
+        self.assertEqual(payload["summary"]["componentOmittedCount"], 5)
         self.assertTrue(payload["summary"]["componentsTruncated"])
         self.assertEqual(payload["limits"]["maxComponents"], 80)
-        self.assertIn("80-component detection limit", " ".join(payload["warnings"]))
+        self.assertEqual(payload["componentOverflow"]["omittedCount"], 5)
+        self.assertTrue(payload["componentOverflow"]["omittedExamples"])
+        self.assertIn("selected 80 of 85", " ".join(payload["warnings"]))
+
+    def test_index_json_accepts_explicit_component_limit(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            for index in range(5):
+                component = root / f"pkg-{index:02d}"
+                component.mkdir()
+                (component / "package.json").write_text("{}", encoding="utf-8")
+            stdout = io.StringIO()
+            with contextlib.redirect_stdout(stdout):
+                code = main(
+                    [
+                        "index",
+                        "--target",
+                        str(root),
+                        "--component-limit",
+                        "3",
+                        "--json",
+                    ]
+                )
+
+            payload = json.loads(stdout.getvalue())
+
+        self.assertEqual(code, 0)
+        self.assertEqual(payload["summary"]["componentCount"], 3)
+        self.assertEqual(payload["summary"]["componentTotalCount"], 5)
+        self.assertEqual(payload["summary"]["componentOmittedCount"], 2)
+        self.assertEqual(payload["componentOverflow"]["limit"], 3)
 
     def test_index_json_preserves_trailing_space_file_names(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -2707,6 +2739,8 @@ class CliTests(unittest.TestCase):
                         "--interactive",
                         "--max-files",
                         "3",
+                        "--component-limit",
+                        "2",
                         "--json",
                     ]
                 )
@@ -2721,9 +2755,12 @@ class CliTests(unittest.TestCase):
         self.assertFalse(payload["execution"]["writesPerformed"])
         self.assertEqual(payload["decisions"]["agentFile"], "AGENTS.md")
         self.assertEqual(payload["decisions"]["maxFiles"], 3)
+        self.assertEqual(payload["decisions"]["componentLimit"], 2)
         self.assertEqual(payload["repositoryScan"]["maxFiles"], 3)
+        self.assertEqual(payload["repositoryScan"]["componentScan"]["limit"], 2)
         self.assertIn("--platform-contract", payload["reproducibleCommands"]["init"])
         self.assertIn("--max-files 3", payload["reproducibleCommands"]["init"])
+        self.assertIn("--component-limit 2", payload["reproducibleCommands"]["init"])
         self.assertIn("harnessforge init", payload["reproducibleCommands"]["init"])
 
     def test_quickstart_interactive_skips_prompts_without_tty(self) -> None:

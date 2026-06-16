@@ -125,6 +125,7 @@ def create_harness(
     with_ci_workflow: bool = False,
     platform_contract: str = "cross-platform",
     max_files: int = 4000,
+    max_components: int = 80,
     update_generated_paths: frozenset[str] = frozenset(),
 ) -> tuple[ProjectProfile, tuple[WriteResult, ...]]:
     agent_file = _validate_agent_file(agent_file)
@@ -134,6 +135,7 @@ def create_harness(
         explicit_package_manager=package_manager,
         explicit_commands=commands,
         max_files=max_files,
+        max_components=max_components,
     )
     context = _template_context(
         profile,
@@ -2407,6 +2409,8 @@ def _manifest_content(
         "fileScanTruncated": profile.file_scan_truncated,
         "detectedComponents": list(profile.components),
         "componentInventoryLimit": profile.component_scan_limit,
+        "componentInventoryTotal": profile.component_scan_total,
+        "componentInventoryOmitted": list(profile.component_overflow[:20]),
         "componentInventoryTruncated": profile.component_scan_truncated,
         "detectedWorkspaceMarkers": list(profile.workspace_markers),
         "detectedRoutingMarkers": list(profile.routing_markers),
@@ -2422,9 +2426,12 @@ def _components_markdown(profile: ProjectProfile) -> str:
         lines.append(
             "- REVIEW REQUIRED: Component inventory reached the "
             f"{profile.component_scan_limit}-component detection limit. "
-            "Run `harnessforge index --target . --max-files <N>` for a deeper "
-            "structural map and add important omitted boundaries manually."
+            "Run `harnessforge index --target . --max-files <N> "
+            "--component-limit <N>` for a deeper structural map and add "
+            "important omitted boundaries manually."
         )
+        for component in profile.component_overflow[:5]:
+            lines.append(f"  - Omitted example: `{component}`")
     return "\n".join(lines)
 
 
