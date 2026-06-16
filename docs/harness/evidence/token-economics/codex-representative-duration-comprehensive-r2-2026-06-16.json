@@ -1,0 +1,92 @@
+{
+  "agent": {
+    "model": "configured-default-unrecorded",
+    "name": "Codex CLI isolated",
+    "provider": "OpenAI",
+    "version": "0.140.0"
+  },
+  "context": {
+    "contextWindowTokens": null,
+    "dynamicContextChars": 554,
+    "lazyLoadedFiles": [
+      "current-state.md",
+      "docs/harness/research/token-economics-metric.schema.json",
+      "feature_list.json"
+    ],
+    "loadedHarnessChars": 106552,
+    "startupFiles": [
+      "AGENTS.md"
+    ],
+    "staticPrefixChars": 6969
+  },
+  "evidenceRefs": [
+    "docs/harness/evidence/token-economics/codex-representative-duration-comprehensive-r2-2026-06-16.json",
+    "docs/harness/evidence/evidence-log.md"
+  ],
+  "harnessProfile": {
+    "changedSurfaces": [
+      "full docs/harness tree",
+      "root instruction routers",
+      ".agents/skills/harness",
+      "local verification scripts"
+    ],
+    "description": "Full committed HarnessForge harness docs and local harness skill available in the scratch target.",
+    "name": "comprehensive"
+  },
+  "limitations": [
+    "Scratch fixture based on committed HarnessForge, not a held-out issue.",
+    "Prompt explicitly named the failing behavior and required verification.",
+    "Profile roots are ignored scratch copies, not long-lived target repositories.",
+    "Codex JSONL did not emit the configured model name in this run.",
+    "Prompt/cache state from nearby runs may affect cached input buckets.",
+    "Raw JSONL contains local working-directory output and remains ignored under .harnessforge/."
+  ],
+  "mechanism": {
+    "expectedExecutionEffect": "improve",
+    "expectedTokenEffect": "mixed",
+    "name": "observability",
+    "notes": "Runner used per-run scratch HOME and CODEX_HOME, symlinked auth only, ignore-user-config, ignore-rules, disabled hooks/plugins/memories/apps/multi_agent, and workspace-write sandboxing.",
+    "risk": "Comprehensive storage is large, but actual cost depends on loaded files and task trajectory."
+  },
+  "outcome": {
+    "completed": true,
+    "failureMode": null,
+    "qualityScore": 1.0,
+    "verificationVerdict": "passed",
+    "worstCaseQuality": 1.0
+  },
+  "promotionStatus": "inconclusive",
+  "recordedAt": "2026-06-16T21:42:56Z",
+  "schemaVersion": "harnessforge.tokenEconomicsMetric.v1",
+  "target": {
+    "commit": "scratch-representative-duration-2026-06-16-comprehensive-r2",
+    "platform": "macOS-26.5.1-arm64-arm-64bit-Mach-O",
+    "repoLabel": "harnessforge-scratch-duration-override"
+  },
+  "task": {
+    "category": "implementation-repair",
+    "description": "Fix the failing token-economics duration override behavior in this HarnessForge scratch copy. Follow the repo startup path for the current profile, then make the smallest Python standard-library-only code change so metadata[\"trajectoryOverrides\"][\"durationSeconds\"] populates record[\"trajectory\"][\"durationSeconds\"] without adding trajectoryOverrides to the normalized record. Run PYTHONPATH=src:. python3 -m unittest tests.test_token_economics. Do not commit, push, or edit docs. Final answer: one sentence with the changed file and verification result.",
+    "heldOut": false,
+    "id": "token-economics.duration-override.comprehensive.r2"
+  },
+  "tokens": {
+    "cacheReadInput": 246016,
+    "cacheWriteInput": null,
+    "output": 2951,
+    "reasoningOutput": 717,
+    "source": "agent_usage_report",
+    "startupInput": 308373,
+    "total": 312041,
+    "uncachedRepeatedInput": null
+  },
+  "trajectory": {
+    "durationSeconds": 68.032,
+    "editCalls": 1,
+    "fileReads": 10,
+    "retries": 0,
+    "searchCalls": 2,
+    "toolCalls": 19,
+    "turns": 1,
+    "verificationRuns": 2
+  }
+}

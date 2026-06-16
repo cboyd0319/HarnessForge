@@ -689,6 +689,13 @@ Initial research slice:
   three profiles fixed the same tiny Python failure and passed the target
   unittest. It remains inconclusive because the fixture is intentionally small,
   but it adds edit and verification-loop trace evidence.
+- A HarnessForge-derived duration override repair batch is committed with
+  three repeats per profile. All nine runs changed only
+  `src/harnessforge/evidence/token_economics.py` and passed the focused
+  token-economics unittest module. The result is mixed: moderate had the lowest
+  median visible tokens and duration, minimal loaded far less harness context
+  but used more trajectory, and comprehensive had the highest median total for
+  this explicit source-level repair.
 
 Remaining closure work:
 
@@ -699,7 +706,8 @@ Remaining closure work:
   as API-level cost supplements; the first repo-local normalizer is
   `scripts/normalize_token_trace.py --source codex-jsonl`;
 - run controlled minimal, moderate, and comprehensive harness task traces on
-  representative repos and more realistic implementation or repair tasks;
+  held-out or external representative repos and more realistic implementation,
+  repair, failure, or retry tasks;
 - keep the isolated trace runner so user-level skills, plugins, hooks, memory,
   and other non-target startup context do not enter the trace unless recorded
   as part of the harness under test;

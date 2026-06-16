@@ -247,6 +247,9 @@ by the maintainer.
   parses reviewed Codex JSONL events into schema-shaped records, and
   `scripts/normalize_token_trace.py --source codex-jsonl` writes normalized
   records from an input trace plus metadata sidecar without running agents.
+  Metadata sidecars can now provide
+  `trajectoryOverrides.durationSeconds` for externally measured wall-clock
+  duration when native Codex JSONL events lack timestamps.
 - The first live Codex JSONL smoke trace is normalized at
   `docs/harness/evidence/token-economics/codex-jsonl-smoke-2026-06-16.json`.
   It reports one read-only orientation turn over `AGENTS.md` and the
@@ -278,6 +281,20 @@ by the maintainer.
   tokens, each with one edit and two verification runs. This is still
   `inconclusive` for product behavior, but it adds the first edit plus
   verification trace evidence.
+- A more representative HarnessForge-derived duration override repair batch is
+  also recorded. Three repeats each ran under minimal, moderate, and
+  comprehensive profiles with per-run scratch `HOME` and `CODEX_HOME`, symlinked
+  auth only, `--ignore-user-config`, `--ignore-rules`, disabled
+  hooks/plugins/memories/apps/multi-agent features, and workspace-write
+  sandboxing. All nine changed only
+  `src/harnessforge/evidence/token_economics.py` and passed
+  `PYTHONPATH=src:. python3 -m unittest tests.test_token_economics`. Median
+  totals were minimal `205,636`, moderate `189,703`, and comprehensive
+  `245,872` visible tokens. Median durations were minimal `63.556`, moderate
+  `52.698`, and comprehensive `62.161` seconds. The result is mixed and still
+  `inconclusive`, but it finally shows a larger loaded-context contrast:
+  minimal loaded `665` harness chars, while moderate and comprehensive commonly
+  loaded about `98K` harness chars.
 - Research refresh now allows normal fetch mode to regenerate stale generated
   lock and inbox files after source allowlist changes while keeping
   `--check` strict about generated-output consistency.
@@ -501,6 +518,19 @@ by the maintainer.
   parser/local-entrypoint tests passed with 9 tests; full unit discovery
   passed with 310 tests; compileall, research source check, diff hygiene, and
   self-audit `100/100` passed.
+- Current representative duration-override verification: isolated
+  minimal/moderate/comprehensive `codex exec --json --ephemeral
+  --ignore-user-config --ignore-rules --disable hooks --disable plugins
+  --disable memories --disable apps --disable multi_agent --sandbox
+  workspace-write` runs completed three repeats each. Raw-trace review found no
+  non-target user-level skill/plugin loading. Scratch target verification
+  passed in all nine targets with the focused token-economics unittest command;
+  raw file-change events touched only
+  `src/harnessforge/evidence/token_economics.py`. Nine normalized records parse
+  as JSON and passed local-path scans. Focused parser/local-entrypoint tests
+  passed with 10 tests; full unit discovery passed with 311 tests; compileall,
+  research source check, JSON validation, diff hygiene, and self-audit
+  `100/100` passed.
 - Current known local verification gap: `pwsh -NoProfile -File ./init.ps1`
   cannot run in this shell because PowerShell command execution fails before
   repo code loads with a .NET `System.IO.FileLoadException`. `pwsh -v` reports
@@ -520,6 +550,15 @@ by the maintainer.
 - `docs/harness/evidence/token-economics/codex-isolated-implementation-comprehensive-r1-2026-06-16.json`
 - `docs/harness/evidence/token-economics/codex-isolated-implementation-minimal-r1-2026-06-16.json`
 - `docs/harness/evidence/token-economics/codex-isolated-implementation-moderate-r1-2026-06-16.json`
+- `docs/harness/evidence/token-economics/codex-representative-duration-comprehensive-r1-2026-06-16.json`
+- `docs/harness/evidence/token-economics/codex-representative-duration-comprehensive-r2-2026-06-16.json`
+- `docs/harness/evidence/token-economics/codex-representative-duration-comprehensive-r3-2026-06-16.json`
+- `docs/harness/evidence/token-economics/codex-representative-duration-minimal-r1-2026-06-16.json`
+- `docs/harness/evidence/token-economics/codex-representative-duration-minimal-r2-2026-06-16.json`
+- `docs/harness/evidence/token-economics/codex-representative-duration-minimal-r3-2026-06-16.json`
+- `docs/harness/evidence/token-economics/codex-representative-duration-moderate-r1-2026-06-16.json`
+- `docs/harness/evidence/token-economics/codex-representative-duration-moderate-r2-2026-06-16.json`
+- `docs/harness/evidence/token-economics/codex-representative-duration-moderate-r3-2026-06-16.json`
 - `docs/harness/evidence/token-economics/codex-isolated-profile-minimal-r1-2026-06-16.json`
 - `docs/harness/evidence/token-economics/codex-isolated-profile-minimal-r2-2026-06-16.json`
 - `docs/harness/evidence/token-economics/codex-isolated-profile-moderate-r1-2026-06-16.json`
@@ -550,10 +589,11 @@ by the maintainer.
 
 Continue the Harness Token Economics Research item by running controlled
 minimal, moderate, and comprehensive harness task traces using
-`harnessforge.tokenEconomicsMetric.v1`. Expand beyond the tiny scratch
-orientation and repair tasks to representative repo tasks with more realistic
-source structure, retries or failure modes, elapsed time, and human quality
-review. Keep the isolated Codex runner so non-target skills/plugins/hooks/memory
-do not enter the traces. Release prep should remain last and should start only
+`harnessforge.tokenEconomicsMetric.v1`. The next useful slice is held-out or
+external-real-repo repair evidence, plus at least one failure or retry case and
+human quality review. Keep the isolated Codex runner so non-target
+skills/plugins/hooks/memory do not enter the traces. Add Claude Code
+OpenTelemetry only when native Codex JSONL is insufficient for cache-creation
+or tool-span buckets. Release prep should remain last and should start only
 after accepted non-release work is closed or explicitly deferred by the
 maintainer.

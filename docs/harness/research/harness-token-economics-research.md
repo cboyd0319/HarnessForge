@@ -227,6 +227,51 @@ This comparison is still too small to close the backlog item. It strengthens
 the evidence that token economics depend on loaded context, cache behavior,
 and execution trajectory, not merely on how many harness files exist.
 
+## Representative Duration Override Repair Batch
+
+A third clean comparison used ignored scratch copies of committed HarnessForge
+and seeded one failing token-economics test. The task asked the agent to add
+support for `metadata["trajectoryOverrides"]["durationSeconds"]` in the Codex
+JSONL normalizer, preserve the public metric schema, avoid docs edits, and run
+`PYTHONPATH=src:. python3 -m unittest tests.test_token_economics`.
+
+The runner used per-run scratch `HOME` and `CODEX_HOME`, symlinked auth only,
+`--ignore-user-config`, `--ignore-rules`, disabled hooks/plugins/memories/apps
+and multi-agent features, and workspace-write sandboxing. Raw JSONL remains
+ignored under `.harnessforge/`; the committed records are normalized.
+
+Summary:
+
+| Profile | Repeats | Loaded harness chars | Total visible tokens | Median total | Cached input range | Median duration seconds | Tool calls | File reads | Outcome |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
+| minimal | 3 | 665 | 122,994-273,545 | 205,636 | 101,504-240,512 | 63.556 | 11-22 | 6-11 | 3/3 passed |
+| moderate | 3 | 97,613 | 179,644-271,005 | 189,703 | 136,832-234,368 | 52.698 | 15-18 | 7 | 3/3 passed |
+| comprehensive | 3 | 97,613-106,552 | 220,259-312,041 | 245,872 | 164,864-246,016 | 62.161 | 12-19 | 7-10 | 3/3 passed |
+
+Initial interpretation:
+
+- All nine runs changed only
+  `src/harnessforge/evidence/token_economics.py` and passed the focused test
+  module.
+- This task finally exercised a larger loaded-context difference. Minimal
+  loaded only the short root instruction file; moderate and comprehensive
+  commonly loaded `current-state.md` and `feature_list.json`, producing about
+  `98K` loaded harness chars before source repair.
+- Moderate had the lowest median total tokens and lowest median duration.
+  Minimal had the smallest loaded harness context, but not the lowest median
+  total, because its trajectories used more tool calls and file reads.
+- Comprehensive had the highest median total on this batch. The extra stored
+  harness did not improve quality for this explicit source-level repair, and
+  one run loaded the metric schema in addition to state files.
+- The result is mixed, not a universal win or loss. It supports the mechanism
+  claim that loaded context and trajectory dominate stored harness size.
+
+This batch also added a narrow normalizer path for externally measured wall
+clock duration: metadata sidecars may provide
+`trajectoryOverrides.durationSeconds`, which is copied into
+`trajectory.durationSeconds` and omitted from the public record. Codex JSONL
+did not emit native duration or timestamp fields in these runs.
+
 ## Required Trace Evidence Still Missing
 
 The accepted backlog item is not complete until HarnessForge has representative
@@ -239,6 +284,11 @@ task traces or controlled evaluations that compare:
 - completion quality, verification success, and worst-case failure cost;
 - cold-start cost, repeated-session savings, rework savings, and instruction
   bloat failures.
+
+Still missing after the duration-override batch: held-out tasks, external
+real-repo repairs, deliberate failure or retry cases, and a second telemetry
+source such as Claude Code OpenTelemetry for cache-creation and tool-span
+buckets.
 
 ## Evidence Path
 

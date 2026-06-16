@@ -216,6 +216,31 @@ class TokenEconomicsTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "line 2"):
                 normalize_codex_jsonl_trace(trace, _metadata())
 
+    def test_codex_jsonl_trace_accepts_duration_override(self) -> None:
+        metadata = _metadata()
+        metadata["trajectoryOverrides"] = {"durationSeconds": 12.5}
+        with tempfile.TemporaryDirectory() as tmp:
+            trace = Path(tmp) / "codex.jsonl"
+            trace.write_text(
+                json.dumps(
+                    {
+                        "type": "turn.completed",
+                        "usage": {
+                            "input_tokens": 10,
+                            "output_tokens": 2,
+                            "reasoning_output_tokens": 1,
+                        },
+                    }
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+
+            record = normalize_codex_jsonl_trace(trace, metadata)
+
+        self.assertEqual(record["trajectory"]["durationSeconds"], 12.5)
+        self.assertNotIn("trajectoryOverrides", record)
+
     def test_committed_token_economics_records_have_required_shape(self) -> None:
         schema = json.loads(
             (

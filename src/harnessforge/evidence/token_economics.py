@@ -47,7 +47,10 @@ def normalize_codex_jsonl_trace(
         record["cost"] = copy.deepcopy(metadata["cost"])
 
     record["tokens"] = _codex_token_summary(events)
-    record["trajectory"] = _codex_trajectory_summary(events)
+    record["trajectory"] = _apply_trajectory_overrides(
+        _codex_trajectory_summary(events),
+        metadata,
+    )
     return record
 
 
@@ -149,6 +152,25 @@ def _codex_trajectory_summary(events: list[dict[str, Any]]) -> dict[str, Any]:
         "retries": sum(1 for event in events if _is_retry_event(event)),
         "durationSeconds": _duration_seconds(events),
     }
+
+
+def _apply_trajectory_overrides(
+    trajectory: dict[str, Any],
+    metadata: Mapping[str, Any],
+) -> dict[str, Any]:
+    overrides = metadata.get("trajectoryOverrides")
+    if not isinstance(overrides, Mapping):
+        return trajectory
+    duration_seconds = overrides.get("durationSeconds")
+    if isinstance(duration_seconds, bool):
+        raise ValueError("trajectoryOverrides.durationSeconds must be a number")
+    if isinstance(duration_seconds, (int, float)):
+        if duration_seconds < 0:
+            raise ValueError("trajectoryOverrides.durationSeconds must be non-negative")
+        trajectory["durationSeconds"] = duration_seconds
+    elif duration_seconds is not None:
+        raise ValueError("trajectoryOverrides.durationSeconds must be a number")
+    return trajectory
 
 
 _FILE_READ_TERMS = (
