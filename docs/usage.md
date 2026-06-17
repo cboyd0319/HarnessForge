@@ -498,9 +498,11 @@ The audit returns:
 - failed checks
 - concrete recommendations
 
-The score covers instructions, tools, environment, state, feedback, scope, and
-lifecycle controls. Treat it as a harness quality signal, not as a substitute
-for code review, security review, or real agent task evaluation.
+The current score reports implementation domains for instructions, tools,
+environment, state, feedback, scope, and lifecycle controls. Treat those as
+audit buckets for the five core harness subsystems: instructions, state,
+verification, scope, and lifecycle. The score is a harness quality signal, not
+a substitute for code review, security review, or real agent task evaluation.
 
 ## Public Repo Quality Corpus
 

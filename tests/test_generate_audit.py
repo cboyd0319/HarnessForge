@@ -87,6 +87,11 @@ class GenerateAuditTests(unittest.TestCase):
             self.assertEqual(headings, AGENTS_SECTION_ORDER)
             self.assertIn("Startup", content)
             self.assertIn("Core harness contract", content)
+            self.assertIn(
+                "instructions, state, verification, scope, and lifecycle",
+                content,
+            )
+            self.assertIn("support surfaces", content)
             self.assertIn("effective agent", content)
             self.assertIn("Implementation Discipline", content)
             self.assertIn("standard library", content)
@@ -399,8 +404,10 @@ class GenerateAuditTests(unittest.TestCase):
         self.assertIn("Effective Agent Boundary", readme)
         self.assertIn("The model is the LLM", readme)
         self.assertIn("changes effective agent behavior", readme)
-        self.assertIn("instructions + tools + environment + state + feedback", readme)
-        self.assertIn("least privilege", readme)
+        self.assertIn(
+            "instructions + state + verification + scope + lifecycle", readme
+        )
+        self.assertIn("support surfaces", readme)
         self.assertIn("verification commands explicit", readme)
         self.assertIn("Bottleneck And Harness Debt", readme)
         self.assertIn("controlled-variable exclusion tests", readme)
@@ -437,6 +444,15 @@ class GenerateAuditTests(unittest.TestCase):
         self.assertNotRegex(generated_text, r"(?i)\bself-heal(?:ing)?\b")
         self.assertNotIn("Local production harness patterns", generated_text)
         self.assertIn("Reviewed production harness patterns", sources)
+        self.assertIn(
+            "Instructions, state, verification, scope, lifecycle, and support-surface patterns",
+            sources,
+        )
+        self.assertNotIn(
+            "Instruction, tool, environment, state, and "
+            "feedback",
+            sources,
+        )
         self.assertIn("https://agentskills.io/specification.md", sources)
         self.assertIn("https://agentskills.io/skill-creation/best-practices.md", sources)
         self.assertIn("https://agentskills.io/skill-creation/evaluating-skills.md", sources)
@@ -930,11 +946,16 @@ class GenerateAuditTests(unittest.TestCase):
         self.assertIn("docs/harness/feedback/quality-document.md", manifest["reviewRequired"])
         self.assertIn("Harness Subsystem Health", quality)
         self.assertIn("Instructions", quality)
-        self.assertIn("Tools", quality)
-        self.assertIn("Environment", quality)
         self.assertIn("State", quality)
-        self.assertIn("Feedback", quality)
-        self.assertIn("verification commands", quality)
+        self.assertIn("Verification", quality)
+        self.assertIn("Scope", quality)
+        self.assertIn("Lifecycle", quality)
+        self.assertIn("instructions, state, verification, scope, and lifecycle", quality)
+        self.assertNotIn(
+            "Review instructions, tools, environment, state, and "
+            "feedback",
+            quality,
+        )
         self.assertIn("Clean-State Dimensions", quality)
         self.assertIn("Benchmark Or Task Evidence", quality)
         self.assertIn("Complexity and scope stayed minimal", quality)

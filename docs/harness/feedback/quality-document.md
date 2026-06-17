@@ -30,17 +30,18 @@ unsafe to rely on without repair.
 
 ## Harness Subsystem Health
 
-Review instructions, tools, environment, state, and feedback separately. Treat
-feedback as the first subsystem to repair when verification commands are
-missing, stale, or vague.
+Review instructions, state, verification, scope, and lifecycle separately.
+Treat verification as the first subsystem to repair when checks are missing,
+stale, or vague. Tools, environment metadata, reports, workflows, and policy
+docs are support surfaces.
 
 | Subsystem | Status | Evidence | Next Improvement |
 | --- | --- | --- | --- |
 | Instructions | A | Root instructions and platform routers exist; self-audit instructions domain passes | Keep root instructions map-like |
-| Tools | A | CLI, Action, and POSIX entrypoints are verified; PowerShell entrypoint is documented with a current local host-runtime gap | Keep shell/tool access least-privilege and sufficient for real work |
-| Environment | A | `pyproject.toml`, CI matrix, component inventory, and dependency policy are current | Keep platform and dependency evidence fresh |
 | State | A | `feature_list.json`, `current-state.md`, and `docs/roadmap.md` are maintained | Keep only one active objective unless explicit multi-agent ownership exists |
-| Feedback | A | Unit tests, pin check, research source check, self-audit, verification matrix, and sensor registry are current | Keep verification commands explicit before adding broader process |
+| Verification | A | Unit tests, pin check, research source check, self-audit, verification matrix, and sensor registry are current | Keep checks explicit before adding broader process |
+| Scope | A | Change contract, component inventory, security map, and feature dependencies are maintained | Keep generated and local surfaces from drifting into each other |
+| Lifecycle | A | `current-state.md`, first-agent review, clean-state checklist, and evidence handoff are maintained | Keep restart state compact and current |
 
 ## Clean-State Dimensions
 

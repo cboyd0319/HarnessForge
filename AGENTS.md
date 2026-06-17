@@ -5,9 +5,11 @@
 HarnessForge is a Python 3.13+ CLI and composite GitHub Action for creating,
 assessing, and safely updating AI coding-agent harnesses in arbitrary repos.
 
-Core harness contract: instructions, tools, environment, state, and feedback.
-Changing instruction, tool, filesystem, git, startup, verification, hook, lint,
-or evaluator surfaces changes the effective agent.
+Core harness contract: instructions, state, verification, scope, and lifecycle.
+Tools, environment metadata, feedback channels, reports, workflows, and policy
+docs are support surfaces. They must serve the core contract or stay optional
+and reviewable. Changing instruction, tool, filesystem, git, startup,
+verification, hook, lint, or evaluator surfaces changes the effective agent.
 
 Startup path:
 

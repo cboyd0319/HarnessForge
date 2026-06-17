@@ -16,19 +16,19 @@ evidence for the next session.
 
 ## Five Core Subsystems
 
-Harness = instructions + tools + environment + state + feedback. Missing any
+Harness = instructions + state + verification + scope + lifecycle. Missing any
 one of these makes the harness incomplete. Keep instruction files map-like,
-tool access least privilege but useful, environment facts self-describing,
-state current, and verification commands explicit. Treat feedback as the
-highest-return repair target.
+state current, verification commands explicit, scope clear, and lifecycle
+handoff restartable. Tools, environment metadata, reports, workflows,
+and policy docs are support surfaces: serve the core or stay optional.
 
 | Subsystem | Primary Files |
 | --- | --- |
 | Instructions | `{{agent_file}}`, platform routers |
-| Tools | `init.sh`, `init.ps1`, optional owner tools |
-| Environment | manifests, component inventory, dependency policy |
 | State | `feature_list.json`, `current-state.md`, roadmap |
-| Feedback | verification matrix, sensor registry, evidence log |
+| Verification | `init.sh`, `init.ps1`, verification matrix, sensor registry |
+| Scope | component inventory, security boundary, change contract |
+| Lifecycle | current state, clean-state checklist, evidence handoff |
 
 ## Effective Agent Boundary
 

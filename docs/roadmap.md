@@ -66,6 +66,11 @@ Complete or explicitly defer this accepted backlog before release prep starts:
 10. More real-repo golden fixtures and expanded large-public-repo field runs.
 11. Deeper instruction-quality scoring beyond the current section, budget,
     placeholder, and duplicate-guidance checks.
+12. Core harness model course correction: keep instructions, state,
+    verification, scope, and lifecycle as the product contract, and demote
+    tools, environment metadata, reports, workflows, policy docs, and other
+    machinery to support surfaces unless explicit evidence proves they belong
+    in the core path.
 
 Release evidence work stays last. Package builds, tags, provenance, optional
 platform CI evidence, and release notes belong to the release-prep phase, not
@@ -107,6 +112,9 @@ proves a narrower local override.
 
 Current weighted patterns:
 
+- the harness core is instructions, state, verification, scope, and lifecycle;
+  tools, environment metadata, reports, workflows, policy docs, and other
+  machinery are support surfaces that must serve that core or stay optional;
 - baseline verification should run before new feature work when practical;
 - work should start from one bounded plan, feature, or roadmap item;
 - implementation should stop at the first rung that satisfies the request: no
@@ -185,6 +193,42 @@ These patterns should shape both local HarnessForge planning and generated
 repo's docs or process wholesale.
 
 ## Accepted Improvements
+
+### Core Harness Model Course Correction
+
+Status: accepted before release prep; root and generated docs now state the
+five-core model, but runtime scoring and report categories still need a
+deliberate alignment pass.
+
+Keep the Walking Labs `harness-creator` model as the HarnessForge product
+contract: instructions, state, verification, scope, and lifecycle. Treat tools,
+environment metadata, reports, workflows, policy docs, research ledgers,
+observability, and automation as support surfaces. They are valuable only when
+they make the five core subsystems easier to follow, verify, or maintain.
+
+Accepted behavior:
+
+- keep root, public, generated, and quality docs from presenting support
+  surfaces as peer core subsystems;
+- update generated manifest snippet contracts and regression tests so new
+  generated targets keep the five-core model;
+- realign audit, report, release-check, maturity, and quality-summary wording
+  so implementation buckets do not redefine the core harness model;
+- review whether the current seven audit domains should remain implementation
+  buckets, collapse into five core domains, or report both with clear labels;
+- treat any new support surface as optional unless it has evidence tying it to
+  instructions, state, verification, scope, or lifecycle;
+- add a regression check that fails on the old support-surface-as-core formula
+  in generated contracts.
+
+Done or retire when:
+
+- public docs, generated docs, root instructions, manifests, tests, report
+  output, release-check output, maturity output, and quality docs consistently
+  separate the five-core contract from support surfaces;
+- generated target smokes and self-audit pass with the corrected contract;
+- any remaining legacy audit category names are explicitly documented as
+  implementation buckets, not core subsystems.
 
 ### Unified Report Command
 

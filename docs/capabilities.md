@@ -53,15 +53,20 @@ The default generated harness is compact and repo-owned. It includes:
   verification routing, source-of-truth guidance, evidence sensors, and
   security notes.
 
-Generated guidance treats a harness as five subsystems:
+Generated guidance treats a harness as five core subsystems.
+Core subsystems: instructions, state, verification, scope, and lifecycle.
 
 | Subsystem | What it covers |
 | --- | --- |
 | Instructions | Startup files, repo purpose, hard constraints, and links to detail |
-| Tools | Local commands, least-privilege automation, and optional owner checks |
-| Environment | Runtime versions, dependencies, setup facts, and reproducible context |
 | State | Current work, backlog, blockers, handoff, and durable decisions |
-| Feedback | Verification commands, evidence, sensors, rubrics, and evaluator loops |
+| Verification | Runnable checks, evidence, sensors, rubrics, and evaluator loops |
+| Scope | Ownership boundaries, allowed changes, non-goals, and done criteria |
+| Lifecycle | Startup, handoff, cleanup, restart, and review state |
+
+Tools, environment metadata, reports, workflows, and policy docs are support surfaces.
+They should exist only when they make the core subsystems easier to follow,
+verify, or maintain.
 
 Changes to instructions, tools, filesystem scope, git access, startup scripts,
 verification commands, hooks, lint or sensor checks, workflow permissions, or

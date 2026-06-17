@@ -10,7 +10,8 @@ token economics research, Kubernetes-scale discovery ranking, generated
 guidance quality, feature-state gates, instruction lifecycle/SNR review,
 generated harness fallback hardening, deeper `enhance` planning, selected
 index/SBOM adapters, policy preset evidence, more real-repo fixtures, expanded
-large-public-repo field runs, and deeper instruction-quality scoring.
+large-public-repo field runs, deeper instruction-quality scoring, and the core
+harness model course correction.
 Release prep starts only after that backlog is closed or intentionally deferred
 by the maintainer.
 

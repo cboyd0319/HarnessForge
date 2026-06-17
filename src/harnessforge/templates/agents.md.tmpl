@@ -5,12 +5,13 @@
 {{project_name}} uses a repo harness so coding agents can start with the right
 context, stay scoped, verify work, and leave a clean restart path.
 
-Core harness contract: instructions, tools, environment, state, and feedback are
-all required. Keep instructions map-like, tool access least privileged but
-useful, environment facts self-describing, state current, and verification
-commands explicit. Feedback usually has the best return. Changing instruction,
-tool, filesystem, git, startup, verification, hook, lint, or evaluator surfaces
-changes the effective agent.
+Core harness contract: instructions, state, verification, scope, and lifecycle.
+Keep instructions map-like, state current, verification commands explicit,
+scope boundaries clear, and lifecycle handoff restartable. Tools, environment
+metadata, feedback channels, reports, and workflows are support surfaces.
+They must serve the core contract or stay optional and reviewable.
+Changing instruction, tool, filesystem, git, startup, verification, hook, lint,
+or evaluator surfaces changes the effective agent.
 
 Detected stack: {{detected_stack}}
 Languages: {{languages}}

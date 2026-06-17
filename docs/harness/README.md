@@ -24,19 +24,24 @@ bridge with removal criteria.
 
 ## Five Core Subsystems
 
-Harness = instructions + tools + environment + state + feedback. Missing any
-one of these makes the harness incomplete.
+HarnessForge follows the Walking Labs `harness-creator` core model:
+instructions, state, verification, scope, and lifecycle. Missing any one of
+these makes a coding-agent harness incomplete. Tools, environment metadata,
+research ledgers, reports, Actions, and policy presets are support surfaces.
+They must serve one of the five core subsystems, or stay optional and
+reviewable.
 
 | Subsystem | This Harness Provides | Review Question |
 | --- | --- | --- |
 | Instructions | `AGENTS.md` plus short platform routers | Does the agent see purpose, stack, first-run commands, hard constraints, and links to detail? |
-| Tools | Local shell entrypoints, HarnessForge commands, Action wiring | Can the agent do useful work with least privilege instead of either blanket-disabled shell access or unrestricted access? |
-| Environment | `pyproject.toml`, CI matrix, component inventory, dependency policy | Are versions, dependencies, setup facts, and reproducible environment choices self-describing? |
 | State | `feature_list.json`, `current-state.md`, `docs/roadmap.md` | Can a new session see what is done, in progress, blocked, and next? |
-| Feedback | Tests, verification matrix, sensor registry, evidence log, local checks | Are verification commands explicit, runnable, and prioritized before broader process? |
+| Verification | Tests, verification matrix, local checks, audit, and release gates | Are checks explicit, runnable, and prioritized before broader process? |
+| Scope | Change contract, component inventory, security boundaries, and feature dependencies | Does the harness prevent overreach, drive-by work, and half-finished changes? |
+| Lifecycle | `current-state.md`, clean-state checklist, first-agent review, and evidence handoff | Can the next session restart without chat history or stale assumptions? |
 
-Treat feedback as the highest-return subsystem. When agent output is weak, fix
-missing, stale, or vague verification commands before adding more instructions.
+Treat verification as the highest-return subsystem. When agent output is weak,
+fix missing, stale, or vague checks before adding more instructions or support
+surfaces.
 
 ## Effective Agent Boundary
 
@@ -48,6 +53,9 @@ these changes effective agent behavior. Treat those changes as product changes
 with scope, verification, and rollback.
 
 ## Practical Harness Map
+
+This map lists implementation surfaces that support the five core subsystems.
+Do not treat every row as a new mandatory subsystem.
 
 | Domain | Artifact | Purpose |
 | --- | --- | --- |
