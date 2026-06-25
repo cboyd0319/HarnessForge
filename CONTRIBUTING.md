@@ -18,6 +18,9 @@ Run `./init.sh` or `.\init.ps1` before submitting larger changes.
 ## Pull Requests
 
 - Read `AGENTS.md` and the relevant files in `docs/harness/` before editing.
+- Follow the DRY and YAGNI Implementation Discipline in `AGENTS.md` for every
+  change: stop at the first rung that solves the request, keep one authoritative
+  home per fact, and prefer boring code over clever.
 - Keep one feature or fix per pull request.
 - Add focused tests for changed behavior when practical.
 - Update docs and harness state when behavior, generated files, workflows, or

@@ -25,8 +25,8 @@ HarnessForge is a Python 3.13+ CLI and composite GitHub Action for creating,
 assessing, and safely updating AI coding-agent harnesses in existing
 repositories.
 
-A good harness has five core subsystems: instructions, state, verification,
-scope, and lifecycle.
+A good harness has five core subsystems:
+instructions, state, verification, scope, and lifecycle.
 HarnessForge turns that layer into repo-owned files an agent can read and a
 maintainer can review, version, test, and improve. Tools, environment metadata,
 reports, workflows, and policy docs are support surfaces, not extra core

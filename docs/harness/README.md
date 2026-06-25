@@ -59,7 +59,7 @@ Do not treat every row as a new mandatory subsystem.
 
 | Domain | Artifact | Purpose |
 | --- | --- | --- |
-| Instructions | `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, `.github/copilot-instructions.md` | Startup path, hard requirements, smallest-correct-change discipline, verification, and platform routing |
+| Instructions | `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, `.github/copilot-instructions.md` | Startup path, hard requirements, DRY and YAGNI implementation discipline, verification, and platform routing |
 | Tools | `harnessforge`, `action.yml`, `init.sh`, `init.ps1`, `scripts/check_pins.py` | Creation, audit, update, CI action, local checks, and pin enforcement |
 | Environment | `pyproject.toml`, CI matrix, `component-inventory.md`, `dependency-change-policy.md` | Python, OS, package, component, and Action support contract |
 | State | `feature_list.json`, `current-state.md`, `evidence-log.md`, `docs/roadmap.md`, `authoritative-facts.md` | Feature state, current objective, evidence, docs routing, and restart state |

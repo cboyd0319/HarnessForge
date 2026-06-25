@@ -90,18 +90,30 @@ alpha/pre-release to avoid runner cost while commits are frequent.
 
 ### Implementation Discipline
 
-Before writing code, stop at the first rung that solves the request:
+All current and future development is DRY and YAGNI. Before writing code, stop
+at the first rung that solves the request:
 
-1. Do not build if no change, deletion, docs, config, or existing behavior is
-   enough.
-2. Use the standard library before custom code.
-3. Use native platform features before new libraries.
-4. Use existing project dependencies before adding dependencies.
-5. Prefer one clear local change over a new abstraction.
-6. Only then write the minimum code that satisfies the contract.
+1. Does this need to exist at all? Skip it if no change, deletion, docs, config,
+   or existing behavior already covers the request.
+2. Standard library does it? Use it before custom code.
+3. Native platform feature covers it? Use it before a new library.
+4. Already-installed dependency solves it? Use it; never add a dependency for
+   what a few clear lines can do.
+5. Can it be one clear line or one local change? Do that before any new
+   abstraction, then write the minimum code that satisfies the contract.
 
 Rules:
 
+- DRY: reduce or remove duplication everywhere. Every fact, rule, or behavior
+  gets one authoritative home; other surfaces link or summarize, never copy.
+  `docs/harness/authoritative-facts.md` owns durable-doc routing.
+- Boring over clever. Clever is what someone has to decode at 3am; prefer the
+  obvious version a tired reader can follow.
+- Between two standard-library options of similar size, take the one that is
+  correct on edge cases. Lazy means writing less code, not picking the flimsier
+  algorithm.
+- Documentation is product. If a behavior is not documented in its owning
+  surface, treat it as not existing.
 - State assumptions and tradeoffs before coding when ambiguous.
 - Do not add speculative features, configurability, abstractions, workflows, or
   dependencies.
