@@ -20,7 +20,7 @@ Downstream tools and GitHub Action summaries may rely on these fields:
 | `detectedStack` | Detected primary stack label |
 | `readiness` | Verdict, warnings, blockers, review surfaces, and high-risk acceptance summary |
 | `reviewWork` | Separates unresolved actionable review work from accepted advisory inventory |
-| `audit` | Structural score, bottleneck, failed checks, and recommendations |
+| `audit` | Structural score, bottleneck, `coreModel` (seven implementation buckets mapped to the five core subsystems plus support surfaces), failed checks, and recommendations |
 | `drift` | Generated-file drift summary and recommended actions |
 | `index` | Structural index summary, compact repo map, file coverage, SBOM evidence, and source-of-truth docs |
 | `nestedInstructionPlan` | Review-required nested `AGENTS.md` candidates for monorepos; never default writes |

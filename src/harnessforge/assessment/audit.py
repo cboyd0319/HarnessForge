@@ -56,6 +56,12 @@ SUPPORT_SURFACE_DOMAINS = tuple(
     name for name, core in DOMAIN_CORE_SUBSYSTEM.items() if core is None
 )
 
+
+def domain_role(domain_name: str) -> str:
+    """Human label for an audit bucket's place in the five-core model."""
+    core = DOMAIN_CORE_SUBSYSTEM.get(domain_name)
+    return f"{core} core" if core else "support surface"
+
 LOCAL_ABSOLUTE_PATH_RE = re.compile(
     r"(?<![A-Za-z0-9_:/.-])("
     r"(?:[A-Za-z]:[\\/][^\s`'\"<>)]*)|"
@@ -176,10 +182,8 @@ def format_audit(result: AuditResult) -> str:
         "",
     ]
     for domain in result.domains:
-        core = DOMAIN_CORE_SUBSYSTEM.get(domain.name)
-        role = f"{core} core" if core else "support surface"
         lines.append(
-            f"{domain.name} [{role}]: {domain.score}/5 "
+            f"{domain.name} [{domain_role(domain.name)}]: {domain.score}/5 "
             f"({domain.passed}/{domain.total})"
         )
         for check in domain.checks:

@@ -55,6 +55,16 @@ Decisions that shape the implementation so a later session does not undo them.
 
 ## Latest Verified Work
 
+- 2026-06-24: Completed the Core Harness Model Course Correction roadmap item.
+  `harnessforge report` and the GitHub Action audit summaries now carry the
+  five-core mapping (`coreModel`) and a labeled bottleneck (for example
+  `feedback (verification core)`), sharing the new `audit.domain_role` helper
+  with `harnessforge audit`. `release-check` and `maturity` were already
+  score-only and never present support surfaces as core. Added
+  `test_generated_contract_keeps_support_surfaces_out_of_core` so a generated
+  contract that lists a support surface as a peer core subsystem fails, plus a
+  report `coreModel` regression. `docs/harness/feedback/report-json-contract.md`
+  documents the new `coreModel` report field.
 - 2026-06-24: Harness-engineering foundations pass. Read the full Walking Labs
   `learn-harness-engineering/docs/en` course (12 lectures, 6 projects,
   references, templates, openai-advanced pack, SOPs) and recorded
@@ -667,11 +677,10 @@ Decisions that shape the implementation so a later session does not undo them.
 ## Touched Surfaces
 
 - `src/harnessforge/assessment/audit.py`
+- `src/harnessforge/evidence/report.py`
+- `src/harnessforge/github_action.py`
 - `tests/test_generate_audit.py`
-- `docs/harness/research/harness-engineering-foundations.md`
-- `docs/harness/research/README.md`
-- `docs/harness/research/sources.md`
-- `docs/harness/README.md`
+- `docs/harness/feedback/report-json-contract.md`
 - `docs/roadmap.md`
 - `current-state.md`
 - `docs/harness/evidence/evidence-log.md`

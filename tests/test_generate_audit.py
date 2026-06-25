@@ -9,6 +9,7 @@ import unittest
 from pathlib import Path
 
 from harnessforge.assessment.audit import audit_target, audit_to_dict, format_audit
+from harnessforge.evidence.report import build_report, format_report
 from harnessforge.generation.generate import create_harness
 AGENTS_SECTION_ORDER = [
     "## Project overview",
@@ -130,6 +131,61 @@ class GenerateAuditTests(unittest.TestCase):
             text = format_audit(result)
             self.assertIn("feedback [verification core]:", text)
             self.assertIn("tools [support surface]:", text)
+
+    def test_generated_contract_keeps_support_surfaces_out_of_core(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "pyproject.toml").write_text(
+                "[project]\nname='demo'\n", encoding="utf-8"
+            )
+            create_harness(root)
+            agents = (root / "AGENTS.md").read_text(encoding="utf-8")
+            manifest = json.loads(
+                (root / "docs/harness/manifest.json").read_text(encoding="utf-8")
+            )
+
+        core_line = next(
+            line
+            for line in agents.splitlines()
+            if line.startswith("Core harness contract:")
+        )
+        self.assertEqual(
+            core_line,
+            "Core harness contract: instructions, state, verification, scope, "
+            "and lifecycle.",
+        )
+        # Regression: the old formula listed support surfaces as peer core
+        # subsystems. They must not appear in the core-contract line.
+        for support in ("Tools", "tools", "environment", "feedback", "workflows"):
+            self.assertNotIn(support, core_line)
+        # Support surfaces must still be named, as support surfaces.
+        self.assertIn("feedback channels", agents)
+        self.assertIn("are support surfaces", agents)
+
+        snippets = manifest["requiredHarnessSnippets"]
+        for required in (
+            "instructions, state, verification, scope, and lifecycle",
+            "support surfaces",
+        ):
+            self.assertIn(required, snippets["AGENTS.md"])
+        for required in ("Five Core Subsystems", "support surfaces"):
+            self.assertIn(required, snippets["docs/harness/README.md"])
+
+    def test_report_surfaces_core_model_and_labels_bottleneck(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "pyproject.toml").write_text(
+                "[project]\nname='demo'\n", encoding="utf-8"
+            )
+            create_harness(root)
+            payload = build_report(root)
+
+        core_model = payload["audit"]["coreModel"]
+        self.assertEqual(core_model["domainMapping"]["feedback"], "verification")
+        self.assertEqual(core_model["supportSurfaces"], ["tools", "environment"])
+        bottleneck = payload["audit"]["bottleneck"]
+        # The bottleneck is labeled so it never reads as a peer core subsystem.
+        self.assertIn(f"`{bottleneck}` (", format_report(payload))
 
     def test_init_writes_cross_platform_harness_and_audits_high(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

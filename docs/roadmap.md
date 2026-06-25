@@ -196,14 +196,16 @@ repo's docs or process wholesale.
 
 ### Core Harness Model Course Correction
 
-Status: in progress. Root and generated docs state the five-core model, and
-`harnessforge audit` now reports the seven implementation buckets mapped onto the
-five core subsystems (`coreModel`, per-domain `coreSubsystem`/`surfaceClass`, and
-inline labels). `docs/harness/research/harness-engineering-foundations.md`
-records the mapping rationale and source lineage. Remaining work: realign
-report, release-check, and maturity wording the same way, and add a regression
-check that fails on the old support-surface-as-core formula in generated
-contracts.
+Status: implemented. Root, public, and generated docs state the five-core model.
+`harnessforge audit`, `harnessforge report`, and the GitHub Action summaries
+report the seven implementation buckets mapped onto the five core subsystems
+(`coreModel`, per-domain `coreSubsystem`/`surfaceClass`, inline role labels, and
+a labeled bottleneck). `release-check` and `maturity` consume the audit score
+only and never present support surfaces as core. Generated manifest snippet
+contracts require the five-core wording, and a regression test fails if a
+generated contract lists a support surface as a peer core subsystem.
+`docs/harness/research/harness-engineering-foundations.md` records the mapping
+rationale and source lineage.
 
 Keep the Walking Labs `harness-creator` model as the HarnessForge product
 contract: instructions, state, verification, scope, and lifecycle. Treat tools,
@@ -215,16 +217,17 @@ Accepted behavior:
 
 - keep root, public, generated, and quality docs from presenting support
   surfaces as peer core subsystems;
-- update generated manifest snippet contracts and regression tests so new
-  generated targets keep the five-core model;
-- realign audit, report, release-check, maturity, and quality-summary wording
-  so implementation buckets do not redefine the core harness model;
+- resolved: generated manifest snippet contracts require the five-core model,
+  and `test_generated_contract_keeps_support_surfaces_out_of_core` regresses it;
+- resolved: audit, report, release-check, and maturity wording no longer let
+  implementation buckets redefine the core harness model (report and Action
+  summaries label the bottleneck; release-check and maturity use only the score);
 - resolved: the seven audit domains stay as implementation buckets and report
   both, with each labeled against the five-core model (`feedback` is the
   verification core; `tools` and `environment` are support surfaces);
 - treat any new support surface as optional unless it has evidence tying it to
   instructions, state, verification, scope, or lifecycle;
-- add a regression check that fails on the old support-surface-as-core formula
+- resolved: a regression check fails on the old support-surface-as-core formula
   in generated contracts.
 
 Done or retire when:

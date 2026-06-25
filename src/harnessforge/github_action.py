@@ -7,7 +7,13 @@ from collections.abc import Mapping
 from pathlib import Path
 from typing import Any
 
-from .assessment.audit import audit_target, audit_to_dict, format_audit, render_html_report
+from .assessment.audit import (
+    audit_target,
+    audit_to_dict,
+    domain_role,
+    format_audit,
+    render_html_report,
+)
 from .core.doctor import doctor_report, format_doctor
 from .core.redact import redact_local_paths
 from .core.reports import relative_to_target, report_path, write_json_payload
@@ -535,7 +541,7 @@ def _print_writes(root: Path, writes: tuple[Any, ...]) -> None:
 def _summary_markdown(result: Any, changed_files: int) -> str:
     lines = [
         f"- Overall score: `{result.overall}/100`",
-        f"- Bottleneck: `{result.bottleneck}`",
+        f"- Bottleneck: `{result.bottleneck}` ({domain_role(result.bottleneck)})",
         f"- Changed files: `{changed_files}`",
         "",
         "| Domain | Score | Passed |",

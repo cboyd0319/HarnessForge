@@ -16,7 +16,7 @@ from .maturity import build_maturity_report
 from .observability import build_observability_report
 from .policy_presets import build_policy_preset_report
 from .sbom_adapter import build_sbom_adapter_plan
-from ..assessment.audit import audit_target, audit_to_dict
+from ..assessment.audit import audit_target, audit_to_dict, domain_role
 from ..core.harness_paths import existing_harness_path, harness_path
 from ..core.reports import report_path, relative_to_target
 from ..generation.update import build_drift_report
@@ -190,7 +190,8 @@ def format_report(payload: dict[str, Any]) -> str:
         "## Audit",
         "",
         f"- Score: {payload['audit']['overall']}/100",
-        f"- Bottleneck: `{payload['audit']['bottleneck']}`",
+        f"- Bottleneck: `{payload['audit']['bottleneck']}` "
+        f"({domain_role(payload['audit']['bottleneck'])})",
         f"- Failed checks: {len(payload['audit']['failedChecks'])}",
         "",
         "## Generated Drift",
@@ -408,6 +409,7 @@ def _audit_summary(audit: dict[str, Any]) -> dict[str, Any]:
     return {
         "overall": audit["overall"],
         "bottleneck": audit["bottleneck"],
+        "coreModel": audit["coreModel"],
         "failedChecks": failed_checks,
         "recommendations": audit["recommendations"],
     }
